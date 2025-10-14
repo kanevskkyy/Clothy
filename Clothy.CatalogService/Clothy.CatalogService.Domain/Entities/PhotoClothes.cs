@@ -11,6 +11,6 @@ namespace Clothy.CatalogService.Domain.Entities
         public Guid ClotheId { get; set; }
         public string? PhotoURL { get; set; }
 
-        public ClotheItem Clothe { get; set; } = null!;
+        public ClotheItem? Clothe { get; set; }
     }
 }

@@ -43,44 +43,46 @@ namespace Clothy.CatalogService.DAL.EntityConfigurations
             builder.Property(property => property.CreatedAt)
                 .IsRequired();
 
-            builder.Property(property => property.UpdatedAt)
-                .IsRequired();
-
             builder.Property(property => property.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             builder.HasOne(property => property.Collection)
-                .WithMany(col => col.ClotheItems)
+                .WithMany(property => property.ClotheItems)
                 .HasForeignKey(property => property.CollectionId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(property => property.Photos)
-                .WithOne(photo => photo.Clothe)
-                .HasForeignKey(photo => photo.ClotheId)
+                .WithOne(property => property.Clothe)
+                .HasForeignKey(property => property.ClotheId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(property => property.Stocks)
-                .WithOne(stock => stock.Clothe)
-                .HasForeignKey(stock => stock.ClotheId)
+                .WithOne(property => property.Clothe)
+                .HasForeignKey(property => property.ClotheId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(property => property.ClotheTags)
-                .WithOne(tag => tag.Clothe)
-                .HasForeignKey(tag => tag.ClotheId)
+                .WithOne(property => property.Clothe)
+                .HasForeignKey(property => property.ClotheId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(property => property.ClotheMaterials)
-                .WithOne(material => material.Clothe)
-                .HasForeignKey(material => material.ClotheId)
+                .WithOne(property => property.Clothe)
+                .HasForeignKey(property => property.ClotheId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(property => property.Brand)
-                .WithMany(brand => brand.ClotheItems)
+                .WithMany(property => property.ClotheItems)
                 .HasForeignKey(property => property.BrandId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasIndex(property => property.Name);
-            builder.HasIndex(property => property.Price);
+            builder.HasOne(property => property.ClothyType)
+                .WithMany(property => property.Items)
+                .HasForeignKey(property => property.ClothingTypeId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasIndex(property => property.BrandId);
+            builder.HasIndex(property => property.CollectionId);
         }
     }
 }

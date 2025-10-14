@@ -14,8 +14,8 @@ namespace Clothy.CatalogService.DAL.DB
         {
             DbContextOptionsBuilder<ClothyCatalogDbContext> optionsBuilder = new DbContextOptionsBuilder<ClothyCatalogDbContext>();
 
-            string connectionString = "Host=localhost;Port=5432;Database=ClothyCatalog;Username=postgres;Password=postgres";
-            optionsBuilder.UseNpgsql(connectionString);
+            const string CONNECTION_STRING = "Host=localhost;Port=5432;Database=ClothyCatalog;Username=postgres;Password=postgres";
+            optionsBuilder.UseNpgsql(CONNECTION_STRING);
 
             return new ClothyCatalogDbContext(optionsBuilder.Options);
         }

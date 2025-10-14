@@ -3,6 +3,7 @@ using System;
 using Clothy.CatalogService.DAL.DB;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Clothy.CatalogService.DAL.Migrations
 {
     [DbContext(typeof(ClothyCatalogDbContext))]
-    partial class ClothyCatalogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251014141701_CreatedTableClothingType")]
+    partial class CreatedTableClothingType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,9 +32,7 @@ namespace Clothy.CatalogService.DAL.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -98,6 +99,7 @@ namespace Clothy.CatalogService.DAL.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime?>("UpdatedAt")
+                        .IsRequired()
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
@@ -107,6 +109,10 @@ namespace Clothy.CatalogService.DAL.Migrations
                     b.HasIndex("ClothingTypeId");
 
                     b.HasIndex("CollectionId");
+
+                    b.HasIndex("Name");
+
+                    b.HasIndex("Price");
 
                     b.HasIndex("Slug")
                         .IsUnique();
@@ -180,6 +186,7 @@ namespace Clothy.CatalogService.DAL.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime?>("UpdatedAt")
+                        .IsRequired()
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
@@ -241,6 +248,7 @@ namespace Clothy.CatalogService.DAL.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime?>("UpdatedAt")
+                        .IsRequired()
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
@@ -272,6 +280,7 @@ namespace Clothy.CatalogService.DAL.Migrations
                         .HasColumnName("hexcode");
 
                     b.Property<DateTime?>("UpdatedAt")
+                        .IsRequired()
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
@@ -307,6 +316,7 @@ namespace Clothy.CatalogService.DAL.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime?>("UpdatedAt")
+                        .IsRequired()
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");

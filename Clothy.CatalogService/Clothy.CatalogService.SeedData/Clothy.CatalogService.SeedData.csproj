@@ -8,10 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Bogus" Version="35.6.4" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Clothy.CatalogService.DAL\Clothy.CatalogService.DAL.csproj" />
     <ProjectReference Include="..\Clothy.CatalogService.Domain\Clothy.CatalogService.Domain.csproj" />
   </ItemGroup>
 

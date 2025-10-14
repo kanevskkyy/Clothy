@@ -25,12 +25,18 @@ namespace Clothy.CatalogService.DAL.EntityConfigurations
                 .IsRequired()
                 .HasMaxLength(500);
 
+            builder.Property(property => property.CreatedAt)
+                .IsRequired();
+
+            builder.Property(property => property.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
             builder.HasIndex(property => property.Name)
                 .IsUnique();
 
             builder.HasMany(property => property.ClotheItems)
-                .WithOne(clothe => clothe.Brand)
-                .HasForeignKey(clothe => clothe.BrandId)
+                .WithOne(property => property.Brand)
+                .HasForeignKey(property => property.BrandId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

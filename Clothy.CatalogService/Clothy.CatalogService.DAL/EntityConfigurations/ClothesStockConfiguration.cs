@@ -27,30 +27,31 @@ namespace Clothy.CatalogService.DAL.EntityConfigurations
             builder.Property(property => property.CreatedAt)
                 .IsRequired();
 
-            builder.Property(property => property.UpdatedAt)
-                .IsRequired();
-
             builder.Property(property => property.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             builder.HasOne(property => property.Clothe)
-                .WithMany(clothe => clothe.Stocks)
+                .WithMany(property => property.Stocks)
                 .HasForeignKey(property => property.ClotheId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(property => property.Size)
-                .WithMany(size => size.ClothesStocks)
+                .WithMany(property => property.ClothesStocks)
                 .HasForeignKey(property => property.SizeId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(property => property.Color)
-                .WithMany(color => color.ClothesStocks)
+                .WithMany(property => property.ClothesStocks)
                 .HasForeignKey(property => property.ColorId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasIndex(property => property.ClotheId);
-            builder.HasIndex(property => property.SizeId);
-            builder.HasIndex(property => property.ColorId);
+            builder.HasIndex(property => new 
+            { 
+                property.ClotheId, 
+                property.SizeId, 
+                property.ColorId 
+            }).IsUnique();
+
         }
     }
 }

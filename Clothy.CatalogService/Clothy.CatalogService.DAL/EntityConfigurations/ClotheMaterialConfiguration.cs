@@ -27,12 +27,12 @@ namespace Clothy.CatalogService.DAL.EntityConfigurations
                 .HasColumnName("percentage");
 
             builder.HasOne(property => property.Clothe)
-                .WithMany(clothe => clothe.ClotheMaterials)
+                .WithMany(property => property.ClotheMaterials)
                 .HasForeignKey(property => property.ClotheId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(property => property.Material)
-                .WithMany(material => material.ClotheMaterials)
+                .WithMany(property => property.ClotheMaterials)
                 .HasForeignKey(property => property.MaterialId)
                 .OnDelete(DeleteBehavior.Cascade);
 

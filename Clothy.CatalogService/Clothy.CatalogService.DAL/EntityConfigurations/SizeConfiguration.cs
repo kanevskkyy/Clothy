@@ -24,9 +24,6 @@ namespace Clothy.CatalogService.DAL.EntityConfigurations
             builder.Property(property => property.CreatedAt)
                 .IsRequired();
 
-            builder.Property(property => property.UpdatedAt)
-                .IsRequired();
-
             builder.Property(property => property.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
 

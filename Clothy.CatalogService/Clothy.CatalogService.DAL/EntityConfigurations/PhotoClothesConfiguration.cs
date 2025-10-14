@@ -22,7 +22,7 @@ namespace Clothy.CatalogService.DAL.EntityConfigurations
                 .HasMaxLength(500);
 
             builder.HasOne(property => property.Clothe)
-                .WithMany(clothe => clothe.Photos)
+                .WithMany(property => property.Photos)
                 .HasForeignKey(property => property.ClotheId)
                 .OnDelete(DeleteBehavior.Cascade);
 

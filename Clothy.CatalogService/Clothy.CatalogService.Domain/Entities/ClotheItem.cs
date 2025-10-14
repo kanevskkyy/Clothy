@@ -17,6 +17,9 @@ namespace Clothy.CatalogService.Domain.Entities
         public Guid? BrandId { get; set; }
         public Brand? Brand { get; set; }
 
+        public Guid? ClothingTypeId { get; set; }
+        public ClothingType? ClothyType { get; set; }
+
         public Guid? CollectionId { get; set; }
         public Collection? Collection { get; set; }
 

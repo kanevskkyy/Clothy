@@ -27,6 +27,7 @@ namespace Clothy.CatalogService.DAL.DB
         public DbSet<PhotoClothes> PhotoClothes { get; set; }
         public DbSet<Size> Sizes { get; set; }
         public DbSet<Tag> Tags { get; set; }
+        public DbSet<ClothingType> ClothingTypes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

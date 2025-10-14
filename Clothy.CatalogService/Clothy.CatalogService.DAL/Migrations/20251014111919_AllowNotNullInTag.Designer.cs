@@ -3,6 +3,7 @@ using System;
 using Clothy.CatalogService.DAL.DB;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Clothy.CatalogService.DAL.Migrations
 {
     [DbContext(typeof(ClothyCatalogDbContext))]
-    partial class ClothyCatalogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251014111919_AllowNotNullInTag")]
+    partial class AllowNotNullInTag
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,9 +32,7 @@ namespace Clothy.CatalogService.DAL.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -61,9 +62,6 @@ namespace Clothy.CatalogService.DAL.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<Guid?>("BrandId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("ClothingTypeId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid?>("CollectionId")
@@ -98,15 +96,18 @@ namespace Clothy.CatalogService.DAL.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime?>("UpdatedAt")
+                        .IsRequired()
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
                     b.HasIndex("BrandId");
 
-                    b.HasIndex("ClothingTypeId");
-
                     b.HasIndex("CollectionId");
+
+                    b.HasIndex("Name");
+
+                    b.HasIndex("Price");
 
                     b.HasIndex("Slug")
                         .IsUnique();
@@ -180,44 +181,21 @@ namespace Clothy.CatalogService.DAL.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime?>("UpdatedAt")
+                        .IsRequired()
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ClotheId");
 
                     b.HasIndex("ColorId");
 
                     b.HasIndex("SizeId");
 
-                    b.HasIndex("ClotheId", "SizeId", "ColorId")
-                        .IsUnique();
-
                     b.ToTable("clothes_stock", null, t =>
                         {
                             t.HasCheckConstraint("ck_clothes_stock_quantity_valid", "\"quantity\" >= 0");
                         });
-                });
-
-            modelBuilder.Entity("Clothy.CatalogService.Domain.Entities.ClothingType", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Slug")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ClothingTypes");
                 });
 
             modelBuilder.Entity("Clothy.CatalogService.Domain.Entities.Collection", b =>
@@ -241,6 +219,7 @@ namespace Clothy.CatalogService.DAL.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime?>("UpdatedAt")
+                        .IsRequired()
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
@@ -272,6 +251,7 @@ namespace Clothy.CatalogService.DAL.Migrations
                         .HasColumnName("hexcode");
 
                     b.Property<DateTime?>("UpdatedAt")
+                        .IsRequired()
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
@@ -307,6 +287,7 @@ namespace Clothy.CatalogService.DAL.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<DateTime?>("UpdatedAt")
+                        .IsRequired()
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
@@ -364,6 +345,7 @@ namespace Clothy.CatalogService.DAL.Migrations
                         .HasColumnType("character varying(10)");
 
                     b.Property<DateTime?>("UpdatedAt")
+                        .IsRequired()
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
@@ -408,19 +390,12 @@ namespace Clothy.CatalogService.DAL.Migrations
                         .HasForeignKey("BrandId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Clothy.CatalogService.Domain.Entities.ClothingType", "ClothyType")
-                        .WithMany("Items")
-                        .HasForeignKey("ClothingTypeId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("Clothy.CatalogService.Domain.Entities.Collection", "Collection")
                         .WithMany("ClotheItems")
                         .HasForeignKey("CollectionId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Brand");
-
-                    b.Navigation("ClothyType");
 
                     b.Navigation("Collection");
                 });
@@ -515,11 +490,6 @@ namespace Clothy.CatalogService.DAL.Migrations
                     b.Navigation("Photos");
 
                     b.Navigation("Stocks");
-                });
-
-            modelBuilder.Entity("Clothy.CatalogService.Domain.Entities.ClothingType", b =>
-                {
-                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("Clothy.CatalogService.Domain.Entities.Collection", b =>
