@@ -1,0 +1,65 @@
+# Build results
+bin/
+obj/
+out/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio
+.vs/
+*.vc.db
+*.vscode/
+
+# DotNet
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# NuGet
+*.nupkg
+*.snupkg
+*.nuspec
+*.psmdcp
+.nuget/
+packages/
+*.nuget.props
+*.nuget.targets
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+
+# Resharper / Rider
+_ReSharper*/
+*.DotSettings.user
+.idea/
+
+# Coverage / Analysis
+*.coverage
+*.coveragexml
+*.TestResults/
+TestResults/
+
+# Publish
+*.pubxml
+*.publishsettings
+Properties/PublishProfiles/
+
+# Backup & temp
+*.bak
+*.tmp
+*.temp
+
+# Docker
+docker-compose.override.yml
+.docker/
