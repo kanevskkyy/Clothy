@@ -26,10 +26,8 @@ namespace Clothy.CatalogService.BLL.Services
         public async Task<TagReadDTO> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             Tag? tag = await unitOfWork.Tags.GetByIdAsync(id, cancellationToken);
-
-            if (tag == null) throw new NotFoundException("Tag not found");
+            if (tag == null) throw new NotFoundException($"Tag not found with ID: {id}");
             
-
             return mapper.Map<TagReadDTO>(tag);
         }
 
@@ -65,8 +63,8 @@ namespace Clothy.CatalogService.BLL.Services
         public async Task<TagReadDTO> UpdateAsync(Guid id, TagUpdateDTO tagUpdateDTO, CancellationToken cancellationToken = default)
         {
             Tag? tag = await unitOfWork.Tags.GetByIdAsync(id, cancellationToken);
-            if (tag == null) throw new NotFoundException("Tag not found");
-            
+            if (tag == null) throw new NotFoundException($"Tag not found with ID: {id}");
+
             bool exists = await unitOfWork.Tags.IsNameAlreadyExistsAsync(tagUpdateDTO.Name, id, cancellationToken);
             if (exists) throw new AlreadyExistsException("Tag with this name already exists");
             
@@ -81,8 +79,7 @@ namespace Clothy.CatalogService.BLL.Services
         public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
             Tag? tag = await unitOfWork.Tags.GetByIdAsync(id, cancellationToken);
-
-            if (tag == null) throw new NotFoundException("Tag not found");
+            if (tag == null) throw new NotFoundException($"Tag not found with ID: {id}");
 
             unitOfWork.Tags.Delete(tag);
             await unitOfWork.SaveChangesAsync(cancellationToken);
