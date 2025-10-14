@@ -1,3 +1,7 @@
+using System.Reflection;
+using Clothy.CatalogService.BLL.Interfaces;
+using Clothy.CatalogService.BLL.Mapper;
+using Clothy.CatalogService.BLL.Services;
 using Clothy.CatalogService.DAL.DB;
 using Clothy.CatalogService.DAL.Interfaces;
 using Clothy.CatalogService.DAL.Repositories;
@@ -13,7 +17,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// REGISTER REPOSITORIES
+// REGISTER REPOSITORIES DI
 builder.Services.AddScoped<IBrandRepository, BrandRepository>();
 builder.Services.AddScoped<IClotheItemRepository, ClotheItemRepository>();
 builder.Services.AddScoped<IClothesStockRepository, ClothesStockRepository>();
@@ -28,6 +32,26 @@ builder.Services.AddScoped<IClothingTypeRepository, ClothingTypeRepository>();
 // REGISTER UNIT OF WORK
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 //
+
+// REGISTER AUTO MAPPER
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.AddMaps(typeof(TagProfile).Assembly);
+});
+
+//
+
+// REGISTER SERVICES DI
+builder.Services.AddScoped<ITagService, TagService>();
+//
+
+builder.Services.AddSwaggerGen(c =>
+{
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+
+    c.IncludeXmlComments(xmlPath);
+});
 
 builder.Services.AddDbContext<ClothyCatalogDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("ClothyCatalogDb")));
