@@ -46,6 +46,8 @@ builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddScoped<ISizeService, SizeService>();
 builder.Services.AddScoped<IMaterialService, MaterialService>();
 builder.Services.AddScoped<IColorService, ColorService>();
+builder.Services.AddScoped<IClothingTypeService, ClothingTypeService>();
+builder.Services.AddScoped<ICollectionService, CollectionService>();
 //
 
 builder.Services.AddSwaggerGen(c =>
