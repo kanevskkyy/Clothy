@@ -21,6 +21,10 @@ namespace Clothy.CatalogService.DAL.EntityConfigurations
                 .IsRequired()
                 .HasMaxLength(100);
 
+            builder.Property(property => property.Slug)
+                .IsRequired()
+                .HasMaxLength(100);
+
             builder.Property(property => property.PhotoURL)
                 .IsRequired()
                 .HasMaxLength(500);
@@ -32,6 +36,9 @@ namespace Clothy.CatalogService.DAL.EntityConfigurations
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             builder.HasIndex(property => property.Name)
+                .IsUnique();
+
+            builder.HasIndex(property => property.Slug)
                 .IsUnique();
 
             builder.HasMany(property => property.ClotheItems)

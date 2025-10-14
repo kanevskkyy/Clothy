@@ -14,6 +14,6 @@ namespace Clothy.CatalogService.Domain.Entities
         public Guid MaterialId { get; set; }
         public Material? Material { get; set; }
 
-        public decimal Percentage { get; set; }
+        public int Percentage { get; set; }
     }
 }

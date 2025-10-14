@@ -32,7 +32,7 @@ namespace Clothy.CatalogService.SeedData.SeedData
                     {
                         ClotheId = clothe.Id,
                         MaterialId = material.Id,
-                        Percentage = Math.Round(faker.Random.Decimal(10, 90), 2)
+                        Percentage = faker.Random.Int(10, 90)
                     };
 
                     clotheMaterials.Add(clotheMaterial);

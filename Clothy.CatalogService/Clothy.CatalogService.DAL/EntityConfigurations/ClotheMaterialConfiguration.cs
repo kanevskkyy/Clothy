@@ -22,7 +22,6 @@ namespace Clothy.CatalogService.DAL.EntityConfigurations
             });
 
             builder.Property(property => property.Percentage)
-                .HasColumnType("decimal(5,2)")
                 .IsRequired()
                 .HasColumnName("percentage");
 

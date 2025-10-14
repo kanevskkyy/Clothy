@@ -40,6 +40,7 @@ namespace Clothy.CatalogService.SeedData.SeedData
                     Id = Guid.NewGuid(),
                     CreatedAt = faker.Date.Past(2).ToUniversalTime(),
                     Name = brandName,
+                    Slug = brandName.Replace(" ", "-").ToLower(),
                     PhotoURL = faker.Image.PicsumUrl()
                 };
 

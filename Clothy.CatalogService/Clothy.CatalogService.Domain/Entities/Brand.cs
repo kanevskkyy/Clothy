@@ -9,6 +9,7 @@ namespace Clothy.CatalogService.Domain.Entities
     public class Brand : BaseEntity
     {
         public string? Name { get; set; }
+        public string? Slug { get; set; }
         public string? PhotoURL { get; set; }
 
         public ICollection<ClotheItem> ClotheItems { get; set; } = new List<ClotheItem>();
