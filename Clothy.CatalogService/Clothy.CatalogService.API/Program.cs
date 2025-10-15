@@ -1,4 +1,5 @@
 using System.Reflection;
+using Clothy.CatalogService.BLL.Helpers;
 using Clothy.CatalogService.BLL.Interfaces;
 using Clothy.CatalogService.BLL.Mapper;
 using Clothy.CatalogService.BLL.Services;
@@ -6,6 +7,7 @@ using Clothy.CatalogService.DAL.DB;
 using Clothy.CatalogService.DAL.Interfaces;
 using Clothy.CatalogService.DAL.Repositories;
 using Clothy.CatalogService.DAL.UOW;
+using DotNetEnv;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -48,7 +50,25 @@ builder.Services.AddScoped<IMaterialService, MaterialService>();
 builder.Services.AddScoped<IColorService, ColorService>();
 builder.Services.AddScoped<IClothingTypeService, ClothingTypeService>();
 builder.Services.AddScoped<ICollectionService, CollectionService>();
+builder.Services.AddScoped<IBrandService, BrandService>();
+builder.Services.AddScoped<IClotheService, ClotheService>();
+builder.Services.AddScoped<IClothesStockService, ClothesStockService>();
 //
+
+// CLOUDINARY CONFIG
+Env.Load();
+builder.Services.Configure<CloudinarySettings>(options =>
+{
+    options.CloudName = Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__CLOUDNAME");
+    options.ApiKey = Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APIKEY");
+    options.ApiSecret = Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APISECRET");
+});
+//
+
+// Cloudinary DI registration
+builder.Services.AddScoped<IImageService, ImageService>();
+//
+
 
 builder.Services.AddSwaggerGen(c =>
 {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Clothy.CatalogService.DAL.DB;
 using Clothy.CatalogService.DAL.Helpers;
 using Clothy.CatalogService.DAL.Interfaces;
@@ -41,6 +42,11 @@ namespace Clothy.CatalogService.DAL.Repositories
                 .ToListAsync(cancellationToken);
 
             return new PagedList<ClothesStock>(stocks, count, parameters.PageNumber, parameters.PageSize);
+        }
+
+        public async Task<bool> IsSizeAndColorAndClotheIdsExists(Guid sizeId, Guid colorId, Guid clotheId, CancellationToken cancellationToken = default)
+        {
+            return await dbSet.AnyAsync(property => property.SizeId == sizeId && property.ColorId == colorId && property.ClotheId == clotheId, cancellationToken);
         }
     }
 }

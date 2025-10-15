@@ -11,6 +11,7 @@ namespace Clothy.CatalogService.DAL.Interfaces
 {
     public interface IClotheItemRepository : IGenericRepository<ClotheItem>
     {
+        Task<bool> IsSlugAlreadyExistsAsync(string slug, Guid? id = null, CancellationToken cancellationToken = default);
         Task<PagedList<ClotheItem>> GetPagedClotheItemsAsync(ClotheItemSpecificationParameters parameters, CancellationToken cancellationToken = default);
         Task<ClotheItem?> GetByIdWithDetailsAsync(Guid id, CancellationToken cancellationToken = default);
     }

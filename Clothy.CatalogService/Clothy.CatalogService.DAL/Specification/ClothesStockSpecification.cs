@@ -15,6 +15,9 @@ namespace Clothy.CatalogService.DAL.Specification
         public ClothesStockSpecification(ClothesStockSpecificationParameters parameters)
         {
             Query.Include(cs => cs.Clothe)
+                 .ThenInclude(property => property.ClothyType)
+                 .Include(cs => cs.Clothe)
+                 .ThenInclude(property => property.Collection)
                  .Include(cs => cs.Size)
                  .Include(cs => cs.Color);
 

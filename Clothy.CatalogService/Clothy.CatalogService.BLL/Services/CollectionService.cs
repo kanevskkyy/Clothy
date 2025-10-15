@@ -72,7 +72,6 @@ namespace Clothy.CatalogService.BLL.Services
             if (exists) throw new AlreadyExistsException("Collection with this slug already exists");
 
             mapper.Map(dto, collection);
-            collection.UpdatedAt = DateTime.UtcNow;
 
             unitOfWork.Collections.Update(collection);
             await unitOfWork.SaveChangesAsync(cancellationToken);
