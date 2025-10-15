@@ -13,6 +13,7 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using static Clothy.CatalogService.BLL.FluentValidation.SizeValidation.SizeDTOValidator;
 using Clothy.CatalogService.BLL.FluentValidation.BrandValidation;
+using Clothy.CatalogService.API.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -92,6 +93,7 @@ builder.Services.AddDbContext<ClothyCatalogDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("ClothyCatalogDb")));
 
 var app = builder.Build();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

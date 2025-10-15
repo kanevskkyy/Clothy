@@ -47,9 +47,8 @@ namespace Clothy.CatalogService.BLL.Services
 
         public async Task<ClotheDetailDTO> CreateAsync(ClotheCreateDTO dto, CancellationToken cancellationToken = default)
         {
-            int totalPercentage = dto.Materials.Sum(percentage => percentage.Percentage);
-            if (totalPercentage != 100) throw new InvalidMaterialPercentageException("Total material percentage must be exactly 100.");
-            
+            if (await unitOfWork.ClotheItems.IsSlugAlreadyExistsAsync(dto.Slug, null, cancellationToken)) throw new AlreadyExistsException("Clothe with this slug already exists");
+
             ClotheItem clothe = mapper.Map<ClotheItem>(dto);
 
             clothe.MainPhotoURL = await imageService.UploadAsync(dto.MainPhoto, "clothes");
@@ -87,6 +86,8 @@ namespace Clothy.CatalogService.BLL.Services
             ClotheItem? clotheItem = await unitOfWork.ClotheItems.GetByIdWithDetailsAsync(id, cancellationToken);
             if (clotheItem == null) throw new NotFoundException($"Clothe item not found with ID: {id}");
 
+            if (await unitOfWork.ClotheItems.IsSlugAlreadyExistsAsync(dto.Slug, id, cancellationToken)) throw new AlreadyExistsException("Clothe with this slug already exists");
+
             mapper.Map(dto, clotheItem);
 
             if (dto.MainPhoto != null)
@@ -109,9 +110,6 @@ namespace Clothy.CatalogService.BLL.Services
                     });
                 }
             }
-
-            int totalPercentage = dto.Materials.Sum(percentage => percentage.Percentage);
-            if (totalPercentage != 100) throw new InvalidMaterialPercentageException("Total material percentage must be exactly 100.");
             
             clotheItem.ClotheMaterials.Clear();
             foreach (ClotheMaterialCreateDTO materialDto in dto.Materials)
