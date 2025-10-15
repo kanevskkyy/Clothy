@@ -8,7 +8,11 @@ using Clothy.CatalogService.DAL.Interfaces;
 using Clothy.CatalogService.DAL.Repositories;
 using Clothy.CatalogService.DAL.UOW;
 using DotNetEnv;
+using FluentValidation.AspNetCore;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using static Clothy.CatalogService.BLL.FluentValidation.SizeValidation.SizeDTOValidator;
+using Clothy.CatalogService.BLL.FluentValidation.BrandValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -68,6 +72,12 @@ builder.Services.Configure<CloudinarySettings>(options =>
 // Cloudinary DI registration
 builder.Services.AddScoped<IImageService, ImageService>();
 //
+
+// FLUENT VALIDATION
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssembly(typeof(BrandCreateDTOValidator).Assembly);
+//
+
 
 
 builder.Services.AddSwaggerGen(c =>
