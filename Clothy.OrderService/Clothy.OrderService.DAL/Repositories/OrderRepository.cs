@@ -35,58 +35,74 @@ namespace Clothy.OrderService.DAL.Repositories
                 ORDER BY o.createdat DESC;
             ";
 
-            IEnumerable<OrderSummaryData> result = await connection.QueryAsync<OrderSummaryData, OrderStatus, double, OrderSummaryData>(
-                sql,
-                (OrderSummaryData order, OrderStatus status, double totalAmount) =>
+            var rawResult = await connection.QueryAsync(sql);
+
+            var result = rawResult.Select(r => new OrderSummaryData
+            {
+                Id = r.id,
+                UserFirstName = r.userfirstname,
+                UserLastName = r.userlastname,
+                CreatedAt = r.createdat,
+                UpdatedAt = r.updatedat,
+                TotalAmount = (double)r.totalamount,
+                Status = new OrderStatus
                 {
-                    order.Status = status;
-                    order.TotalAmount = totalAmount;
-                    return order;
-                },
-                splitOn: "StatusId",
-                commandTimeout: 60
-            );
+                    Id = r.statusid,
+                    Name = r.statusname,
+                    IconUrl = r.statusiconurl,
+                    CreatedAt = null,
+                    UpdatedAt = null
+                }
+            });
 
             return result;
         }
+
 
         public async Task<OrderWithDetailsData?> GetByIdWithDetailsAsync(Guid id, CancellationToken ct = default)
         {
             IDbConnection connection = await GetOpenConnectionAsync();
 
-            string sql = @"
+            string orderSql = @"
                 SELECT o.id, o.userfirstname, o.userlastname, o.createdat, o.updatedat,
-                       s.id AS StatusId, s.name AS StatusName, s.iconurl AS StatusIconUrl,
+                       s.id AS Id, s.name AS Name, s.iconurl AS IconUrl,
                        COALESCE(SUM(oi.price * oi.quantity), 0) AS TotalAmount
                 FROM orders o
                 JOIN order_status s ON o.statusid = s.id
                 LEFT JOIN order_item oi ON oi.orderid = o.id
                 WHERE o.id = @Id
                 GROUP BY o.id, s.id, s.name, s.iconurl, o.userfirstname, o.userlastname, o.createdat, o.updatedat;
-            ";
+                ";
 
-            OrderWithDetailsData? order = await connection.QuerySingleOrDefaultAsync<OrderWithDetailsData>(
-                sql, new 
-                { 
+            OrderWithDetailsData? order = await connection.QueryAsync<OrderWithDetailsData, OrderStatus, OrderWithDetailsData>(
+                orderSql,
+                (o, s) =>
+                {
+                    o.Status = s;
+                    return o;
+                },
+                new { 
                     Id = id 
-                });
+                },
+                splitOn: "Id" 
+            ).ContinueWith(t => t.Result.FirstOrDefault());
+
 
             if (order == null) return null;
-            
-            string itemsSql = @"
-                SELECT *
-                FROM order_item
-                WHERE orderid = @Id;
-            ";
 
-            IEnumerable<OrderItemData> items = await connection.QueryAsync<OrderItemData>(itemsSql, new 
+            string itemsSql = @"SELECT * FROM order_item WHERE orderid = @Id;";
+            var items = await connection.QueryAsync<OrderItemData>(itemsSql, new 
             { 
                 Id = id 
             });
-            order.Items = new List<OrderItemData>(items);
+            order.Items = items.ToList();
 
             string deliverySql = @"
-                SELECT dd.*, dp.id AS DeliveryProviderId, dp.name AS DeliveryProviderName, dp.iconurl AS DeliveryProviderIconUrl,
+                SELECT dd.id AS DeliveryDetailId, dd.postalindex, dd.phonenumber, 
+                       dd.firstname, dd.lastname, dd.middlename, dd.detailsdescription,
+                       dd.createdat AS DeliveryCreatedAt, dd.updatedat AS DeliveryUpdatedAt,
+                       dp.id AS DeliveryProviderId, dp.name AS DeliveryProviderName, 
+                       dp.iconurl AS DeliveryProviderIconUrl,
                        c.id AS CityId, c.name AS CityName
                 FROM delivery_detail dd
                 JOIN delivery_provider dp ON dd.providerid = dp.id
@@ -94,23 +110,41 @@ namespace Clothy.OrderService.DAL.Repositories
                 WHERE dd.orderid = @Id;
             ";
 
-            IEnumerable<DeliveryDetailData> deliveryResult = await connection.QueryAsync<DeliveryDetailData, DeliveryProvider, City, DeliveryDetailData>(
-                deliverySql,
-                (DeliveryDetailData dd, DeliveryProvider dp, City city) =>
-                {
-                    dd.DeliveryProvider = dp;
-                    dd.City = city;
-                    return dd;
-                },
-                new 
-                { 
-                    Id = id 
-                },
-                splitOn: "DeliveryProviderId,CityId"
-            );
+            dynamic? delivery = await connection.QuerySingleOrDefaultAsync<dynamic>(deliverySql, new 
+            { 
+                Id = id 
+            });
 
-            List<DeliveryDetailData> deliveryList = new List<DeliveryDetailData>(deliveryResult);
-            order.DeliveryDetail = deliveryList.Count > 0 ? deliveryList[0] : null;
+            if (delivery != null)
+            {
+                order.DeliveryDetail = new DeliveryDetailData
+                {
+                    Id = (Guid)delivery.deliverydetailid,
+                    PostalIndex = delivery.postalindex,
+                    PhoneNumber = delivery.phonenumber,
+                    FirstName = delivery.firstname,
+                    LastName = delivery.lastname,
+                    MiddleName = delivery.middlename,
+                    DetailsDescription = delivery.detailsdescription,
+                    CreatedAt = delivery.deliverycreatedat,
+                    UpdatedAt = delivery.deliveryupdatedat,
+                    DeliveryProvider = new DeliveryProvider
+                    {
+                        Id = (Guid)delivery.deliveryproviderid,
+                        Name = delivery.deliveryprovidername,
+                        IconUrl = delivery.deliveryprovidericonurl,  
+                        CreatedAt = DateTime.MinValue,
+                        UpdatedAt = null
+                    },
+                    City = new City
+                    {
+                        Id = (Guid)delivery.cityid,
+                        Name = delivery.cityname,
+                        CreatedAt = DateTime.MinValue,
+                        UpdatedAt = null
+                    }
+                };
+            }
 
             return order;
         }

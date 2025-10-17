@@ -35,6 +35,7 @@ builder.Services.AddAutoMapper(typeof(CityProfile).Assembly);
 builder.Services.AddScoped<ICityService, CityService>();
 builder.Services.AddScoped<IDeliveryProviderService, DeliveryProviderService>();
 builder.Services.AddScoped<IOrderStatusService, OrderStatusService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 //
 
 builder.Services.AddControllers();

@@ -18,6 +18,24 @@ namespace Clothy.OrderService.DAL.Repositories
 
         }
 
+        public async Task<OrderStatus?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
+        {
+            using IDbConnection connection = await GetOpenConnectionAsync();
+            string sql = @"
+                SELECT id, name, iconurl, createdat, updatedat
+                FROM order_status
+                WHERE LOWER(name) = LOWER(@Name);
+            ";
+            OrderStatus? orderStatus = await connection.QueryFirstOrDefaultAsync<OrderStatus>(
+                new CommandDefinition(sql, new
+                {
+                    Name = name
+                },
+                cancellationToken: cancellationToken)
+            );
+            return orderStatus;
+        }
+
         public async Task<bool> ExistsByNameAsync(string name, Guid? excludeId = null, CancellationToken cancellationToken = default)
         {
             using IDbConnection connection = await GetOpenConnectionAsync();
