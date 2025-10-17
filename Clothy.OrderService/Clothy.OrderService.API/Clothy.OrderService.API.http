@@ -1,0 +1,6 @@
+@Clothy.OrderService.API_HostAddress = http://localhost:5186
+
+GET {{Clothy.OrderService.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -49,6 +49,9 @@ namespace Clothy.CatalogService.BLL.Services
         {
             if (await unitOfWork.ClotheItems.IsSlugAlreadyExistsAsync(dto.Slug, null, cancellationToken)) throw new AlreadyExistsException("Clothe with this slug already exists");
 
+            int totalPercentage = dto.Materials.Sum(percentage => percentage.Percentage);
+            if (totalPercentage != 100) throw new InvalidMaterialPercentageException("Total material percentage must be exactly 100.");
+
             ClotheItem clothe = mapper.Map<ClotheItem>(dto);
 
             clothe.MainPhotoURL = await imageService.UploadAsync(dto.MainPhoto, "clothes");
@@ -87,6 +90,9 @@ namespace Clothy.CatalogService.BLL.Services
             if (clotheItem == null) throw new NotFoundException($"Clothe item not found with ID: {id}");
 
             if (await unitOfWork.ClotheItems.IsSlugAlreadyExistsAsync(dto.Slug, id, cancellationToken)) throw new AlreadyExistsException("Clothe with this slug already exists");
+
+            int totalPercentage = dto.Materials.Sum(percentage => percentage.Percentage);
+            if (totalPercentage != 100) throw new InvalidMaterialPercentageException("Total material percentage must be exactly 100.");
 
             mapper.Map(dto, clotheItem);
 

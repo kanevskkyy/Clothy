@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35931.197 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.OrderService.API", "Clothy.OrderService.API\Clothy.OrderService.API.csproj", "{D576085D-AD52-4640-95C7-3244041E0E87}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.OrderService.BLL", "Clothy.OrderService.BLL\Clothy.OrderService.BLL.csproj", "{DD07836E-AE85-4CB4-B234-E3912A199122}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.OrderService.DAL", "Clothy.OrderService.DAL\Clothy.OrderService.DAL.csproj", "{530761ED-A0D1-4780-B045-AF4089FFDD0A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.OrderService.Domain", "Clothy.OrderService.Domain\Clothy.OrderService.Domain.csproj", "{4786C278-B8F1-4039-812B-E87210C26E3D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.OrderService.SeedData", "Clothy.OrderService.SeedData\Clothy.OrderService.SeedData.csproj", "{FC95FEFB-7E09-483B-A494-2ED34B54E1D7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D576085D-AD52-4640-95C7-3244041E0E87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D576085D-AD52-4640-95C7-3244041E0E87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D576085D-AD52-4640-95C7-3244041E0E87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D576085D-AD52-4640-95C7-3244041E0E87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD07836E-AE85-4CB4-B234-E3912A199122}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD07836E-AE85-4CB4-B234-E3912A199122}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD07836E-AE85-4CB4-B234-E3912A199122}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD07836E-AE85-4CB4-B234-E3912A199122}.Release|Any CPU.Build.0 = Release|Any CPU
+		{530761ED-A0D1-4780-B045-AF4089FFDD0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{530761ED-A0D1-4780-B045-AF4089FFDD0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{530761ED-A0D1-4780-B045-AF4089FFDD0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{530761ED-A0D1-4780-B045-AF4089FFDD0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4786C278-B8F1-4039-812B-E87210C26E3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4786C278-B8F1-4039-812B-E87210C26E3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4786C278-B8F1-4039-812B-E87210C26E3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4786C278-B8F1-4039-812B-E87210C26E3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC95FEFB-7E09-483B-A494-2ED34B54E1D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC95FEFB-7E09-483B-A494-2ED34B54E1D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC95FEFB-7E09-483B-A494-2ED34B54E1D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC95FEFB-7E09-483B-A494-2ED34B54E1D7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EB98A4C9-02EA-4725-BA4E-4C6D96E52051}
+	EndGlobalSection
+EndGlobal

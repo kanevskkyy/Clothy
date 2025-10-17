@@ -29,6 +29,7 @@ namespace Clothy.CatalogService.API.Middleware
                 {
                     NotFoundException => (int)HttpStatusCode.NotFound,
                     AlreadyExistsException => (int)HttpStatusCode.Conflict,
+                    InvalidMaterialPercentageException => (int)HttpStatusCode.UnprocessableEntity,
                     _ => (int)HttpStatusCode.InternalServerError
                 };
 
