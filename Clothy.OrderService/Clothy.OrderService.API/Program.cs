@@ -1,3 +1,7 @@
+using System.Reflection;
+using Clothy.OrderService.BLL.Interfaces;
+using Clothy.OrderService.BLL.Mapper;
+using Clothy.OrderService.BLL.Services;
 using Clothy.OrderService.DAL.ConnectionFactory;
 using Clothy.OrderService.DAL.Interfaces;
 using Clothy.OrderService.DAL.Repositories;
@@ -21,11 +25,25 @@ builder.Services.AddScoped<IDeliveryDetailRepository, DeliveryDetailRepository>(
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 //
 
+// AUTO MAPPER REGISTER
+builder.Services.AddAutoMapper(typeof(CityProfile).Assembly);
+//
+
+// SERVICES REGISTER
+builder.Services.AddScoped<ICityService, CityService>();
+//
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    string xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
+    
+    options.IncludeXmlComments(xmlPath);
+});
 
 var app = builder.Build();
 

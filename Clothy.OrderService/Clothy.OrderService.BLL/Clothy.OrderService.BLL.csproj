@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Clothy.OrderService.DAL\Clothy.OrderService.DAL.csproj" />
     <ProjectReference Include="..\Clothy.OrderService.Domain\Clothy.OrderService.Domain.csproj" />
   </ItemGroup>
