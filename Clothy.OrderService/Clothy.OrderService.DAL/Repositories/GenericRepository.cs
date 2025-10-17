@@ -64,12 +64,16 @@ namespace Clothy.OrderService.DAL.Repositories
             string paramsString = string.Join(", ", columns.Select(c => "@" + c));
             string sqlCode = $"INSERT INTO {tableName} ({columnsString}) VALUES ({paramsString}) RETURNING id";
 
-            return await databaseConnection.ExecuteScalarAsync<Guid>(
+            Guid insertedId = await databaseConnection.ExecuteScalarAsync<Guid>(
                 new CommandDefinition(
-                    sqlCode, 
-                    entity, 
-                    transaction: transaction, 
+                    sqlCode,
+                    entity,
+                    transaction: transaction,
                     cancellationToken: cancellationToken));
+
+            typeof(T).GetProperty("Id")?.SetValue(entity, insertedId);
+
+            return insertedId;
         }
 
         public virtual async Task<T?> UpdateAsync(T entity, CancellationToken cancellationToken = default, IDbTransaction? transaction = null)

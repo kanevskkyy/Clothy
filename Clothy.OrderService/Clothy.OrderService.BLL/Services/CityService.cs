@@ -48,7 +48,7 @@ namespace Clothy.OrderService.BLL.Services
             if (exists) throw new AlreadyExistsException($"City with name '{dto.Name}' already exists.");
 
             City city = mapper.Map<City>(dto);
-            await unitOfWork.Cities.AddAsync(city, cancellationToken);
+            city.Id = await unitOfWork.Cities.AddAsync(city, cancellationToken);
             await unitOfWork.CommitAsync();
 
             return mapper.Map<CityReadDTO>(city);

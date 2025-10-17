@@ -1,4 +1,5 @@
 using System.Reflection;
+using Clothy.OrderService.BLL.Helpers;
 using Clothy.OrderService.BLL.Interfaces;
 using Clothy.OrderService.BLL.Mapper;
 using Clothy.OrderService.BLL.Services;
@@ -6,6 +7,7 @@ using Clothy.OrderService.DAL.ConnectionFactory;
 using Clothy.OrderService.DAL.Interfaces;
 using Clothy.OrderService.DAL.Repositories;
 using Clothy.OrderService.DAL.UOW;
+using DotNetEnv;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +33,8 @@ builder.Services.AddAutoMapper(typeof(CityProfile).Assembly);
 
 // SERVICES REGISTER
 builder.Services.AddScoped<ICityService, CityService>();
+builder.Services.AddScoped<IDeliveryProviderService, DeliveryProviderService>();
+builder.Services.AddScoped<IOrderStatusService, OrderStatusService>();
 //
 
 builder.Services.AddControllers();
@@ -44,6 +48,20 @@ builder.Services.AddSwaggerGen(options =>
     
     options.IncludeXmlComments(xmlPath);
 });
+
+// CLOUDINARY CONFIG
+Env.Load();
+builder.Services.Configure<CloudinarySettings>(options =>
+{
+    options.CloudName = Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__CLOUDNAME");
+    options.ApiKey = Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APIKEY");
+    options.ApiSecret = Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APISECRET");
+});
+//
+
+// Image Service
+builder.Services.AddScoped<IImageService, ImageService>();
+//
 
 var app = builder.Build();
 

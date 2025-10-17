@@ -23,13 +23,13 @@ namespace Clothy.OrderService.API.Controllers
         /// Get paginated list of cities with optional filtering and sorting.
         /// </summary>
         /// <param name="filter">Filter parameters for cities.</param>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="cancelletionToken">Cancellation token.</param>
         /// <returns>Paginated list of cities.</returns>
         [HttpGet]
-        public async Task<ActionResult<PagedList<CityReadDTO>>> GetPaged([FromQuery] CityFilterDTO filter, CancellationToken ct)
+        public async Task<ActionResult<PagedList<CityReadDTO>>> GetPaged([FromQuery] CityFilterDTO filter, CancellationToken cancelletionToken)
         {
             logger.LogInformation("Fetching paged cities. Page: {PageNumber}, PageSize: {PageSize}", filter.PageNumber, filter.PageSize);
-            PagedList<CityReadDTO> cities = await cityService.GetPagedAsync(filter, ct);
+            PagedList<CityReadDTO> cities = await cityService.GetPagedAsync(filter, cancelletionToken);
             
             return Ok(cities);
         }
@@ -38,13 +38,13 @@ namespace Clothy.OrderService.API.Controllers
         /// Get a specific city by its ID.
         /// </summary>
         /// <param name="id">City ID (GUID).</param>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="cancelletionToken">Cancellation token.</param>
         /// <returns>City details.</returns>
         [HttpGet("{id:guid}")]
-        public async Task<ActionResult<CityReadDTO>> GetById(Guid id, CancellationToken ct)
+        public async Task<ActionResult<CityReadDTO>> GetById(Guid id, CancellationToken cancelletionToken)
         {
             logger.LogInformation("Fetching city with ID: {Id}", id);
-            CityReadDTO city = await cityService.GetByIdAsync(id, ct);
+            CityReadDTO city = await cityService.GetByIdAsync(id, cancelletionToken);
             
             return Ok(city);
         }
@@ -53,16 +53,19 @@ namespace Clothy.OrderService.API.Controllers
         /// Create a new city.
         /// </summary>
         /// <param name="dto">City creation data.</param>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="cancelletionToken">Cancellation token.</param>
         /// <returns>Created city.</returns>
         [HttpPost]
-        public async Task<ActionResult<CityReadDTO>> Create([FromBody] CityCreateDTO dto, CancellationToken ct)
+        public async Task<ActionResult<CityReadDTO>> Create([FromBody] CityCreateDTO dto, CancellationToken cancelletionToken)
         {
             logger.LogInformation("Creating city with name: {Name}", dto.Name);
-            CityReadDTO created = await cityService.CreateAsync(dto, ct);
+            CityReadDTO created = await cityService.CreateAsync(dto, cancelletionToken);
             
             logger.LogInformation("City created with ID: {Id}", created.Id);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+            return CreatedAtAction(nameof(GetById), new 
+            { 
+                id = created.Id 
+            }, created);
         }
 
         /// <summary>
@@ -70,13 +73,13 @@ namespace Clothy.OrderService.API.Controllers
         /// </summary>
         /// <param name="id">City ID (GUID).</param>
         /// <param name="dto">Update data for the city.</param>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="cancelletionToken">Cancellation token.</param>
         /// <returns>Updated city.</returns>
         [HttpPut("{id:guid}")]
-        public async Task<ActionResult<CityReadDTO>> Update(Guid id, [FromBody] CityUpdateDTO dto, CancellationToken ct)
+        public async Task<ActionResult<CityReadDTO>> Update(Guid id, [FromBody] CityUpdateDTO dto, CancellationToken cancelletionToken)
         {
             logger.LogInformation("Updating city with ID: {Id}", id);
-            CityReadDTO updated = await cityService.UpdateAsync(id, dto, ct);
+            CityReadDTO updated = await cityService.UpdateAsync(id, dto, cancelletionToken);
             
             logger.LogInformation("City with ID {Id} updated.", id);
             return Ok(updated);
@@ -86,13 +89,13 @@ namespace Clothy.OrderService.API.Controllers
         /// Delete a city by its ID.
         /// </summary>
         /// <param name="id">City ID (GUID).</param>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="cancelletionToken">Cancellation token.</param>
         /// <returns>No content.</returns>
         [HttpDelete("{id:guid}")]
-        public async Task<ActionResult> Delete(Guid id, CancellationToken ct)
+        public async Task<ActionResult> Delete(Guid id, CancellationToken cancelletionToken)
         {
             logger.LogInformation("Deleting city with ID: {Id}", id);
-            await cityService.DeleteAsync(id, ct);
+            await cityService.DeleteAsync(id, cancelletionToken);
             
             logger.LogInformation("City with ID {Id} deleted.", id);
             return NoContent();
