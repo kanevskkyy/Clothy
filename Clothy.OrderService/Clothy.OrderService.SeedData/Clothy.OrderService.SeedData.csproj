@@ -7,4 +7,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Bogus" Version="35.6.4" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Clothy.OrderService.DAL\Clothy.OrderService.DAL.csproj" />
+    <ProjectReference Include="..\Clothy.OrderService.Domain\Clothy.OrderService.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
