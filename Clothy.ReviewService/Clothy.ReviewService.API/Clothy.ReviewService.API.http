@@ -1,0 +1,6 @@
+@Clothy.ReviewService.API_HostAddress = http://localhost:5142
+
+GET {{Clothy.ReviewService.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
