@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Clothy.ReviewService.Domain.Exceptions;
+using Clothy.ReviewService.Domain.ValueObjects;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Clothy.ReviewService.Domain.Entities
@@ -13,46 +14,27 @@ namespace Clothy.ReviewService.Domain.Entities
         [BsonElement("clotheItemId")]
         public Guid ClotheItemId { get; private set; }
 
-        [BsonElement("userId")]
-        public Guid UserId { get; private set; }
-
-        [BsonElement("userFirstName")]
-        public string UserFirstName { get; private set; }
-
-        [BsonElement("userLastName")]
-        public string UserLastName { get; private set; }
-
-        [BsonElement("userPhotoUrl")]
-        public string UserPhotoUrl { get; private set; }
+        [BsonElement("user")]
+        public UserInfo User { get; private set; }
 
         [BsonElement("questionText")]
-        public string QuestionText { get; private set; }
+        public TextValue QuestionText { get; private set; }
 
         [BsonElement("answers")]
         public List<Answer> Answers { get; private set; } = new();
 
-        private Question() 
-        {
-            
-        }
+        private Question() { }
 
-        public Question(Guid clotheItemId, Guid userId, string firstName, string lastName, string questionText, string photoUrl)
+        public Question(Guid clotheItemId, UserInfo user, TextValue text)
         {
-            if (string.IsNullOrWhiteSpace(questionText)) throw new EmptyQuestionException();
-
             ClotheItemId = clotheItemId;
-            UserId = userId;
-            UserFirstName = firstName.Trim();
-            UserLastName = lastName.Trim();
-            UserPhotoUrl = photoUrl;
-            QuestionText = questionText.Trim();
+            User = user;
+            QuestionText = text;
         }
 
-        public void AddAnswer(Guid userId, string firstName, string lastName, string answerText, string photoUrl)
+        public void AddAnswer(Answer answer)
         {
-            if (string.IsNullOrWhiteSpace(answerText)) throw new EmptyAnswerException();
-
-            Answer answer = new Answer(userId, firstName, lastName, answerText, photoUrl);
+            if (answer == null) throw new EmptyValueException("Answer");
             Answers.Add(answer);
             UpdateTimestamp();
         }

@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Clothy.ReviewService.Domain.Exceptions
 {
-    public class EmptyAnswerException : DomainException
+    public class EmptyValueException : DomainException
     {
-        public EmptyAnswerException() : base("Answer text cannot be empty.") 
+        public EmptyValueException(string fieldName) : base($"{fieldName} cannot be empty.")
         {
-            
+
         }
     }
 }

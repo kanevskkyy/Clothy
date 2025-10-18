@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Clothy.ReviewService.Infrastructure.Settings
+namespace Clothy.ReviewService.Infrastructure.DB.Settings
 {
     public class MongoDbSettings
     {
