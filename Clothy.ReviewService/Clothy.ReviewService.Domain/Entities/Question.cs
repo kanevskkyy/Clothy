@@ -18,30 +18,38 @@ namespace Clothy.ReviewService.Domain.Entities
         public UserInfo User { get; private set; }
 
         [BsonElement("questionText")]
-        public TextValue QuestionText { get; private set; }
+        public string QuestionText { get; private set; }  
 
         [BsonElement("answers")]
         public List<Answer> Answers { get; private set; } = new();
 
-        private Question() { }
-
-        public Question(Guid clotheItemId, UserInfo user, TextValue text)
+        private Question() 
         {
-            ClotheItemId = clotheItemId;
-            User = user;
-            QuestionText = text;
+
         }
 
-        public void UpdateQuestion(TextValue newText)
+        public Question(Guid clotheItemId, UserInfo user, string questionText)
         {
-            if (newText == null) throw new EmptyValueException("QuestionText");
-            QuestionText = newText;
+            if (string.IsNullOrWhiteSpace(questionText))
+                throw new EmptyValueException("QuestionText");
+
+            ClotheItemId = clotheItemId;
+            User = user;
+            QuestionText = questionText.Trim();
+        }
+
+        public void UpdateQuestion(string newText)
+        {
+            if (string.IsNullOrWhiteSpace(newText)) throw new EmptyValueException("QuestionText");
+
+            QuestionText = newText.Trim();
             UpdateTimestamp();
         }
 
         public void AddAnswer(Answer answer)
         {
-            if (answer == null) throw new EmptyValueException("Answer");
+            if (answer == null) throw new ArgumentNullException(nameof(answer));
+
             Answers.Add(answer);
             UpdateTimestamp();
         }

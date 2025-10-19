@@ -6,13 +6,12 @@ using System.Threading.Tasks;
 using Clothy.ReviewService.Application.Interfaces.Commands;
 using Clothy.ReviewService.Domain.Entities;
 using Clothy.ReviewService.Domain.ValueObjects;
-using MediatR;
 
-namespace Clothy.ReviewService.Application.Features.Questions.Commands.CreateQuestion
+namespace Clothy.ReviewService.Application.Features.Questions.Commands.AddAnswer
 {
-    public record CreateQuestionCommand(
-        Guid ClotheItemId,
+    public record AddAnswerWithQuestionIdCommand(
+        string QuestionId,
         UserInfo User,
-        string QuestionText
-    ) : ICommand<Question>;
+        string AnswerText
+    ) : ICommand<Answer>;
 }

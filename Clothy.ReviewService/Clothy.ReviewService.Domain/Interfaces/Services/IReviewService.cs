@@ -15,7 +15,7 @@ namespace Clothy.ReviewService.Domain.Interfaces.Services
         Task<PagedList<Review>> GetReviewsAsync(ReviewQueryParameters queryParameters, CancellationToken cancellationToken = default);
         Task<Review?> GetReviewByIdAsync(string id, CancellationToken cancellationToken = default);
         Task<Review> AddReviewAsync(Review review, CancellationToken cancellationToken = default);
-        Task UpdateReviewAsync(string id, TextValue newComment, RatingValue? newRating = null, CancellationToken cancellationToken = default);
+        Task UpdateReviewAsync(string id, string newComment, int newRating, CancellationToken cancellationToken = default);
         Task DeleteReviewAsync(string id, CancellationToken cancellationToken = default);
     }
 }

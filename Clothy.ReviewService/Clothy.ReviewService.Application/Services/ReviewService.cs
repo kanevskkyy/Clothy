@@ -44,7 +44,7 @@ namespace Clothy.ReviewService.Application.Services
             return review;
         }
 
-        public async Task UpdateReviewAsync(string id, TextValue newComment, RatingValue? newRating = null, CancellationToken cancellationToken = default)
+        public async Task UpdateReviewAsync(string id, string newComment, int newRating, CancellationToken cancellationToken = default)
         {
             Review? review = await reviewRepository.GetByIdAsync(id, cancellationToken);
             if (review == null) throw new NotFoundException($"Review with ID {id} not found!");

@@ -15,22 +15,26 @@ namespace Clothy.ReviewService.Domain.Entities
         public UserInfo User { get; private set; }
 
         [BsonElement("answerText")]
-        public TextValue AnswerText { get; private set; }
+        public string AnswerText { get; private set; }  
 
         private Answer() 
         {
-            
+
         }
 
-        public Answer(UserInfo user, TextValue text)
+        public Answer(UserInfo user, string answerText)
         {
+            if (string.IsNullOrWhiteSpace(answerText)) throw new EmptyValueException("AnswerText");
+
             User = user;
-            AnswerText = text;
+            AnswerText = answerText.Trim();
         }
 
-        public void UpdateAnswer(TextValue newText)
+        public void UpdateAnswer(string newText)
         {
-            AnswerText = newText; 
+            if (string.IsNullOrWhiteSpace(newText)) throw new EmptyValueException("AnswerText");
+
+            AnswerText = newText.Trim();
             UpdateTimestamp();
         }
     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Clothy.ReviewService.Domain.Exceptions;
 using MongoDB.Bson.Serialization.Attributes;
@@ -22,6 +23,7 @@ namespace Clothy.ReviewService.Domain.ValueObjects
         [BsonElement("photoUrl")]
         public string PhotoUrl { get; }
 
+        [JsonConstructor]
         public UserInfo(Guid userId, string firstName, string lastName, string photoUrl)
         {
             if (string.IsNullOrWhiteSpace(firstName)) throw new EmptyValueException("First name");

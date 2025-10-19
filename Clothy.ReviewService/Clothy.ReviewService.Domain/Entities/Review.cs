@@ -18,28 +18,36 @@ namespace Clothy.ReviewService.Domain.Entities
         public UserInfo User { get; private set; }
 
         [BsonElement("rating")]
-        public RatingValue Rating { get; private set; }
+        public int Rating { get; private set; }  
 
         [BsonElement("comment")]
-        public TextValue Comment { get; private set; }
+        public string Comment { get; private set; }  
 
         private Review() 
         {
             
         }
 
-        public Review(Guid clotheItemId, UserInfo user, RatingValue rating, TextValue comment)
+        public Review(Guid clotheItemId, UserInfo user, int rating, string comment)
         {
+            if (rating < 1 || rating > 5) throw new InvalidRatingException(rating);
+
+            if (string.IsNullOrWhiteSpace(comment)) throw new EmptyValueException("Comment");
+
             ClotheItemId = clotheItemId;
             User = user;
             Rating = rating;
-            Comment = comment;
+            Comment = comment.Trim();
         }
 
-        public void UpdateComment(TextValue newComment, RatingValue? newRating = null)
+        public void UpdateComment(string newComment, int newRating)
         {
-            Comment = newComment;
-            if (newRating != null) Rating = newRating;
+            if (string.IsNullOrWhiteSpace(newComment)) throw new EmptyValueException("Comment");
+
+            if (newRating < 1 || newRating > 5) throw new InvalidRatingException(newRating);
+
+            Comment = newComment.Trim();
+            Rating = newRating;
             UpdateTimestamp();
         }
     }

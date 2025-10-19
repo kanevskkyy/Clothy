@@ -9,18 +9,18 @@ using MediatR;
 
 namespace Clothy.ReviewService.Application.Features.Questions.Commands.UpdateAnswer
 {
-    public class UpdateAnswerToQuestionCommandHandler : ICommandHandler<UpdateAnswerToQuestionCommand>
+    public class UpdateAnswerWithIdsCommandHandler : ICommandHandler<UpdateAnswerWithIdsCommand>
     {
         private IQuestionService questionService;
 
-        public UpdateAnswerToQuestionCommandHandler(IQuestionService questionService)
+        public UpdateAnswerWithIdsCommandHandler(IQuestionService questionService)
         {
             this.questionService = questionService;
         }
 
-        public async Task<Unit> Handle(UpdateAnswerToQuestionCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(UpdateAnswerWithIdsCommand request, CancellationToken cancellationToken)
         {
-            await questionService.UpdateAnswerAsync(request.QuestionId.ToString(), request.AnswerId.ToString(), request.AnswerText, cancellationToken);
+            await questionService.UpdateAnswerAsync(request.QuestionId, request.AnswerId, request.AnswerText, cancellationToken);
             return Unit.Value;
         }
     }

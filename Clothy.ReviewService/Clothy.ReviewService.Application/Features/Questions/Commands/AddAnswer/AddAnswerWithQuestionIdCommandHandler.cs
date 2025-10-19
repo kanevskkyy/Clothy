@@ -9,21 +9,21 @@ using Clothy.ReviewService.Domain.Interfaces.Services;
 
 namespace Clothy.ReviewService.Application.Features.Questions.Commands.AddAnswer
 {
-    public class AddAnswerToQuestionCommandHandler : ICommandHandler<AddAnswerToQuestionCommand, Guid>
+    public class AddAnswerWithQuestionIdCommandHandler : ICommandHandler<AddAnswerWithQuestionIdCommand, Answer>
     {
         private IQuestionService questionService;
 
-        public AddAnswerToQuestionCommandHandler(IQuestionService questionService)
+        public AddAnswerWithQuestionIdCommandHandler(IQuestionService questionService)
         {
             this.questionService = questionService;
         }
 
-        public async Task<Guid> Handle(AddAnswerToQuestionCommand request, CancellationToken cancellationToken)
+        public async Task<Answer> Handle(AddAnswerWithQuestionIdCommand request, CancellationToken cancellationToken)
         {
             Answer answer = new Answer(request.User, request.AnswerText);
-            await questionService.AddAnswerAsync(request.QuestionId.ToString(), answer, cancellationToken);
-
-            return Guid.Parse(answer.Id);
+            await questionService.AddAnswerAsync(request.QuestionId, answer, cancellationToken);
+            
+            return answer;
         }
     }
 }

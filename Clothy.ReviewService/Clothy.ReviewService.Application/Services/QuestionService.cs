@@ -50,7 +50,7 @@ namespace Clothy.ReviewService.Application.Services
             await questionRepository.AddAnswerAsync(questionId, answer, cancellationToken);
         }
 
-        public async Task UpdateAnswerAsync(string questionId, string answerId, TextValue newText, CancellationToken cancellationToken = default)
+        public async Task UpdateAnswerAsync(string questionId, string answerId, string newText, CancellationToken cancellationToken = default)
         {
             Question? question = await questionRepository.GetByIdAsync(questionId, cancellationToken);
             if (question == null) throw new NotFoundException($"Question with ID {questionId} not found!");
@@ -62,7 +62,7 @@ namespace Clothy.ReviewService.Application.Services
             await questionRepository.UpdateAnswerAsync(questionId, answer, cancellationToken);
         }
 
-        public async Task UpdateQuestionAsync(string questionId, TextValue newText, CancellationToken cancellationToken = default)
+        public async Task UpdateQuestionAsync(string questionId, string newText, CancellationToken cancellationToken = default)
         {
             Question? question = await questionRepository.GetByIdAsync(questionId, cancellationToken);
             if (question == null) throw new NotFoundException($"Question with ID {questionId} not found!");

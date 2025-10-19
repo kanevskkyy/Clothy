@@ -8,5 +8,5 @@ using MediatR;
 
 namespace Clothy.ReviewService.Application.Features.Reviews.Commands.DeleteReview
 {
-    public record DeleteReviewCommand(Guid ReviewId) : ICommand;
+    public record DeleteReviewCommand(string ReviewId) : ICommand;
 }

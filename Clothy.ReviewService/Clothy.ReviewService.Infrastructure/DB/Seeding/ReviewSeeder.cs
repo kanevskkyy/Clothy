@@ -28,38 +28,38 @@ namespace Clothy.ReviewService.Infrastructure.DB.Seeding
                 new Review(
                     Guid.NewGuid(),
                     new UserInfo(Guid.NewGuid(), "Alice", "Smith", "https://randomuser.me/api/portraits/women/1.jpg"),
-                    new RatingValue(5),
-                    new TextValue("Absolutely love it! Great quality and fit.", "Comment")
+                    5,
+                    "Absolutely love it! Great quality and fit."
                 ),
                 new Review(
                     Guid.NewGuid(),
                     new UserInfo(Guid.NewGuid(), "Bob", "Johnson", "https://randomuser.me/api/portraits/men/2.jpg"),
-                    new RatingValue(4),
-                    new TextValue("Pretty good, but shipping was slow.", "Comment")
+                    4,
+                    "Pretty good, but shipping was slow."
                 ),
                 new Review(
                     Guid.NewGuid(),
                     new UserInfo(Guid.NewGuid(), "Clara", "Davis", "https://randomuser.me/api/portraits/women/3.jpg"),
-                    new RatingValue(3),
-                    new TextValue("Average product, nothing special.", "Comment")
+                    3,
+                    "Average product, nothing special."
                 ),
                 new Review(
                     Guid.NewGuid(),
                     new UserInfo(Guid.NewGuid(), "David", "Brown", "https://randomuser.me/api/portraits/men/4.jpg"),
-                    new RatingValue(5),
-                    new TextValue("Excellent! Would buy again.", "Comment")
+                    5,
+                    "Excellent! Would buy again."
                 ),
                 new Review(
                     Guid.NewGuid(),
                     new UserInfo(Guid.NewGuid(), "Eva", "Miller", "https://randomuser.me/api/portraits/women/5.jpg"),
-                    new RatingValue(2),
-                    new TextValue("Not satisfied, the material feels cheap.", "Comment")
+                    2,
+                    "Not satisfied, the material feels cheap."
                 ),
                 new Review(
                     Guid.NewGuid(),
                     new UserInfo(Guid.NewGuid(), "Frank", "Wilson", "https://randomuser.me/api/portraits/men/6.jpg"),
-                    new RatingValue(4),
-                    new TextValue("Good product, reasonable price.", "Comment")
+                    4,
+                    "Good product, reasonable price."
                 )
             };
 

@@ -12,12 +12,12 @@ namespace Clothy.ReviewService.Domain.Interfaces.Services
 {
     public interface IQuestionService
     {
-        Task UpdateQuestionAsync(string questionId, TextValue newText, CancellationToken cancellationToken = default);
+        Task UpdateQuestionAsync(string questionId, string newText, CancellationToken cancellationToken = default);
         Task<PagedList<Question>> GetQuestionsAsync(QuestionQueryParameters queryParameters, CancellationToken cancellationToken = default);
         Task<Question?> GetQuestionByIdAsync(string id, CancellationToken cancellationToken = default);
         Task<Question> AddQuestionAsync(Question question, CancellationToken cancellationToken = default);
         Task AddAnswerAsync(string questionId, Answer answer, CancellationToken cancellationToken = default);
-        Task UpdateAnswerAsync(string questionId, string answerId, TextValue newText, CancellationToken cancellationToken = default);
+        Task UpdateAnswerAsync(string questionId, string answerId, string newText, CancellationToken cancellationToken = default);
         Task DeleteAnswerAsync(string questionId, string answerId, CancellationToken cancellationToken = default);
         Task DeleteQuestionAsync(string id, CancellationToken cancellationToken = default);
     }

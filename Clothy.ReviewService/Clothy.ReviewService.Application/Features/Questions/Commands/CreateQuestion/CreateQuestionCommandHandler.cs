@@ -9,7 +9,7 @@ using Clothy.ReviewService.Domain.Interfaces.Services;
 
 namespace Clothy.ReviewService.Application.Features.Questions.Commands.CreateQuestion
 {
-    public class CreateQuestionCommandHandler : ICommandHandler<CreateQuestionCommand, Guid>
+    public class CreateQuestionCommandHandler : ICommandHandler<CreateQuestionCommand, Question>
     {
         private IQuestionService questionService;
 
@@ -18,14 +18,14 @@ namespace Clothy.ReviewService.Application.Features.Questions.Commands.CreateQue
             this.questionService = questionService;
         }
 
-        public async Task<Guid> Handle(CreateQuestionCommand request, CancellationToken cancellationToken)
+        public async Task<Question> Handle(CreateQuestionCommand request, CancellationToken cancellationToken)
         {
             Question question = await questionService.AddQuestionAsync(
                 new Question(request.ClotheItemId, request.User, request.QuestionText),
                 cancellationToken
             );
 
-            return Guid.Parse(question.Id);
+            return question;
         }
     }
 }

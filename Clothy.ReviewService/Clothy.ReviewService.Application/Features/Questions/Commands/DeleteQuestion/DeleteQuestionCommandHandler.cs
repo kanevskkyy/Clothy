@@ -20,7 +20,7 @@ namespace Clothy.ReviewService.Application.Features.Questions.Commands.DeleteQue
 
         public async Task<Unit> Handle(DeleteQuestionCommand request, CancellationToken cancellationToken)
         {
-            await questionService.DeleteQuestionAsync(request.QuestionId.ToString(), cancellationToken);
+            await questionService.DeleteQuestionAsync(request.QuestionId, cancellationToken);
             return Unit.Value;
         }
     }

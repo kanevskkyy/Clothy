@@ -27,37 +27,37 @@ namespace Clothy.ReviewService.Infrastructure.DB.Seeding
                 new Question(
                     Guid.NewGuid(),
                     new UserInfo(Guid.NewGuid(), "Charlie", "Brown", "https://randomuser.me/api/portraits/men/10.jpg"),
-                    new TextValue("What sizes are available?", "QuestionText")
+                    "What sizes are available?"
                 ),
                 new Question(
                     Guid.NewGuid(),
                     new UserInfo(Guid.NewGuid(), "Dana", "White", "https://randomuser.me/api/portraits/women/11.jpg"),
-                    new TextValue("Is this item washable?", "QuestionText")
+                    "Is this item washable?"
                 ),
                 new Question(
                     Guid.NewGuid(),
                     new UserInfo(Guid.NewGuid(), "Ella", "Green", "https://randomuser.me/api/portraits/women/12.jpg"),
-                    new TextValue("Can I return it if it doesn't fit?", "QuestionText")
+                    "Can I return it if it doesn't fit?"
                 ),
                 new Question(
                     Guid.NewGuid(),
                     new UserInfo(Guid.NewGuid(), "Frank", "Black", "https://randomuser.me/api/portraits/men/13.jpg"),
-                    new TextValue("Does it come in different colors?", "QuestionText")
+                    "Does it come in different colors?"
                 )
             };
 
             fakeData[0].AddAnswer(new Answer(
                 new UserInfo(Guid.NewGuid(), "Alice", "Smith", "https://randomuser.me/api/portraits/women/1.jpg"),
-                new TextValue("Available in S, M, L, XL.", "AnswerText")
+                "Available in S, M, L, XL."
             ));
             fakeData[0].AddAnswer(new Answer(
                 new UserInfo(Guid.NewGuid(), "Bob", "Johnson", "https://randomuser.me/api/portraits/men/2.jpg"),
-                new TextValue("Check the product page for exact measurements.", "AnswerText")
+                "Check the product page for exact measurements."
             ));
 
             fakeData[3].AddAnswer(new Answer(
                 new UserInfo(Guid.NewGuid(), "Clara", "Davis", "https://randomuser.me/api/portraits/women/3.jpg"),
-                new TextValue("Yes, we have red, blue and black options.", "AnswerText")
+                "Yes, we have red, blue and black options."
             ));
 
             await questions.InsertManyAsync(fakeData, cancellationToken: cancellationToken);

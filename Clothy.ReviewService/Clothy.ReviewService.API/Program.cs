@@ -1,4 +1,5 @@
-﻿using Clothy.ReviewService.Application.Behaviours;
+﻿using System.Reflection;
+using Clothy.ReviewService.Application.Behaviours;
 using Clothy.ReviewService.Application.Features.Questions.Commands.UpdateQuestion;
 using Clothy.ReviewService.Application.Services;
 using Clothy.ReviewService.Domain.Interfaces.Repositories;
@@ -22,7 +23,7 @@ builder.Services.AddHealthChecks()
 //
 
 //MediatR
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<UpdateQuestionCommandHandler>());
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<UpdateQuestionWithIdCommandHandler>());
 //
 
 // Behaviors
@@ -44,7 +45,13 @@ builder.Services.AddScoped<IQuestionService, QuestionService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    string xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
+
+    options.IncludeXmlComments(xmlPath);
+});
 
 
 var app = builder.Build();

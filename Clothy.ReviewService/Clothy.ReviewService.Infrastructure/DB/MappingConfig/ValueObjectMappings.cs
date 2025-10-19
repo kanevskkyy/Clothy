@@ -13,18 +13,6 @@ namespace Clothy.ReviewService.Infrastructure.DB.MappingConfig
     {
         public static void Register()
         {
-            BsonClassMap.RegisterClassMap<TextValue>(cm =>
-            {
-                cm.AutoMap();
-                cm.MapCreator(v => new TextValue(v.Text, "Comment")); 
-            });
-
-            BsonClassMap.RegisterClassMap<RatingValue>(cm =>
-            {
-                cm.AutoMap();
-                cm.MapCreator(r => new RatingValue(r.Rating));
-            });
-
             BsonClassMap.RegisterClassMap<UserInfo>(cm =>
             {
                 cm.AutoMap();

@@ -10,7 +10,6 @@ using MediatR;
 namespace Clothy.ReviewService.Application.Features.Questions.Commands.UpdateQuestion
 {
     public record UpdateQuestionCommand(
-        Guid QuestionId,
-        TextValue QuestionText
+        string QuestionText
     ) : ICommand;
 }

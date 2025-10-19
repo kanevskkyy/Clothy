@@ -9,7 +9,7 @@ using Clothy.ReviewService.Domain.Interfaces.Services;
 
 namespace Clothy.ReviewService.Application.Features.Reviews.Commands.CreateReview
 {
-    public class CreateReviewCommandHandler : ICommandHandler<CreateReviewCommand, Guid>
+    public class CreateReviewCommandHandler : ICommandHandler<CreateReviewCommand, Review>
     {
         private IReviewService reviewService;
 
@@ -18,13 +18,13 @@ namespace Clothy.ReviewService.Application.Features.Reviews.Commands.CreateRevie
             this.reviewService = reviewService;
         }
 
-        public async Task<Guid> Handle(CreateReviewCommand request, CancellationToken cancellationToken)
+        public async Task<Review> Handle(CreateReviewCommand request, CancellationToken cancellationToken)
         {
             Review? review = await reviewService.AddReviewAsync(
                 new Review(request.ClotheItemId, request.User, request.Rating, request.Comment),
                 cancellationToken
             );
-            return Guid.Parse(review.Id);
+            return review;
         }
     }
 }

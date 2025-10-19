@@ -4,12 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Clothy.ReviewService.Application.Interfaces.Commands;
-using MediatR;
 
-namespace Clothy.ReviewService.Application.Features.Questions.Commands.DeleteAnswer
+namespace Clothy.ReviewService.Application.Features.Questions.Commands.UpdateAnswer
 {
-    public record DeleteAnswerToQuestionCommand(
-        string QuestionId,
-        string AnswerId
+    public record UpdateAnswerCommand(
+        string AnswerText
     ) : ICommand;
 }

@@ -28,7 +28,7 @@ namespace Clothy.ReviewService.Infrastructure.Repositories
 
             if (queryParameters.ClotheItemId.HasValue) filter &= filterBuilder.Eq(r => r.ClotheItemId, queryParameters.ClotheItemId.Value);
 
-            if (queryParameters.Rating.HasValue) filter &= filterBuilder.Eq(r => r.Rating.Rating, queryParameters.Rating.Value);
+            if (queryParameters.Rating.HasValue) filter &= filterBuilder.Eq(r => r.Rating, queryParameters.Rating.Value);
 
             IFindFluent<Review, Review> findFluent = collection.Find(filter);
 
