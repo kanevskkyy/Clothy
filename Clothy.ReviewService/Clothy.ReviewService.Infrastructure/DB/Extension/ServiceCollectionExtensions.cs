@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson;
+using Clothy.ReviewService.Infrastructure.DB.UOW;
 
 namespace Clothy.ReviewService.Infrastructure.DB.Extension
 {
@@ -24,6 +25,12 @@ namespace Clothy.ReviewService.Infrastructure.DB.Extension
 
             MongoDbContext context = new MongoDbContext(mongoSettings);
             services.AddSingleton(context);
+
+            services.AddScoped<IUnitOfWork>(sp =>
+            {
+                var mongoDb = sp.GetRequiredService<MongoDbContext>().Database;
+                return new UnitOfWork(mongoDb);
+            });
 
             services.AddSingleton<IIndexCreationService, IndexCreationService>();
             services.AddSingleton<ReviewSeeder>();

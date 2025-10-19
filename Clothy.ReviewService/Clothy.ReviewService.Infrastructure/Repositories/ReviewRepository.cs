@@ -40,5 +40,15 @@ namespace Clothy.ReviewService.Infrastructure.Repositories
 
             return await PagedList<Review>.ToPagedListAsync(findFluent, queryParameters.PageNumber, queryParameters.PageSize, cancellationToken);
         }
+
+        public async Task<bool> HasUserReviewedClotheAsync(Guid userId, Guid clotheItemId, CancellationToken cancellationToken = default)
+        {
+            var filterBuilder = Builders<Review>.Filter;
+            var filter = filterBuilder.Eq(r => r.User.UserId, userId) &
+                         filterBuilder.Eq(r => r.ClotheItemId, clotheItemId);
+
+            long count = await collection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
+            return count > 0;
+        }
     }
 }

@@ -11,6 +11,7 @@ namespace Clothy.ReviewService.Domain.Interfaces.Repositories
 {
     public interface IQuestionRepository : IGenericRepository<Question>
     {
+        Task UpdateQuestionAsync(Question question, CancellationToken cancellationToken = default);
         Task<PagedList<Question>> GetQuestionsAsync(QuestionQueryParameters queryParameters, CancellationToken cancellationToken = default);
         Task AddAnswerAsync(string questionId, Answer answer, CancellationToken cancellationToken = default);
         Task UpdateAnswerAsync(string questionId, Answer answer, CancellationToken cancellationToken = default);

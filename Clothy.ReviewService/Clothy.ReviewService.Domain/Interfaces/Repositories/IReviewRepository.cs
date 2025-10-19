@@ -11,6 +11,7 @@ namespace Clothy.ReviewService.Domain.Interfaces.Repositories
 {
     public interface IReviewRepository : IGenericRepository<Review>
     {
+        Task<bool> HasUserReviewedClotheAsync(Guid userId, Guid clotheItemId, CancellationToken cancellationToken = default);
         Task<PagedList<Review>> GetReviewsAsync(ReviewQueryParameters queryParameters, CancellationToken cancellationToken = default);
     }
 }

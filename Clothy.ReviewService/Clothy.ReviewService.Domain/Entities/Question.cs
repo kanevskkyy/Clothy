@@ -32,6 +32,13 @@ namespace Clothy.ReviewService.Domain.Entities
             QuestionText = text;
         }
 
+        public void UpdateQuestion(TextValue newText)
+        {
+            if (newText == null) throw new EmptyValueException("QuestionText");
+            QuestionText = newText;
+            UpdateTimestamp();
+        }
+
         public void AddAnswer(Answer answer)
         {
             if (answer == null) throw new EmptyValueException("Answer");

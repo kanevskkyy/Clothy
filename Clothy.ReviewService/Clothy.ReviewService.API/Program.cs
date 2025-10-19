@@ -1,13 +1,46 @@
-﻿using Clothy.ReviewService.Infrastructure.DB.Extension;
+﻿using Clothy.ReviewService.Application.Behaviours;
+using Clothy.ReviewService.Application.Features.Questions.Commands.UpdateQuestion;
+using Clothy.ReviewService.Application.Services;
+using Clothy.ReviewService.Domain.Interfaces.Repositories;
+using Clothy.ReviewService.Domain.Interfaces.Services;
+using Clothy.ReviewService.Infrastructure.DB.Extension;
+using Clothy.ReviewService.Infrastructure.DB.MappingConfig;
 using Clothy.ReviewService.Infrastructure.DB.MongoHeathCheck;
 using Clothy.ReviewService.Infrastructure.DB.Seeding;
+using Clothy.ReviewService.Infrastructure.Repositories;
+using MediatR;
 
 var builder = WebApplication.CreateBuilder(args);
 
+ValueObjectMappings.Register();
+
 builder.Services.AddMongoDb(builder.Configuration);
 
+// MONGO HEALTH CHECK
 builder.Services.AddHealthChecks()
     .AddCheck<MongoHealthCheck>("MongoDB");
+//
+
+//MediatR
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<UpdateQuestionCommandHandler>());
+//
+
+// Behaviors
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ExceptionHandlingBehavior<,>));
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceBehavior<,>));
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+//
+
+// REPOSITORIES DI
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
+//
+
+// SERVICES DI
+builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<IQuestionService, QuestionService>();
+//
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

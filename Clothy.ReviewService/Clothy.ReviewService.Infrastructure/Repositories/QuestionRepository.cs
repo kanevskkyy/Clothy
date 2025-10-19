@@ -66,6 +66,17 @@ namespace Clothy.ReviewService.Infrastructure.Repositories
             await collection.UpdateOneAsync(filter, update, cancellationToken: cancellationToken);
         }
 
+        public async Task UpdateQuestionAsync(Question question, CancellationToken cancellationToken = default)
+        {
+            if (question == null) throw new EmptyValueException("Question");
+
+            var update = Builders<Question>.Update
+                .Set(q => q.QuestionText, question.QuestionText)
+                .CurrentDate(q => q.UpdatedAt);
+
+            await collection.UpdateOneAsync(q => q.Id == question.Id, update, cancellationToken: cancellationToken);
+        }
+
         public async Task DeleteAnswerAsync(string questionId, string answerId, CancellationToken cancellationToken = default)
         {
             var update = Builders<Question>.Update.PullFilter(q => q.Answers, a => a.Id == answerId)
