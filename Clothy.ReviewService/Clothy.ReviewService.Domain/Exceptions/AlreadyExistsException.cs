@@ -10,6 +10,7 @@ namespace Clothy.ReviewService.Domain.Exceptions
     {
         public AlreadyExistsException(string message) : base(message)
         {
+
         }
     }
 }

@@ -9,6 +9,6 @@ namespace Clothy.ReviewService.Application.Features.Reviews.Commands.UpdateRevie
 {
     public record UpdateReviewCommand(
         string Comment,
-        int Rating 
+        int Rating
     ) : ICommand;
 }

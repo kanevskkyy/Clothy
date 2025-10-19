@@ -1,7 +1,9 @@
 ﻿using System.Reflection;
+using Clothy.ReviewService.API.Middleware;
 using Clothy.ReviewService.Application.Behaviours;
 using Clothy.ReviewService.Application.Features.Questions.Commands.UpdateQuestion;
 using Clothy.ReviewService.Application.Services;
+using Clothy.ReviewService.Application.Validations.Questions;
 using Clothy.ReviewService.Domain.Interfaces.Repositories;
 using Clothy.ReviewService.Domain.Interfaces.Services;
 using Clothy.ReviewService.Infrastructure.DB.Extension;
@@ -9,6 +11,8 @@ using Clothy.ReviewService.Infrastructure.DB.MappingConfig;
 using Clothy.ReviewService.Infrastructure.DB.MongoHeathCheck;
 using Clothy.ReviewService.Infrastructure.DB.Seeding;
 using Clothy.ReviewService.Infrastructure.Repositories;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using MediatR;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -43,6 +47,11 @@ builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IQuestionService, QuestionService>();
 //
 
+// FLUENT VALIDATION
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssembly(typeof(UpdateAnswerCommandValidator).Assembly);
+//
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -55,17 +64,23 @@ builder.Services.AddSwaggerGen(options =>
 
 
 var app = builder.Build();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     services.EnsureIndexes();
 
-    ReviewSeeder reviewSeeder = services.GetRequiredService<ReviewSeeder>();
-    await reviewSeeder.SeedAsync();
+    List<IDataSeeder> seeders = new List<IDataSeeder>()
+    {
+        services.GetRequiredService<ReviewSeeder>(),
+        services.GetRequiredService<QuestionSeeder>()
+    };
 
-    QuestionSeeder questionSeeder = services.GetRequiredService<QuestionSeeder>();
-    await questionSeeder.SeedAsync();
+    foreach (var seeder in seeders)
+    {
+        await seeder.SeedAsync();
+    }
 }
 
 if (app.Environment.IsDevelopment())
