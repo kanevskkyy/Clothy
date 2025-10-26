@@ -1,0 +1,6 @@
+@Clothy.Gateway_HostAddress = http://localhost:5126
+
+GET {{Clothy.Gateway_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
