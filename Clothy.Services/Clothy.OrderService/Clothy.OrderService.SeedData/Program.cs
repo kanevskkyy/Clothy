@@ -8,17 +8,24 @@ using Clothy.OrderService.SeedData;
 using Clothy.OrderService.SeedData.Seeders;
 using Clothy.OrderService.DAL.Repositories;
 using Clothy.OrderService.DAL.Interfaces;
+using Microsoft.Extensions.Configuration;
+using Dapper;
 
 class Program
 {
     public static async Task Main()
     {
         Console.WriteLine("Starting seed...");
-        
-        string connectionString = "Host=localhost;Port=5432;Database=ClothyOrder;Username=postgres;Password=postgres";
-        
+
+        var builder = new ConfigurationBuilder()
+                    .AddEnvironmentVariables()
+                    .Build();
+
+        string? connectionString = builder.GetConnectionString("ClothyOrder");
+        Console.WriteLine($"Using connection string: {connectionString}");
+
         ServiceCollection services = new ServiceCollection();
-        services.AddSingleton<IConnectionFactory>(provider => new ConnectionFactory(connectionString));
+        services.AddSingleton<IConnectionFactory>(provider => new ConnectionFactory(connectionString!));
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IOrderRepository, OrderRepository>();

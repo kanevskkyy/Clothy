@@ -15,7 +15,7 @@ using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+string? connectionString = builder.Configuration.GetConnectionString("ClothyOrder");
 builder.Services.AddSingleton<IConnectionFactory>(new ConnectionFactory(connectionString));
 
 // REGISTER REPOSITORY

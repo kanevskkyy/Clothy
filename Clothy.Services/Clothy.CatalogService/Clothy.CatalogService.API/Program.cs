@@ -14,13 +14,38 @@ using Microsoft.EntityFrameworkCore;
 using static Clothy.CatalogService.BLL.FluentValidation.SizeValidation.SizeDTOValidator;
 using Clothy.CatalogService.BLL.FluentValidation.BrandValidation;
 using Clothy.CatalogService.API.Middleware;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.ServiceDiscovery; 
+using OpenTelemetry.Metrics; 
+using OpenTelemetry.Trace;
+using k8s.KubeConfigModels;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddServiceDiscovery();
+builder.Services.ConfigureHttpClientDefaults(http =>
+{
+    http.AddStandardResilienceHandler();
+    http.AddServiceDiscovery();
+});
+
+builder.Services.AddOpenTelemetry()
+    .WithMetrics(metrics =>
+    {
+        metrics.AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddRuntimeInstrumentation();
+    })
+    .WithTracing(tracing =>
+    {
+        tracing.AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation();
+    });
+
+builder.Services.AddHealthChecks()
+    .AddCheck("self", () => Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy(), ["live"]);
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -34,19 +59,15 @@ builder.Services.AddScoped<ISizeRepository, SizeRepository>();
 builder.Services.AddScoped<ITagRepository, TagRepository>();
 builder.Services.AddScoped<ICollectionRepository, CollectionRepository>();
 builder.Services.AddScoped<IClothingTypeRepository, ClothingTypeRepository>();
-//
 
 // REGISTER UNIT OF WORK
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-//
 
 // REGISTER AUTO MAPPER
 builder.Services.AddAutoMapper(cfg =>
 {
     cfg.AddMaps(typeof(TagProfile).Assembly);
 });
-
-//
 
 // REGISTER SERVICES DI
 builder.Services.AddScoped<ITagService, TagService>();
@@ -58,7 +79,6 @@ builder.Services.AddScoped<ICollectionService, CollectionService>();
 builder.Services.AddScoped<IBrandService, BrandService>();
 builder.Services.AddScoped<IClotheService, ClotheService>();
 builder.Services.AddScoped<IClothesStockService, ClothesStockService>();
-//
 
 // CLOUDINARY CONFIG
 Env.Load();
@@ -68,34 +88,38 @@ builder.Services.Configure<CloudinarySettings>(options =>
     options.ApiKey = Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APIKEY");
     options.ApiSecret = Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APISECRET");
 });
-//
 
 // Cloudinary DI registration
 builder.Services.AddScoped<IImageService, ImageService>();
-//
 
 // FLUENT VALIDATION
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssembly(typeof(BrandCreateDTOValidator).Assembly);
-//
-
-
 
 builder.Services.AddSwaggerGen(c =>
 {
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-
     c.IncludeXmlComments(xmlPath);
 });
 
-builder.Services.AddDbContext<ClothyCatalogDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("ClothyCatalogDb")));
+
+builder.AddNpgsqlDbContext<ClothyCatalogDbContext>("ClothyCatalogDb");
 
 var app = builder.Build();
+
+// ASPIRE HEALTH CHECK ENDPOINTS
+if (app.Environment.IsDevelopment())
+{
+    app.MapHealthChecks("/health");
+    app.MapHealthChecks("/alive", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+    {
+        Predicate = r => r.Tags.Contains("live")
+    });
+}
+
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -103,9 +127,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

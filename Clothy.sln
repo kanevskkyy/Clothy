@@ -45,6 +45,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.Gateway", "Clothy.Ga
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.Aggregator", "Clothy.Aggregator\Clothy.Aggregator.csproj", "{1911ED85-8F64-4E9B-9FF9-A2817D0F8B3E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.OrderService.SeedData", "Clothy.Services\Clothy.OrderService\Clothy.OrderService.SeedData\Clothy.OrderService.SeedData.csproj", "{38682539-568A-3719-8909-5B3324805543}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -259,6 +261,18 @@ Global
 		{1911ED85-8F64-4E9B-9FF9-A2817D0F8B3E}.Release|x64.Build.0 = Release|Any CPU
 		{1911ED85-8F64-4E9B-9FF9-A2817D0F8B3E}.Release|x86.ActiveCfg = Release|Any CPU
 		{1911ED85-8F64-4E9B-9FF9-A2817D0F8B3E}.Release|x86.Build.0 = Release|Any CPU
+		{38682539-568A-3719-8909-5B3324805543}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38682539-568A-3719-8909-5B3324805543}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38682539-568A-3719-8909-5B3324805543}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{38682539-568A-3719-8909-5B3324805543}.Debug|x64.Build.0 = Debug|Any CPU
+		{38682539-568A-3719-8909-5B3324805543}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{38682539-568A-3719-8909-5B3324805543}.Debug|x86.Build.0 = Debug|Any CPU
+		{38682539-568A-3719-8909-5B3324805543}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38682539-568A-3719-8909-5B3324805543}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38682539-568A-3719-8909-5B3324805543}.Release|x64.ActiveCfg = Release|Any CPU
+		{38682539-568A-3719-8909-5B3324805543}.Release|x64.Build.0 = Release|Any CPU
+		{38682539-568A-3719-8909-5B3324805543}.Release|x86.ActiveCfg = Release|Any CPU
+		{38682539-568A-3719-8909-5B3324805543}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -280,5 +294,9 @@ Global
 		{E2CE7D75-D47B-4F73-859C-FA096FB24874} = {AB0F27BE-5EAB-D20B-F38F-08760D071155}
 		{20B03FD1-521F-4893-B5E7-9C8E44DDDF73} = {AB0F27BE-5EAB-D20B-F38F-08760D071155}
 		{FBB9A5CB-60A3-4C01-8400-A7D4A5FDF1DB} = {AB0F27BE-5EAB-D20B-F38F-08760D071155}
+		{38682539-568A-3719-8909-5B3324805543} = {5C3EB1F2-72C7-87C2-61E6-FC27803A142B}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F15FA95A-2976-493B-AA4A-033ECCBFD759}
 	EndGlobalSection
 EndGlobal

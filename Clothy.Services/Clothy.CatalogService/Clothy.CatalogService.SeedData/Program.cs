@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Clothy.CatalogService.DAL.DB;
 using Clothy.CatalogService.SeedData.SeedData;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace Clothy.CatalogService.SeedData
 {
@@ -13,12 +14,22 @@ namespace Clothy.CatalogService.SeedData
     {
         public static async Task Main()
         {
-            const string CONNECTION_STRING = "Host=localhost;Port=5432;Database=ClothyCatalog;Username=postgres;Password=postgres";
+            var builder = new ConfigurationBuilder()
+                    .AddEnvironmentVariables()  
+                    .Build();
+
+            string? connectionString = builder.GetConnectionString("ClothyCatalogDb");
+            Console.WriteLine($"Using connection string: {connectionString}");
+
             var options = new DbContextOptionsBuilder<ClothyCatalogDbContext>()
-                .UseNpgsql(CONNECTION_STRING)
+                .UseNpgsql(connectionString)
                 .Options;
 
             using ClothyCatalogDbContext context = new ClothyCatalogDbContext(options);
+
+            Console.WriteLine("Applying migrations...");
+            await context.Database.MigrateAsync();
+            Console.WriteLine("Migrations applied!");
 
             ISeeder[] seeders = new ISeeder[]
             {

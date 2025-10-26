@@ -41,6 +41,12 @@ public static class Extensions
         return builder;
     }
 
+    public static WebApplicationBuilder AddServiceDefaults(this WebApplicationBuilder builder)
+    {
+        ((IHostApplicationBuilder)builder).AddServiceDefaults();
+        return builder;
+    }
+
     public static IHostApplicationBuilder ConfigureOpenTelemetry(this IHostApplicationBuilder builder)
     {
         builder.Logging.AddOpenTelemetry(logging =>
