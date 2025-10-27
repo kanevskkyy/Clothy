@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Clothy.ServiceDefaults\Clothy.ServiceDefaults.csproj" />
     <ProjectReference Include="..\Clothy.ReviewService.Application\Clothy.ReviewService.Application.csproj" />
     <ProjectReference Include="..\Clothy.ReviewService.Infrastructure\Clothy.ReviewService.Infrastructure.csproj" />
   </ItemGroup>

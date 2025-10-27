@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using Clothy.CatalogService.BLL.Helpers;
 using Clothy.CatalogService.BLL.Interfaces;
 using Clothy.CatalogService.BLL.Mapper;
@@ -10,40 +10,12 @@ using Clothy.CatalogService.DAL.UOW;
 using DotNetEnv;
 using FluentValidation.AspNetCore;
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
-using static Clothy.CatalogService.BLL.FluentValidation.SizeValidation.SizeDTOValidator;
 using Clothy.CatalogService.BLL.FluentValidation.BrandValidation;
 using Clothy.CatalogService.API.Middleware;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.ServiceDiscovery; 
-using OpenTelemetry.Metrics; 
-using OpenTelemetry.Trace;
-using k8s.KubeConfigModels;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddServiceDiscovery();
-builder.Services.ConfigureHttpClientDefaults(http =>
-{
-    http.AddStandardResilienceHandler();
-    http.AddServiceDiscovery();
-});
-
-builder.Services.AddOpenTelemetry()
-    .WithMetrics(metrics =>
-    {
-        metrics.AddAspNetCoreInstrumentation()
-            .AddHttpClientInstrumentation()
-            .AddRuntimeInstrumentation();
-    })
-    .WithTracing(tracing =>
-    {
-        tracing.AddAspNetCoreInstrumentation()
-            .AddHttpClientInstrumentation();
-    });
-
-builder.Services.AddHealthChecks()
-    .AddCheck("self", () => Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy(), ["live"]);
+builder.AddServiceDefaults();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -103,20 +75,11 @@ builder.Services.AddSwaggerGen(c =>
     c.IncludeXmlComments(xmlPath);
 });
 
-
 builder.AddNpgsqlDbContext<ClothyCatalogDbContext>("ClothyCatalogDb");
 
 var app = builder.Build();
 
-// ASPIRE HEALTH CHECK ENDPOINTS
-if (app.Environment.IsDevelopment())
-{
-    app.MapHealthChecks("/health");
-    app.MapHealthChecks("/alive", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
-    {
-        Predicate = r => r.Tags.Contains("live")
-    });
-}
+app.MapDefaultEndpoints();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 

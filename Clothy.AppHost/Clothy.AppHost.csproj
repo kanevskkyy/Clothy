@@ -22,6 +22,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Clothy.Gateway\Clothy.Gateway.csproj" />
 		<ProjectReference Include="..\Clothy.Aggregator\Clothy.Aggregator.csproj" />
+		<ProjectReference Include="..\Clothy.ServiceDefaults\Clothy.ServiceDefaults.csproj" />
 		<ProjectReference Include="..\Clothy.Services\Clothy.CatalogService\Clothy.CatalogService.API\Clothy.CatalogService.API.csproj" />
 		<ProjectReference Include="..\Clothy.Services\Clothy.CatalogService\Clothy.CatalogService.SeedData\Clothy.CatalogService.SeedData.csproj" />
 		<ProjectReference Include="..\Clothy.Services\Clothy.OrderService\Clothy.OrderService.API\Clothy.OrderService.API.csproj" />

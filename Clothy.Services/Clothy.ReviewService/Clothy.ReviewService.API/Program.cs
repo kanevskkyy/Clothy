@@ -17,40 +17,35 @@ using MediatR;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults();
+
 ValueObjectMappings.Register();
 
 builder.Services.AddMongoDb(builder.Configuration);
 
-// MONGO HEALTH CHECK
 builder.Services.AddHealthChecks()
     .AddCheck<MongoHealthCheck>("MongoDB");
-//
 
-//MediatR
+// MediatR
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<UpdateQuestionWithIdCommandHandler>());
-//
 
 // Behaviors
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ExceptionHandlingBehavior<,>));
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceBehavior<,>));
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-//
 
 // REPOSITORIES DI
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
-//
 
 // SERVICES DI
 builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IQuestionService, QuestionService>();
-//
 
 // FLUENT VALIDATION
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssembly(typeof(UpdateAnswerCommandValidator).Assembly);
-//
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -58,25 +53,24 @@ builder.Services.AddSwaggerGen(options =>
 {
     string xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
-
     options.IncludeXmlComments(xmlPath);
 });
 
-
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
+
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     services.EnsureIndexes();
-
     List<IDataSeeder> seeders = new List<IDataSeeder>()
     {
         services.GetRequiredService<ReviewSeeder>(),
         services.GetRequiredService<QuestionSeeder>()
     };
-
     foreach (var seeder in seeders)
     {
         await seeder.SeedAsync();
@@ -92,7 +86,5 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
-
-app.MapHealthChecks("/health");
 
 app.Run();

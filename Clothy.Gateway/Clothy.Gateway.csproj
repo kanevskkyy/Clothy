@@ -11,6 +11,8 @@
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.15" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
     <PackageReference Include="Yarp.ReverseProxy" Version="2.3.0" />
+	<PackageReference Include="Microsoft.Extensions.ServiceDiscovery" Version="8.2.2" />
+	<PackageReference Include="Microsoft.Extensions.ServiceDiscovery.Yarp" Version="8.2.2" />
   </ItemGroup>
 
   <ItemGroup>

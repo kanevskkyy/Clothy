@@ -19,8 +19,14 @@ namespace Clothy.ReviewService.Infrastructure.DB.Extension
         {
             ConfigureMongoDbSerialization();
 
-            MongoDbSettings mongoSettings = new MongoDbSettings();
-            configuration.GetSection("MongoDbSettings").Bind(mongoSettings);
+            var connectionString = configuration.GetConnectionString("ClothyReviewsDb");
+
+            MongoDbSettings mongoSettings = new MongoDbSettings
+            {
+                ConnectionString = connectionString,
+                DatabaseName = "ClothyReviewsDb" 
+            };
+
             services.AddSingleton(mongoSettings);
 
             MongoDbContext context = new MongoDbContext(mongoSettings);
