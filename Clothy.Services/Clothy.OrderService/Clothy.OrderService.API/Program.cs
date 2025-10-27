@@ -76,6 +76,7 @@ app.MapDefaultEndpoints();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseCorrelationId();
+app.UseServiceLogging();
 
 if (app.Environment.IsDevelopment())
 {

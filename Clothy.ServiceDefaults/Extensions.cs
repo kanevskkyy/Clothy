@@ -31,7 +31,7 @@ public static class Extensions
             .MinimumLevel.Information()
             .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
             .MinimumLevel.Override("System", LogEventLevel.Warning)
-            .WriteTo.Console(new CompactJsonFormatter())
+            .WriteTo.Console()
         );
 
         builder.ConfigureOpenTelemetry();
@@ -56,6 +56,7 @@ public static class Extensions
     public static WebApplication UseServiceDefaults(this WebApplication app)
     {
         app.UseCorrelationId();
+        app.UseServiceLogging();
         app.MapDefaultEndpoints();
 
         return app;
@@ -83,6 +84,22 @@ public static class Extensions
                 metrics.AddAspNetCoreInstrumentation()
                        .AddHttpClientInstrumentation()
                        .AddRuntimeInstrumentation();
+
+                var otlpEndpoint = builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"];
+                if (!string.IsNullOrWhiteSpace(otlpEndpoint))
+                {
+                    metrics.AddOtlpExporter(otlpOptions =>
+                    {
+                        otlpOptions.Endpoint = new Uri(otlpEndpoint);
+                        otlpOptions.BatchExportProcessorOptions = new BatchExportActivityProcessorOptions
+                        {
+                            MaxQueueSize = 2048,
+                            ScheduledDelayMilliseconds = 5000,
+                            ExporterTimeoutMilliseconds = 30000,
+                            MaxExportBatchSize = 512
+                        };
+                    });
+                }
             })
             .WithTracing(tracing =>
             {
@@ -138,19 +155,17 @@ public static class Extensions
                     };
                 });
 
-
                 tracing.AddSource("MongoDB.Driver.Core.Extensions.DiagnosticSources");
 
                 tracing.SetSampler(builder.Environment.IsDevelopment()
-                    ? new AlwaysOnSampler() 
+                    ? new AlwaysOnSampler()
                     : new TraceIdRatioBasedSampler(0.25));
 
-                var otlpEndpoint = builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"];
-                if (!string.IsNullOrWhiteSpace(otlpEndpoint))
+                if (!string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]))
                 {
                     tracing.AddOtlpExporter(otlpOptions =>
                     {
-                        otlpOptions.Endpoint = new Uri(otlpEndpoint);
+                        otlpOptions.Endpoint = new Uri(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
                         otlpOptions.BatchExportProcessorOptions = new BatchExportActivityProcessorOptions
                         {
                             MaxQueueSize = 2048,
@@ -164,6 +179,7 @@ public static class Extensions
 
         return builder;
     }
+
 
     private static IHostApplicationBuilder AddOpenTelemetryExporters(this IHostApplicationBuilder builder)
     {

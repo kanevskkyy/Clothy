@@ -8,21 +8,21 @@ namespace Clothy.ServiceDefaults.Middleware
 {
     public class CorrelationIdDelegatingHandler : DelegatingHandler
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private const string CorrelationIdHeader = "X-Correlation-Id";
+        private IHttpContextAccessor httpContextAccessor;
+        private const string CORRELATION_ID_HEADER = "X-Correlation-Id";
 
         public CorrelationIdDelegatingHandler(IHttpContextAccessor httpContextAccessor)
         {
-            _httpContextAccessor = httpContextAccessor;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var correlationId = _httpContextAccessor.HttpContext?.Items[CorrelationIdHeader]?.ToString();
+            string? correlationId = httpContextAccessor.HttpContext?.Items[CORRELATION_ID_HEADER]?.ToString();
 
-            if (!string.IsNullOrEmpty(correlationId) && !request.Headers.Contains(CorrelationIdHeader))
+            if (!string.IsNullOrEmpty(correlationId) && !request.Headers.Contains(CORRELATION_ID_HEADER))
             {
-                request.Headers.TryAddWithoutValidation(CorrelationIdHeader, correlationId);
+                request.Headers.TryAddWithoutValidation(CORRELATION_ID_HEADER, correlationId);
             }
 
             return base.SendAsync(request, cancellationToken);

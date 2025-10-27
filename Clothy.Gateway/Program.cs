@@ -22,26 +22,20 @@ builder.Services.AddReverseProxy()
                 reqContext.ProxyRequest.Headers.Add("X-Correlation-Id", correlationId.ToString());
             }
         });
+    })
+    .ConfigureHttpClient((context, httpClient) =>
+    {
+        httpClient.ConnectTimeout = TimeSpan.FromSeconds(10); 
     });
+
 
 
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
-app.Use(async (context, next) =>
-{
-    if (!context.Request.Headers.TryGetValue("X-Correlation-ID", out var correlationId))
-    {
-        correlationId = Guid.NewGuid().ToString();
-    }
-    context.Request.Headers["X-Correlation-ID"] = correlationId;
-
-    context.Items["CorrelationId"] = correlationId;
-
-    await next();
-});
 
 app.UseCorrelationId();
+app.UseMiddleware<RouteMetadataMiddleware>();
 
 app.MapDefaultEndpoints();
 app.MapReverseProxy();

@@ -80,6 +80,7 @@ using (var scope = app.Services.CreateScope())
 
 app.UseServiceDefaults();
 app.UseCorrelationId();
+app.UseServiceLogging();
 
 if (app.Environment.IsDevelopment())
 {
