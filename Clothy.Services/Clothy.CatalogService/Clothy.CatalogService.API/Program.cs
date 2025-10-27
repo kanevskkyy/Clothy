@@ -12,6 +12,7 @@ using FluentValidation.AspNetCore;
 using FluentValidation;
 using Clothy.CatalogService.BLL.FluentValidation.BrandValidation;
 using Clothy.CatalogService.API.Middleware;
+using Clothy.ServiceDefaults.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -82,6 +83,7 @@ var app = builder.Build();
 app.MapDefaultEndpoints();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseCorrelationId();
 
 if (app.Environment.IsDevelopment())
 {

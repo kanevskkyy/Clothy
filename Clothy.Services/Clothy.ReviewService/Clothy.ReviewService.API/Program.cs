@@ -11,6 +11,7 @@ using Clothy.ReviewService.Infrastructure.DB.MappingConfig;
 using Clothy.ReviewService.Infrastructure.DB.MongoHeathCheck;
 using Clothy.ReviewService.Infrastructure.DB.Seeding;
 using Clothy.ReviewService.Infrastructure.Repositories;
+using Clothy.ServiceDefaults.Middleware;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using MediatR;
@@ -76,6 +77,9 @@ using (var scope = app.Services.CreateScope())
         await seeder.SeedAsync();
     }
 }
+
+app.UseServiceDefaults();
+app.UseCorrelationId();
 
 if (app.Environment.IsDevelopment())
 {

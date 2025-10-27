@@ -12,32 +12,42 @@ namespace Clothy.CatalogService.DAL.UOW
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private ClothyCatalogDbContext context;
+        public IBrandRepository Brands { get; }
+        public IClotheItemRepository ClotheItems { get; }
+        public IClothesStockRepository ClothesStocks { get; }
+        public ICollectionRepository Collections { get; }
+        public IColorRepository Colors { get; }
+        public IMaterialRepository Materials { get; }
+        public ISizeRepository Sizes { get; }
+        public ITagRepository Tags { get; }
+        public IClothingTypeRepository ClothingTypes { get; }
 
-        public UnitOfWork(ClothyCatalogDbContext context)
+        private readonly ClothyCatalogDbContext context;
+
+        public UnitOfWork(
+            ClothyCatalogDbContext context,
+            IBrandRepository brands,
+            IClotheItemRepository clotheItems,
+            IClothesStockRepository clothesStocks,
+            ICollectionRepository collections,
+            IColorRepository colors,
+            IMaterialRepository materials,
+            ISizeRepository sizes,
+            ITagRepository tags,
+            IClothingTypeRepository clothingTypes)
         {
             this.context = context;
 
-            Brands = new BrandRepository(context);
-            ClotheItems = new ClotheItemRepository(context);
-            ClothesStocks = new ClothesStockRepository(context);
-            Collections = new CollectionRepository(context);
-            Colors = new ColorRepository(context);
-            Materials = new MaterialRepository(context);
-            Sizes = new SizeRepository(context);
-            Tags = new TagRepository(context);
-            ClothingTypes = new ClothingTypeRepository(context);
+            Brands = brands;
+            ClotheItems = clotheItems;
+            ClothesStocks = clothesStocks;
+            Collections = collections;
+            Colors = colors;
+            Materials = materials;
+            Sizes = sizes;
+            Tags = tags;
+            ClothingTypes = clothingTypes;
         }
-
-        public IBrandRepository Brands { get; private set; }
-        public IClotheItemRepository ClotheItems { get; private set; }
-        public IClothesStockRepository ClothesStocks { get; private set; }
-        public ICollectionRepository Collections { get; private set; }
-        public IColorRepository Colors { get; private set; }
-        public IMaterialRepository Materials { get; private set; }
-        public ISizeRepository Sizes { get; private set; }
-        public ITagRepository Tags { get; private set; }
-        public IClothingTypeRepository ClothingTypes { get; private set; }
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {

@@ -1,3 +1,4 @@
+using Clothy.ServiceDefaults.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,16 +8,32 @@ using Microsoft.Extensions.ServiceDiscovery;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
+using Serilog;
+using Serilog.Filters;
+using Serilog.Formatting.Compact;
+using Serilog.Events;
+using System.Diagnostics;
+using OpenTelemetry.Resources;
 
 namespace Microsoft.Extensions.Hosting;
 
-// Adds common .NET Aspire services: service discovery, resilience, health checks, and OpenTelemetry.
-// This project should be referenced by each service project in your solution.
-// To learn more about using this project, see https://aka.ms/dotnet/aspire/service-defaults
 public static class Extensions
 {
     public static IHostApplicationBuilder AddServiceDefaults(this IHostApplicationBuilder builder)
     {
+        builder.Logging.ClearProviders();
+
+        builder.Services.AddSerilog((ctx, lc) => lc
+            .Enrich.FromLogContext()
+            .Enrich.WithProperty("ServiceName", builder.Environment.ApplicationName)
+            .Enrich.WithMachineName()
+            .Enrich.WithEnvironmentName()
+            .MinimumLevel.Information()
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+            .MinimumLevel.Override("System", LogEventLevel.Warning)
+            .WriteTo.Console(new CompactJsonFormatter())
+        );
+
         builder.ConfigureOpenTelemetry();
 
         builder.AddDefaultHealthChecks();
@@ -25,20 +42,23 @@ public static class Extensions
 
         builder.Services.ConfigureHttpClientDefaults(http =>
         {
-            // Turn on resilience by default
             http.AddStandardResilienceHandler();
-
-            // Turn on service discovery by default
             http.AddServiceDiscovery();
+            http.AddHttpMessageHandler<CorrelationIdDelegatingHandler>();
         });
 
-        // Uncomment the following to restrict the allowed schemes for service discovery.
-        // builder.Services.Configure<ServiceDiscoveryOptions>(options =>
-        // {
-        //     options.AllowedSchemes = ["https"];
-        // });
+        builder.Services.AddHttpContextAccessor();
+        builder.Services.AddTransient<CorrelationIdDelegatingHandler>();
 
         return builder;
+    }
+
+    public static WebApplication UseServiceDefaults(this WebApplication app)
+    {
+        app.UseCorrelationId();
+        app.MapDefaultEndpoints();
+
+        return app;
     }
 
     public static WebApplicationBuilder AddServiceDefaults(this WebApplicationBuilder builder)
@@ -56,21 +76,91 @@ public static class Extensions
         });
 
         builder.Services.AddOpenTelemetry()
+            .ConfigureResource(resource => resource
+                .AddService(builder.Environment.ApplicationName))
             .WithMetrics(metrics =>
             {
                 metrics.AddAspNetCoreInstrumentation()
-                    .AddHttpClientInstrumentation()
-                    .AddRuntimeInstrumentation();
+                       .AddHttpClientInstrumentation()
+                       .AddRuntimeInstrumentation();
             })
             .WithTracing(tracing =>
             {
-                tracing.AddAspNetCoreInstrumentation()
-                    // Uncomment the following line to enable gRPC instrumentation (requires the OpenTelemetry.Instrumentation.GrpcNetClient package)
-                    //.AddGrpcClientInstrumentation()
-                    .AddHttpClientInstrumentation();
-            });
+                tracing.AddAspNetCoreInstrumentation(options =>
+                {
+                    options.EnrichWithHttpRequest = (activity, request) =>
+                    {
+                        activity.SetTag("ServiceName", builder.Environment.ApplicationName);
+                        activity.SetTag("Environment", builder.Environment.EnvironmentName);
+                        activity.SetTag("http.scheme", request.Scheme);
+                        activity.SetTag("http.host", request.Host.Host);
+                    };
 
-        builder.AddOpenTelemetryExporters();
+                    options.EnrichWithHttpResponse = (activity, response) =>
+                    {
+                        activity.SetTag("http.status_code", response.StatusCode);
+                    };
+
+                    options.EnrichWithException = (activity, exception) =>
+                    {
+                        activity.SetTag("error", true);
+                        activity.SetTag("exception.type", exception.GetType().Name);
+                        activity.SetTag("exception.message", exception.Message);
+                    };
+                });
+
+                tracing.AddHttpClientInstrumentation(options =>
+                {
+                    options.EnrichWithHttpRequestMessage = (activity, request) =>
+                    {
+                        activity.SetTag("http.url", request.RequestUri?.ToString());
+                    };
+
+                    options.EnrichWithHttpResponseMessage = (activity, response) =>
+                    {
+                        activity.SetTag("http.status_code", (int)response.StatusCode);
+                    };
+
+                    options.EnrichWithException = (activity, exception) =>
+                    {
+                        activity.SetTag("error", true);
+                        activity.SetTag("exception.type", exception.GetType().Name);
+                        activity.SetTag("exception.message", exception.Message);
+                    };
+                });
+
+                tracing.AddEntityFrameworkCoreInstrumentation(options =>
+                {
+                    options.SetDbStatementForText = true;
+                    options.EnrichWithIDbCommand = (activity, command) =>
+                    {
+                        activity.SetTag("db.statement", command.CommandText);
+                    };
+                });
+
+
+                tracing.AddSource("MongoDB.Driver.Core.Extensions.DiagnosticSources");
+
+                tracing.SetSampler(builder.Environment.IsDevelopment()
+                    ? new AlwaysOnSampler() 
+                    : new TraceIdRatioBasedSampler(0.25));
+
+                var otlpEndpoint = builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"];
+                if (!string.IsNullOrWhiteSpace(otlpEndpoint))
+                {
+                    tracing.AddOtlpExporter(otlpOptions =>
+                    {
+                        otlpOptions.Endpoint = new Uri(otlpEndpoint);
+                        otlpOptions.BatchExportProcessorOptions = new BatchExportActivityProcessorOptions
+                        {
+                            MaxQueueSize = 2048,
+                            ScheduledDelayMilliseconds = 5000,
+                            ExporterTimeoutMilliseconds = 30000,
+                            MaxExportBatchSize = 512
+                        };
+                    });
+                }
+            });
 
         return builder;
     }
@@ -84,20 +174,12 @@ public static class Extensions
             builder.Services.AddOpenTelemetry().UseOtlpExporter();
         }
 
-        // Uncomment the following lines to enable the Azure Monitor exporter (requires the Azure.Monitor.OpenTelemetry.AspNetCore package)
-        //if (!string.IsNullOrEmpty(builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]))
-        //{
-        //    builder.Services.AddOpenTelemetry()
-        //       .UseAzureMonitor();
-        //}
-
         return builder;
     }
 
     public static IHostApplicationBuilder AddDefaultHealthChecks(this IHostApplicationBuilder builder)
     {
         builder.Services.AddHealthChecks()
-            // Add a default liveness check to ensure app is responsive
             .AddCheck("self", () => HealthCheckResult.Healthy(), ["live"]);
 
         return builder;
@@ -105,14 +187,10 @@ public static class Extensions
 
     public static WebApplication MapDefaultEndpoints(this WebApplication app)
     {
-        // Adding health checks endpoints to applications in non-development environments has security implications.
-        // See https://aka.ms/dotnet/aspire/healthchecks for details before enabling these endpoints in non-development environments.
         if (app.Environment.IsDevelopment())
         {
-            // All health checks must pass for app to be considered ready to accept traffic after starting
             app.MapHealthChecks("/health");
 
-            // Only health checks tagged with the "live" tag must pass for app to be considered alive
             app.MapHealthChecks("/alive", new HealthCheckOptions
             {
                 Predicate = r => r.Tags.Contains("live")

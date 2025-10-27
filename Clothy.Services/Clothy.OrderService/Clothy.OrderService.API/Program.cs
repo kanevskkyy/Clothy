@@ -9,6 +9,7 @@ using Clothy.OrderService.DAL.ConnectionFactory;
 using Clothy.OrderService.DAL.Interfaces;
 using Clothy.OrderService.DAL.Repositories;
 using Clothy.OrderService.DAL.UOW;
+using Clothy.ServiceDefaults.Middleware;
 using DotNetEnv;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -74,6 +75,7 @@ var app = builder.Build();
 app.MapDefaultEndpoints();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseCorrelationId();
 
 if (app.Environment.IsDevelopment())
 {
