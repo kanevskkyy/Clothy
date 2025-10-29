@@ -13,6 +13,7 @@ using FluentValidation;
 using Clothy.CatalogService.BLL.FluentValidation.BrandValidation;
 using Clothy.CatalogService.API.Middleware;
 using Clothy.ServiceDefaults.Middleware;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 

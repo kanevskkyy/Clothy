@@ -13,6 +13,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Clothy.ServiceDefaults\Clothy.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\Clothy.Services\Clothy.CatalogService\Clothy.CatalogService.BLL\Clothy.CatalogService.BLL.csproj" />
+    <ProjectReference Include="..\Clothy.Services\Clothy.OrderService\Clothy.OrderService.BLL\Clothy.OrderService.BLL.csproj" />
+    <ProjectReference Include="..\Clothy.Services\Clothy.ReviewService\Clothy.ReviewService.Domain\Clothy.ReviewService.Domain.csproj" />
   </ItemGroup>
 
 </Project>

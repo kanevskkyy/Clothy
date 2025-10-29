@@ -1,20 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Collections.Concurrent;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Memory;
+using System.Threading.Tasks;
 
 namespace Clothy.ServiceDefaults.Middleware
 {
     public class RouteMetadataMiddleware
     {
-        private RequestDelegate next;
+        private readonly RequestDelegate _next;
         private const long MAX_REQUEST_SIZE = 10 * 1024 * 1024;
+        private static readonly MemoryCache _rateLimitCache = new(new MemoryCacheOptions());
 
         public RouteMetadataMiddleware(RequestDelegate next)
         {
-            this.next = next;
+            _next = next;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -59,13 +59,35 @@ namespace Clothy.ServiceDefaults.Middleware
                     {
                         if (int.TryParse(rateLimit, out var limit))
                         {
-                            context.Items["RouteRateLimit"] = limit;
+                            string clientKey = GetClientKey(context);
+                            int counter = _rateLimitCache.GetOrCreate(clientKey, entry =>
+                            {
+                                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1);
+                                return 0;
+                            });
+
+                            if (counter >= limit)
+                            {
+                                context.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+                                await context.Response.WriteAsync("Rate limit exceeded. Try again later.");
+                                return;
+                            }
+                            else
+                            {
+                                _rateLimitCache.Set(clientKey, counter + 1, TimeSpan.FromMinutes(1));
+                                context.Items["RouteRateLimit"] = limit;
+                            }
                         }
                     }
                 }
             }
 
-            await next(context);
+            await _next(context);
+        }
+
+        private string GetClientKey(HttpContext context)
+        {
+            return context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
         }
     }
 }
