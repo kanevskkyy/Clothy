@@ -11,6 +11,7 @@ namespace Clothy.CatalogService.BLL.Interfaces
 {
     public interface IClotheService
     {
+        Task<PriceRangeDTO> GetMinAndMaxPriceAsync(CancellationToken cancellationToken = default);
         Task<PagedList<ClotheSummaryDTO>> GetPagedClotheItemsAsync(ClotheItemSpecificationParameters parameters, CancellationToken cancellationToken = default);
         Task<ClotheDetailDTO> GetDetailByIdAsync(Guid id, CancellationToken cancellationToken = default);
         Task<ClotheDetailDTO> CreateAsync(ClotheCreateDTO dto, CancellationToken cancellationToken = default);

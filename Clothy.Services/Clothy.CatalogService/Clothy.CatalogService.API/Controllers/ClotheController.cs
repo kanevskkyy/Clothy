@@ -83,6 +83,20 @@ namespace Clothy.CatalogService.API.Controllers
         }
 
         /// <summary>
+        /// Get minimum and maximum price among all clothes.
+        /// </summary>
+        /// <param name="ct">Cancellation token.</param>
+        /// <returns>Object with min and max price.</returns>
+        [HttpGet("pricerange")]
+        public async Task<ActionResult<PriceRangeDTO>> GetPriceRange(CancellationToken ct)
+        {
+            logger.LogInformation("Fetching price range for clothes.");
+
+            PriceRangeDTO priceRangeDTO = await clotheService.GetMinAndMaxPriceAsync(ct);
+            return Ok(priceRangeDTO);
+        }
+
+        /// <summary>
         /// Delete a clothe item by ID.
         /// </summary>
         /// <param name="id">Clothe ID (GUID).</param>

@@ -142,6 +142,17 @@ namespace Clothy.CatalogService.BLL.Services
             return await GetDetailByIdAsync(clotheItem.Id, cancellationToken);
         }
 
+        public async Task<PriceRangeDTO> GetMinAndMaxPriceAsync(CancellationToken cancellationToken = default)
+        {
+            var (minPrice, maxPrice) = await unitOfWork.ClotheItems.GetMinAndMaxPriceAsync(cancellationToken);
+
+            return new PriceRangeDTO
+            {
+                MinPrice = minPrice,
+                MaxPrice = maxPrice
+            };
+        }
+
         public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
             ClotheItem? clothe = await unitOfWork.ClotheItems.GetByIdWithDetailsAsync(id, cancellationToken);

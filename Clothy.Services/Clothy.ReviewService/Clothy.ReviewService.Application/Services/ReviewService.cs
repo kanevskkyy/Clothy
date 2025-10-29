@@ -22,6 +22,13 @@ namespace Clothy.ReviewService.Application.Services
             this.reviewRepository = reviewRepository;
         }
 
+        public async Task<ReviewStatistics> GetReviewStatisticsAsync(Guid clotheItemId, CancellationToken cancellationToken = default)
+        {
+            if(!await reviewRepository.ClotheItemExistsAsync(clotheItemId, cancellationToken)) throw new NotFoundException($"ClotheItem  with ID {clotheItemId} not found!");
+
+            return await reviewRepository.GetReviewStatisticsAsync(clotheItemId, cancellationToken);
+        }
+
         public async Task<PagedList<Review>> GetReviewsAsync(ReviewQueryParameters queryParameters, CancellationToken cancellationToken = default)
         {
             return await reviewRepository.GetReviewsAsync(queryParameters, cancellationToken);

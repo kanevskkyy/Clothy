@@ -36,13 +36,6 @@ namespace Clothy.CatalogService.BLL.Services
             return mapper.Map<List<SizeReadDTO>>(await unitOfWork.Sizes.GetAllAsync(cancellationToken));
         }
 
-        public async Task<List<SizeWithCountDTO>> GetAllWithCountAsync(CancellationToken cancellationToken = default)
-        {
-            return (await unitOfWork.Sizes.GetSizesWithStockAsync(cancellationToken))
-                .Select(pair => mapper.Map<SizeWithCountDTO>(pair))
-                .ToList();
-        }
-
         public async Task<SizeReadDTO> CreateAsync(SizeCreateDTO sizeCreateDTO, CancellationToken cancellationToken = default)
         {
             bool exists = await unitOfWork.Sizes.IsNameAlreadyExistsAsync(sizeCreateDTO.Name, null, cancellationToken);

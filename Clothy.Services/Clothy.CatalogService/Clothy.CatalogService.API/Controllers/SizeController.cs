@@ -31,19 +31,6 @@ namespace Clothy.CatalogService.API.Controllers
         }
 
         /// <summary>
-        /// Get all sizes with stock information.
-        /// </summary>
-        /// <param name="ct">Cancellation token.</param>
-        /// <returns>List of sizes including stock info.</returns>
-        [HttpGet("with-stock")]
-        public async Task<ActionResult<IEnumerable<SizeWithCountDTO>>> GetAllWithStock(CancellationToken ct)
-        {
-            logger.LogInformation("Fetching all sizes with stock.");
-            List<SizeWithCountDTO> sizesWithStock = await sizeService.GetAllWithCountAsync(ct);
-            return Ok(sizesWithStock);
-        }
-
-        /// <summary>
         /// Get a size by its ID.
         /// </summary>
         /// <param name="id">Size ID (GUID).</param>

@@ -6,12 +6,15 @@ using System.Threading.Tasks;
 using Clothy.ReviewService.Domain.Entities.QueryParameters;
 using Clothy.ReviewService.Domain.Entities;
 using Clothy.ReviewService.Domain.Helpers;
+using Clothy.ReviewService.Domain.ValueObjects;
 
 namespace Clothy.ReviewService.Domain.Interfaces.Repositories
 {
     public interface IReviewRepository : IGenericRepository<Review>
     {
+        Task<ReviewStatistics> GetReviewStatisticsAsync(Guid clotheItemId, CancellationToken cancellationToken = default);
         Task<bool> HasUserReviewedClotheAsync(Guid userId, Guid clotheItemId, CancellationToken cancellationToken = default);
         Task<PagedList<Review>> GetReviewsAsync(ReviewQueryParameters queryParameters, CancellationToken cancellationToken = default);
+        Task<bool> ClotheItemExistsAsync(Guid clotheItemId, CancellationToken cancellationToken = default);
     }
 }

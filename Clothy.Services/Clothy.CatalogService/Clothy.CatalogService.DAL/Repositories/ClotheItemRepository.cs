@@ -20,6 +20,14 @@ namespace Clothy.CatalogService.DAL.Repositories
 
         }
 
+        public async Task<(decimal minPrice, decimal maxPrice)> GetMinAndMaxPriceAsync(CancellationToken cancellationToken = default)
+        {
+            decimal minPrice = await dbSet.MinAsync(p => p.Price, cancellationToken);
+            decimal maxPrice = await dbSet.MaxAsync(p => p.Price, cancellationToken);
+
+            return (minPrice, maxPrice);
+        }
+
         public async Task<bool> IsSlugAlreadyExistsAsync(string slug, Guid? id = null, CancellationToken cancellationToken = default)
         {
             if (id == null)
@@ -39,15 +47,15 @@ namespace Clothy.CatalogService.DAL.Repositories
                 .Include(property => property.Brand)
                 .Include(property => property.ClothyType)
                 .Include(property => property.Photos)
-                .Include(property => property.Stocks)
-                    .ThenInclude(property => property.Color)
-                 .Include(property => property.Stocks)
-                    .ThenInclude(property => property.Size)
+                .Include(property => property.Stocks.Where(stock => stock.Quantity > 0))
+                    .ThenInclude(stock => stock.Color)
+                .Include(property => property.Stocks.Where(stock => stock.Quantity > 0))
+                    .ThenInclude(stock => stock.Size)
                 .Include(property => property.ClotheTags)
                     .ThenInclude(property => property.Tag)
                 .Include(property => property.ClotheMaterials)
                     .ThenInclude(property => property.Material)
-                 .FirstOrDefaultAsync(property => property.Id == id, cancellationToken); 
+                .FirstOrDefaultAsync(property => property.Id == id, cancellationToken);
         }
 
         public async Task<PagedList<ClotheItem>> GetPagedClotheItemsAsync(ClotheItemSpecificationParameters parameters, CancellationToken cancellationToken = default)

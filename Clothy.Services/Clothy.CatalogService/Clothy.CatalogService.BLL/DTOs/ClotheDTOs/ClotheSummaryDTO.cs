@@ -22,7 +22,7 @@ namespace Clothy.CatalogService.BLL.DTOs.ClotheDTOs
         public CollectionReadDTO? Collection { get; set; }
 
         public int AdditionalPhotosCount { get; set; }
-        public int AdditionalColorsCount { get; set; }
+        public int ColorsCount { get; set; }
         public bool IsAvailable { get; set; }
     }
 }

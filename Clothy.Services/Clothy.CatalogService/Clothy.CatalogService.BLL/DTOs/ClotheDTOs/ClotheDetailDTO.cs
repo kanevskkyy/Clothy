@@ -7,6 +7,7 @@ using Clothy.CatalogService.BLL.DTOs.BrandDTOs;
 using Clothy.CatalogService.BLL.DTOs.ClothingTypeDTOs;
 using Clothy.CatalogService.BLL.DTOs.CollectionDTOs;
 using Clothy.CatalogService.BLL.DTOs.ColorDTOs;
+using Clothy.CatalogService.BLL.DTOs.SizeDTOs;
 using Clothy.CatalogService.BLL.DTOs.TagDTOs;
 
 namespace Clothy.CatalogService.BLL.DTOs.ClotheDTOs
@@ -27,6 +28,6 @@ namespace Clothy.CatalogService.BLL.DTOs.ClotheDTOs
         public List<PhotoReadDTO> AdditionalPhotos { get; set; } = new();
         public List<TagReadDTO> Tags { get; set; } = new();
         public List<MaterialWithPercentageDTO> Materials { get; set; } = new();
-        public List<ColorReadDTO> Colors { get; set; } = new();
+        public List<ClotheStockDTO> Stocks { get; set; } = new();
     }
 }

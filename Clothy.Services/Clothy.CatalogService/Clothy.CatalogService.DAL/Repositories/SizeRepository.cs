@@ -28,23 +28,5 @@ namespace Clothy.CatalogService.DAL.Repositories
                 return await dbSet.AnyAsync(property => property.Name.ToLower() == name.ToLower() && property.Id != id, cancellationToken);
             }
         }
-
-        public async Task<Dictionary<Size, int>> GetSizesWithStockAsync(CancellationToken cancellationToken = default)
-        {
-            List<Size> sizes = await dbSet
-                .Include(property => property.ClothesStocks)
-                .ToListAsync(cancellationToken);
-
-            Dictionary<Size, int> result = new Dictionary<Size, int>();
-
-            foreach (Size size in sizes)
-            {
-                int quantityCount = size.ClothesStocks.Count;
-                result.Add(size, quantityCount);
-            }
-
-            return result;
-
-        }
     }
 }

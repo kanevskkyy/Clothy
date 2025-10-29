@@ -3,6 +3,7 @@ using Clothy.ReviewService.Application.Features.Reviews.Commands.DeleteReview;
 using Clothy.ReviewService.Application.Features.Reviews.Commands.UpdateReview;
 using Clothy.ReviewService.Application.Features.Reviews.Query.GetReviewById;
 using Clothy.ReviewService.Application.Features.Reviews.Query.GetReviews;
+using Clothy.ReviewService.Application.Features.Reviews.Query.GetReviewStatistics;
 using Clothy.ReviewService.Domain.Entities.QueryParameters;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -89,6 +90,32 @@ namespace Clothy.ReviewService.API.Controllers
 
             logger.LogInformation("Review with ID {Id} updated.", id);
             return NoContent();
+        }
+
+        /// <summary>
+        /// Get review statistics for a specific clothe item.
+        /// </summary>
+        /// <param name="clotheItemId">The ID of the clothe item</param>
+        /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
+        /// <returns>
+        /// Review statistics including:
+        /// <list type="bullet">
+        /// <item><description>Total number of reviews</description></item>
+        /// <item><description>Count of 5, 4, 3, 2, and 1 stars reviews</description></item>
+        /// <item><description>Average rating for the clothe item</description></item>
+        /// </list>
+        /// </returns>
+        /// <response code="200">Returns aggregated review statistics for the specified clothe item.</response>
+        [HttpGet("statistics/{clotheItemId}")]
+        public async Task<IActionResult> GetReviewStatistics(Guid clotheItemId, CancellationToken cancellationToken)
+        {
+            logger.LogInformation("Fetching review statistics for ClotheItemId: {ClotheItemId}", clotheItemId);
+
+            GetReviewStatisticsQuery query = new GetReviewStatisticsQuery(clotheItemId);
+            var stats = await mediator.Send(query, cancellationToken);
+
+            logger.LogInformation("Review statistics successfully fetched for ClotheItemId: {ClotheItemId}", clotheItemId);
+            return Ok(stats);
         }
 
         /// <summary>

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Clothy.CatalogService.BLL.DTOs.ClotheDTOs;
 using Clothy.CatalogService.BLL.DTOs.ColorDTOs;
+using Clothy.CatalogService.BLL.DTOs.SizeDTOs;
 using Clothy.CatalogService.BLL.DTOs.TagDTOs;
 using Clothy.CatalogService.Domain.Entities;
 
@@ -17,7 +18,11 @@ namespace Clothy.CatalogService.BLL.Mapper
         {
             CreateMap<ClotheItem, ClotheSummaryDTO>()
                 .ForMember(dto => dto.AdditionalPhotosCount, map => map.MapFrom(c => c.Photos.Count))
-                .ForMember(dto => dto.AdditionalColorsCount, map => map.MapFrom(c => c.Stocks.Count))
+                .ForMember(dto => dto.ColorsCount, map => map.MapFrom(c =>
+                    Math.Max(c.Stocks
+                        .Select(s => s.ColorId)     
+                        .Distinct()                 
+                        .Count() - 1, 0)))          
                 .ForMember(dto => dto.IsAvailable, map => map.MapFrom(c => c.Stocks.Any(s => s.Quantity > 0)))
                 .ForMember(dto => dto.Brand, map => map.MapFrom(c => c.Brand))
                 .ForMember(dto => dto.Collection, map => map.MapFrom(c => c.Collection))
@@ -27,16 +32,16 @@ namespace Clothy.CatalogService.BLL.Mapper
                 .ForMember(dto => dto.AdditionalPhotos, map => map.MapFrom(c => c.Photos))
                 .ForMember(dto => dto.Tags, map => map.MapFrom(c => c.ClotheTags))
                 .ForMember(dto => dto.Materials, map => map.MapFrom(c => c.ClotheMaterials))
-                .ForMember(dto => dto.Colors, map => map.MapFrom(c => c.Stocks))
+                .ForMember(dto => dto.Stocks, map => map.MapFrom(c => c.Stocks))
                 .ForMember(dto => dto.Brand, map => map.MapFrom(c => c.Brand))
                 .ForMember(dto => dto.Collection, map => map.MapFrom(c => c.Collection))
                 .ForMember(dto => dto.ClothyType, map => map.MapFrom(c => c.ClothyType));
 
-            CreateMap<ClothesStock, ColorReadDTO>()
-                .ForMember(dto => dto.Id, opt => opt.MapFrom(s => s.Color.Id))
-                .ForMember(dto => dto.HexCode, opt => opt.MapFrom(s => s.Color.HexCode))
-                .ForMember(dto => dto.CreatedAt, opt => opt.MapFrom(s => s.Color.CreatedAt))
-                .ForMember(dto => dto.UpdatedAt, opt => opt.MapFrom(s => s.Color.UpdatedAt));
+            CreateMap<ClothesStock, ClotheStockDTO>()
+                .ForMember(dto => dto.StockId, map => map.MapFrom(s => s.Id))
+                .ForMember(dto => dto.Size, map => map.MapFrom(s => s.Size))
+                .ForMember(dto => dto.Color, map => map.MapFrom(s => s.Color))
+                .ForMember(dto => dto.Quantity, map => map.MapFrom(s => s.Quantity));
 
             CreateMap<PhotoClothes, PhotoReadDTO>()
                 .ForMember(dto => dto.Id, map => map.MapFrom(c => c.Id))

@@ -12,6 +12,7 @@ namespace Clothy.ReviewService.Domain.Interfaces.Services
 {
     public interface IReviewService
     {
+        Task<ReviewStatistics> GetReviewStatisticsAsync(Guid clotheItemId, CancellationToken cancellationToken = default);
         Task<PagedList<Review>> GetReviewsAsync(ReviewQueryParameters queryParameters, CancellationToken cancellationToken = default);
         Task<Review?> GetReviewByIdAsync(string id, CancellationToken cancellationToken = default);
         Task<Review> AddReviewAsync(Review review, CancellationToken cancellationToken = default);
