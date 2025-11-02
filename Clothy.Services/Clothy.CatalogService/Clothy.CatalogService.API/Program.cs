@@ -14,6 +14,11 @@ using Clothy.CatalogService.BLL.FluentValidation.BrandValidation;
 using Clothy.ServiceDefaults.Middleware;
 using Clothy.CatalogService.API.Middleware;
 using Clothy.Shared.Helpers;
+using Clothy.CatalogService.BLL.RedisCache.Clothe;
+using Clothy.CatalogService.BLL.RedisCache.ClotheItemCache;
+using Clothy.CatalogService.BLL.RedisCache.StockCache;
+using Clothy.CatalogService.Domain.Entities;
+using Clothy.Shared.Cache.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,6 +59,14 @@ builder.Services.AddScoped<IBrandService, BrandService>();
 builder.Services.AddScoped<IClotheService, ClotheService>();
 builder.Services.AddScoped<IClothesStockService, ClothesStockService>();
 
+// REDIS
+builder.Services.AddTransient<ICachePreloader, ClotheItemCachePreloader>();
+builder.Services.AddTransient<IEntityCacheInvalidationService<ClotheItem>, ClotheItemCacheInvalidationService>();
+
+builder.Services.AddTransient<ICachePreloader, ClothesStockCachePreloader>();
+builder.Services.AddTransient<IEntityCacheInvalidationService<ClothesStock>, ClothesStockCacheInvalidationService>();
+//
+
 // CLOUDINARY CONFIG
 builder.Services.AddCloudinary(builder.Configuration);
 //
@@ -71,9 +84,19 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.AddNpgsqlDbContext<ClothyCatalogDbContext>("ClothyCatalogDb");
 
+builder.AddRedisClient("clothy-redis");
+builder.Services.AddMemoryCache(options =>
+{
+    options.SizeLimit = 1024; 
+
+    options.CompactionPercentage = 0.2;
+});
+
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
+
+await app.PreloadCachesAsync();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseCorrelationId();

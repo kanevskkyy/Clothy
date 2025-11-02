@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Clothy.CatalogService.BLL.DTOs.ClotheStocksDTOs;
@@ -10,6 +10,7 @@ using Clothy.CatalogService.BLL.Interfaces;
 using Clothy.CatalogService.DAL.UOW;
 using Clothy.CatalogService.Domain.Entities;
 using Clothy.CatalogService.Domain.QueryParameters;
+using Clothy.Shared.Cache.Interfaces;
 using Clothy.Shared.Exceptions;
 using Clothy.Shared.Helpers;
 
@@ -19,27 +20,55 @@ namespace Clothy.CatalogService.BLL.Services
     {
         private IUnitOfWork unitOfWork;
         private IMapper mapper;
+        private IEntityCacheService cacheService;
+        private IEntityCacheInvalidationService<ClothesStock> cacheInvalidationService;
 
-        public ClothesStockService(IUnitOfWork unitOfWork, IMapper mapper)
+        public ClothesStockService(IUnitOfWork unitOfWork, IMapper mapper, IEntityCacheService cacheService, IEntityCacheInvalidationService<ClothesStock> cacheInvalidationService)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
+            this.cacheService = cacheService;
+            this.cacheInvalidationService = cacheInvalidationService;
         }
 
         public async Task<PagedList<ClothesStockReadDTO>> GetPagedClothesStockAsync(ClothesStockSpecificationParameters parameters, CancellationToken cancellationToken = default)
         {
-            PagedList<ClothesStock> paged = await unitOfWork.ClothesStocks.GetPagedClothesStockAsync(parameters, cancellationToken);
-            List<ClothesStockReadDTO> mapped = mapper.Map<List<ClothesStockReadDTO>>(paged.Items);
+            bool shouldCache = parameters.PageNumber <= 3;
+            string cacheKey = $"clothesstock:page:{parameters.PageNumber}:size:{parameters.PageSize}";
 
-            return new PagedList<ClothesStockReadDTO>(mapped, paged.TotalCount, paged.CurrentPage, paged.PageSize);
+            if (shouldCache)
+            {
+                var cached = await cacheService.GetOrSetAsync(cacheKey, async () =>
+                {
+                    PagedList<ClothesStock> paged = await unitOfWork.ClothesStocks.GetPagedClothesStockAsync(parameters, cancellationToken);
+                    List<ClothesStockReadDTO> mapped = mapper.Map<List<ClothesStockReadDTO>>(paged.Items);
+                    
+                    return new PagedList<ClothesStockReadDTO>(mapped, paged.TotalCount, paged.CurrentPage, paged.PageSize);
+                });
+
+                return cached!;
+            }
+            else
+            {
+                PagedList<ClothesStock> paged = await unitOfWork.ClothesStocks.GetPagedClothesStockAsync(parameters, cancellationToken);
+                List<ClothesStockReadDTO> mapped = mapper.Map<List<ClothesStockReadDTO>>(paged.Items);
+                
+                return new PagedList<ClothesStockReadDTO>(mapped, paged.TotalCount, paged.CurrentPage, paged.PageSize);
+            }
         }
 
         public async Task<ClothesStockReadDTO> GetByIdWithDetailsAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            ClothesStock? stock = await unitOfWork.ClothesStocks.GetByIdWithDetailsAsync(id, cancellationToken);
-            if (stock == null) throw new NotFoundException($"Clothes stock not found with ID: {id}");
+            string cacheKey = $"clothesstock:{id}";
+            var cached = await cacheService.GetOrSetAsync(cacheKey, async () =>
+            {
+                ClothesStock? stock = await unitOfWork.ClothesStocks.GetByIdWithDetailsAsync(id, cancellationToken);
+                if (stock == null) throw new NotFoundException($"Clothes stock not found with ID: {id}");
+             
+                return mapper.Map<ClothesStockReadDTO>(stock);
+            });
 
-            return mapper.Map<ClothesStockReadDTO>(stock);
+            return cached!;
         }
 
         public async Task<ClothesStockReadDTO> CreateAsync(ClothesStockCreateDTO dto, CancellationToken cancellationToken = default)
@@ -59,7 +88,8 @@ namespace Clothy.CatalogService.BLL.Services
             ClothesStock stock = mapper.Map<ClothesStock>(dto);
             await unitOfWork.ClothesStocks.AddAsync(stock, cancellationToken);
             await unitOfWork.SaveChangesAsync(cancellationToken);
-
+            
+            await cacheInvalidationService.InvalidateAllAsync();
             return await GetByIdWithDetailsAsync(stock.Id, cancellationToken);
         }
 
@@ -69,10 +99,10 @@ namespace Clothy.CatalogService.BLL.Services
             if (stock == null) throw new NotFoundException($"Clothes stock not found with ID: {id}");
 
             mapper.Map(dto, stock);
-
             unitOfWork.ClothesStocks.Update(stock);
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
+            await cacheInvalidationService.InvalidateByIdAsync(id);
             return await GetByIdWithDetailsAsync(stock.Id, cancellationToken);
         }
 
@@ -83,6 +113,8 @@ namespace Clothy.CatalogService.BLL.Services
 
             unitOfWork.ClothesStocks.Delete(stock);
             await unitOfWork.SaveChangesAsync(cancellationToken);
+
+            await cacheInvalidationService.InvalidateByIdAsync(id);
         }
     }
 }

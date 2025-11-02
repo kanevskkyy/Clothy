@@ -22,6 +22,14 @@ builder.Services.AddServiceDiscovery();
 builder.Services.AddTransient<FilterAggregatorService>();
 builder.Services.AddTransient<ClotheAggregatorService>();
 
+builder.AddRedisClient("clothy-redis");
+builder.Services.AddMemoryCache(options =>
+{
+    options.SizeLimit = 1024;
+
+    options.CompactionPercentage = 0.2;
+});
+
 builder.Services.AddHttpClient<CatalogClient>(client =>
 {
     client.BaseAddress = new Uri("http://catalog");

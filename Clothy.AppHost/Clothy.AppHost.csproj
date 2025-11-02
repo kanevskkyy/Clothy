@@ -14,6 +14,7 @@
 		<PackageReference Include="Aspire.Hosting.PostgreSQL" Version="9.5.2" />
 		<PackageReference Include="Aspire.Hosting.MongoDB" Version="9.5.2" />
 		<PackageReference Include="DotNetEnv" Version="3.1.1" />
+		<PackageReference Include="Aspire.Hosting.Redis" Version="9.5.2" />
 	</ItemGroup>
 	<ItemGroup>
 		<Content Include="Scripts\**\*.sql">

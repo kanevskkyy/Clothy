@@ -20,8 +20,16 @@ builder.AddServiceDefaults();
 
 builder.Services.AddSingleton<IConnectionFactory>(sp =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("ClothyOrder");
+    string? connectionString = builder.Configuration.GetConnectionString("ClothyOrder");
     return new ConnectionFactory(connectionString);
+});
+
+builder.AddRedisClient("clothy-redis");
+builder.Services.AddMemoryCache(options =>
+{
+    options.SizeLimit = 1024;
+
+    options.CompactionPercentage = 0.2;
 });
 
 // REGISTER REPOSITORY

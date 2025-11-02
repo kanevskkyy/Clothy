@@ -15,7 +15,10 @@ var postgresPassword = builder.AddParameter("postgres-password");
 var postgres = builder.AddPostgres("clothy-postgres", password: postgresPassword)
     .WithImage("postgres:16")
     .WithDataVolume("pgdata")
-    .WithInitBindMount("./Scripts");
+    .WithBindMount("./Scripts", "/docker-entrypoint-initdb.d");
+
+var redis = builder.AddRedis("clothy-redis")
+    .WithDataVolume("redisdata");
 
 var postgresCatalog = postgres.AddDatabase("ClothyCatalogDb");
 var postgresOrders = postgres.AddDatabase("ClothyOrder");
@@ -27,16 +30,20 @@ var mongo = builder.AddMongoDB("clothy-mongo")
 
 var catalogService = builder.AddProject<Clothy_CatalogService_API>("catalog")
     .WithReference(postgresCatalog)
+    .WithReference(redis)
     .WithEnvironment("CLOUDINARYSETTINGS__CLOUDNAME", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__CLOUDNAME"))
     .WithEnvironment("CLOUDINARYSETTINGS__APIKEY", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APIKEY"))
     .WithEnvironment("CLOUDINARYSETTINGS__APISECRET", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APISECRET"))
+    .WaitFor(redis)
     .WaitFor(postgresCatalog);
 
 var ordersService = builder.AddProject<Clothy_OrderService_API>("orders")
     .WithReference(postgresOrders)
+    .WithReference(redis)
     .WithEnvironment("CLOUDINARYSETTINGS__CLOUDNAME", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__CLOUDNAME"))
     .WithEnvironment("CLOUDINARYSETTINGS__APIKEY", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APIKEY"))
     .WithEnvironment("CLOUDINARYSETTINGS__APISECRET", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APISECRET"))
+    .WaitFor(redis)
     .WaitFor(postgresOrders);
 
 var reviewsService = builder.AddProject<Clothy_ReviewService_API>("reviews")
@@ -53,10 +60,12 @@ var seedOrders = builder.AddProject<Clothy_OrderService_SeedData>("order-seed")
 
 var aggregator = builder.AddProject<Clothy_Aggregator>("aggregator")
     .WithReference(catalogService)
+    .WithReference(redis)
     .WithReference(ordersService)
     .WithReference(reviewsService)
     .WaitFor(catalogService)
     .WaitFor(ordersService)
+    .WaitFor(redis)
     .WaitFor(reviewsService);
 
 var gateway = builder.AddProject<Clothy_Gateway>("gateway")
