@@ -30,12 +30,15 @@ namespace Clothy.CatalogService.BLL.RedisCache.StockCache
 
             try
             {
-                for (int page = 1; page <= 3; page++)
+                const int PAGE_SIZE = 10;
+                const int TOTAL_PAGES = 3;
+
+                for (int page = 1; page <= TOTAL_PAGES; page++)
                 {
                     ClothesStockSpecificationParameters parameters = new ClothesStockSpecificationParameters
                     {
                         PageNumber = page,
-                        PageSize = 10
+                        PageSize = PAGE_SIZE
                     };
 
                     PagedList<ClothesStockReadDTO> pagedStocks = await stockService.GetPagedClothesStockAsync(parameters, cancellationToken);

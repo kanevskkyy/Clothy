@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Clothy.OrderService.BLL.DTOs.CityDTOs;
@@ -9,6 +9,7 @@ using Clothy.OrderService.BLL.Interfaces;
 using Clothy.OrderService.DAL.FilterDTOs;
 using Clothy.OrderService.DAL.UOW;
 using Clothy.OrderService.Domain.Entities;
+using Clothy.Shared.Cache.Interfaces;
 using Clothy.Shared.Exceptions;
 using Clothy.Shared.Helpers;
 
@@ -18,28 +19,55 @@ namespace Clothy.OrderService.BLL.Services
     {
         private IUnitOfWork unitOfWork;
         private IMapper mapper;
+        private IEntityCacheService cacheService;
+        private IEntityCacheInvalidationService<City> cacheInvalidationService;
 
-        public CityService(IUnitOfWork unitOfWork, IMapper mapper)
+        private const int MAX_CACHED_PAGES = 3;
+
+        public CityService(IUnitOfWork unitOfWork, IMapper mapper, IEntityCacheService cacheService, IEntityCacheInvalidationService<City> cacheInvalidationService)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
+            this.cacheService = cacheService;
+            this.cacheInvalidationService = cacheInvalidationService;
         }
 
         public async Task<PagedList<CityReadDTO>> GetPagedAsync(CityFilterDTO filter, CancellationToken cancellationToken = default)
         {
-            var (cities, totalCount) = await unitOfWork.Cities.GetPagedAsync(filter, cancellationToken);
-            List<CityReadDTO> dtos = mapper.Map<List<CityReadDTO>>(cities);
+            bool usePageCache = filter.PageNumber <= MAX_CACHED_PAGES;
+            string cacheKey = $"cities:page:{filter.PageNumber}:size:{filter.PageSize}";
 
-            return new PagedList<CityReadDTO>(dtos, totalCount, filter.PageNumber, filter.PageSize);
+            if (usePageCache)
+            {
+                var cached = await cacheService.GetOrSetAsync(cacheKey, async () =>
+                {
+                    var (cities, totalCount) = await unitOfWork.Cities.GetPagedAsync(filter, cancellationToken);
+                    List<CityReadDTO> dtos = mapper.Map<List<CityReadDTO>>(cities);
+                    return new PagedList<CityReadDTO>(dtos, totalCount, filter.PageNumber, filter.PageSize);
+                });
+
+                return cached;
+            }
+            else
+            {
+                var (cities, totalCount) = await unitOfWork.Cities.GetPagedAsync(filter, cancellationToken);
+                List<CityReadDTO> dtos = mapper.Map<List<CityReadDTO>>(cities);
+                return new PagedList<CityReadDTO>(dtos, totalCount, filter.PageNumber, filter.PageSize);
+            }
         }
-
 
         public async Task<CityReadDTO> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            City? city = await unitOfWork.Cities.GetByIdAsync(id, cancellationToken);
-            if (city == null) throw new NotFoundException($"City not found with ID: {id}");
+            string cacheKey = $"city:{id}";
 
-            return mapper.Map<CityReadDTO>(city);
+            var cached = await cacheService.GetOrSetAsync(cacheKey, async () =>
+            {
+                City? city = await unitOfWork.Cities.GetByIdAsync(id, cancellationToken);
+                if (city == null) throw new NotFoundException($"City not found with ID: {id}");
+                return mapper.Map<CityReadDTO>(city);
+            });
+
+            return cached;
         }
 
         public async Task<CityReadDTO> CreateAsync(CityCreateDTO dto, CancellationToken cancellationToken = default)
@@ -50,6 +78,8 @@ namespace Clothy.OrderService.BLL.Services
             City city = mapper.Map<City>(dto);
             city.Id = await unitOfWork.Cities.AddAsync(city, cancellationToken);
             await unitOfWork.CommitAsync();
+
+            await cacheInvalidationService.InvalidateAllAsync();
 
             return mapper.Map<CityReadDTO>(city);
         }
@@ -63,8 +93,11 @@ namespace Clothy.OrderService.BLL.Services
             if (exists) throw new AlreadyExistsException($"City with name '{dto.Name}' already exists.");
 
             mapper.Map(dto, city);
-            await unitOfWork.Cities.UpdateAsync(city);
+            await unitOfWork.Cities.UpdateAsync(city, cancellationToken);
             await unitOfWork.CommitAsync();
+
+            await cacheInvalidationService.InvalidateByIdAsync(city.Id);
+            await cacheInvalidationService.InvalidateAllAsync();
 
             return mapper.Map<CityReadDTO>(city);
         }
@@ -74,8 +107,11 @@ namespace Clothy.OrderService.BLL.Services
             City? city = await unitOfWork.Cities.GetByIdAsync(id, cancellationToken);
             if (city == null) throw new NotFoundException($"City not found with ID: {id}");
 
-            await unitOfWork.Cities.DeleteAsync(city.Id);
+            await unitOfWork.Cities.DeleteAsync(city.Id, cancellationToken);
             await unitOfWork.CommitAsync();
+
+            await cacheInvalidationService.InvalidateByIdAsync(id);
+            await cacheInvalidationService.InvalidateAllAsync();
         }
     }
 }

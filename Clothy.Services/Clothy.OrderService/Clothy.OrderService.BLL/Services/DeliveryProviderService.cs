@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Clothy.OrderService.BLL.DTOs.DeliveryProviderDTOs;
 using Clothy.OrderService.BLL.Interfaces;
 using Clothy.OrderService.DAL.UOW;
 using Clothy.OrderService.Domain.Entities;
+using Clothy.Shared.Cache.Interfaces;
 using Clothy.Shared.Exceptions;
 using Clothy.Shared.Helpers.CloudinaryConfig;
 
@@ -18,27 +19,44 @@ namespace Clothy.OrderService.BLL.Services
         private IUnitOfWork unitOfWork;
         private IMapper mapper;
         private IImageService imageService;
+        private IEntityCacheService cacheService;
+        private IEntityCacheInvalidationService<DeliveryProvider> cacheInvalidationService;
 
-        public DeliveryProviderService(IUnitOfWork unitOfWork, IMapper mapper, IImageService imageService)
+        private const string ALL_CACHE_KEY = "delivery-provider:all";
+
+        public DeliveryProviderService(IUnitOfWork unitOfWork, IMapper mapper, IImageService imageService, IEntityCacheService cacheService, IEntityCacheInvalidationService<DeliveryProvider> cacheInvalidationService)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
             this.imageService = imageService;
+            this.cacheService = cacheService;
+            this.cacheInvalidationService = cacheInvalidationService;
         }
 
         public async Task<List<DeliveryProviderReadDTO>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            IEnumerable<DeliveryProvider> providers = await unitOfWork.DeliveryProviders.GetAllAsync(cancellationToken);
-           
-            return mapper.Map<List<DeliveryProviderReadDTO>>(providers.ToList());
+            List<DeliveryProviderReadDTO>? cached = await cacheService.GetOrSetAsync(ALL_CACHE_KEY, async () =>
+            {
+                IEnumerable<DeliveryProvider> providers = await unitOfWork.DeliveryProviders.GetAllAsync(cancellationToken);
+                return mapper.Map<List<DeliveryProviderReadDTO>>(providers.ToList());
+            });
+
+            return cached!;
         }
 
         public async Task<DeliveryProviderReadDTO> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            DeliveryProvider? provider = await unitOfWork.DeliveryProviders.GetByIdAsync(id, cancellationToken);
-            if (provider == null) throw new NotFoundException($"DeliveryProvider not found with ID: {id}");
+            string cacheKey = $"delivery-provider:{id}";
 
-            return mapper.Map<DeliveryProviderReadDTO>(provider);
+            DeliveryProviderReadDTO? cached = await cacheService.GetOrSetAsync(cacheKey, async () =>
+            {
+                DeliveryProvider? provider = await unitOfWork.DeliveryProviders.GetByIdAsync(id, cancellationToken);
+                if (provider == null) throw new NotFoundException($"DeliveryProvider not found with ID: {id}");
+                
+                return mapper.Map<DeliveryProviderReadDTO>(provider);
+            });
+
+            return cached!;
         }
 
         public async Task<DeliveryProviderReadDTO> CreateAsync(DeliveryProviderCreateDTO dto, CancellationToken cancellationToken = default)
@@ -47,11 +65,12 @@ namespace Clothy.OrderService.BLL.Services
             if (exists) throw new AlreadyExistsException($"DeliveryProvider with name '{dto.Name}' already exists.");
 
             DeliveryProvider provider = mapper.Map<DeliveryProvider>(dto);
-
             if (dto.Icon != null) provider.IconUrl = await imageService.UploadAsync(dto.Icon, "delivery-providers");
-            
+
             provider.Id = await unitOfWork.DeliveryProviders.AddAsync(provider, cancellationToken);
             await unitOfWork.CommitAsync();
+
+            await cacheInvalidationService.InvalidateAllAsync();
 
             return mapper.Map<DeliveryProviderReadDTO>(provider);
         }
@@ -74,6 +93,9 @@ namespace Clothy.OrderService.BLL.Services
             await unitOfWork.DeliveryProviders.UpdateAsync(provider, cancellationToken);
             await unitOfWork.CommitAsync();
 
+            await cacheInvalidationService.InvalidateByIdAsync(provider.Id);
+            await cacheInvalidationService.InvalidateAllAsync();
+
             return mapper.Map<DeliveryProviderReadDTO>(provider);
         }
 
@@ -86,6 +108,9 @@ namespace Clothy.OrderService.BLL.Services
 
             await unitOfWork.DeliveryProviders.DeleteAsync(id, cancellationToken);
             await unitOfWork.CommitAsync();
+
+            await cacheInvalidationService.InvalidateByIdAsync(id);
+            await cacheInvalidationService.InvalidateAllAsync(); 
         }
     }
 }

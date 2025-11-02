@@ -37,7 +37,11 @@ namespace Clothy.CatalogService.BLL.Services
             bool usePageCache = parameters.PageNumber <= MAX_CASHED_PAGES;
             string cacheKey;
 
-            if (usePageCache) cacheKey = $"clothes:page:{parameters.PageNumber}:size:{parameters.PageSize}";
+            if (usePageCache)
+            {
+                if (parameters.MinPrice.HasValue && parameters.MaxPrice.HasValue) cacheKey = $"clothes:price:{parameters.MinPrice}-{parameters.MaxPrice}:page:{parameters.PageNumber}:size:{parameters.PageSize}";
+                else cacheKey = $"clothes:page:{parameters.PageNumber}:size:{parameters.PageSize}";
+            }
             else
             {
                 PagedList<ClotheItem> paged = await unitOfWork.ClotheItems.GetPagedClotheItemsAsync(parameters, cancellationToken);
@@ -45,12 +49,14 @@ namespace Clothy.CatalogService.BLL.Services
                 return new PagedList<ClotheSummaryDTO>(mapped, paged.TotalCount, paged.CurrentPage, paged.PageSize);
             }
 
-            var cached = await cacheService.GetOrSetAsync(cacheKey, async () =>
-            {
-                PagedList<ClotheItem> paged = await unitOfWork.ClotheItems.GetPagedClotheItemsAsync(parameters, cancellationToken);
-                List<ClotheSummaryDTO> mapped = mapper.Map<List<ClotheSummaryDTO>>(paged.Items);
-                return new PagedList<ClotheSummaryDTO>(mapped, paged.TotalCount, paged.CurrentPage, paged.PageSize);
-            });
+            PagedList<ClotheSummaryDTO>? cached = await cacheService.GetOrSetAsync(
+                cacheKey,
+                async () =>
+                {
+                    PagedList<ClotheItem> paged = await unitOfWork.ClotheItems.GetPagedClotheItemsAsync(parameters, cancellationToken);
+                    List<ClotheSummaryDTO> mapped = mapper.Map<List<ClotheSummaryDTO>>(paged.Items);
+                    return new PagedList<ClotheSummaryDTO>(mapped, paged.TotalCount, paged.CurrentPage, paged.PageSize);
+                });
 
             return cached!;
         }

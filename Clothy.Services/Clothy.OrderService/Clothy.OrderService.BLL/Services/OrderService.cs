@@ -12,6 +12,8 @@ using Clothy.OrderService.Domain.Entities.AdditionalEntities;
 using Clothy.Shared.Exceptions;
 using Clothy.Shared.Helpers;
 using Clothy.OrderService.DAL.FilterDTOs;
+using Clothy.Shared.Cache.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace Clothy.OrderService.BLL.Services
 {
@@ -19,11 +21,16 @@ namespace Clothy.OrderService.BLL.Services
     {
         private IUnitOfWork unitOfWork;
         private IMapper mapper;
+        private IEntityCacheService cacheService;
+        private IEntityCacheInvalidationService<Order> cacheInvalidationService;
+        private const int MAX_CASHED_PAGES = 3;
 
-        public OrderService(IUnitOfWork unitOfWork, IMapper mapper)
+        public OrderService(IUnitOfWork unitOfWork, IMapper mapper, IEntityCacheService cacheService, IEntityCacheInvalidationService<Order> cacheInvalidationService)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
+            this.cacheService = cacheService;
+            this.cacheInvalidationService = cacheInvalidationService;
         }
 
         public async Task<OrderDetailDTO> CreateAsync(OrderCreateDTO dto, CancellationToken cancellationToken = default)
@@ -33,8 +40,8 @@ namespace Clothy.OrderService.BLL.Services
 
             Order order = mapper.Map<Order>(dto);
             order.StatusId = pendingStatus.Id;
-            
-            await unitOfWork.Orders.AddAsync(order, cancellationToken); 
+
+            await unitOfWork.Orders.AddAsync(order, cancellationToken);
 
             foreach (var itemDto in dto.Items)
             {
@@ -49,23 +56,49 @@ namespace Clothy.OrderService.BLL.Services
 
             await unitOfWork.CommitAsync();
 
+            await cacheInvalidationService.InvalidateAllAsync();
+
             return await GetByIdAsync(order.Id, cancellationToken);
         }
 
         public async Task<OrderDetailDTO> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            OrderWithDetailsData? orderData = await unitOfWork.Orders.GetByIdWithDetailsAsync(id, cancellationToken);
-            if (orderData == null) throw new NotFoundException($"Order not found with ID: {id}");
+            string cacheKey = $"order:{id}";
 
-            return mapper.Map<OrderDetailDTO>(orderData);
+            OrderDetailDTO? cached = await cacheService.GetOrSetAsync(cacheKey, async () =>
+            {
+                OrderWithDetailsData? orderData = await unitOfWork.Orders.GetByIdWithDetailsAsync(id, cancellationToken);
+                if (orderData == null) throw new NotFoundException($"Order not found with ID: {id}");
+
+                return mapper.Map<OrderDetailDTO>(orderData);
+            });
+
+            return cached!;
         }
 
         public async Task<PagedList<OrderReadDTO>> GetPagedAsync(OrderFilterDTO filter, CancellationToken cancellationToken = default)
         {
-            var (orders, totalCount) = await unitOfWork.Orders.GetPagedAsync(filter, cancellationToken);
-            List<OrderReadDTO> ordersDTO = mapper.Map<List<OrderReadDTO>>(orders);
- 
-            return new PagedList<OrderReadDTO>(ordersDTO, totalCount, filter.PageNumber, filter.PageSize);
+            bool usePageCache = filter.StatusId.HasValue && filter.PageNumber <= MAX_CASHED_PAGES;
+
+            if (usePageCache)
+            {
+                string cacheKey = $"orders:status:{filter.StatusId}:page:{filter.PageNumber}:size:{filter.PageSize}";
+
+                PagedList<OrderReadDTO>? cached = await cacheService.GetOrSetAsync(cacheKey, async () =>
+                {
+                    var (orders, totalCount) = await unitOfWork.Orders.GetPagedAsync(filter, cancellationToken);
+                    List<OrderReadDTO> ordersDTO = mapper.Map<List<OrderReadDTO>>(orders);
+                    return new PagedList<OrderReadDTO>(ordersDTO, totalCount, filter.PageNumber, filter.PageSize);
+                });
+
+                return cached!;
+            }
+            else
+            {
+                var (orders, totalCount) = await unitOfWork.Orders.GetPagedAsync(filter, cancellationToken);
+                List<OrderReadDTO> ordersDTO = mapper.Map<List<OrderReadDTO>>(orders);
+                return new PagedList<OrderReadDTO>(ordersDTO, totalCount, filter.PageNumber, filter.PageSize);
+            }
         }
 
         public async Task<OrderDetailDTO> UpdateStatusAsync(Guid id, OrderUpdateStatusDTO dto, CancellationToken cancellationToken = default)
@@ -81,6 +114,8 @@ namespace Clothy.OrderService.BLL.Services
             Order? updatedOrder = await unitOfWork.Orders.UpdateAsync(order, cancellationToken);
             await unitOfWork.CommitAsync();
 
+            await cacheInvalidationService.InvalidateByIdAsync(updatedOrder.Id);
+
             return await GetByIdAsync(updatedOrder.Id, cancellationToken);
         }
 
@@ -91,6 +126,8 @@ namespace Clothy.OrderService.BLL.Services
 
             await unitOfWork.Orders.DeleteAsync(order.Id, cancellationToken);
             await unitOfWork.CommitAsync();
+
+            await cacheInvalidationService.InvalidateByIdAsync(id);
         }
     }
 }
