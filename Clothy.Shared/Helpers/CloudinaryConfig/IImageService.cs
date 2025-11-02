@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace Clothy.OrderService.BLL.Helpers
+namespace Clothy.Shared.Helpers.CloudinaryConfig
 {
     public interface IImageService
     {

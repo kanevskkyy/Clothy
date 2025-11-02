@@ -7,6 +7,7 @@ using Clothy.ReviewService.Domain.Entities.QueryParameters;
 using Clothy.ReviewService.Domain.Entities;
 using Clothy.ReviewService.Domain.Helpers;
 using Clothy.ReviewService.Domain.ValueObjects;
+using Clothy.Shared.Helpers;
 
 namespace Clothy.ReviewService.Domain.Interfaces.Repositories
 {

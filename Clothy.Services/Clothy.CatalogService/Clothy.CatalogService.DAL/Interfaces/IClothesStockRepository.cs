@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Clothy.CatalogService.DAL.Helpers;
 using Clothy.CatalogService.Domain.Entities;
 using Clothy.CatalogService.Domain.QueryParameters;
+using Clothy.Shared.Helpers;
 
 namespace Clothy.CatalogService.DAL.Interfaces
 {

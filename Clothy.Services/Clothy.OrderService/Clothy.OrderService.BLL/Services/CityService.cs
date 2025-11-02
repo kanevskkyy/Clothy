@@ -5,12 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Clothy.OrderService.BLL.DTOs.CityDTOs;
-using Clothy.OrderService.BLL.DTOs.FilterDTOs;
-using Clothy.OrderService.BLL.Exceptions;
-using Clothy.OrderService.BLL.Helpers;
 using Clothy.OrderService.BLL.Interfaces;
+using Clothy.OrderService.DAL.FilterDTOs;
 using Clothy.OrderService.DAL.UOW;
 using Clothy.OrderService.Domain.Entities;
+using Clothy.Shared.Exceptions;
+using Clothy.Shared.Helpers;
 
 namespace Clothy.OrderService.BLL.Services
 {
@@ -27,12 +27,12 @@ namespace Clothy.OrderService.BLL.Services
 
         public async Task<PagedList<CityReadDTO>> GetPagedAsync(CityFilterDTO filter, CancellationToken cancellationToken = default)
         {
-            IEnumerable<City> cities = await unitOfWork.Cities.GetAllAsync(cancellationToken);
-            cities = ApplyFilters(cities, filter);
+            var (cities, totalCount) = await unitOfWork.Cities.GetPagedAsync(filter, cancellationToken);
+            List<CityReadDTO> dtos = mapper.Map<List<CityReadDTO>>(cities);
 
-            List<CityReadDTO> citiesDTO = mapper.Map<List<CityReadDTO>>(cities.ToList());
-            return PagedList<CityReadDTO>.ToPagedList(citiesDTO, filter.PageNumber, filter.PageSize);
+            return new PagedList<CityReadDTO>(dtos, totalCount, filter.PageNumber, filter.PageSize);
         }
+
 
         public async Task<CityReadDTO> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
@@ -76,30 +76,6 @@ namespace Clothy.OrderService.BLL.Services
 
             await unitOfWork.Cities.DeleteAsync(city.Id);
             await unitOfWork.CommitAsync();
-        }
-
-        private IEnumerable<City> ApplyFilters(IEnumerable<City> query, CityFilterDTO filter)
-        {
-            if (!string.IsNullOrWhiteSpace(filter.Name)) query = query.Where(property => property.Name != null && property.Name.Contains(filter.Name, StringComparison.OrdinalIgnoreCase));
-
-            query = query.OrderByDescending(property => property.Name);
-
-            switch (filter.SortBy?.ToLower())
-            {
-                case "createdat":
-                    if (filter.SortDescending) query = query.OrderByDescending(property => property.CreatedAt);
-                    else query = query.OrderBy(property => property.CreatedAt);
-                    
-                    break;
-
-                case "name":
-                    if (filter.SortDescending) query = query.OrderByDescending(property => property.Name);
-                    else query = query.OrderBy(property => property.Name);
-                    
-                    break;
-            }
-
-            return query;
         }
     }
 }

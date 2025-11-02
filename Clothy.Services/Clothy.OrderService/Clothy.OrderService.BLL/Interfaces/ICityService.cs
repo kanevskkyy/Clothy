@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Clothy.OrderService.BLL.DTOs.CityDTOs;
-using Clothy.OrderService.BLL.DTOs.FilterDTOs;
-using Clothy.OrderService.BLL.Helpers;
+using Clothy.OrderService.DAL.FilterDTOs;
+using Clothy.Shared.Helpers;
 
 namespace Clothy.OrderService.BLL.Interfaces
 {

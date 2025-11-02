@@ -1,7 +1,7 @@
-﻿using Clothy.OrderService.BLL.DTOs.FilterDTOs;
-using Clothy.OrderService.BLL.DTOs.OrderDTOs;
-using Clothy.OrderService.BLL.Helpers;
+﻿using Clothy.OrderService.BLL.DTOs.OrderDTOs;
 using Clothy.OrderService.BLL.Interfaces;
+using Clothy.OrderService.DAL.FilterDTOs;
+using Clothy.Shared.Helpers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Clothy.OrderService.API.Controllers

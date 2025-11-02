@@ -5,14 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Clothy.OrderService.BLL.DTOs.OrderDTOs;
-using Clothy.OrderService.BLL.DTOs.OrderItemDTOs;
-using Clothy.OrderService.BLL.DTOs.FilterDTOs;
-using Clothy.OrderService.BLL.Exceptions;
-using Clothy.OrderService.BLL.Helpers;
 using Clothy.OrderService.BLL.Interfaces;
 using Clothy.OrderService.DAL.UOW;
 using Clothy.OrderService.Domain.Entities;
 using Clothy.OrderService.Domain.Entities.AdditionalEntities;
+using Clothy.Shared.Exceptions;
+using Clothy.Shared.Helpers;
+using Clothy.OrderService.DAL.FilterDTOs;
 
 namespace Clothy.OrderService.BLL.Services
 {
@@ -63,11 +62,10 @@ namespace Clothy.OrderService.BLL.Services
 
         public async Task<PagedList<OrderReadDTO>> GetPagedAsync(OrderFilterDTO filter, CancellationToken cancellationToken = default)
         {
-            IEnumerable<OrderSummaryData> orders = await unitOfWork.Orders.GetAllWithDetailsAsync(cancellationToken);
-            orders = ApplyFilters(orders, filter);
-
-            List<OrderReadDTO> ordersDTO = mapper.Map<List<OrderReadDTO>>(orders.ToList());
-            return PagedList<OrderReadDTO>.ToPagedList(ordersDTO, filter.PageNumber, filter.PageSize);
+            var (orders, totalCount) = await unitOfWork.Orders.GetPagedAsync(filter, cancellationToken);
+            List<OrderReadDTO> ordersDTO = mapper.Map<List<OrderReadDTO>>(orders);
+ 
+            return new PagedList<OrderReadDTO>(ordersDTO, totalCount, filter.PageNumber, filter.PageSize);
         }
 
         public async Task<OrderDetailDTO> UpdateStatusAsync(Guid id, OrderUpdateStatusDTO dto, CancellationToken cancellationToken = default)
@@ -93,64 +91,6 @@ namespace Clothy.OrderService.BLL.Services
 
             await unitOfWork.Orders.DeleteAsync(order.Id, cancellationToken);
             await unitOfWork.CommitAsync();
-        }
-
-        private IEnumerable<OrderSummaryData> ApplyFilters(IEnumerable<OrderSummaryData> query, OrderFilterDTO filter)
-        {
-            if (filter.StatusId.HasValue)
-            {
-                List<OrderSummaryData> filtered = new List<OrderSummaryData>();
-                foreach (OrderSummaryData order in query)
-                {
-                    if (order.Status != null && order.Status.Id == filter.StatusId.Value)
-                    {
-                        filtered.Add(order);
-                    }
-                }
-                query = filtered;
-            }
-
-            if (filter.UserId.HasValue)
-            {
-                List<OrderSummaryData> filteredByUser = new List<OrderSummaryData>();
-                foreach (OrderSummaryData order in query)
-                {
-                    if (order.Id == filter.UserId.Value)
-                    {
-                        filteredByUser.Add(order);
-                    }
-                }
-                query = filteredByUser;
-            }
-
-            if (!string.IsNullOrEmpty(filter.SortBy))
-            {
-                string sort = filter.SortBy.ToLower();
-                if (sort == "createdat")
-                {
-                    if (filter.SortDescending)
-                    {
-                        query = query.OrderByDescending(o => o.CreatedAt);
-                    }
-                    else
-                    {
-                        query = query.OrderBy(o => o.CreatedAt);
-                    }
-                }
-                else if (sort == "statusid")
-                {
-                    if (filter.SortDescending)
-                    {
-                        query = query.OrderByDescending(o => o.Status.Id);
-                    }
-                    else
-                    {
-                        query = query.OrderBy(o => o.Status.Id);
-                    }
-                }
-            }
-
-            return query;
         }
     }
 }

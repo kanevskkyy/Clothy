@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Clothy.OrderService.BLL.Helpers
+namespace Clothy.Shared.Helpers.CloudinaryConfig
 {
     public class CloudinarySettings
     {

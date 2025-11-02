@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CloudinaryDotNet.Actions;
 using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
-namespace Clothy.CatalogService.BLL.Helpers
+namespace Clothy.Shared.Helpers.CloudinaryConfig
 {
     public class ImageService : IImageService
     {

@@ -9,6 +9,8 @@ using Clothy.ReviewService.Domain.Helpers;
 using Clothy.ReviewService.Domain.Interfaces.Repositories;
 using Clothy.ReviewService.Domain.Interfaces.Services;
 using Clothy.ReviewService.Domain.ValueObjects;
+using Clothy.Shared.Exceptions;
+using Clothy.Shared.Helpers;
 
 namespace Clothy.ReviewService.Application.Services
 {

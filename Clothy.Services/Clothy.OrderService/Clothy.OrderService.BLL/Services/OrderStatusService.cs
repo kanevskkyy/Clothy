@@ -5,11 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Clothy.OrderService.BLL.DTOs.OrderStatusDTOs;
-using Clothy.OrderService.BLL.Exceptions;
-using Clothy.OrderService.BLL.Helpers;
 using Clothy.OrderService.BLL.Interfaces;
 using Clothy.OrderService.DAL.UOW;
 using Clothy.OrderService.Domain.Entities;
+using Clothy.Shared.Exceptions;
+using Clothy.Shared.Helpers.CloudinaryConfig;
 
 namespace Clothy.OrderService.BLL.Services
 {

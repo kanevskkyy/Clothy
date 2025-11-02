@@ -21,11 +21,7 @@
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
 	</ItemGroup>
 	<ItemGroup>
-		<Content Include=".env">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
-	<ItemGroup>
+		<ProjectReference Include="..\..\..\Clothy.Shared\Clothy.Shared.csproj" />
 		<ProjectReference Include="..\Clothy.CatalogService.BLL\Clothy.CatalogService.BLL.csproj" />
 		<ProjectReference Include="..\Clothy.CatalogService.DAL\Clothy.CatalogService.DAL.csproj" />
 		<ProjectReference Include="..\..\..\Clothy.ServiceDefaults\Clothy.ServiceDefaults.csproj" />

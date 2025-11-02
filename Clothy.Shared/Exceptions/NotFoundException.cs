@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Clothy.CatalogService.BLL.Exceptions
+namespace Clothy.Shared.Exceptions
 {
     public class NotFoundException : Exception
     {

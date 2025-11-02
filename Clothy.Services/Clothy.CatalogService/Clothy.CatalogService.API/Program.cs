@@ -11,9 +11,9 @@ using DotNetEnv;
 using FluentValidation.AspNetCore;
 using FluentValidation;
 using Clothy.CatalogService.BLL.FluentValidation.BrandValidation;
-using Clothy.CatalogService.API.Middleware;
 using Clothy.ServiceDefaults.Middleware;
-using System.Text.Json;
+using Clothy.CatalogService.API.Middleware;
+using Clothy.Shared.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,16 +55,8 @@ builder.Services.AddScoped<IClotheService, ClotheService>();
 builder.Services.AddScoped<IClothesStockService, ClothesStockService>();
 
 // CLOUDINARY CONFIG
-Env.Load();
-builder.Services.Configure<CloudinarySettings>(options =>
-{
-    options.CloudName = Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__CLOUDNAME");
-    options.ApiKey = Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APIKEY");
-    options.ApiSecret = Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APISECRET");
-});
-
-// Cloudinary DI registration
-builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddCloudinary(builder.Configuration);
+//
 
 // FLUENT VALIDATION
 builder.Services.AddFluentValidationAutoValidation();

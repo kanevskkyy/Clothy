@@ -3,10 +3,12 @@ using Clothy.CatalogService.BLL.DTOs.ClotheDTOs;
 using Clothy.CatalogService.BLL.Exceptions;
 using Clothy.CatalogService.BLL.Helpers;
 using Clothy.CatalogService.BLL.Interfaces;
-using Clothy.CatalogService.DAL.Helpers;
 using Clothy.CatalogService.DAL.UOW;
 using Clothy.CatalogService.Domain.Entities;
 using Clothy.CatalogService.Domain.QueryParameters;
+using Clothy.Shared.Exceptions;
+using Clothy.Shared.Helpers;
+using Clothy.Shared.Helpers.CloudinaryConfig;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -60,8 +62,14 @@ namespace Clothy.CatalogService.BLL.Services
             foreach (IFormFile photo in dto.AdditionalPhotos)
             {
                 string url = await imageService.UploadAsync(photo, "clothes");
-                clothe.Photos.Add(new PhotoClothes { PhotoURL = url });
+                clothe.Photos.Add(new PhotoClothes { 
+                    PhotoURL = url 
+                });
             }
+
+            if (!await unitOfWork.Materials.AreAllExistAsync(dto.Materials.Select(m => m.MaterialId), cancellationToken)) throw new NotFoundException("One or more materials do not exist.");
+
+            if (!await unitOfWork.Tags.AreAllExistAsync(dto.TagIds, cancellationToken)) throw new NotFoundException("One or more tags do not exist.");
 
             clothe.ClotheMaterials = dto.Materials
                 .Select(material => new ClotheMaterial 
@@ -116,7 +124,11 @@ namespace Clothy.CatalogService.BLL.Services
                     });
                 }
             }
-            
+
+            if (!await unitOfWork.Materials.AreAllExistAsync(dto.Materials.Select(m => m.MaterialId), cancellationToken)) throw new NotFoundException("One or more materials do not exist.");
+
+            if (!await unitOfWork.Tags.AreAllExistAsync(dto.TagIds, cancellationToken)) throw new NotFoundException("One or more tags do not exist.");
+
             clotheItem.ClotheMaterials.Clear();
             foreach (ClotheMaterialCreateDTO materialDto in dto.Materials)
             {

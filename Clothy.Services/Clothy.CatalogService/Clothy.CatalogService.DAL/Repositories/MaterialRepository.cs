@@ -46,6 +46,18 @@ namespace Clothy.CatalogService.DAL.Repositories
             }
         }
 
+        public async Task<bool> AreAllExistAsync(IEnumerable<Guid> materialIds, CancellationToken cancellationToken = default)
+        {
+            if (materialIds == null || !materialIds.Any()) return true;
+
+            var existingIds = await dbSet
+                .Where(m => materialIds.Contains(m.Id))
+                .Select(m => m.Id)
+                .ToListAsync(cancellationToken);
+
+            return existingIds.Count == materialIds.Count();
+        }
+
         public async Task<bool> IsSlugAlreadyExistsAsync(string slug, Guid? id = null, CancellationToken cancellationToken = default)
         {
             if (id == null)

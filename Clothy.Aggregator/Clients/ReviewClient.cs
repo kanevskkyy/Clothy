@@ -2,6 +2,7 @@
 using Clothy.Aggregator.DTOs.Questions;
 using Clothy.Aggregator.DTOs.Reviews;
 using Clothy.ReviewService.Domain.Helpers;
+using Clothy.Shared.Helpers;
 
 namespace Clothy.Aggregator.Clients
 {

@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
 using Clothy.OrderService.API.Middleware;
 using Clothy.OrderService.BLL.FluentValidation.OrderStatusValidation;
-using Clothy.OrderService.BLL.Helpers;
 using Clothy.OrderService.BLL.Interfaces;
 using Clothy.OrderService.BLL.Mapper;
 using Clothy.OrderService.BLL.Services;
@@ -10,6 +9,7 @@ using Clothy.OrderService.DAL.Interfaces;
 using Clothy.OrderService.DAL.Repositories;
 using Clothy.OrderService.DAL.UOW;
 using Clothy.ServiceDefaults.Middleware;
+using Clothy.Shared.Helpers;
 using DotNetEnv;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -44,6 +44,10 @@ builder.Services.AddScoped<IDeliveryProviderService, DeliveryProviderService>();
 builder.Services.AddScoped<IOrderStatusService, OrderStatusService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 
+// CLOUDINARY CONFIG
+builder.Services.AddCloudinary(builder.Configuration);
+//
+
 // FLUENT VALIDATION
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssembly(typeof(OrderStatusCreateDTOValidator).Assembly);
@@ -57,18 +61,6 @@ builder.Services.AddSwaggerGen(options =>
 
     options.IncludeXmlComments(xmlPath);
 });
-
-// CLOUDINARY CONFIG
-Env.Load();
-builder.Services.Configure<CloudinarySettings>(options =>
-{
-    options.CloudName = Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__CLOUDNAME");
-    options.ApiKey = Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APIKEY");
-    options.ApiSecret = Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APISECRET");
-});
-
-// Image Service
-builder.Services.AddScoped<IImageService, ImageService>();
 
 var app = builder.Build();
 

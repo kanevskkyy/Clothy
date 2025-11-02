@@ -7,10 +7,11 @@ using AutoMapper;
 using Clothy.CatalogService.BLL.DTOs.ClotheStocksDTOs;
 using Clothy.CatalogService.BLL.Exceptions;
 using Clothy.CatalogService.BLL.Interfaces;
-using Clothy.CatalogService.DAL.Helpers;
 using Clothy.CatalogService.DAL.UOW;
 using Clothy.CatalogService.Domain.Entities;
 using Clothy.CatalogService.Domain.QueryParameters;
+using Clothy.Shared.Exceptions;
+using Clothy.Shared.Helpers;
 
 namespace Clothy.CatalogService.BLL.Services
 {
@@ -45,6 +46,15 @@ namespace Clothy.CatalogService.BLL.Services
         {
             bool exists = await unitOfWork.ClothesStocks.IsSizeAndColorAndClotheIdsExists(dto.SizeId, dto.ColorId, dto.ClotheId, cancellationToken);
             if (exists) throw new AlreadyExistsException("Clothes stock with this Size, Color and Clothe already exists");
+
+            ClotheItem? clotheItem = await unitOfWork.ClotheItems.GetByIdAsync(dto.ClotheId, cancellationToken);
+            if (clotheItem == null) throw new NotFoundException($"ClotheItem not found with ID: {dto.ClotheId}");
+
+            Size? size = await unitOfWork.Sizes.GetByIdAsync(dto.SizeId, cancellationToken);
+            if (size == null) throw new NotFoundException($"Size not found with ID: {dto.SizeId}");
+
+            Color? color = await unitOfWork.Colors.GetByIdAsync(dto.ColorId, cancellationToken);
+            if (color == null) throw new NotFoundException($"Color not found with ID: {dto.ColorId}");
 
             ClothesStock stock = mapper.Map<ClothesStock>(dto);
             await unitOfWork.ClothesStocks.AddAsync(stock, cancellationToken);

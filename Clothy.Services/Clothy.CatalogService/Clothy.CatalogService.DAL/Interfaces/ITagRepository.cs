@@ -11,5 +11,6 @@ namespace Clothy.CatalogService.DAL.Interfaces
     {
         Task<bool> IsNameAlreadyExistsAsync(string name, Guid? id = null, CancellationToken cancellationToken = default);
         Task<Dictionary<Tag, int>> GetTagsWithStockCountAsync(CancellationToken cancellationToken = default);
+        Task<bool> AreAllExistAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken = default); 
     }
 }

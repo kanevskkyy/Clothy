@@ -1,7 +1,7 @@
 ﻿using Clothy.CatalogService.BLL.DTOs.ClotheStocksDTOs;
 using Clothy.CatalogService.BLL.Interfaces;
-using Clothy.CatalogService.DAL.Helpers;
 using Clothy.CatalogService.Domain.QueryParameters;
+using Clothy.Shared.Helpers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Clothy.CatalogService.API.Controllers

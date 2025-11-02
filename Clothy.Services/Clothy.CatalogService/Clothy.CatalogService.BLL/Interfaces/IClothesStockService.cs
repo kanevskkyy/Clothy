@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Clothy.CatalogService.BLL.DTOs.ClotheStocksDTOs;
-using Clothy.CatalogService.DAL.Helpers;
 using Clothy.CatalogService.Domain.QueryParameters;
+using Clothy.Shared.Helpers;
 
 namespace Clothy.CatalogService.BLL.Interfaces
 {

@@ -1,4 +1,5 @@
 ﻿using Clothy.ReviewService.Domain.Exceptions;
+using Clothy.Shared.Exceptions;
 using MongoDB.Driver;
 using System.Net;
 
@@ -28,15 +29,15 @@ namespace Clothy.ReviewService.API.Middleware
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = ex switch
                 {
-                    NotFoundException => (int)HttpStatusCode.NotFound,              
-                    AlreadyExistsException => (int)HttpStatusCode.Conflict,         
-                    InvalidRatingException => (int)HttpStatusCode.BadRequest,       
+                    NotFoundException => (int)HttpStatusCode.NotFound,
+                    AlreadyExistsException => (int)HttpStatusCode.Conflict,
+                    InvalidRatingException => (int)HttpStatusCode.BadRequest,
                     EmptyValueException => (int)HttpStatusCode.BadRequest,
                     MongoConnectionException => (int)HttpStatusCode.ServiceUnavailable,
                     MongoWriteException => (int)HttpStatusCode.BadRequest,
-                    MongoException => (int)HttpStatusCode.ServiceUnavailable,     
+                    MongoException => (int)HttpStatusCode.ServiceUnavailable,
 
-                    _ => (int)HttpStatusCode.InternalServerError                  
+                    _ => (int)HttpStatusCode.InternalServerError
                 };
 
                 var response = new

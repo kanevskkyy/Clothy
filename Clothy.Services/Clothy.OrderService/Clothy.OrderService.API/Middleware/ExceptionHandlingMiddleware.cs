@@ -1,4 +1,4 @@
-﻿using Clothy.OrderService.BLL.Exceptions;
+﻿using Clothy.Shared.Exceptions;
 using System.Net;
 
 namespace Clothy.OrderService.API.Middleware

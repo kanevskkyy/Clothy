@@ -1,20 +1,24 @@
 ﻿using Aspire.Hosting;
 using Projects;
+using DotNetEnv;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
+string ENV_PATH = Path.Combine(Directory.GetCurrentDirectory(), ".env");
+if (File.Exists(ENV_PATH))
+{
+    Env.Load(ENV_PATH);
+}
+
 var postgresPassword = builder.AddParameter("postgres-password");
 
-var postgresCatalog = builder.AddPostgres("clothy-postgres-catalog", password: postgresPassword)
+var postgres = builder.AddPostgres("clothy-postgres", password: postgresPassword)
     .WithImage("postgres:16")
-    .WithDataVolume("pgdata-catalog")
-    .AddDatabase("ClothyCatalogDb");
+    .WithDataVolume("pgdata")
+    .WithInitBindMount("./Scripts");
 
-var postgresOrders = builder.AddPostgres("clothy-postgres-orders", password: postgresPassword)
-    .WithImage("postgres:16")
-    .WithDataVolume("pgdata-orders")
-    .WithInitBindMount("./Scripts")
-    .AddDatabase("ClothyOrder");
+var postgresCatalog = postgres.AddDatabase("ClothyCatalogDb");
+var postgresOrders = postgres.AddDatabase("ClothyOrder");
 
 var mongo = builder.AddMongoDB("clothy-mongo")
     .WithImage("mongo:7")
@@ -23,10 +27,16 @@ var mongo = builder.AddMongoDB("clothy-mongo")
 
 var catalogService = builder.AddProject<Clothy_CatalogService_API>("catalog")
     .WithReference(postgresCatalog)
+    .WithEnvironment("CLOUDINARYSETTINGS__CLOUDNAME", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__CLOUDNAME"))
+    .WithEnvironment("CLOUDINARYSETTINGS__APIKEY", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APIKEY"))
+    .WithEnvironment("CLOUDINARYSETTINGS__APISECRET", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APISECRET"))
     .WaitFor(postgresCatalog);
 
 var ordersService = builder.AddProject<Clothy_OrderService_API>("orders")
     .WithReference(postgresOrders)
+    .WithEnvironment("CLOUDINARYSETTINGS__CLOUDNAME", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__CLOUDNAME"))
+    .WithEnvironment("CLOUDINARYSETTINGS__APIKEY", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APIKEY"))
+    .WithEnvironment("CLOUDINARYSETTINGS__APISECRET", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APISECRET"))
     .WaitFor(postgresOrders);
 
 var reviewsService = builder.AddProject<Clothy_ReviewService_API>("reviews")

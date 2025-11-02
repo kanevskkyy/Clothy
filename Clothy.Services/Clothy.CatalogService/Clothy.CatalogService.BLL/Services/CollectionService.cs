@@ -10,6 +10,7 @@ using Clothy.CatalogService.BLL.Exceptions;
 using Clothy.CatalogService.BLL.Interfaces;
 using Clothy.CatalogService.DAL.UOW;
 using Clothy.CatalogService.Domain.Entities;
+using Clothy.Shared.Exceptions;
 
 namespace Clothy.CatalogService.BLL.Services
 {

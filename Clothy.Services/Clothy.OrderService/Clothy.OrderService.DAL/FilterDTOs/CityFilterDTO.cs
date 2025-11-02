@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Clothy.OrderService.BLL.DTOs.FilterDTOs
+namespace Clothy.OrderService.DAL.FilterDTOs
 {
     public class CityFilterDTO : BaseFilterDTO
     {
