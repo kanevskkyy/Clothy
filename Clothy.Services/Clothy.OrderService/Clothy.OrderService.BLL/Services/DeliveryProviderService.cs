@@ -9,8 +9,8 @@ using Clothy.OrderService.BLL.Interfaces;
 using Clothy.OrderService.DAL.UOW;
 using Clothy.OrderService.Domain.Entities;
 using Clothy.Shared.Cache.Interfaces;
-using Clothy.Shared.Exceptions;
 using Clothy.Shared.Helpers.CloudinaryConfig;
+using Clothy.Shared.Helpers.Exceptions;
 
 namespace Clothy.OrderService.BLL.Services
 {
@@ -21,8 +21,10 @@ namespace Clothy.OrderService.BLL.Services
         private IImageService imageService;
         private IEntityCacheService cacheService;
         private IEntityCacheInvalidationService<DeliveryProvider> cacheInvalidationService;
-
         private const string ALL_CACHE_KEY = "delivery-provider:all";
+        private static TimeSpan MEMORY_TTL_DELIVERY_PROVIDER = TimeSpan.FromHours(12);
+        private static TimeSpan REDIS_TTL_DELIVERY_PROVIDER = TimeSpan.FromDays(7);
+
 
         public DeliveryProviderService(IUnitOfWork unitOfWork, IMapper mapper, IImageService imageService, IEntityCacheService cacheService, IEntityCacheInvalidationService<DeliveryProvider> cacheInvalidationService)
         {
@@ -35,11 +37,16 @@ namespace Clothy.OrderService.BLL.Services
 
         public async Task<List<DeliveryProviderReadDTO>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            List<DeliveryProviderReadDTO>? cached = await cacheService.GetOrSetAsync(ALL_CACHE_KEY, async () =>
-            {
-                IEnumerable<DeliveryProvider> providers = await unitOfWork.DeliveryProviders.GetAllAsync(cancellationToken);
-                return mapper.Map<List<DeliveryProviderReadDTO>>(providers.ToList());
-            });
+            List<DeliveryProviderReadDTO>? cached = await cacheService.GetOrSetAsync(
+                ALL_CACHE_KEY,
+                async () =>
+                {
+                    IEnumerable<DeliveryProvider> providers = await unitOfWork.DeliveryProviders.GetAllAsync(cancellationToken);
+                    return mapper.Map<List<DeliveryProviderReadDTO>>(providers.ToList());
+                },
+                memoryExpiration: MEMORY_TTL_DELIVERY_PROVIDER,
+                redisExpiration: REDIS_TTL_DELIVERY_PROVIDER
+            );
 
             return cached!;
         }
@@ -48,13 +55,17 @@ namespace Clothy.OrderService.BLL.Services
         {
             string cacheKey = $"delivery-provider:{id}";
 
-            DeliveryProviderReadDTO? cached = await cacheService.GetOrSetAsync(cacheKey, async () =>
-            {
-                DeliveryProvider? provider = await unitOfWork.DeliveryProviders.GetByIdAsync(id, cancellationToken);
-                if (provider == null) throw new NotFoundException($"DeliveryProvider not found with ID: {id}");
-                
-                return mapper.Map<DeliveryProviderReadDTO>(provider);
-            });
+            DeliveryProviderReadDTO? cached = await cacheService.GetOrSetAsync(
+                cacheKey,
+                async () =>
+                {
+                    DeliveryProvider? provider = await unitOfWork.DeliveryProviders.GetByIdAsync(id, cancellationToken);
+                    if (provider == null) throw new NotFoundException($"DeliveryProvider not found with ID: {id}");
+                    return mapper.Map<DeliveryProviderReadDTO>(provider);
+                },
+                memoryExpiration: MEMORY_TTL_DELIVERY_PROVIDER,
+                redisExpiration: REDIS_TTL_DELIVERY_PROVIDER
+            );
 
             return cached!;
         }

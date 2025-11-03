@@ -22,6 +22,7 @@
     <ProjectReference Include="..\..\..\Clothy.Shared\Clothy.Shared.csproj" />
     <ProjectReference Include="..\Clothy.OrderService.DAL\Clothy.OrderService.DAL.csproj" />
     <ProjectReference Include="..\Clothy.OrderService.Domain\Clothy.OrderService.Domain.csproj" />
+    <ProjectReference Include="..\Clothy.OrderService.gRPC.Client\Clothy.OrderService.gRPC.Client.csproj" />
   </ItemGroup>
 
 </Project>

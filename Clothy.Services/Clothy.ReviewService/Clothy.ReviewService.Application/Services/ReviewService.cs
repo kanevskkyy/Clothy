@@ -10,8 +10,8 @@ using Clothy.ReviewService.Domain.Interfaces.Repositories;
 using Clothy.ReviewService.Domain.Interfaces.Services;
 using Clothy.ReviewService.Domain.ValueObjects;
 using Clothy.ReviewService.Domain.Exceptions;
-using Clothy.Shared.Exceptions;
 using Clothy.Shared.Helpers;
+using Clothy.Shared.Helpers.Exceptions;
 
 namespace Clothy.ReviewService.Application.Services
 {
@@ -26,7 +26,7 @@ namespace Clothy.ReviewService.Application.Services
 
         public async Task<ReviewStatistics> GetReviewStatisticsAsync(Guid clotheItemId, CancellationToken cancellationToken = default)
         {
-            if(!await reviewRepository.ClotheItemExistsAsync(clotheItemId, cancellationToken)) throw new NotFoundException($"ClotheItem  with ID {clotheItemId} not found!");
+            if(!await reviewRepository.ClotheItemExistsAsync(clotheItemId, cancellationToken)) throw new NotFoundException($"ClotheItem with ID {clotheItemId} not found!");
 
             return await reviewRepository.GetReviewStatisticsAsync(clotheItemId, cancellationToken);
         }

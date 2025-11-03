@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Clothy.Shared.Exceptions
+namespace Clothy.Shared.Helpers.Exceptions
 {
     public class AlreadyExistsException : Exception
     {

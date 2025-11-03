@@ -15,6 +15,8 @@ namespace Clothy.OrderService.BLL.RedisCache.DeliveryProviderCache
         private IEntityCacheService cacheService;
         private IDeliveryProviderService providerService;
         private ILogger<DeliveryProviderCachePreloader> logger;
+        private static TimeSpan MEMORY_TTL = TimeSpan.FromHours(12);
+        private static TimeSpan REDIS_TTL = TimeSpan.FromDays(7);
 
         public DeliveryProviderCachePreloader(IEntityCacheService cacheService, IDeliveryProviderService providerService, ILogger<DeliveryProviderCachePreloader> logger)
         {
@@ -34,7 +36,7 @@ namespace Clothy.OrderService.BLL.RedisCache.DeliveryProviderCache
                 foreach (DeliveryProviderReadDTO provider in providers)
                 {
                     string cacheKey = $"delivery-provider:{provider.Id}";
-                    await cacheService.SetAsync(cacheKey, provider);
+                    await cacheService.SetAsync(cacheKey, provider, MEMORY_TTL, REDIS_TTL);
                     logger.LogInformation("Preloaded DeliveryProvider {Name} ({Id}) into cache with key {CacheKey}", provider.Name, provider.Id, cacheKey);
                 }
 

@@ -1,0 +1,24 @@
+﻿syntax = "proto3";
+
+message OrderItemToValidate {
+    string clotheId = 1;
+    string colorId = 2;
+    string sizeId = 3;
+}
+
+message ValidateOrderItemsRequest {
+    repeated OrderItemToValidate items = 1;
+}
+
+message ValidateOrderItemResponse {
+    bool isValid = 1;
+    string errorMessage = 2;
+}
+
+message ValidateOrderItemsResponse {
+    repeated ValidateOrderItemResponse results = 1;
+}
+
+service OrderItemValidator {
+    rpc ValidateOrderItems (ValidateOrderItemsRequest) returns (ValidateOrderItemsResponse);
+}

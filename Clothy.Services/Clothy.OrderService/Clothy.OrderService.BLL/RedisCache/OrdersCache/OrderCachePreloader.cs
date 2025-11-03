@@ -20,6 +20,11 @@ namespace Clothy.OrderService.BLL.RedisCache.OrdersCache
         private IOrderService orderService;
         private ILogger<OrderCachePreloader> logger;
         private IUnitOfWork unitOfWork;
+        private static TimeSpan MEMORY_TTL = TimeSpan.FromMinutes(30);
+        private static TimeSpan REDIS_TTL = TimeSpan.FromHours(2);
+
+        private const int PAGE_SIZE = 10;
+        private const int TOTAL_PAGES = 3;
 
         public OrderCachePreloader(IEntityCacheService cacheService, IOrderService orderService, ILogger<OrderCachePreloader> logger, IUnitOfWork unitOfWork)
         {
@@ -35,9 +40,6 @@ namespace Clothy.OrderService.BLL.RedisCache.OrdersCache
 
             try
             {
-                const int PAGE_SIZE = 10;
-                const int TOTAL_PAGES = 3; 
-
                 for (int page = 1; page <= TOTAL_PAGES; page++)
                 {
                     OrderStatus? pendingStatus = await unitOfWork.OrderStatuses.GetByNameAsync("Pending", cancellationToken);
@@ -50,11 +52,17 @@ namespace Clothy.OrderService.BLL.RedisCache.OrdersCache
                     };
 
                     PagedList<OrderReadDTO> pagedResult = await orderService.GetPagedAsync(filter, cancellationToken);
+                    if (pagedResult == null)
+                    {
+                        logger.LogWarning("Paged orders is null for page {Page}. Skipping cache.", page);
+                        continue;
+                    }
 
                     string cacheKey = $"orders:status:{pendingStatus.Id}:page:{page}:size:{PAGE_SIZE}";
-                    await cacheService.SetAsync(cacheKey, pagedResult);
+                    await cacheService.SetAsync(cacheKey, pagedResult, MEMORY_TTL, REDIS_TTL);
 
-                    logger.LogInformation("Preloaded Pending Orders, page {Page}, {Count} items into cache with key {CacheKey}.", page, pagedResult.Items.Count, cacheKey);
+                    logger.LogInformation("Preloaded Pending Orders, page {Page}, {Count} items into cache with key {CacheKey}.",
+                        page, pagedResult.Items.Count, cacheKey);
                 }
 
                 logger.LogInformation("OrderCachePreloader completed successfully.");

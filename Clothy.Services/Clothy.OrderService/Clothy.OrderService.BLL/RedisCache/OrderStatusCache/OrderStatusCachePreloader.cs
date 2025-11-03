@@ -16,6 +16,8 @@ namespace Clothy.OrderService.BLL.RedisCache.OrderStatusCache
         private IEntityCacheService cacheService;
         private IOrderStatusService orderStatusService;
         private ILogger<OrderStatusCachePreloader> logger;
+        private static TimeSpan MEMORY_TTL = TimeSpan.FromHours(1);
+        private static TimeSpan REDIS_TTL = TimeSpan.FromDays(7);
 
         public OrderStatusCachePreloader(IEntityCacheService cacheService, IOrderStatusService orderStatusService, ILogger<OrderStatusCachePreloader> logger)
         {
@@ -35,7 +37,7 @@ namespace Clothy.OrderService.BLL.RedisCache.OrderStatusCache
                 foreach (OrderStatusReadDTO status in statuses)
                 {
                     string cacheKey = $"order-status:{status.Id}";
-                    await cacheService.SetAsync(cacheKey, status);
+                    await cacheService.SetAsync(cacheKey, status, MEMORY_TTL, REDIS_TTL);
                     logger.LogInformation("Preloaded OrderStatus {Name} ({Id}) into cache with key {CacheKey}", status.Name, status.Id, cacheKey);
                 }
 

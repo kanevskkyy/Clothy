@@ -20,6 +20,13 @@ namespace Clothy.Shared.Cache
         private const string CLEAR_ALL_MESSAGES = "__CLEAR_ALL__";
         private bool disposed;
 
+        private static readonly JsonSerializerOptions JsonOptions = new()
+        {
+            PropertyNamingPolicy = null, 
+            WriteIndented = false,
+            PropertyNameCaseInsensitive = true 
+        };
+
         private readonly HashSet<string> _memoryKeys = new();
 
         public EntityCacheService(IMemoryCache memoryCache, IConnectionMultiplexer redisMultiplexer, ILogger<EntityCacheService> logger)
@@ -80,7 +87,7 @@ namespace Clothy.Shared.Cache
             var redisValue = await redisDb.StringGetAsync(key);
             if (redisValue.HasValue)
             {
-                var redisData = JsonSerializer.Deserialize<T>(redisValue)!;
+                var redisData = JsonSerializer.Deserialize<T>(redisValue, JsonOptions)!;
                 logger.LogInformation("Cache hit: Redis | Key: {Key}", key);
                 MemoryCacheEntryOptions options = new MemoryCacheEntryOptions
                 {
@@ -119,7 +126,7 @@ namespace Clothy.Shared.Cache
             };
             memoryCache.Set(key, value, options);
             TrackMemoryKey(key);
-            await redisDb.StringSetAsync(key, JsonSerializer.Serialize(value), redisExpiration ?? TimeSpan.FromMinutes(5));
+            await redisDb.StringSetAsync(key, JsonSerializer.Serialize(value, JsonOptions), redisExpiration ?? TimeSpan.FromMinutes(5));
             await subscriber.PublishAsync(INVALIDATION_CHANNEL, key);
         }
 

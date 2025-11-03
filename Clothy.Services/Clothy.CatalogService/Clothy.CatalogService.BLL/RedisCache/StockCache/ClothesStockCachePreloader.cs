@@ -16,6 +16,11 @@ namespace Clothy.CatalogService.BLL.RedisCache.StockCache
         private IEntityCacheService cacheService;
         private IClothesStockService stockService;
         private ILogger<ClothesStockCachePreloader> logger;
+        private static TimeSpan MEMORY_TTL = TimeSpan.FromMinutes(5);
+        private static TimeSpan REDIS_TTL = TimeSpan.FromMinutes(30);
+
+        private const int PAGE_SIZE = 10;
+        private const int TOTAL_PAGES = 3;
 
         public ClothesStockCachePreloader(IEntityCacheService cacheService, IClothesStockService stockService, ILogger<ClothesStockCachePreloader> logger)
         {
@@ -30,8 +35,6 @@ namespace Clothy.CatalogService.BLL.RedisCache.StockCache
 
             try
             {
-                const int PAGE_SIZE = 10;
-                const int TOTAL_PAGES = 3;
 
                 for (int page = 1; page <= TOTAL_PAGES; page++)
                 {
@@ -43,8 +46,14 @@ namespace Clothy.CatalogService.BLL.RedisCache.StockCache
 
                     PagedList<ClothesStockReadDTO> pagedStocks = await stockService.GetPagedClothesStockAsync(parameters, cancellationToken);
 
+                    if (pagedStocks == null)
+                    {
+                        logger.LogWarning("Paged stocks is null for page {Page}. Skipping cache.", page);
+                        continue;
+                    }
+
                     string cacheKey = $"clothesstock:page:{page}";
-                    await cacheService.SetAsync(cacheKey, pagedStocks);
+                    await cacheService.SetAsync(cacheKey, pagedStocks, MEMORY_TTL, REDIS_TTL);
 
                     logger.LogInformation("Preloaded ClothesStock page {Page} with {Count} items into cache with key {CacheKey}.", page, pagedStocks.Items.Count, cacheKey);
                 }

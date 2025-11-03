@@ -1,4 +1,4 @@
-﻿using Clothy.Shared.Exceptions;
+﻿using Clothy.Shared.Helpers.Exceptions;
 using System.Net;
 
 namespace Clothy.OrderService.API.Middleware
@@ -29,6 +29,7 @@ namespace Clothy.OrderService.API.Middleware
                 {
                     NotFoundException => (int)HttpStatusCode.NotFound,
                     AlreadyExistsException => (int)HttpStatusCode.Conflict,
+                    ValidationFailedException => (int)HttpStatusCode.BadRequest,
                     _ => (int)HttpStatusCode.InternalServerError
                 };
 

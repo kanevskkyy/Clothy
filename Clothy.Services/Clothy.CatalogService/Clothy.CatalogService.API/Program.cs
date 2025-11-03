@@ -19,6 +19,7 @@ using Clothy.CatalogService.BLL.RedisCache.ClotheItemCache;
 using Clothy.CatalogService.BLL.RedisCache.StockCache;
 using Clothy.CatalogService.Domain.Entities;
 using Clothy.Shared.Cache.Interfaces;
+using Clothy.CatalogService.gRPC.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -75,6 +76,11 @@ builder.Services.AddCloudinary(builder.Configuration);
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssembly(typeof(BrandCreateDTOValidator).Assembly);
 
+//GRPC 
+
+builder.Services.AddGrpc();
+//
+
 builder.Services.AddSwaggerGen(c =>
 {
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -97,6 +103,8 @@ var app = builder.Build();
 app.MapDefaultEndpoints();
 
 await app.PreloadCachesAsync();
+
+app.MapGrpcService<OrderItemValidatorService>();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseCorrelationId();

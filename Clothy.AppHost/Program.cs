@@ -39,11 +39,13 @@ var catalogService = builder.AddProject<Clothy_CatalogService_API>("catalog")
 
 var ordersService = builder.AddProject<Clothy_OrderService_API>("orders")
     .WithReference(postgresOrders)
+    .WithReference(catalogService)
     .WithReference(redis)
     .WithEnvironment("CLOUDINARYSETTINGS__CLOUDNAME", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__CLOUDNAME"))
     .WithEnvironment("CLOUDINARYSETTINGS__APIKEY", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APIKEY"))
     .WithEnvironment("CLOUDINARYSETTINGS__APISECRET", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APISECRET"))
     .WaitFor(redis)
+    .WaitFor(catalogService)
     .WaitFor(postgresOrders);
 
 var reviewsService = builder.AddProject<Clothy_ReviewService_API>("reviews")

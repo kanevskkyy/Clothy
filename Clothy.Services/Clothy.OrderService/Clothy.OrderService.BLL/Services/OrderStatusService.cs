@@ -9,8 +9,8 @@ using Clothy.OrderService.BLL.Interfaces;
 using Clothy.OrderService.DAL.UOW;
 using Clothy.OrderService.Domain.Entities;
 using Clothy.Shared.Cache.Interfaces;
-using Clothy.Shared.Exceptions;
 using Clothy.Shared.Helpers.CloudinaryConfig;
+using Clothy.Shared.Helpers.Exceptions;
 
 namespace Clothy.OrderService.BLL.Services
 {
@@ -22,6 +22,8 @@ namespace Clothy.OrderService.BLL.Services
         private IEntityCacheService cacheService;
         private IEntityCacheInvalidationService<OrderStatus> cacheInvalidationService;
         private const string ALL_STATUSES_KEY = "order-status:all";
+        private static readonly TimeSpan MEMORY_TTL_ORDER_STATUS = TimeSpan.FromHours(1);
+        private static readonly TimeSpan REDIS_TTL_ORDER_STATUS = TimeSpan.FromDays(7);
 
         public OrderStatusService(IUnitOfWork unitOfWork, IMapper mapper, IImageService imageService, IEntityCacheService cacheService, IEntityCacheInvalidationService<OrderStatus> cacheInvalidationService)
         {
@@ -34,11 +36,16 @@ namespace Clothy.OrderService.BLL.Services
 
         public async Task<List<OrderStatusReadDTO>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            var cached = await cacheService.GetOrSetAsync(ALL_STATUSES_KEY, async () =>
-            {
-                IEnumerable<OrderStatus> statuses = await unitOfWork.OrderStatuses.GetAllAsync(cancellationToken);
-                return mapper.Map<List<OrderStatusReadDTO>>(statuses.ToList());
-            });
+            var cached = await cacheService.GetOrSetAsync(
+                ALL_STATUSES_KEY,
+                async () =>
+                {
+                    IEnumerable<OrderStatus> statuses = await unitOfWork.OrderStatuses.GetAllAsync(cancellationToken);
+                    return mapper.Map<List<OrderStatusReadDTO>>(statuses.ToList());
+                },
+                memoryExpiration: MEMORY_TTL_ORDER_STATUS,
+                redisExpiration: REDIS_TTL_ORDER_STATUS
+            );
 
             return cached!;
         }
@@ -47,13 +54,17 @@ namespace Clothy.OrderService.BLL.Services
         {
             string cacheKey = $"order-status:{id}";
 
-            var cached = await cacheService.GetOrSetAsync(cacheKey, async () =>
-            {
-                OrderStatus? status = await unitOfWork.OrderStatuses.GetByIdAsync(id, cancellationToken);
-                if (status == null) throw new NotFoundException($"OrderStatus not found with ID: {id}");
-
-                return mapper.Map<OrderStatusReadDTO>(status);
-            });
+            var cached = await cacheService.GetOrSetAsync(
+                cacheKey,
+                async () =>
+                {
+                    OrderStatus? status = await unitOfWork.OrderStatuses.GetByIdAsync(id, cancellationToken);
+                    if (status == null) throw new NotFoundException($"OrderStatus not found with ID: {id}");
+                    return mapper.Map<OrderStatusReadDTO>(status);
+                },
+                memoryExpiration: MEMORY_TTL_ORDER_STATUS,
+                redisExpiration: REDIS_TTL_ORDER_STATUS
+            );
 
             return cached!;
         }

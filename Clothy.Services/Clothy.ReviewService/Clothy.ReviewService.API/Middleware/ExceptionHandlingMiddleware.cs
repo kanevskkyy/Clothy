@@ -1,5 +1,5 @@
 ﻿using Clothy.ReviewService.Domain.Exceptions;
-using Clothy.Shared.Exceptions;
+using Clothy.Shared.Helpers.Exceptions;
 using MongoDB.Driver;
 using System.Net;
 

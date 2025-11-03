@@ -16,8 +16,9 @@ using Clothy.OrderService.Domain.Entities;
 using Clothy.ServiceDefaults.Middleware;
 using Clothy.Shared.Cache.Interfaces;
 using Clothy.Shared.Helpers;
-using DotNetEnv;
 using FluentValidation;
+using Clothy.OrderService.gRPC.Client.Services.Interfaces;
+using Clothy.OrderService.gRPC.Client.Services;
 using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -86,9 +87,23 @@ builder.Services.AddSwaggerGen(options =>
 {
     string xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
-
     options.IncludeXmlComments(xmlPath);
 });
+
+//GRPC 
+builder.Services.AddScoped<IOrderItemValidatorGrpcClient, OrderItemValidatorGrpcClient>();
+builder.Services.AddGrpcClient<OrderItemValidator.OrderItemValidatorClient>(options =>
+{
+    options.Address = new Uri("https://catalog");
+})
+.ConfigureChannel(channelOptions =>
+{
+    channelOptions.MaxReceiveMessageSize = 5 * 1024 * 1024;
+    channelOptions.MaxSendMessageSize = 5 * 1024 * 1024;
+})
+.AddServiceDiscovery();
+
+//
 
 var app = builder.Build();
 

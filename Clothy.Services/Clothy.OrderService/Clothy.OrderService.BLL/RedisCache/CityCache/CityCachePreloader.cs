@@ -17,6 +17,8 @@ namespace Clothy.OrderService.BLL.RedisCache.CityCache
         private IEntityCacheService cacheService;
         private ICityService cityService;
         private ILogger<CityCachePreloader> logger;
+        private static TimeSpan MEMORY_TTL = TimeSpan.FromHours(6);
+        private static TimeSpan REDIS_TTL = TimeSpan.FromDays(1);
 
         private const int PAGE_SIZE = 10;
         private const int TOTAL_PAGES = 3;
@@ -43,15 +45,18 @@ namespace Clothy.OrderService.BLL.RedisCache.CityCache
                     };
 
                     PagedList<CityReadDTO> pagedResult = await cityService.GetPagedAsync(filter, cancellationToken);
-
-                    foreach (CityReadDTO city in pagedResult.Items)
+                    if (pagedResult == null)
                     {
-                        string cacheKey = $"city:{city.Id}";
-                        await cacheService.SetAsync(cacheKey, city);
-                        logger.LogInformation("Preloaded City {Name} ({Id}) into cache with key {CacheKey}", city.Name, city.Id, cacheKey);
+                        logger.LogWarning("Paged cities is null for page {Page}. Skipping cache.", page);
+                        continue;
                     }
 
-                    if (pagedResult.Items.Count < PAGE_SIZE) break; 
+                    string cacheKey = $"cities:page:{page}:size:{PAGE_SIZE}";
+                    await cacheService.SetAsync(cacheKey, pagedResult, MEMORY_TTL, REDIS_TTL);
+
+                    logger.LogInformation("Preloaded Cities page {Page} with {Count} items into cache with key {CacheKey}.", page, pagedResult.Items.Count, cacheKey);
+
+                    if (pagedResult.Items.Count < PAGE_SIZE) break;
                 }
 
                 logger.LogInformation("CityCachePreloader completed successfully.");

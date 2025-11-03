@@ -32,7 +32,7 @@ builder.Services.AddMemoryCache(options =>
 
 builder.Services.AddHttpClient<CatalogClient>(client =>
 {
-    client.BaseAddress = new Uri("http://catalog");
+    client.BaseAddress = new Uri("https://catalog");
     client.DefaultRequestHeaders.Add("Accept", "application/json");
 })
 .AddHttpMessageHandler<CorrelationIdDelegatingHandler>()  
@@ -40,7 +40,7 @@ builder.Services.AddHttpClient<CatalogClient>(client =>
 
 builder.Services.AddHttpClient<ReviewClient>(client =>
 {
-    client.BaseAddress = new Uri("http://reviews");
+    client.BaseAddress = new Uri("https://reviews");
     client.DefaultRequestHeaders.Add("Accept", "application/json");
 })
 .AddHttpMessageHandler<CorrelationIdDelegatingHandler>()

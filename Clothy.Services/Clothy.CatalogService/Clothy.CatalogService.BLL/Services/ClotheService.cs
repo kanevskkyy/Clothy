@@ -6,11 +6,11 @@ using Clothy.CatalogService.BLL.Interfaces;
 using Clothy.CatalogService.DAL.UOW;
 using Clothy.CatalogService.Domain.Entities;
 using Clothy.CatalogService.Domain.QueryParameters;
-using Clothy.Shared.Exceptions;
 using Clothy.Shared.Helpers;
 using Clothy.Shared.Helpers.CloudinaryConfig;
 using Clothy.Shared.Cache.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Clothy.Shared.Helpers.Exceptions;
 
 namespace Clothy.CatalogService.BLL.Services
 {
@@ -22,6 +22,10 @@ namespace Clothy.CatalogService.BLL.Services
         private IEntityCacheService cacheService;
         private IEntityCacheInvalidationService<ClotheItem> cacheInvalidationService;
         private const int MAX_CASHED_PAGES = 10;
+        private static TimeSpan MEMORY_TTL_CLOTHE_PAGE = TimeSpan.FromMinutes(30);
+        private static TimeSpan REDIS_TTL_CLOTHE_PAGE = TimeSpan.FromHours(1);
+        private static TimeSpan MEMORY_TTL_CLOTHE_DETAIL = TimeSpan.FromMinutes(15);
+        private static TimeSpan REDIS_TTL_CLOTHE_DETAIL = TimeSpan.FromMinutes(30);
 
         public ClotheService(IUnitOfWork unitOfWork,IMapper mapper, IImageService imageService, IEntityCacheService cacheService, IEntityCacheInvalidationService<ClotheItem> cacheInvalidationService)
         {
@@ -56,22 +60,29 @@ namespace Clothy.CatalogService.BLL.Services
                     PagedList<ClotheItem> paged = await unitOfWork.ClotheItems.GetPagedClotheItemsAsync(parameters, cancellationToken);
                     List<ClotheSummaryDTO> mapped = mapper.Map<List<ClotheSummaryDTO>>(paged.Items);
                     return new PagedList<ClotheSummaryDTO>(mapped, paged.TotalCount, paged.CurrentPage, paged.PageSize);
-                });
+                },
+                MEMORY_TTL_CLOTHE_PAGE,
+                REDIS_TTL_CLOTHE_PAGE
+            );
+
 
             return cached!;
         }
 
-
         public async Task<ClotheDetailDTO> GetDetailByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             string cacheKey = $"clothe:{id}";
-            var cached = await cacheService.GetOrSetAsync(cacheKey, async () =>
-            {
-                ClotheItem? clotheItem = await unitOfWork.ClotheItems.GetByIdWithDetailsAsync(id, cancellationToken);
-                if (clotheItem == null) throw new NotFoundException($"Clothe item not found with ID: {id}");
-                
-                return mapper.Map<ClotheDetailDTO>(clotheItem);
-            });
+            var cached = await cacheService.GetOrSetAsync(
+                cacheKey,
+                async () =>
+                {
+                    ClotheItem? clotheItem = await unitOfWork.ClotheItems.GetByIdWithDetailsAsync(id, cancellationToken);
+                    if (clotheItem == null) throw new NotFoundException($"Clothe item not found with ID: {id}");
+                    return mapper.Map<ClotheDetailDTO>(clotheItem);
+                },
+                MEMORY_TTL_CLOTHE_DETAIL,
+                REDIS_TTL_CLOTHE_DETAIL
+            );
 
             return cached!;
         }

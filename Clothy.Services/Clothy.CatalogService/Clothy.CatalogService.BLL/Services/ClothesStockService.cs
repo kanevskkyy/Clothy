@@ -11,8 +11,8 @@ using Clothy.CatalogService.DAL.UOW;
 using Clothy.CatalogService.Domain.Entities;
 using Clothy.CatalogService.Domain.QueryParameters;
 using Clothy.Shared.Cache.Interfaces;
-using Clothy.Shared.Exceptions;
 using Clothy.Shared.Helpers;
+using Clothy.Shared.Helpers.Exceptions;
 
 namespace Clothy.CatalogService.BLL.Services
 {
@@ -22,6 +22,11 @@ namespace Clothy.CatalogService.BLL.Services
         private IMapper mapper;
         private IEntityCacheService cacheService;
         private IEntityCacheInvalidationService<ClothesStock> cacheInvalidationService;
+        private static TimeSpan MEMORY_TTL_PAGE = TimeSpan.FromMinutes(1);
+        private static TimeSpan REDIS_TTL_PAGE = TimeSpan.FromMinutes(10);
+
+        private static TimeSpan MEMORY_TTL_ITEM = TimeSpan.FromMinutes(5);
+        private static TimeSpan REDIS_TTL_ITEM = TimeSpan.FromMinutes(30);
 
         public ClothesStockService(IUnitOfWork unitOfWork, IMapper mapper, IEntityCacheService cacheService, IEntityCacheInvalidationService<ClothesStock> cacheInvalidationService)
         {
@@ -38,13 +43,17 @@ namespace Clothy.CatalogService.BLL.Services
 
             if (shouldCache)
             {
-                var cached = await cacheService.GetOrSetAsync(cacheKey, async () =>
-                {
-                    PagedList<ClothesStock> paged = await unitOfWork.ClothesStocks.GetPagedClothesStockAsync(parameters, cancellationToken);
-                    List<ClothesStockReadDTO> mapped = mapper.Map<List<ClothesStockReadDTO>>(paged.Items);
-                    
-                    return new PagedList<ClothesStockReadDTO>(mapped, paged.TotalCount, paged.CurrentPage, paged.PageSize);
-                });
+                var cached = await cacheService.GetOrSetAsync(
+                    cacheKey,
+                    async () =>
+                    {
+                        PagedList<ClothesStock> paged = await unitOfWork.ClothesStocks.GetPagedClothesStockAsync(parameters, cancellationToken);
+                        List<ClothesStockReadDTO> mapped = mapper.Map<List<ClothesStockReadDTO>>(paged.Items);
+                        return new PagedList<ClothesStockReadDTO>(mapped, paged.TotalCount, paged.CurrentPage, paged.PageSize);
+                    },
+                    memoryExpiration: MEMORY_TTL_PAGE,
+                    redisExpiration: REDIS_TTL_PAGE
+                );
 
                 return cached!;
             }
@@ -52,7 +61,6 @@ namespace Clothy.CatalogService.BLL.Services
             {
                 PagedList<ClothesStock> paged = await unitOfWork.ClothesStocks.GetPagedClothesStockAsync(parameters, cancellationToken);
                 List<ClothesStockReadDTO> mapped = mapper.Map<List<ClothesStockReadDTO>>(paged.Items);
-                
                 return new PagedList<ClothesStockReadDTO>(mapped, paged.TotalCount, paged.CurrentPage, paged.PageSize);
             }
         }
@@ -60,13 +68,18 @@ namespace Clothy.CatalogService.BLL.Services
         public async Task<ClothesStockReadDTO> GetByIdWithDetailsAsync(Guid id, CancellationToken cancellationToken = default)
         {
             string cacheKey = $"clothesstock:{id}";
-            var cached = await cacheService.GetOrSetAsync(cacheKey, async () =>
-            {
-                ClothesStock? stock = await unitOfWork.ClothesStocks.GetByIdWithDetailsAsync(id, cancellationToken);
-                if (stock == null) throw new NotFoundException($"Clothes stock not found with ID: {id}");
-             
-                return mapper.Map<ClothesStockReadDTO>(stock);
-            });
+
+            var cached = await cacheService.GetOrSetAsync(
+                cacheKey,
+                async () =>
+                {
+                    ClothesStock? stock = await unitOfWork.ClothesStocks.GetByIdWithDetailsAsync(id, cancellationToken);
+                    if (stock == null) throw new NotFoundException($"Clothes stock not found with ID: {id}");
+                    return mapper.Map<ClothesStockReadDTO>(stock);
+                },
+                memoryExpiration: MEMORY_TTL_ITEM,
+                redisExpiration: REDIS_TTL_ITEM
+            );
 
             return cached!;
         }

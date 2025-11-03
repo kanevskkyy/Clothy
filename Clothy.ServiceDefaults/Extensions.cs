@@ -50,6 +50,8 @@ public static class Extensions
 
         builder.Services.AddMemoryCache();
         builder.Services.AddSingleton<IEntityCacheService, EntityCacheService>();
+
+        builder.Services.AddHealthChecks();
         //
 
         builder.ConfigureOpenTelemetry();

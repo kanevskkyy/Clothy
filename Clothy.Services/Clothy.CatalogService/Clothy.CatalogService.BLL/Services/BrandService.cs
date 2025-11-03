@@ -10,8 +10,8 @@ using Clothy.CatalogService.BLL.Helpers;
 using Clothy.CatalogService.BLL.Interfaces;
 using Clothy.CatalogService.DAL.UOW;
 using Clothy.CatalogService.Domain.Entities;
-using Clothy.Shared.Exceptions;
 using Clothy.Shared.Helpers.CloudinaryConfig;
+using Clothy.Shared.Helpers.Exceptions;
 
 namespace Clothy.CatalogService.BLL.Services
 {
