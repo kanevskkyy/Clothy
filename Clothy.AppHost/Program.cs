@@ -50,7 +50,9 @@ var ordersService = builder.AddProject<Clothy_OrderService_API>("orders")
 
 var reviewsService = builder.AddProject<Clothy_ReviewService_API>("reviews")
     .WithReference(mongo)
-    .WaitFor(mongo);
+    .WithReference(catalogService)
+    .WaitFor(mongo)
+    .WaitFor(catalogService);
 
 var seedCatalog = builder.AddProject<Clothy_CatalogService_SeedData>("catalog-seed")
     .WithReference(postgresCatalog)
@@ -60,7 +62,7 @@ var seedOrders = builder.AddProject<Clothy_OrderService_SeedData>("order-seed")
     .WithReference(postgresOrders)
     .WaitFor(ordersService);
 
-var aggregator = builder.AddProject<Clothy_Aggregator>("aggregator")
+var aggregator = builder.AddProject<Clothy_Aggregator_API>("aggregator")
     .WithReference(catalogService)
     .WithReference(redis)
     .WithReference(ordersService)

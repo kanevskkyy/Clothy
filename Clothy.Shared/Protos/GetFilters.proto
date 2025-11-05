@@ -1,0 +1,68 @@
+﻿syntax = "proto3";
+
+message Empty {
+
+}
+
+message BrandsGrpcResponse {
+	string id = 1;
+	string name = 2;
+	string slug = 3;
+	string photoUrl = 4;
+}
+
+message ClothingTypesGrpcResponse {
+	string id = 1;
+	string name = 2;
+	string slug = 3;
+}
+
+message CollectionsGrpcResponse {
+	string id = 1;
+	string name = 2;
+	string slug = 3;
+	int32 clotheItemCount = 4;
+}
+
+message ColorsGrpcResponse {
+	string id = 1;
+	string hexCode = 2;
+	int32 clotheItemCount = 3;
+}
+
+message MaterialsGrpcResponse {
+	string id = 1;
+	string name = 2;
+	int32 clotheItemCount = 3;
+}
+
+message SizesGrpcResponse {
+	string id = 1;
+	string name = 2;
+}
+
+message TagsGrpcResponse {
+	string id = 1;
+	string name = 2;
+	int32 clotheItemCount = 3;
+}
+
+message PriceGrpcResponse {
+	string minPrice = 1;
+	string maxPrice = 2;
+}
+
+message FilterResponse {
+	repeated BrandsGrpcResponse brands = 1;
+	repeated ClothingTypesGrpcResponse clothingTypes = 2;
+	repeated CollectionsGrpcResponse collections = 3;
+	repeated ColorsGrpcResponse colors = 4;
+	repeated MaterialsGrpcResponse materials = 5;
+	repeated SizesGrpcResponse sizes = 6;
+	repeated TagsGrpcResponse tags = 7;
+	PriceGrpcResponse priceRange = 8;
+}
+
+service ClotheFilterServiceGrpc {
+	rpc GetAllFilters (Empty) returns (FilterResponse);
+}

@@ -1,0 +1,14 @@
+﻿syntax = "proto3";
+
+message ClotheItemIdToValidate {
+	string clotheId = 1;
+}
+
+message ClotheItemResponse {
+	bool isValid = 1;
+	string errorMessage = 2;
+}
+
+service ClotheItemIdValidator {
+	rpc ValidateClotheItemId (ClotheItemIdToValidate) returns (ClotheItemResponse);
+}

@@ -9,7 +9,7 @@ namespace Clothy.CatalogService.BLL.DTOs.MaterialDTOs
     public class MaterialWithCountDTO
     {
         public Guid Id { get; set; }
-        public string Name { get; set; } 
-        public int Count { get; set; }
+        public string? Name { get; set; } 
+        public int ClotheItemCount { get; set; }
     }
 }

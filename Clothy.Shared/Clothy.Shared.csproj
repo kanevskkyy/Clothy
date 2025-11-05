@@ -26,6 +26,10 @@
 
 	<ItemGroup>
 		<Protobuf Include="Protos/ValidateOrderItem.proto" GrpcServices="Both" />
+		<Protobuf Include="Protos/GetClotheById.proto" GrpcServices="Both" />
+		<Protobuf Include="Protos/ValidateClotheItemId.proto" GrpcServices="Both" />
+		<Protobuf Include="Protos/Reviews.proto" GrpcServices="Both" />
+		<Protobuf Include="Protos/GetFilters.proto" GrpcServices="Both" />
 	</ItemGroup>
 
 </Project>

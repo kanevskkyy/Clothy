@@ -77,7 +77,6 @@ builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssembly(typeof(BrandCreateDTOValidator).Assembly);
 
 //GRPC 
-
 builder.Services.AddGrpc();
 //
 
@@ -105,6 +104,9 @@ app.MapDefaultEndpoints();
 await app.PreloadCachesAsync();
 
 app.MapGrpcService<OrderItemValidatorService>();
+app.MapGrpcService<ClotheItemValidatorService>();
+app.MapGrpcService<ClotheFilterService>();
+app.MapGrpcService<GetClotheByIdGrpcService>();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseCorrelationId();

@@ -6,6 +6,9 @@ using Clothy.ReviewService.Application.Services;
 using Clothy.ReviewService.Application.Validations.Questions;
 using Clothy.ReviewService.Domain.Interfaces.Repositories;
 using Clothy.ReviewService.Domain.Interfaces.Services;
+using Clothy.ReviewService.gRPC.Client.Services;
+using Clothy.ReviewService.gRPC.Client.Services.Interfaces;
+using Clothy.ReviewService.gRPC.Server.Services;
 using Clothy.ReviewService.Infrastructure.DB.Extension;
 using Clothy.ReviewService.Infrastructure.DB.MappingConfig;
 using Clothy.ReviewService.Infrastructure.DB.MongoHeathCheck;
@@ -23,6 +26,8 @@ builder.AddServiceDefaults();
 ValueObjectMappings.Register();
 
 builder.Services.AddMongoDb(builder.Configuration);
+
+builder.Services.AddGrpc();
 
 builder.Services.AddHealthChecks()
     .AddCheck<MongoHealthCheck>("MongoDB");
@@ -57,11 +62,20 @@ builder.Services.AddSwaggerGen(options =>
     options.IncludeXmlComments(xmlPath);
 });
 
+// GRPC
+builder.Services.AddScoped<IClotheItemIdValidatorGrpcClient, ClotheItemIdValidatorGrpcClient>();
+builder.Services.AddConfiguredGrpcClient<ClotheItemIdValidator.ClotheItemIdValidatorClient>("catalog");
+//
+
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+//grpc server
+app.MapGrpcService<ReviewServiceGrpcImpl>();
+//
 
 using (var scope = app.Services.CreateScope())
 {

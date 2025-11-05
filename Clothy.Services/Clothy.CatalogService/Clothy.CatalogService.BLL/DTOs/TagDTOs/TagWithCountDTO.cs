@@ -10,6 +10,6 @@ namespace Clothy.CatalogService.BLL.DTOs.TagDTOs
     {
         public Guid Id { get; set; }
         public string? Name { get; set; }
-        public int Count { get; set; }
+        public int ClotheItemCount { get; set; }
     }
 }

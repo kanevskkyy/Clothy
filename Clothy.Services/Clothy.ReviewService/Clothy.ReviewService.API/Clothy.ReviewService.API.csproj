@@ -21,6 +21,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Clothy.ServiceDefaults\Clothy.ServiceDefaults.csproj" />
     <ProjectReference Include="..\Clothy.ReviewService.Application\Clothy.ReviewService.Application.csproj" />
+    <ProjectReference Include="..\Clothy.ReviewService.gRPC.Client\Clothy.ReviewService.gRPC.Client.csproj" />
+    <ProjectReference Include="..\Clothy.ReviewService.gRPC.Server\Clothy.ReviewService.gRPC.Server.csproj" />
     <ProjectReference Include="..\Clothy.ReviewService.Infrastructure\Clothy.ReviewService.Infrastructure.csproj" />
   </ItemGroup>
 

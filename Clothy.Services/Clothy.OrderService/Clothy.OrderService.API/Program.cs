@@ -92,17 +92,7 @@ builder.Services.AddSwaggerGen(options =>
 
 //GRPC 
 builder.Services.AddScoped<IOrderItemValidatorGrpcClient, OrderItemValidatorGrpcClient>();
-builder.Services.AddGrpcClient<OrderItemValidator.OrderItemValidatorClient>(options =>
-{
-    options.Address = new Uri("https://catalog");
-})
-.ConfigureChannel(channelOptions =>
-{
-    channelOptions.MaxReceiveMessageSize = 5 * 1024 * 1024;
-    channelOptions.MaxSendMessageSize = 5 * 1024 * 1024;
-})
-.AddServiceDiscovery();
-
+builder.Services.AddConfiguredGrpcClient<OrderItemValidator.OrderItemValidatorClient>("catalog");
 //
 
 var app = builder.Build();

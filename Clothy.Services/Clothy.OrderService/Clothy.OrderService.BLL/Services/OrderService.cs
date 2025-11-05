@@ -32,12 +32,7 @@ namespace Clothy.OrderService.BLL.Services
         private static TimeSpan MEMORY_TTL_PAGED_ORDERS = TimeSpan.FromMinutes(10);
         private static TimeSpan REDIS_TTL_PAGED_ORDERS = TimeSpan.FromHours(1);
 
-        public OrderService(
-            IUnitOfWork unitOfWork,
-            IMapper mapper,
-            IEntityCacheService cacheService,
-            IEntityCacheInvalidationService<Order> cacheInvalidationService,
-            IOrderItemValidatorGrpcClient validatorGrpcClient)
+        public OrderService(IUnitOfWork unitOfWork, IMapper mapper, IEntityCacheService cacheService, IEntityCacheInvalidationService<Order> cacheInvalidationService, IOrderItemValidatorGrpcClient validatorGrpcClient)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;

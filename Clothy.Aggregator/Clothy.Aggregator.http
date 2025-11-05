@@ -1,6 +1,0 @@
-@Clothy.Aggregator_HostAddress = http://localhost:5288
-
-GET {{Clothy.Aggregator_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

@@ -23,7 +23,7 @@ namespace Clothy.CatalogService.BLL.Mapper
             CreateMap<KeyValuePair<Material, int>, MaterialWithCountDTO>()
                 .ForMember(dest => dest.Id, map => map.MapFrom(pair => pair.Key.Id))
                 .ForMember(dest => dest.Name, map => map.MapFrom(pair => pair.Key.Name))
-                .ForMember(dest => dest.Count, map => map.MapFrom(pair => pair.Value));
+                .ForMember(dest => dest.ClotheItemCount, map => map.MapFrom(pair => pair.Value));
         }
     }
 }

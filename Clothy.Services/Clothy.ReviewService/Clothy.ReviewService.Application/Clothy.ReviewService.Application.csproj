@@ -15,6 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Clothy.Shared\Clothy.Shared.csproj" />
     <ProjectReference Include="..\Clothy.ReviewService.Domain\Clothy.ReviewService.Domain.csproj" />
+    <ProjectReference Include="..\Clothy.ReviewService.gRPC.Client\Clothy.ReviewService.gRPC.Client.csproj" />
   </ItemGroup>
 
 </Project>

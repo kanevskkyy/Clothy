@@ -21,11 +21,11 @@
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\..\..\Clothy.CatalogService.gRPC.Server\Clothy.CatalogService.gRPC.Server.csproj" />
 		<ProjectReference Include="..\..\..\Clothy.Shared\Clothy.Shared.csproj" />
 		<ProjectReference Include="..\Clothy.CatalogService.BLL\Clothy.CatalogService.BLL.csproj" />
 		<ProjectReference Include="..\Clothy.CatalogService.DAL\Clothy.CatalogService.DAL.csproj" />
 		<ProjectReference Include="..\..\..\Clothy.ServiceDefaults\Clothy.ServiceDefaults.csproj" />
 		<ProjectReference Include="..\Clothy.CatalogService.Domain\Clothy.CatalogService.Domain.csproj" />
+		<ProjectReference Include="..\Clothy.CatalogService.gRPC.Server\Clothy.CatalogService.gRPC.Server.csproj" />
 	</ItemGroup>
 </Project>
