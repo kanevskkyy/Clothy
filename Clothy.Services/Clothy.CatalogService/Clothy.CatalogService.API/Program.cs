@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using Clothy.CatalogService.BLL.Helpers;
 using Clothy.CatalogService.BLL.Interfaces;
 using Clothy.CatalogService.BLL.Mapper;
 using Clothy.CatalogService.BLL.Services;
@@ -7,7 +6,6 @@ using Clothy.CatalogService.DAL.DB;
 using Clothy.CatalogService.DAL.Interfaces;
 using Clothy.CatalogService.DAL.Repositories;
 using Clothy.CatalogService.DAL.UOW;
-using DotNetEnv;
 using FluentValidation.AspNetCore;
 using FluentValidation;
 using Clothy.CatalogService.BLL.FluentValidation.BrandValidation;
@@ -20,6 +18,8 @@ using Clothy.CatalogService.BLL.RedisCache.StockCache;
 using Clothy.CatalogService.Domain.Entities;
 using Clothy.Shared.Cache.Interfaces;
 using Clothy.CatalogService.gRPC.Server.Services;
+using Clothy.Aggregator.Aggregate.RedisCache;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -70,6 +70,10 @@ builder.Services.AddTransient<IEntityCacheInvalidationService<ClothesStock>, Clo
 
 // CLOUDINARY CONFIG
 builder.Services.AddCloudinary(builder.Configuration);
+//
+
+//FILTERS CACHE SERVICE
+builder.Services.AddScoped<IFilterCacheInvalidationService, FilterCacheInvalidationService>();
 //
 
 // FLUENT VALIDATION

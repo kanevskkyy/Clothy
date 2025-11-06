@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Clothy.Aggregator.Aggregate.RedisCache;
 using Clothy.CatalogService.BLL.DTOs.BrandDTOs;
 using Clothy.CatalogService.BLL.Exceptions;
 using Clothy.CatalogService.BLL.Helpers;
@@ -20,11 +21,13 @@ namespace Clothy.CatalogService.BLL.Services
         private IUnitOfWork unitOfWork;
         private IMapper mapper;
         private IImageService imageService;
+        private IFilterCacheInvalidationService filterCacheInvalidationService;
 
-        public BrandService(IUnitOfWork unitOfWork, IMapper mapper, IImageService imageService)
+        public BrandService(IUnitOfWork unitOfWork, IMapper mapper, IImageService imageService, IFilterCacheInvalidationService filterCacheInvalidationService)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
+            this.filterCacheInvalidationService = filterCacheInvalidationService;
             this.imageService = imageService;
         }
 
@@ -57,6 +60,7 @@ namespace Clothy.CatalogService.BLL.Services
             await unitOfWork.Brands.AddAsync(brand, cancellationToken);
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
+            await filterCacheInvalidationService.InvalidateAsync();
             return mapper.Map<BrandReadDTO>(brand);
         }
 
@@ -81,6 +85,7 @@ namespace Clothy.CatalogService.BLL.Services
             unitOfWork.Brands.Update(brand);
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
+            await filterCacheInvalidationService.InvalidateAsync();
             return mapper.Map<BrandReadDTO>(brand);
         }
 
@@ -93,6 +98,8 @@ namespace Clothy.CatalogService.BLL.Services
 
             unitOfWork.Brands.Delete(brand);
             await unitOfWork.SaveChangesAsync(cancellationToken);
+
+            await filterCacheInvalidationService.InvalidateAsync();
         }
     }
 }

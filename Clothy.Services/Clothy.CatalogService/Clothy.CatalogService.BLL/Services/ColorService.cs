@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Clothy.Aggregator.Aggregate.RedisCache;
 using Clothy.CatalogService.BLL.DTOs.ColorDTOs;
 using Clothy.CatalogService.BLL.Exceptions;
 using Clothy.CatalogService.BLL.Interfaces;
@@ -17,9 +18,11 @@ namespace Clothy.CatalogService.BLL.Services
     {
         private IUnitOfWork unitOfWork;
         private IMapper mapper;
+        private IFilterCacheInvalidationService filterCacheInvalidationService;
 
-        public ColorService(IUnitOfWork unitOfWork, IMapper mapper)
+        public ColorService(IUnitOfWork unitOfWork, IMapper mapper, IFilterCacheInvalidationService filterCacheInvalidationService)
         {
+            this.filterCacheInvalidationService = filterCacheInvalidationService;
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
         }
@@ -52,6 +55,7 @@ namespace Clothy.CatalogService.BLL.Services
             Color color = mapper.Map<Color>(colorCreateDTO);
             await unitOfWork.Colors.AddAsync(color, cancellationToken);
             await unitOfWork.SaveChangesAsync(cancellationToken);
+            await filterCacheInvalidationService.InvalidateAsync();
 
             return mapper.Map<ColorReadDTO>(color);
         }
@@ -68,6 +72,7 @@ namespace Clothy.CatalogService.BLL.Services
 
             unitOfWork.Colors.Update(color);
             await unitOfWork.SaveChangesAsync(cancellationToken);
+            await filterCacheInvalidationService.InvalidateAsync();
 
             return mapper.Map<ColorReadDTO>(color);
         }
@@ -79,6 +84,7 @@ namespace Clothy.CatalogService.BLL.Services
 
             unitOfWork.Colors.Delete(color);
             await unitOfWork.SaveChangesAsync(cancellationToken);
+            await filterCacheInvalidationService.InvalidateAsync();
         }
     }
 }

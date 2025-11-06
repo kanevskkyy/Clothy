@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Clothy.Aggregator.Aggregate.RedisCache;
 using Clothy.CatalogService.BLL.DTOs.MaterialDTOs;
 using Clothy.CatalogService.BLL.Exceptions;
 using Clothy.CatalogService.BLL.Interfaces;
@@ -17,9 +18,11 @@ namespace Clothy.CatalogService.BLL.Services
     {
         private IUnitOfWork unitOfWork;
         private IMapper mapper;
+        private IFilterCacheInvalidationService filterCacheInvalidationService;
 
-        public MaterialService(IUnitOfWork unitOfWork, IMapper mapper)
+        public MaterialService(IUnitOfWork unitOfWork, IMapper mapper, IFilterCacheInvalidationService filterCacheInvalidationService)
         {
+            this.filterCacheInvalidationService= filterCacheInvalidationService;
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
         }
@@ -54,6 +57,7 @@ namespace Clothy.CatalogService.BLL.Services
             Material material = mapper.Map<Material>(materialCreateDTO);
             await unitOfWork.Materials.AddAsync(material, cancellationToken);
             await unitOfWork.SaveChangesAsync(cancellationToken);
+            await filterCacheInvalidationService.InvalidateAsync();
 
             return mapper.Map<MaterialReadDTO>(material);
         }
@@ -73,6 +77,7 @@ namespace Clothy.CatalogService.BLL.Services
 
             unitOfWork.Materials.Update(material);
             await unitOfWork.SaveChangesAsync(cancellationToken);
+            await filterCacheInvalidationService.InvalidateAsync();
 
             return mapper.Map<MaterialReadDTO>(material);
         }
@@ -84,6 +89,7 @@ namespace Clothy.CatalogService.BLL.Services
 
             unitOfWork.Materials.Delete(material);
             await unitOfWork.SaveChangesAsync(cancellationToken);
+            await filterCacheInvalidationService.InvalidateAsync();
         }
     }
 }

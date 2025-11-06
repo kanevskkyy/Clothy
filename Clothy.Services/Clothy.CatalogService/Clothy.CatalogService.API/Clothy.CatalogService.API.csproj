@@ -21,6 +21,7 @@
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
 	</ItemGroup>
 	<ItemGroup>
+		<ProjectReference Include="..\..\..\Clothy.Aggregator\Clothy.Aggregator.Aggregate\Clothy.Aggregator.Aggregate.csproj" />
 		<ProjectReference Include="..\..\..\Clothy.Shared\Clothy.Shared.csproj" />
 		<ProjectReference Include="..\Clothy.CatalogService.BLL\Clothy.CatalogService.BLL.csproj" />
 		<ProjectReference Include="..\Clothy.CatalogService.DAL\Clothy.CatalogService.DAL.csproj" />

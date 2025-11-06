@@ -5,10 +5,7 @@ using DotNetEnv;
 var builder = DistributedApplication.CreateBuilder(args);
 
 string ENV_PATH = Path.Combine(Directory.GetCurrentDirectory(), ".env");
-if (File.Exists(ENV_PATH))
-{
-    Env.Load(ENV_PATH);
-}
+Env.Load(ENV_PATH);
 
 var postgresPassword = builder.AddParameter("postgres-password");
 

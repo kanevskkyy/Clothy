@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Clothy.Aggregator.Aggregate.RedisCache;
 using Clothy.CatalogService.BLL.DTOs.ClothingTypeDTOs;
 using Clothy.CatalogService.BLL.DTOs.CollectionDTOs;
 using Clothy.CatalogService.BLL.Exceptions;
@@ -18,9 +19,11 @@ namespace Clothy.CatalogService.BLL.Services
     {
         private IUnitOfWork unitOfWork;
         private IMapper mapper;
+        private IFilterCacheInvalidationService filterCacheInvalidationService;
 
-        public CollectionService(IUnitOfWork unitOfWork, IMapper mapper)
+        public CollectionService(IUnitOfWork unitOfWork, IMapper mapper, IFilterCacheInvalidationService filterCacheInvalidationService)
         {
+            this.filterCacheInvalidationService = filterCacheInvalidationService;
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
         }
@@ -57,6 +60,7 @@ namespace Clothy.CatalogService.BLL.Services
             Collection collection = mapper.Map<Collection>(dto);
             await unitOfWork.Collections.AddAsync(collection, cancellationToken);
             await unitOfWork.SaveChangesAsync(cancellationToken);
+            await filterCacheInvalidationService.InvalidateAsync();
 
             return mapper.Map<CollectionReadDTO>(collection);
         }
@@ -76,6 +80,7 @@ namespace Clothy.CatalogService.BLL.Services
 
             unitOfWork.Collections.Update(collection);
             await unitOfWork.SaveChangesAsync(cancellationToken);
+            await filterCacheInvalidationService.InvalidateAsync();
 
             return mapper.Map<CollectionReadDTO>(collection);
         }
@@ -87,6 +92,7 @@ namespace Clothy.CatalogService.BLL.Services
 
             unitOfWork.Collections.Delete(collection);
             await unitOfWork.SaveChangesAsync(cancellationToken);
+            await filterCacheInvalidationService.InvalidateAsync();
         }
     }
 }

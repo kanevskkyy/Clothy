@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Serialization.Formatters;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using Clothy.Aggregator.Aggregate.RedisCache;
 using Clothy.CatalogService.BLL.DTOs.SizeDTOs;
 using Clothy.CatalogService.BLL.Exceptions;
 using Clothy.CatalogService.BLL.Interfaces;
@@ -17,9 +20,11 @@ namespace Clothy.CatalogService.BLL.Services
     {
         private IUnitOfWork unitOfWork;
         private IMapper mapper;
+        private IFilterCacheInvalidationService filterCacheInvalidationService;
 
-        public SizeService(IUnitOfWork unitOfWork, IMapper mapper)
+        public SizeService(IUnitOfWork unitOfWork, IMapper mapper, IFilterCacheInvalidationService filterCacheInvalidationService)
         {
+            this.filterCacheInvalidationService = filterCacheInvalidationService;
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
         }
@@ -45,6 +50,7 @@ namespace Clothy.CatalogService.BLL.Services
             Size size = mapper.Map<Size>(sizeCreateDTO);
             await unitOfWork.Sizes.AddAsync(size, cancellationToken);
             await unitOfWork.SaveChangesAsync(cancellationToken);
+            await filterCacheInvalidationService.InvalidateAsync();
 
             return mapper.Map<SizeReadDTO>(size);
         }
@@ -61,6 +67,7 @@ namespace Clothy.CatalogService.BLL.Services
 
             unitOfWork.Sizes.Update(size);
             await unitOfWork.SaveChangesAsync(cancellationToken);
+            await filterCacheInvalidationService.InvalidateAsync();
 
             return mapper.Map<SizeReadDTO>(size);
         }
@@ -72,6 +79,7 @@ namespace Clothy.CatalogService.BLL.Services
 
             unitOfWork.Sizes.Delete(size);
             await unitOfWork.SaveChangesAsync(cancellationToken);
+            await filterCacheInvalidationService.InvalidateAsync();
         }
     }
 }

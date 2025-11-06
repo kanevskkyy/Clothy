@@ -43,7 +43,6 @@ builder.Services.AddConfiguredGrpcClient<ClotheFilterServiceGrpc.ClotheFilterSer
 builder.Services.AddConfiguredGrpcClient<ClotheServiceGrpc.ClotheServiceGrpcClient>("catalog");
 builder.Services.AddConfiguredGrpcClient<ReviewServiceGrpc.ReviewServiceGrpcClient>("reviews");
 
-//builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<CorrelationIdDelegatingHandler>();
 
 var app = builder.Build();
