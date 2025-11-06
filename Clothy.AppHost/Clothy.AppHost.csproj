@@ -14,6 +14,7 @@
 		<PackageReference Include="Aspire.Hosting.PostgreSQL" Version="9.5.2" />
 		<PackageReference Include="Aspire.Hosting.MongoDB" Version="9.5.2" />
 		<PackageReference Include="DotNetEnv" Version="3.1.1" />
+		<PackageReference Include="Aspire.Hosting.Redis" Version="9.5.2" />
 	</ItemGroup>
 	<ItemGroup>
 		<Content Include="Scripts\**\*.sql">
@@ -21,8 +22,8 @@
 		</Content>
 	</ItemGroup>
 	<ItemGroup>
+		<ProjectReference Include="..\Clothy.Aggregator\Clothy.Aggregator.API\Clothy.Aggregator.API.csproj" />
 		<ProjectReference Include="..\Clothy.Gateway\Clothy.Gateway.csproj" />
-		<ProjectReference Include="..\Clothy.Aggregator\Clothy.Aggregator.csproj" />
 		<ProjectReference Include="..\Clothy.ServiceDefaults\Clothy.ServiceDefaults.csproj" />
 		<ProjectReference Include="..\Clothy.Services\Clothy.CatalogService\Clothy.CatalogService.API\Clothy.CatalogService.API.csproj" />
 		<ProjectReference Include="..\Clothy.Services\Clothy.CatalogService\Clothy.CatalogService.SeedData\Clothy.CatalogService.SeedData.csproj" />

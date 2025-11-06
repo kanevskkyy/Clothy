@@ -14,6 +14,9 @@ using Serilog.Formatting.Compact;
 using Serilog.Events;
 using System.Diagnostics;
 using OpenTelemetry.Resources;
+using Clothy.Shared.Cache;
+using Clothy.Shared.Cache.Interfaces;
+using StackExchange.Redis;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -33,6 +36,23 @@ public static class Extensions
             .MinimumLevel.Override("System", LogEventLevel.Warning)
             .WriteTo.Console()
         );
+
+        // REDIS CONFIGURATION
+        builder.Services.AddSingleton<IConnectionMultiplexer>(_ =>
+        {
+            string redisHost = "clothy-redis";
+            int redisPort = 6379;
+
+            ConfigurationOptions config = ConfigurationOptions.Parse($"{redisHost}:{redisPort}");
+            config.AbortOnConnectFail = false;
+            return ConnectionMultiplexer.Connect(config);
+        });
+
+        builder.Services.AddMemoryCache();
+        builder.Services.AddSingleton<IEntityCacheService, EntityCacheService>();
+
+        builder.Services.AddHealthChecks();
+        //
 
         builder.ConfigureOpenTelemetry();
 

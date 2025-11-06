@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Clothy.Aggregator.Aggregate.RedisCache;
 using Clothy.CatalogService.BLL.DTOs.ClothingTypeDTOs;
 using Clothy.CatalogService.BLL.Exceptions;
 using Clothy.CatalogService.BLL.Interfaces;
 using Clothy.CatalogService.DAL.UOW;
 using Clothy.CatalogService.Domain.Entities;
-using Clothy.Shared.Exceptions;
+using Clothy.Shared.Helpers.Exceptions;
 
 namespace Clothy.CatalogService.BLL.Services
 {
@@ -17,9 +18,11 @@ namespace Clothy.CatalogService.BLL.Services
     {
         private IUnitOfWork unitOfWork;
         private IMapper mapper;
+        private IFilterCacheInvalidationService filterCacheInvalidationService;
 
-        public ClothingTypeService(IUnitOfWork unitOfWork, IMapper mapper)
+        public ClothingTypeService(IUnitOfWork unitOfWork, IMapper mapper, IFilterCacheInvalidationService filterCacheInvalidationService)
         {
+            this.filterCacheInvalidationService = filterCacheInvalidationService;
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
         }
@@ -48,6 +51,7 @@ namespace Clothy.CatalogService.BLL.Services
             ClothingType clothingType = mapper.Map<ClothingType>(clothingTypeCreateDTO);
             await unitOfWork.ClothingTypes.AddAsync(clothingType, cancellationToken);
             await unitOfWork.SaveChangesAsync(cancellationToken);
+            await filterCacheInvalidationService.InvalidateAsync();
 
             return mapper.Map<ClothingTypeReadDTO>(clothingType);
         }
@@ -67,6 +71,7 @@ namespace Clothy.CatalogService.BLL.Services
 
             unitOfWork.ClothingTypes.Update(clothingType);
             await unitOfWork.SaveChangesAsync(cancellationToken);
+            await filterCacheInvalidationService.InvalidateAsync();
 
             return mapper.Map<ClothingTypeReadDTO>(clothingType);
         }
@@ -78,6 +83,7 @@ namespace Clothy.CatalogService.BLL.Services
 
             unitOfWork.ClothingTypes.Delete(clothingType);
             await unitOfWork.SaveChangesAsync(cancellationToken);
+            await filterCacheInvalidationService.InvalidateAsync();
         }
     }
 }

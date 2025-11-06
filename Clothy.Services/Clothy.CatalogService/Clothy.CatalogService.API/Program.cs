@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using Clothy.CatalogService.BLL.Helpers;
 using Clothy.CatalogService.BLL.Interfaces;
 using Clothy.CatalogService.BLL.Mapper;
 using Clothy.CatalogService.BLL.Services;
@@ -7,13 +6,20 @@ using Clothy.CatalogService.DAL.DB;
 using Clothy.CatalogService.DAL.Interfaces;
 using Clothy.CatalogService.DAL.Repositories;
 using Clothy.CatalogService.DAL.UOW;
-using DotNetEnv;
 using FluentValidation.AspNetCore;
 using FluentValidation;
 using Clothy.CatalogService.BLL.FluentValidation.BrandValidation;
 using Clothy.ServiceDefaults.Middleware;
 using Clothy.CatalogService.API.Middleware;
 using Clothy.Shared.Helpers;
+using Clothy.CatalogService.BLL.RedisCache.Clothe;
+using Clothy.CatalogService.BLL.RedisCache.ClotheItemCache;
+using Clothy.CatalogService.BLL.RedisCache.StockCache;
+using Clothy.CatalogService.Domain.Entities;
+using Clothy.Shared.Cache.Interfaces;
+using Clothy.CatalogService.gRPC.Server.Services;
+using Clothy.Aggregator.Aggregate.RedisCache;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,13 +60,29 @@ builder.Services.AddScoped<IBrandService, BrandService>();
 builder.Services.AddScoped<IClotheService, ClotheService>();
 builder.Services.AddScoped<IClothesStockService, ClothesStockService>();
 
+// REDIS
+builder.Services.AddTransient<ICachePreloader, ClotheItemCachePreloader>();
+builder.Services.AddTransient<IEntityCacheInvalidationService<ClotheItem>, ClotheItemCacheInvalidationService>();
+
+builder.Services.AddTransient<ICachePreloader, ClothesStockCachePreloader>();
+builder.Services.AddTransient<IEntityCacheInvalidationService<ClothesStock>, ClothesStockCacheInvalidationService>();
+//
+
 // CLOUDINARY CONFIG
 builder.Services.AddCloudinary(builder.Configuration);
+//
+
+//FILTERS CACHE SERVICE
+builder.Services.AddScoped<IFilterCacheInvalidationService, FilterCacheInvalidationService>();
 //
 
 // FLUENT VALIDATION
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssembly(typeof(BrandCreateDTOValidator).Assembly);
+
+//GRPC 
+builder.Services.AddGrpc();
+//
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -71,9 +93,24 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.AddNpgsqlDbContext<ClothyCatalogDbContext>("ClothyCatalogDb");
 
+builder.AddRedisClient("clothy-redis");
+builder.Services.AddMemoryCache(options =>
+{
+    options.SizeLimit = 1024; 
+
+    options.CompactionPercentage = 0.2;
+});
+
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
+
+await app.PreloadCachesAsync();
+
+app.MapGrpcService<OrderItemValidatorService>();
+app.MapGrpcService<ClotheItemValidatorService>();
+app.MapGrpcService<ClotheFilterService>();
+app.MapGrpcService<GetClotheByIdGrpcService>();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseCorrelationId();

@@ -1,5 +1,5 @@
 ﻿using Clothy.ReviewService.Domain.Exceptions;
-using Clothy.Shared.Exceptions;
+using Clothy.Shared.Helpers.Exceptions;
 using MongoDB.Driver;
 using System.Net;
 
@@ -35,6 +35,7 @@ namespace Clothy.ReviewService.API.Middleware
                     EmptyValueException => (int)HttpStatusCode.BadRequest,
                     MongoConnectionException => (int)HttpStatusCode.ServiceUnavailable,
                     MongoWriteException => (int)HttpStatusCode.BadRequest,
+                    ValidationFailedException => (int)HttpStatusCode.BadRequest,
                     MongoException => (int)HttpStatusCode.ServiceUnavailable,
 
                     _ => (int)HttpStatusCode.InternalServerError
@@ -44,7 +45,6 @@ namespace Clothy.ReviewService.API.Middleware
                 {
                     type = ex.GetType().Name,
                     message = ex.Message,
-                    stackTrace = context.RequestServices.GetService<IHostEnvironment>()?.IsDevelopment() == true ? ex.StackTrace : null
                 };
 
                 await context.Response.WriteAsJsonAsync(response);

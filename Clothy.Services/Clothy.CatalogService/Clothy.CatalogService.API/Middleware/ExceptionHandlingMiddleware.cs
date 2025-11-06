@@ -1,5 +1,5 @@
 ﻿using Clothy.CatalogService.BLL.Exceptions;
-using Clothy.Shared.Exceptions;
+using Clothy.Shared.Helpers.Exceptions;
 using System.Net;
 
 namespace Clothy.CatalogService.API.Middleware

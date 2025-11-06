@@ -23,7 +23,7 @@ namespace Clothy.CatalogService.BLL.Mapper
             CreateMap<KeyValuePair<Color, int>, ColorWithCountDTO>()
                 .ForMember(dto => dto.Id, map => map.MapFrom(pair => pair.Key.Id))
                 .ForMember(dto => dto.HexCode, map => map.MapFrom(pair => pair.Key.HexCode))
-                .ForMember(dto => dto.Count, map => map.MapFrom(pair => pair.Value));
+                .ForMember(dto => dto.ClotheItemCount, map => map.MapFrom(pair => pair.Value));
         }
     }
 }

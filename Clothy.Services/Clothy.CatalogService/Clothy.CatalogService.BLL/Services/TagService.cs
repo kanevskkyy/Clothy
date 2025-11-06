@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Clothy.Aggregator.Aggregate.RedisCache;
 using Clothy.CatalogService.BLL.DTOs.TagDTOs;
 using Clothy.CatalogService.BLL.Exceptions;
 using Clothy.CatalogService.BLL.Interfaces;
 using Clothy.CatalogService.DAL.UOW;
 using Clothy.CatalogService.Domain.Entities;
-using Clothy.Shared.Exceptions;
+using Clothy.Shared.Helpers.Exceptions;
 
 namespace Clothy.CatalogService.BLL.Services
 {
@@ -17,9 +18,11 @@ namespace Clothy.CatalogService.BLL.Services
     {
         private IUnitOfWork unitOfWork;
         private IMapper mapper;
+        private IFilterCacheInvalidationService filterCacheInvalidationService;
 
-        public TagService(IUnitOfWork unitOfWork, IMapper mapper)
+        public TagService(IUnitOfWork unitOfWork, IMapper mapper, IFilterCacheInvalidationService filterCacheInvalidationService)
         {
+            this.filterCacheInvalidationService = filterCacheInvalidationService;
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
         }
@@ -57,6 +60,7 @@ namespace Clothy.CatalogService.BLL.Services
             Tag tag = mapper.Map<Tag>(tagCreateDTO);
             await unitOfWork.Tags.AddAsync(tag, cancellationToken);
             await unitOfWork.SaveChangesAsync(cancellationToken);
+            await filterCacheInvalidationService.InvalidateAsync();
 
             return mapper.Map<TagReadDTO>(tag);
         }
@@ -73,6 +77,7 @@ namespace Clothy.CatalogService.BLL.Services
 
             unitOfWork.Tags.Update(tag);
             await unitOfWork.SaveChangesAsync(cancellationToken);
+            await filterCacheInvalidationService.InvalidateAsync();
 
             return mapper.Map<TagReadDTO>(tag);
         }
@@ -84,6 +89,7 @@ namespace Clothy.CatalogService.BLL.Services
 
             unitOfWork.Tags.Delete(tag);
             await unitOfWork.SaveChangesAsync(cancellationToken);
+            await filterCacheInvalidationService.InvalidateAsync();
         }
     }
 }
