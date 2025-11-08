@@ -11,9 +11,6 @@ namespace Clothy.OrderService.BLL.DTOs.DeliveryDetailDTOs
     public class DeliveryDetailDTO
     {
         public Guid Id { get; set; }
-        public DeliveryProviderReadDTO? DeliveryProvider { get; set; }
-        public CityReadDTO? City { get; set; }
-        public string? PostalIndex { get; set; }
         public string? PhoneNumber { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }

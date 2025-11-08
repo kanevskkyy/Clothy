@@ -101,6 +101,12 @@ builder.Services.AddMemoryCache(options =>
     options.CompactionPercentage = 0.2;
 });
 
+await using (var scope = builder.Services.BuildServiceProvider().CreateAsyncScope())
+{
+    ClothyCatalogDbContext dbContext = scope.ServiceProvider.GetRequiredService<ClothyCatalogDbContext>();
+    await dbContext.Database.MigrateAsync();
+}
+
 var app = builder.Build();
 
 app.MapDefaultEndpoints();

@@ -12,16 +12,6 @@ namespace Clothy.OrderService.BLL.FluentValidation.DeliveryDetailValidation
     {
         public DeliveryDetailCreateDTOValidator()
         {
-            RuleFor(x => x.ProviderId)
-                .NotEmpty().WithMessage("ProviderId is required");
-
-            RuleFor(x => x.CityId)
-                .NotEmpty().WithMessage("CityId is required");
-
-            RuleFor(x => x.PostalIndex)
-                .NotEmpty().WithMessage("PostalIndex is required")
-                .MaximumLength(20).WithMessage("PostalIndex cannot exceed 20 characters");
-
             RuleFor(x => x.PhoneNumber)
                 .NotEmpty().WithMessage("PhoneNumber is required")
                 .MaximumLength(20).WithMessage("PhoneNumber cannot exceed 20 characters");
@@ -37,9 +27,6 @@ namespace Clothy.OrderService.BLL.FluentValidation.DeliveryDetailValidation
             RuleFor(x => x.MiddleName)
                 .NotEmpty().WithMessage("MiddleName is required")
                 .MaximumLength(100).WithMessage("MiddleName cannot exceed 100 characters");
-
-            RuleFor(x => x.DetailsDescription)
-                .NotEmpty().WithMessage("DetailsDescription is required");
         }
     }
 }

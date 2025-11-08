@@ -46,6 +46,7 @@ builder.Services.AddScoped<ICityRepository, CityRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
 builder.Services.AddScoped<IDeliveryDetailRepository, DeliveryDetailRepository>();
+builder.Services.AddScoped<IRegionRepository, RegionRepository>();
 
 // REGISTER UNIT OF WORK
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -58,6 +59,7 @@ builder.Services.AddScoped<ICityService, CityService>();
 builder.Services.AddScoped<IDeliveryProviderService, DeliveryProviderService>();
 builder.Services.AddScoped<IOrderStatusService, OrderStatusService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IRegionService, RegionService>();
 
 // CLOUDINARY CONFIG
 builder.Services.AddCloudinary(builder.Configuration);

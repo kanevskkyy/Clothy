@@ -20,6 +20,7 @@ namespace Clothy.OrderService.BLL.Mapper
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status));
 
             CreateMap<OrderWithDetailsData, OrderDetailDTO>()
+                .ForMember(dest => dest.TotalAmount, opt => opt.MapFrom(src => src.TotalAmount))
                 .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items))
                 .ForMember(dest => dest.DeliveryDetail, opt => opt.MapFrom(src => src.DeliveryDetail));
 

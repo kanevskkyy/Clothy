@@ -34,6 +34,7 @@ class Program
         services.AddScoped<ICityRepository, CityRepository>();
         services.AddScoped<IOrderItemRepository, OrderItemRepository>();
         services.AddScoped<IDeliveryDetailRepository, DeliveryDetailRepository>();
+        services.AddScoped<IRegionRepository, RegionRepository>();
 
         services.AddScoped<ISeeder, OrderStatusSeeder>();
         services.AddScoped<ISeeder, DeliveryProviderSeeder>();
@@ -41,6 +42,7 @@ class Program
         services.AddScoped<ISeeder, OrderSeeder>();
         services.AddScoped<ISeeder, OrderItemSeeder>();
         services.AddScoped<ISeeder, DeliveryDetailSeeder>();
+        services.AddScoped<ISeeder, RegionSeeder>();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
 
