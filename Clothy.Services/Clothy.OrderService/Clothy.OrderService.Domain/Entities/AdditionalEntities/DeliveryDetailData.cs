@@ -9,15 +9,17 @@ namespace Clothy.OrderService.Domain.Entities.AdditionalEntities
     public class DeliveryDetailData
     {
         public Guid Id { get; set; }
-        public DeliveryProvider? DeliveryProvider { get; set; }
-        public City? City { get; set; }
-        public string? PostalIndex { get; set; }
         public string? PhoneNumber { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string? MiddleName { get; set; }
-        public string? DetailsDescription { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+
+        public PickupPoints? PickupPoint { get; set; }
+        public DeliveryProvider? DeliveryProvider { get; set; }
+        public Settlement? Settlement { get; set; }
+        public Region? Region { get; set; }
+        public City? City { get; set; }
     }
 }

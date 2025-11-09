@@ -36,7 +36,7 @@ namespace Clothy.OrderService.BLL.Services
 
         public async Task<List<OrderStatusReadDTO>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            var cached = await cacheService.GetOrSetAsync(
+            List<OrderStatusReadDTO>? cached = await cacheService.GetOrSetAsync(
                 ALL_STATUSES_KEY,
                 async () =>
                 {
@@ -54,7 +54,7 @@ namespace Clothy.OrderService.BLL.Services
         {
             string cacheKey = $"order-status:{id}";
 
-            var cached = await cacheService.GetOrSetAsync(
+            OrderStatusReadDTO? cached = await cacheService.GetOrSetAsync(
                 cacheKey,
                 async () =>
                 {

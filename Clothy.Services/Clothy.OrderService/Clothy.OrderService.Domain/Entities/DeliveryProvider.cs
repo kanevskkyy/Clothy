@@ -12,5 +12,7 @@ namespace Clothy.OrderService.Domain.Entities
         public string? IconUrl { get; set; }
 
         public ICollection<DeliveryDetail> DeliveryDetails { get; set; } = new List<DeliveryDetail>();
+        public ICollection<PickupPoints> PickupPoints { get; set; } = new List<PickupPoints>();
+
     }
 }

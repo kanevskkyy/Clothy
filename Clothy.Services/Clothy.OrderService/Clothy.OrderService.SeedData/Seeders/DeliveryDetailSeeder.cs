@@ -23,10 +23,12 @@ namespace Clothy.OrderService.SeedData.Seeders
             IEnumerable<Order> orders = await uow.Orders.GetAllAsync();
             IEnumerable<DeliveryProvider> providers = await uow.DeliveryProviders.GetAllAsync();
             IEnumerable<City> cities = await uow.Cities.GetAllAsync();
+            IEnumerable<PickupPoints> pickupPoints = await uow.PickupPoint.GetAllAsync();
 
             if (!orders.Any()) throw new SeederDependencyException("Orders table must be seeded before seeding DeliveryDetails.");
             if (!providers.Any()) throw new SeederDependencyException("DeliveryProvider table must be seeded before seeding DeliveryDetails.");
             if (!cities.Any()) throw new SeederDependencyException("City table must be seeded before seeding DeliveryDetails.");
+            if (!pickupPoints.Any()) throw new SeederDependencyException("PickupPoint table must be seeded before seeding DeliveryDetails.");
 
             Faker faker = new Faker();
 
@@ -35,14 +37,11 @@ namespace Clothy.OrderService.SeedData.Seeders
                 DeliveryDetail detail = new DeliveryDetail
                 {
                     OrderId = faker.PickRandom(orders).Id,
-                    ProviderId = faker.PickRandom(providers).Id,
-                    CityId = faker.PickRandom(cities).Id,
-                    PostalIndex = faker.Address.ZipCode(),
                     PhoneNumber = faker.Phone.PhoneNumber("+380#########"),
                     FirstName = faker.Name.FirstName(),
                     LastName = faker.Name.LastName(),
+                    PickupPointId = faker.PickRandom(pickupPoints).Id,
                     MiddleName = faker.Name.LastName(),
-                    DetailsDescription = faker.Lorem.Sentence(10),
                     CreatedAt = faker.Date.Past(2).ToUniversalTime(),
                     UpdatedAt = faker.Date.Recent(30).ToUniversalTime()
                 };

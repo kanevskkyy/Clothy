@@ -20,6 +20,10 @@ using FluentValidation;
 using Clothy.OrderService.gRPC.Client.Services.Interfaces;
 using Clothy.OrderService.gRPC.Client.Services;
 using FluentValidation.AspNetCore;
+using Clothy.OrderService.BLL.RedisCache.RegionCache;
+using Clothy.OrderService.BLL.RedisCache.PickupPointsCache;
+using Clothy.OrderService.BLL.RedisCache.SettlementCache;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +50,9 @@ builder.Services.AddScoped<ICityRepository, CityRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
 builder.Services.AddScoped<IDeliveryDetailRepository, DeliveryDetailRepository>();
+builder.Services.AddScoped<IRegionRepository, RegionRepository>();
+builder.Services.AddScoped<ISettlementRepository, SettlementRepository>();
+builder.Services.AddScoped<IPickupPointRepository, PickupPointRepository>();
 
 // REGISTER UNIT OF WORK
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -58,6 +65,9 @@ builder.Services.AddScoped<ICityService, CityService>();
 builder.Services.AddScoped<IDeliveryProviderService, DeliveryProviderService>();
 builder.Services.AddScoped<IOrderStatusService, OrderStatusService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IRegionService, RegionService>();
+builder.Services.AddScoped<ISettlementService, SettlementService>();
+builder.Services.AddScoped<IPickupPointService, PickupPointService>();
 
 // CLOUDINARY CONFIG
 builder.Services.AddCloudinary(builder.Configuration);
@@ -75,13 +85,27 @@ builder.Services.AddTransient<IEntityCacheInvalidationService<DeliveryProvider>,
 
 builder.Services.AddTransient<ICachePreloader, CityCachePreloader>();
 builder.Services.AddTransient<IEntityCacheInvalidationService<City>, CityCacheInvalidationService>();
+
+builder.Services.AddTransient<ICachePreloader, RegionCachePreloader>();
+builder.Services.AddTransient<IEntityCacheInvalidationService<Region>, RegionCacheInvalidationService>();
+
+builder.Services.AddTransient<ICachePreloader, PickupPointCachePreloader>();
+builder.Services.AddTransient<IEntityCacheInvalidationService<PickupPoints>, PickupPointCacheInvalidationService>();
+
+builder.Services.AddTransient<ICachePreloader, SettlementCachePreloader>();
+builder.Services.AddTransient<IEntityCacheInvalidationService<Settlement>, SettlementCacheInvalidationService>();
 //
 
 // FLUENT VALIDATION
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssembly(typeof(OrderStatusCreateDTOValidator).Assembly);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    options.JsonSerializerOptions.DefaultIgnoreCondition =
+        System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {

@@ -61,12 +61,6 @@ namespace Clothy.OrderService.BLL.Services
             OrderStatus? pendingStatus = await unitOfWork.OrderStatuses.GetByNameAsync("Pending", cancellationToken);
             if (pendingStatus == null) throw new NotFoundException($"Pending status not found");
 
-            DeliveryProvider? deliveryProvider = await unitOfWork.DeliveryProviders.GetByIdAsync(dto.DeliveryDetail.ProviderId, cancellationToken);
-            if (deliveryProvider == null) throw new NotFoundException($"Delivery provider not found with ID: {dto.DeliveryDetail.ProviderId}");
-
-            City? city = await unitOfWork.Cities.GetByIdAsync(dto.DeliveryDetail.CityId, cancellationToken);
-            if (city == null) throw new NotFoundException($"City not found with ID: {dto.DeliveryDetail.CityId}");
-
             Order order = mapper.Map<Order>(dto);
             order.StatusId = pendingStatus.Id;
 
@@ -78,6 +72,9 @@ namespace Clothy.OrderService.BLL.Services
                 item.OrderId = order.Id;
                 await unitOfWork.OrderItems.AddAsync(item, cancellationToken);
             }
+
+            PickupPoints? pickupPoints = await unitOfWork.PickupPoint.GetByIdAsync(dto.DeliveryDetail.PickupPointId, cancellationToken);
+            if (pickupPoints == null) throw new NotFoundException($"PickupPoint not found with ID: {dto.DeliveryDetail.PickupPointId}");
 
             DeliveryDetail delivery = mapper.Map<DeliveryDetail>(dto.DeliveryDetail);
             delivery.OrderId = order.Id;
