@@ -8,6 +8,7 @@ namespace Clothy.OrderService.BLL.DTOs.DeliveryDetailDTOs
 {
     public class DeliveryDetailCreateDTO
     {
+        public Guid PickupPointId { get; set; }
         public string? PhoneNumber { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }

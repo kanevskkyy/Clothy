@@ -27,6 +27,9 @@ namespace Clothy.OrderService.BLL.FluentValidation.DeliveryDetailValidation
             RuleFor(x => x.MiddleName)
                 .NotEmpty().WithMessage("MiddleName is required")
                 .MaximumLength(100).WithMessage("MiddleName cannot exceed 100 characters");
+
+            RuleFor(x => x.PickupPointId)
+                .NotEmpty().WithMessage("PickupPointId is required");
         }
     }
 }

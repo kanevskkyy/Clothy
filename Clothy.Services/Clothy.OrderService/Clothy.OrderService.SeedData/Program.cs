@@ -33,18 +33,20 @@ class Program
         services.AddScoped<IDeliveryProviderRepository, DeliveryProviderRepository>();
         services.AddScoped<ICityRepository, CityRepository>();
         services.AddScoped<IOrderItemRepository, OrderItemRepository>();
-        services.AddScoped<IDeliveryDetailRepository, DeliveryDetailRepository>();
         services.AddScoped<IRegionRepository, RegionRepository>();
         services.AddScoped<ISettlementRepository, SettlementRepository>();
+        services.AddScoped<IPickupPointRepository, PickupPointRepository>();
+        services.AddScoped<IDeliveryDetailRepository, DeliveryDetailRepository>();
 
         services.AddScoped<ISeeder, OrderStatusSeeder>();
         services.AddScoped<ISeeder, DeliveryProviderSeeder>();
         services.AddScoped<ISeeder, CitySeeder>();
         services.AddScoped<ISeeder, OrderSeeder>();
         services.AddScoped<ISeeder, OrderItemSeeder>();
-        services.AddScoped<ISeeder, DeliveryDetailSeeder>();
         services.AddScoped<ISeeder, RegionSeeder>();
         services.AddScoped<ISeeder, SettlementSeeder>();
+        services.AddScoped<ISeeder, PickupPointSeeder>();
+        services.AddScoped<ISeeder, DeliveryDetailSeeder>();
 
         ServiceProvider serviceProvider = services.BuildServiceProvider();
 

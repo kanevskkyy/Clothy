@@ -10,6 +10,8 @@ namespace Clothy.OrderService.Domain.Entities
     {
         public Guid OrderId { get; set; }
         public Order? Order { get; set; }
+        public Guid PickupPointId { get; set; }
+        public PickupPoints? PickupPoints { get; set; }
 
         public string? PhoneNumber { get; set; }
 

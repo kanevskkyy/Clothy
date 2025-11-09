@@ -95,13 +95,14 @@ CREATE TABLE pickup_points (
     updatedat TIMESTAMP WITHOUT TIME ZONE,
     FOREIGN KEY (deliveryproviderid) REFERENCES delivery_provider(id)
         ON UPDATE CASCADE
-        ON DELETE CASCADE
+        ON DELETE CASCADE,
+    UNIQUE (address, deliveryproviderid)
 );
 
 CREATE TABLE delivery_detail (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     orderid UUID NOT NULL,
-    pickuppointsid UUID NOT NULL,
+    pickuppointid UUID NOT NULL,
     phonenumber VARCHAR(20) NOT NULL,
     firstname VARCHAR(100) NOT NULL,
     lastname VARCHAR(100) NOT NULL,
@@ -112,7 +113,7 @@ CREATE TABLE delivery_detail (
         REFERENCES orders(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
-    CONSTRAINT fk_pickuppoints_id FOREIGN KEY (pickuppointsid)
+    CONSTRAINT fk_pickuppoints_id FOREIGN KEY (pickuppointid)
         REFERENCES pickup_points(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
@@ -125,4 +126,4 @@ CREATE INDEX idx_regions_cityid ON regions(cityid);
 CREATE INDEX idx_settlements_regionid ON settlements(regionid);
 CREATE INDEX idx_pickup_points_providerid ON pickup_points(deliveryproviderid);
 CREATE INDEX idx_deliverydetail_orderid ON delivery_detail(orderid);
-CREATE INDEX idx_deliverydetail_pickuppointsid ON delivery_detail(pickuppointsid);
+CREATE INDEX idx_deliverydetail_pickuppointsid ON delivery_detail(pickuppointid);

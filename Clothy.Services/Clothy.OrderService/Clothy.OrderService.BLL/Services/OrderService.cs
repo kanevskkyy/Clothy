@@ -73,6 +73,9 @@ namespace Clothy.OrderService.BLL.Services
                 await unitOfWork.OrderItems.AddAsync(item, cancellationToken);
             }
 
+            PickupPoints? pickupPoints = await unitOfWork.PickupPoint.GetByIdAsync(dto.DeliveryDetail.PickupPointId, cancellationToken);
+            if (pickupPoints == null) throw new NotFoundException($"PickupPoint not found with ID: {dto.DeliveryDetail.PickupPointId}");
+
             DeliveryDetail delivery = mapper.Map<DeliveryDetail>(dto.DeliveryDetail);
             delivery.OrderId = order.Id;
             await unitOfWork.DeliveryDetails.AddAsync(delivery, cancellationToken);

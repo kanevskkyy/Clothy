@@ -16,6 +16,7 @@ namespace Clothy.OrderService.BLL.DTOs.DeliveryDetailDTOs
         public string? LastName { get; set; }
         public string? MiddleName { get; set; }
         public string? DetailsDescription { get; set; }
+        public Guid PickupPointId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
     }

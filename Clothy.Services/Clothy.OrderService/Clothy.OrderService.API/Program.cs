@@ -48,6 +48,7 @@ builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
 builder.Services.AddScoped<IDeliveryDetailRepository, DeliveryDetailRepository>();
 builder.Services.AddScoped<IRegionRepository, RegionRepository>();
 builder.Services.AddScoped<ISettlementRepository, SettlementRepository>();
+builder.Services.AddScoped<IPickupPointRepository, PickupPointRepository>();
 
 // REGISTER UNIT OF WORK
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -62,6 +63,7 @@ builder.Services.AddScoped<IOrderStatusService, OrderStatusService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IRegionService, RegionService>();
 builder.Services.AddScoped<ISettlementService, SettlementService>();
+builder.Services.AddScoped<IPickupPointService, PickupPointService>();
 
 // CLOUDINARY CONFIG
 builder.Services.AddCloudinary(builder.Configuration);
