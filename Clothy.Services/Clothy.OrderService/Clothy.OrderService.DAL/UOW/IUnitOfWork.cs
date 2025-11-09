@@ -17,6 +17,7 @@ namespace Clothy.OrderService.DAL.UOW
         IOrderItemRepository OrderItems { get; }
         IDeliveryDetailRepository DeliveryDetails { get; }
         IRegionRepository Region { get; }
+        ISettlementRepository Settlement { get; }
 
         IDbConnection Connection { get; }
         IDbTransaction? Transaction { get; }

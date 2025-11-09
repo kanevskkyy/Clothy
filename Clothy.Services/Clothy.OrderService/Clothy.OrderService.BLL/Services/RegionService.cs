@@ -77,7 +77,7 @@ namespace Clothy.OrderService.BLL.Services
             bool exists = await unitOfWork.Region.ExistByNameAndCityIdAsync(regionUpdateDTO.Name, regionUpdateDTO.CityId, id, cancellationToken);
             if (exists) throw new AlreadyExistsException($"Region with name '{regionUpdateDTO.Name}' already exists.");
 
-            region = mapper.Map<Region>(regionUpdateDTO);
+            mapper.Map(regionUpdateDTO, region);
 
             await unitOfWork.Region.UpdateAsync(region, cancellationToken);
             await unitOfWork.CommitAsync();

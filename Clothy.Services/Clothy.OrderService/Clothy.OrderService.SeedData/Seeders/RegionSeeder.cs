@@ -17,7 +17,7 @@ namespace Clothy.OrderService.SeedData.Seeders
             if (existingRegions.Any()) return;
 
             IEnumerable<City> cities = await uow.Cities.GetAllAsync();
-            if (!cities.Any()) return; 
+            if (!cities.Any()) return;  
 
             Faker faker = new Faker();
             List<Region> regions = new List<Region>();
@@ -28,7 +28,7 @@ namespace Clothy.OrderService.SeedData.Seeders
                 {
                     regions.Add(new Region
                     {
-                        Name = $"{city.Name} Region {i + 1}",
+                        Name = $"{faker.Address.Country()} Region {i + 1}",
                         CityId = city.Id,
                         CreatedAt = faker.Date.Past(5).ToUniversalTime(),
                         UpdatedAt = faker.Date.Recent(30).ToUniversalTime()

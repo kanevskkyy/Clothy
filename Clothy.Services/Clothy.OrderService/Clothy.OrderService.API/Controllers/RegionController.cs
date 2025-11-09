@@ -62,7 +62,9 @@ namespace Clothy.OrderService.API.Controllers
             RegionReadDTO created = await regionService.CreateAsync(regionCreateDTO, cancellationToken);
             logger.LogInformation("Region created with ID: {Id}", created.Id);
 
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+            return CreatedAtAction(nameof(GetById), new { 
+                id = created.Id 
+            }, created);
         }
 
         /// <summary>
