@@ -40,7 +40,7 @@ namespace Clothy.OrderService.BLL.Services
 
             if (usePageCache)
             {
-                var cached = await cacheService.GetOrSetAsync(
+                PagedList<CityReadDTO>? cached = await cacheService.GetOrSetAsync(
                     cacheKey,
                     async () =>
                     {
@@ -66,7 +66,7 @@ namespace Clothy.OrderService.BLL.Services
         {
             string cacheKey = $"city:{id}";
 
-            var cached = await cacheService.GetOrSetAsync(
+            CityReadDTO? cached = await cacheService.GetOrSetAsync(
                 cacheKey,
                 async () =>
                 {

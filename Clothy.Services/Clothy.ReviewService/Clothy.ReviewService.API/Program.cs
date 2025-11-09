@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Text.Json;
 using Clothy.ReviewService.API.Middleware;
 using Clothy.ReviewService.Application.Behaviours;
 using Clothy.ReviewService.Application.Features.Questions.Commands.UpdateQuestion;
@@ -53,7 +54,12 @@ builder.Services.AddScoped<IQuestionService, QuestionService>();
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssembly(typeof(UpdateAnswerCommandValidator).Assembly);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    options.JsonSerializerOptions.DefaultIgnoreCondition =
+        System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {

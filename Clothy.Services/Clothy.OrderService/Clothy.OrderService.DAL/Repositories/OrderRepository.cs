@@ -108,10 +108,11 @@ namespace Clothy.OrderService.DAL.Repositories
             IDbConnection connection = await GetOpenConnectionAsync();
 
             string orderSql = @"
-                SELECT o.id, o.userfirstname, o.userlastname, o.createdat, o.updatedat,
-                       s.id AS Id, s.name AS Name, s.iconurl AS IconUrl
+                SELECT 
+                    o.id, o.userfirstname, o.userlastname, o.createdat, o.updatedat,
+                    s.id, s.name, s.iconurl
                 FROM orders o
-                JOIN order_status s ON o.statusid = s.id
+                LEFT JOIN order_status s ON o.statusid = s.id
                 WHERE o.id = @Id;
             ";
 
@@ -124,7 +125,7 @@ namespace Clothy.OrderService.DAL.Repositories
                     return tempOrder;
                 },
                 new { Id = id },
-                splitOn: "Id"
+                splitOn: "id" 
             );
 
             OrderWithDetailsData? order = orderResult.FirstOrDefault();
@@ -136,16 +137,31 @@ namespace Clothy.OrderService.DAL.Repositories
             order.TotalAmount = order.Items.Sum(item => item.Price * item.Quantity);
 
             string deliverySql = @"
-                SELECT dd.id AS DeliveryDetailId, dd.phonenumber, 
-                       dd.firstname, dd.lastname, dd.middlename,
-                       dd.createdat AS DeliveryCreatedAt, dd.updatedat AS DeliveryUpdatedAt
+                SELECT 
+                    dd.id AS DeliveryDetailId, dd.phonenumber, dd.firstname, dd.lastname, dd.middlename,
+                    dd.createdat AS DeliveryCreatedAt, dd.updatedat AS DeliveryUpdatedAt,
+                    pp.id AS PickupPointId, pp.address, pp.deliveryproviderid,
+                    dp.id AS DeliveryProviderId, dp.name AS DeliveryProviderName, dp.iconurl AS DeliveryProviderIconUrl,
+                    s.id AS SettlementId, s.name AS SettlementName, s.regionid,
+                    r.id AS RegionId, r.name AS RegionName, r.cityid,
+                    c.id AS CityId, c.name AS CityName
                 FROM delivery_detail dd
+                JOIN pickup_points pp ON dd.pickuppointid = pp.id
+                JOIN delivery_provider dp ON pp.deliveryproviderid = dp.id
+                JOIN settlements s ON s.id = (
+                    SELECT st.id FROM settlements st 
+                    JOIN regions rg ON rg.id = st.regionid 
+                    JOIN city ct ON ct.id = rg.cityid 
+                    LIMIT 1
+                )
+                JOIN regions r ON s.regionid = r.id
+                JOIN city c ON r.cityid = c.id
                 WHERE dd.orderid = @Id
                 ORDER BY dd.createdat DESC
                 LIMIT 1;
             ";
 
-            dynamic? delivery = await connection.QueryFirstOrDefaultAsync<dynamic>(deliverySql, new { Id = id });
+            var delivery = await connection.QueryFirstOrDefaultAsync<dynamic>(deliverySql, new { Id = id });
 
             if (delivery != null)
             {
@@ -158,6 +174,36 @@ namespace Clothy.OrderService.DAL.Repositories
                     MiddleName = delivery.middlename,
                     CreatedAt = delivery.deliverycreatedat,
                     UpdatedAt = delivery.deliveryupdatedat,
+
+                    PickupPoint = new PickupPoints
+                    {
+                        Id = (Guid)delivery.pickuppointid,
+                        Address = delivery.address,
+                        DeliveryProviderId = delivery.deliveryproviderid,
+                    },
+                    DeliveryProvider = new DeliveryProvider
+                    {
+                        Id = (Guid)delivery.deliveryproviderid,
+                        Name = delivery.deliveryprovidername,
+                        IconUrl = delivery.deliveryprovidericonurl
+                    },
+                    Settlement = new Settlement
+                    {
+                        Id = (Guid)delivery.settlementid,
+                        Name = delivery.settlementname,
+                        RegionId = delivery.regionid
+                    },
+                    Region = new Region
+                    {
+                        Id = (Guid)delivery.regionid,
+                        Name = delivery.regionname,
+                        CityId = delivery.cityid
+                    },
+                    City = new City
+                    {
+                        Id = (Guid)delivery.cityid,
+                        Name = delivery.cityname
+                    }
                 };
             }
 

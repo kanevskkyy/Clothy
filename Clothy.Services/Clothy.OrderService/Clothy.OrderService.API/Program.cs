@@ -20,6 +20,10 @@ using FluentValidation;
 using Clothy.OrderService.gRPC.Client.Services.Interfaces;
 using Clothy.OrderService.gRPC.Client.Services;
 using FluentValidation.AspNetCore;
+using Clothy.OrderService.BLL.RedisCache.RegionCache;
+using Clothy.OrderService.BLL.RedisCache.PickupPointsCache;
+using Clothy.OrderService.BLL.RedisCache.SettlementCache;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -81,13 +85,27 @@ builder.Services.AddTransient<IEntityCacheInvalidationService<DeliveryProvider>,
 
 builder.Services.AddTransient<ICachePreloader, CityCachePreloader>();
 builder.Services.AddTransient<IEntityCacheInvalidationService<City>, CityCacheInvalidationService>();
+
+builder.Services.AddTransient<ICachePreloader, RegionCachePreloader>();
+builder.Services.AddTransient<IEntityCacheInvalidationService<Region>, RegionCacheInvalidationService>();
+
+builder.Services.AddTransient<ICachePreloader, PickupPointCachePreloader>();
+builder.Services.AddTransient<IEntityCacheInvalidationService<PickupPoints>, PickupPointCacheInvalidationService>();
+
+builder.Services.AddTransient<ICachePreloader, SettlementCachePreloader>();
+builder.Services.AddTransient<IEntityCacheInvalidationService<Settlement>, SettlementCacheInvalidationService>();
 //
 
 // FLUENT VALIDATION
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssembly(typeof(OrderStatusCreateDTOValidator).Assembly);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    options.JsonSerializerOptions.DefaultIgnoreCondition =
+        System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {

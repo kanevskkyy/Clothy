@@ -13,19 +13,24 @@ using Clothy.ServiceDefaults.Middleware;
 using Clothy.CatalogService.API.Middleware;
 using Clothy.Shared.Helpers;
 using Clothy.CatalogService.BLL.RedisCache.Clothe;
-using Clothy.CatalogService.BLL.RedisCache.ClotheItemCache;
 using Clothy.CatalogService.BLL.RedisCache.StockCache;
 using Clothy.CatalogService.Domain.Entities;
 using Clothy.Shared.Cache.Interfaces;
 using Clothy.CatalogService.gRPC.Server.Services;
 using Clothy.Aggregator.Aggregate.RedisCache;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    options.JsonSerializerOptions.DefaultIgnoreCondition =
+        System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -61,10 +66,7 @@ builder.Services.AddScoped<IClotheService, ClotheService>();
 builder.Services.AddScoped<IClothesStockService, ClothesStockService>();
 
 // REDIS
-builder.Services.AddTransient<ICachePreloader, ClotheItemCachePreloader>();
 builder.Services.AddTransient<IEntityCacheInvalidationService<ClotheItem>, ClotheItemCacheInvalidationService>();
-
-builder.Services.AddTransient<ICachePreloader, ClothesStockCachePreloader>();
 builder.Services.AddTransient<IEntityCacheInvalidationService<ClothesStock>, ClothesStockCacheInvalidationService>();
 //
 
@@ -110,8 +112,6 @@ await using (var scope = builder.Services.BuildServiceProvider().CreateAsyncScop
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
-
-await app.PreloadCachesAsync();
 
 app.MapGrpcService<OrderItemValidatorService>();
 app.MapGrpcService<ClotheItemValidatorService>();

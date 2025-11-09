@@ -25,7 +25,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
-  <ItemGroup>
+	<ItemGroup>
     <ProjectReference Include="..\..\..\Clothy.ServiceDefaults\Clothy.ServiceDefaults.csproj" />
     <ProjectReference Include="..\Clothy.OrderService.BLL\Clothy.OrderService.BLL.csproj" />
     <ProjectReference Include="..\Clothy.OrderService.DAL\Clothy.OrderService.DAL.csproj" />
