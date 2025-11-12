@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Clothy.ReviewService.Domain.Entities;
 using Clothy.ReviewService.Domain.Entities.QueryParameters;
-using Clothy.ReviewService.Domain.Interfaces.Repositories;
+using Clothy.ReviewService.Domain.Interfaces;
 using Clothy.ReviewService.Domain.ValueObjects;
 using Clothy.Shared.Helpers;
 using Grpc.Core;

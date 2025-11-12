@@ -10,6 +10,5 @@ namespace Clothy.Shared.Cache.Interfaces
     {
         Task InvalidateByIdAsync(Guid entityId);
         Task InvalidateAllAsync();
-        Type EntityType => typeof(T);
     }
 }

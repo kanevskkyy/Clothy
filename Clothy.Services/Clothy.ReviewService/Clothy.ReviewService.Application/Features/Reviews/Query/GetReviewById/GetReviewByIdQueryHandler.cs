@@ -4,23 +4,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Clothy.ReviewService.Domain.Entities;
-using Clothy.ReviewService.Domain.Interfaces.Services;
+using Clothy.ReviewService.Domain.Interfaces;
+using Clothy.Shared.Helpers.Exceptions;
 using MediatR;
 
 namespace Clothy.ReviewService.Application.Features.Reviews.Query.GetReviewById
 {
     public class GetReviewByIdQueryHandler : IRequestHandler<GetReviewByIdQuery, Review?>
     {
-        private IReviewService reviewService;
+        private IReviewRepository reviewRepository;
 
-        public GetReviewByIdQueryHandler(IReviewService reviewService)
+        public GetReviewByIdQueryHandler(IReviewRepository reviewRepository)
         {
-            this.reviewService = reviewService;
+            this.reviewRepository = reviewRepository;
         }
 
         public async Task<Review?> Handle(GetReviewByIdQuery request, CancellationToken cancellationToken)
         {
-            return await reviewService.GetReviewByIdAsync(request.ReviewId, cancellationToken);
+            Review? review = await reviewRepository.GetByIdAsync(request.ReviewId, cancellationToken);
+            if (review == null) throw new NotFoundException($"Review with ID {request.ReviewId} not found!");
+
+            return review;
         }
     }
 }

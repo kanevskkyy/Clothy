@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Clothy.ReviewService.Domain.Exceptions;
 using Clothy.ReviewService.Domain.ValueObjects;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -30,9 +29,6 @@ namespace Clothy.ReviewService.Domain.Entities
 
         public Question(Guid clotheItemId, UserInfo user, string questionText)
         {
-            if (string.IsNullOrWhiteSpace(questionText))
-                throw new EmptyValueException("QuestionText");
-
             ClotheItemId = clotheItemId;
             User = user;
             QuestionText = questionText.Trim();
@@ -40,8 +36,6 @@ namespace Clothy.ReviewService.Domain.Entities
 
         public void UpdateQuestion(string newText)
         {
-            if (string.IsNullOrWhiteSpace(newText)) throw new EmptyValueException("QuestionText");
-
             QuestionText = newText.Trim();
             UpdateTimestamp();
         }

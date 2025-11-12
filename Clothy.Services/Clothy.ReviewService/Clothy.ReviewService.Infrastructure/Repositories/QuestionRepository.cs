@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 using Clothy.ReviewService.Domain.Entities.QueryParameters;
 using Clothy.ReviewService.Domain.Entities;
 using Clothy.ReviewService.Domain.Helpers;
-using Clothy.ReviewService.Domain.Interfaces.Repositories;
 using Clothy.ReviewService.Infrastructure.DB;
 using MongoDB.Driver;
-using Clothy.ReviewService.Domain.Exceptions;
 using Clothy.Shared.Helpers;
+using Clothy.ReviewService.Domain.Interfaces;
 
 namespace Clothy.ReviewService.Infrastructure.Repositories
 {
@@ -43,8 +42,6 @@ namespace Clothy.ReviewService.Infrastructure.Repositories
 
         public async Task AddAnswerAsync(string questionId, Answer answer, CancellationToken cancellationToken = default)
         {
-            if (answer == null) throw new EmptyValueException("Answer");
-
             var update = Builders<Question>.Update.Push(q => q.Answers, answer)
                                                 .CurrentDate(q => q.UpdatedAt);
 
@@ -53,8 +50,6 @@ namespace Clothy.ReviewService.Infrastructure.Repositories
 
         public async Task UpdateAnswerAsync(string questionId, Answer answer, CancellationToken cancellationToken = default)
         {
-            if (answer == null) throw new EmptyValueException("Answer");
-
             var filter = Builders<Question>.Filter.And(
                 Builders<Question>.Filter.Eq(q => q.Id, questionId),
                 Builders<Question>.Filter.ElemMatch(q => q.Answers, a => a.Id == answer.Id)
@@ -69,8 +64,6 @@ namespace Clothy.ReviewService.Infrastructure.Repositories
 
         public async Task UpdateQuestionAsync(Question question, CancellationToken cancellationToken = default)
         {
-            if (question == null) throw new EmptyValueException("Question");
-
             var update = Builders<Question>.Update
                 .Set(q => q.QuestionText, question.QuestionText)
                 .CurrentDate(q => q.UpdatedAt);

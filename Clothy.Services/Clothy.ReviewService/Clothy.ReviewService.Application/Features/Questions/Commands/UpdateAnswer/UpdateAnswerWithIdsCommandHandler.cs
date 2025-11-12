@@ -4,23 +4,32 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Clothy.ReviewService.Application.Interfaces.Commands;
-using Clothy.ReviewService.Domain.Interfaces.Services;
+using Clothy.ReviewService.Domain.Entities;
+using Clothy.ReviewService.Domain.Interfaces;
+using Clothy.Shared.Helpers.Exceptions;
 using MediatR;
 
 namespace Clothy.ReviewService.Application.Features.Questions.Commands.UpdateAnswer
 {
     public class UpdateAnswerWithIdsCommandHandler : ICommandHandler<UpdateAnswerWithIdsCommand>
     {
-        private IQuestionService questionService;
+        private IQuestionRepository questionRepository;
 
-        public UpdateAnswerWithIdsCommandHandler(IQuestionService questionService)
+        public UpdateAnswerWithIdsCommandHandler(IQuestionRepository questionRepository)
         {
-            this.questionService = questionService;
+            this.questionRepository = questionRepository;
         }
 
         public async Task<Unit> Handle(UpdateAnswerWithIdsCommand request, CancellationToken cancellationToken)
         {
-            await questionService.UpdateAnswerAsync(request.QuestionId, request.AnswerId, request.AnswerText, cancellationToken);
+            Question? question = await questionRepository.GetByIdAsync(request.QuestionId, cancellationToken);
+            if (question == null) throw new NotFoundException($"Question with ID {request.QuestionId} not found!");
+
+            Answer? answer = question.Answers.FirstOrDefault(tempAnswer => tempAnswer.Id == request.AnswerId);
+            if (answer == null) throw new NotFoundException($"Answer with ID {request.AnswerId} not found!");
+
+            answer.UpdateAnswer(request.AnswerText);
+            await questionRepository.UpdateAnswerAsync(request.QuestionId, answer, cancellationToken);
             return Unit.Value;
         }
     }

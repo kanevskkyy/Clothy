@@ -3,10 +3,10 @@ using System.Text.Json;
 using Clothy.ReviewService.API.Middleware;
 using Clothy.ReviewService.Application.Behaviours;
 using Clothy.ReviewService.Application.Features.Questions.Commands.UpdateQuestion;
-using Clothy.ReviewService.Application.Services;
+using Clothy.ReviewService.Application.Validations.Additional;
 using Clothy.ReviewService.Application.Validations.Questions;
-using Clothy.ReviewService.Domain.Interfaces.Repositories;
-using Clothy.ReviewService.Domain.Interfaces.Services;
+using Clothy.ReviewService.Application.Validations.Reviews;
+using Clothy.ReviewService.Domain.Interfaces;
 using Clothy.ReviewService.gRPC.Client.Services;
 using Clothy.ReviewService.gRPC.Client.Services.Interfaces;
 using Clothy.ReviewService.gRPC.Server.Services;
@@ -46,31 +46,21 @@ builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBeh
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
 
-// SERVICES DI
-builder.Services.AddScoped<IReviewService, ReviewService>();
-builder.Services.AddScoped<IQuestionService, QuestionService>();
-
 // FLUENT VALIDATION
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssembly(typeof(UpdateAnswerCommandValidator).Assembly);
+//
 
-builder.Services.AddControllers().AddJsonOptions(options =>
-{
-    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-    options.JsonSerializerOptions.DefaultIgnoreCondition =
-        System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
-});
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
-{
-    string xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
-    options.IncludeXmlComments(xmlPath);
-});
 
 // GRPC
 builder.Services.AddScoped<IClotheItemIdValidatorGrpcClient, ClotheItemIdValidatorGrpcClient>();
-builder.Services.AddConfiguredGrpcClient<ClotheItemIdValidator.ClotheItemIdValidatorClient>("catalog");
+builder.Services.AddConfiguredGrpcClient<ClotheItemIdValidator.ClotheItemIdValidatorClient>("catalog")
+    .AddStandardResilienceHandler(resilience =>
+    {
+        resilience.Retry.MaxRetryAttempts = 3;
+        resilience.CircuitBreaker.FailureRatio = 0.4;
+    });
 //
 
 var app = builder.Build();
@@ -99,8 +89,6 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseServiceDefaults();
-app.UseCorrelationId();
-app.UseServiceLogging();
 
 if (app.Environment.IsDevelopment())
 {

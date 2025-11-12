@@ -4,23 +4,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Clothy.ReviewService.Application.Interfaces.Commands;
-using Clothy.ReviewService.Domain.Interfaces.Services;
+using Clothy.ReviewService.Domain.Entities;
+using Clothy.ReviewService.Domain.Interfaces;
+using Clothy.Shared.Helpers.Exceptions;
 using MediatR;
 
 namespace Clothy.ReviewService.Application.Features.Questions.Commands.DeleteQuestion
 {
     public class DeleteQuestionCommandHandler : ICommandHandler<DeleteQuestionCommand>
     {
-        private IQuestionService questionService;
+        private IQuestionRepository questionRepository;
 
-        public DeleteQuestionCommandHandler(IQuestionService questionService)
+        public DeleteQuestionCommandHandler(IQuestionRepository questionRepository)
         {
-            this.questionService = questionService;
+            this.questionRepository = questionRepository;
         }
 
         public async Task<Unit> Handle(DeleteQuestionCommand request, CancellationToken cancellationToken)
         {
-            await questionService.DeleteQuestionAsync(request.QuestionId, cancellationToken);
+            Question? question = await questionRepository.GetByIdAsync(request.QuestionId, cancellationToken);
+            if (question == null) throw new NotFoundException($"Question with ID {request.QuestionId} not found!");
+
+            await questionRepository.DeleteAsync(request.QuestionId, cancellationToken);
             return Unit.Value;
         }
     }

@@ -4,23 +4,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Clothy.ReviewService.Application.Interfaces.Commands;
-using Clothy.ReviewService.Domain.Interfaces.Services;
+using Clothy.ReviewService.Domain.Entities;
+using Clothy.ReviewService.Domain.Interfaces;
+using Clothy.Shared.Helpers.Exceptions;
 using MediatR;
 
 namespace Clothy.ReviewService.Application.Features.Reviews.Commands.DeleteReview
 {
     public class DeleteReviewCommandHandler : ICommandHandler<DeleteReviewCommand>
     {
-        private IReviewService reviewService;
+        private IReviewRepository reviewRepository;
 
-        public DeleteReviewCommandHandler(IReviewService reviewService)
+        public DeleteReviewCommandHandler(IReviewRepository reviewRepository)
         {
-            this.reviewService = reviewService;
+            this.reviewRepository = reviewRepository;
         }
 
         public async Task<Unit> Handle(DeleteReviewCommand request, CancellationToken cancellationToken)
         {
-            await reviewService.DeleteReviewAsync(request.ReviewId.ToString(), cancellationToken);
+            Review? review = await reviewRepository.GetByIdAsync(request.ReviewId, cancellationToken);
+            if (review == null) throw new NotFoundException($"Review with ID {request.ReviewId} not found!");
+
+            await reviewRepository.DeleteAsync(request.ReviewId, cancellationToken);
             return Unit.Value;
         }
     }

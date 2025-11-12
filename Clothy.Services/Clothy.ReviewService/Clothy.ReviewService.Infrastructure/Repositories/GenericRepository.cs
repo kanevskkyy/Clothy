@@ -4,8 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Clothy.ReviewService.Domain.Entities;
-using Clothy.ReviewService.Domain.Exceptions;
-using Clothy.ReviewService.Domain.Interfaces.Repositories;
+using Clothy.ReviewService.Domain.Interfaces;
 using Clothy.ReviewService.Infrastructure.DB;
 using MongoDB.Driver;
 
@@ -22,7 +21,6 @@ namespace Clothy.ReviewService.Infrastructure.Repositories
             {
                 "Review" => (IMongoCollection<T>)context.Reviews,
                 "Question" => (IMongoCollection<T>)context.Questions,
-                _ => throw new DomainException($"Collection for type {typeof(T).Name} is not defined.")
             };
             this.session = session;
         }

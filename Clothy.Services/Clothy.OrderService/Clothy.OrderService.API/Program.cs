@@ -36,12 +36,6 @@ builder.Services.AddSingleton<IConnectionFactory>(sp =>
 });
 
 builder.AddRedisClient("clothy-redis");
-builder.Services.AddMemoryCache(options =>
-{
-    options.SizeLimit = 1024;
-
-    options.CompactionPercentage = 0.2;
-});
 
 // REGISTER REPOSITORY
 builder.Services.AddScoped<IOrderStatusRepository, OrderStatusRepository>();
@@ -100,23 +94,16 @@ builder.Services.AddTransient<IEntityCacheInvalidationService<Settlement>, Settl
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssembly(typeof(OrderStatusCreateDTOValidator).Assembly);
 
-builder.Services.AddControllers().AddJsonOptions(options =>
-{
-    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-    options.JsonSerializerOptions.DefaultIgnoreCondition =
-        System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
-});
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
-{
-    string xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
-    options.IncludeXmlComments(xmlPath);
-});
 
 //GRPC 
 builder.Services.AddScoped<IOrderItemValidatorGrpcClient, OrderItemValidatorGrpcClient>();
-builder.Services.AddConfiguredGrpcClient<OrderItemValidator.OrderItemValidatorClient>("catalog");
+builder.Services.AddConfiguredGrpcClient<OrderItemValidator.OrderItemValidatorClient>("catalog")
+    .AddStandardResilienceHandler(resilience =>
+    {
+        resilience.Retry.MaxRetryAttempts = 3;
+        resilience.CircuitBreaker.FailureRatio = 0.3;
+    });
 //
 
 var app = builder.Build();
@@ -126,8 +113,7 @@ app.MapDefaultEndpoints();
 await app.PreloadCachesAsync();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
-app.UseCorrelationId();
-app.UseServiceLogging();
+app.UseServiceDefaults();
 
 if (app.Environment.IsDevelopment())
 {

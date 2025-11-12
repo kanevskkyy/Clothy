@@ -38,11 +38,9 @@ namespace Clothy.Shared.Cache
             subscriber = redisMultiplexer.GetSubscriber();
             subscriber.Subscribe(INVALIDATION_CHANNEL, (channel, message) =>
             {
-                var msg = message.ToString();
-                if (msg == CLEAR_ALL_MESSAGES)
-                    ClearAllMemoryCache();
-                else
-                    RemoveFromMemory(msg);
+                string msg = message.ToString();
+                if (msg == CLEAR_ALL_MESSAGES) ClearAllMemoryCache();
+                else RemoveFromMemory(msg);
             });
         }
 
@@ -84,19 +82,25 @@ namespace Clothy.Shared.Cache
                 return memoryData;
             }
 
-            var redisValue = await redisDb.StringGetAsync(key);
-            if (redisValue.HasValue)
+            try
             {
-                var redisData = JsonSerializer.Deserialize<T>(redisValue, JsonOptions)!;
-                logger.LogInformation("Cache hit: Redis | Key: {Key}", key);
-                MemoryCacheEntryOptions options = new MemoryCacheEntryOptions
+                var redisValue = await redisDb.StringGetAsync(key);
+                if (redisValue.HasValue)
                 {
-                    AbsoluteExpirationRelativeToNow = memoryExpiration ?? TimeSpan.FromMinutes(1),
-                    Size = 1
-                };
-                memoryCache.Set(key, redisData, options);
-                TrackMemoryKey(key);
-                return redisData;
+                    var redisData = JsonSerializer.Deserialize<T>(redisValue, JsonOptions)!;
+                    var memoryOptions = new MemoryCacheEntryOptions
+                    {
+                        AbsoluteExpirationRelativeToNow = memoryExpiration ?? TimeSpan.FromMinutes(1),
+                        Size = 1
+                    };
+                    memoryCache.Set(key, redisData, memoryOptions);
+                    TrackMemoryKey(key);
+                    return redisData;
+                }
+            }
+            catch (RedisConnectionException ex)
+            {
+                logger.LogWarning(ex, "Redis unavailable, fallback to DB | Key: {Key}", key);
             }
 
             logger.LogInformation("Cache miss | Key: {Key} — fetching from DB", key);
@@ -110,7 +114,14 @@ namespace Clothy.Shared.Cache
                 };
                 memoryCache.Set(key, dbData, options);
                 TrackMemoryKey(key);
-                await redisDb.StringSetAsync(key, JsonSerializer.Serialize(dbData), redisExpiration ?? TimeSpan.FromMinutes(5));
+                try
+                {
+                    await redisDb.StringSetAsync(key, JsonSerializer.Serialize(dbData), redisExpiration ?? TimeSpan.FromMinutes(5));
+                }
+                catch (RedisConnectionException ex)
+                {
+                    logger.LogWarning(ex, "Redis unavailable, failed to write | Key: {Key}", key);
+                }
             }
 
             return dbData;

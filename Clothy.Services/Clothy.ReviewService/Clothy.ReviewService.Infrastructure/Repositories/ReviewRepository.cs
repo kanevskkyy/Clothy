@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using Clothy.ReviewService.Domain.Entities.QueryParameters;
 using Clothy.ReviewService.Domain.Entities;
 using Clothy.ReviewService.Domain.Helpers;
-using Clothy.ReviewService.Domain.Interfaces.Repositories;
 using Clothy.ReviewService.Infrastructure.DB;
 using MongoDB.Driver;
 using Clothy.ReviewService.Domain.ValueObjects;
 using Clothy.Shared.Helpers;
+using Clothy.ReviewService.Domain.Interfaces;
 
 namespace Clothy.ReviewService.Infrastructure.Repositories
 {

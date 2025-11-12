@@ -24,13 +24,6 @@ using System.Text.Json;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-
-builder.Services.AddControllers().AddJsonOptions(options =>
-{
-    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-    options.JsonSerializerOptions.DefaultIgnoreCondition =
-        System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
-});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -86,22 +79,9 @@ builder.Services.AddValidatorsFromAssembly(typeof(BrandCreateDTOValidator).Assem
 builder.Services.AddGrpc();
 //
 
-builder.Services.AddSwaggerGen(c =>
-{
-    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    c.IncludeXmlComments(xmlPath);
-});
-
 builder.AddNpgsqlDbContext<ClothyCatalogDbContext>("ClothyCatalogDb");
 
 builder.AddRedisClient("clothy-redis");
-builder.Services.AddMemoryCache(options =>
-{
-    options.SizeLimit = 1024; 
-
-    options.CompactionPercentage = 0.2;
-});
 
 await using (var scope = builder.Services.BuildServiceProvider().CreateAsyncScope())
 {
@@ -119,8 +99,7 @@ app.MapGrpcService<ClotheFilterService>();
 app.MapGrpcService<GetClotheByIdGrpcService>();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
-app.UseCorrelationId();
-app.UseServiceLogging();
+app.UseServiceDefaults();
 
 if (app.Environment.IsDevelopment())
 {

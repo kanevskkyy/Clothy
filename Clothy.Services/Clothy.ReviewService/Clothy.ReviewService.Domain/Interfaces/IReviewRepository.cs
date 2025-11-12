@@ -9,7 +9,7 @@ using Clothy.ReviewService.Domain.Helpers;
 using Clothy.ReviewService.Domain.ValueObjects;
 using Clothy.Shared.Helpers;
 
-namespace Clothy.ReviewService.Domain.Interfaces.Repositories
+namespace Clothy.ReviewService.Domain.Interfaces
 {
     public interface IReviewRepository : IGenericRepository<Review>
     {

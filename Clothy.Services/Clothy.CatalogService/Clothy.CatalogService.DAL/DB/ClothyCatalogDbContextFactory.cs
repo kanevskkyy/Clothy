@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
 
 namespace Clothy.CatalogService.DAL.DB
 {
@@ -12,10 +13,21 @@ namespace Clothy.CatalogService.DAL.DB
     {
         public ClothyCatalogDbContext CreateDbContext(string[] args)
         {
-            DbContextOptionsBuilder<ClothyCatalogDbContext> optionsBuilder = new DbContextOptionsBuilder<ClothyCatalogDbContext>();
+            var configuration = new ConfigurationBuilder()
+                .AddEnvironmentVariables() 
+                .Build();
 
-            const string CONNECTION_STRING = "Host=localhost;Port=5432;Database=ClothyCatalog;Username=postgres;Password=postgres";
-            optionsBuilder.UseNpgsql(CONNECTION_STRING);
+            string? connectionString = configuration["ClothyCatalogDb"];
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new InvalidOperationException(
+                    "Connection string 'ClothyCatalogDb' is not set in environment variables!");
+            }
+
+            Console.WriteLine($"Using connection string: {connectionString}");
+
+            DbContextOptionsBuilder optionsBuilder = new DbContextOptionsBuilder<ClothyCatalogDbContext>();
+            optionsBuilder.UseNpgsql(connectionString);
 
             return new ClothyCatalogDbContext(optionsBuilder.Options);
         }

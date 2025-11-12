@@ -17,6 +17,8 @@ using OpenTelemetry.Resources;
 using Clothy.Shared.Cache;
 using Clothy.Shared.Cache.Interfaces;
 using StackExchange.Redis;
+using System.Text.Json;
+using System.Reflection;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -25,6 +27,13 @@ public static class Extensions
     public static IHostApplicationBuilder AddServiceDefaults(this IHostApplicationBuilder builder)
     {
         builder.Logging.ClearProviders();
+
+        builder.Services.AddControllers().AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            options.JsonSerializerOptions.DefaultIgnoreCondition =
+                System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+        });
 
         builder.Services.AddSerilog((ctx, lc) => lc
             .Enrich.FromLogContext()
@@ -48,6 +57,12 @@ public static class Extensions
             return ConnectionMultiplexer.Connect(config);
         });
 
+        builder.Services.AddMemoryCache(options =>
+        {
+            options.SizeLimit = 1024;
+
+            options.CompactionPercentage = 0.2;
+        });
         builder.Services.AddMemoryCache();
         builder.Services.AddSingleton<IEntityCacheService, EntityCacheService>();
 
@@ -65,6 +80,21 @@ public static class Extensions
             http.AddStandardResilienceHandler();
             http.AddServiceDiscovery();
             http.AddHttpMessageHandler<CorrelationIdDelegatingHandler>();
+        });
+
+        builder.Services.AddSwaggerGen(options =>
+        {
+            var entryAssembly = Assembly.GetEntryAssembly();
+            if (entryAssembly != null)
+            {
+                string xmlFilename = $"{entryAssembly.GetName().Name}.xml";
+                string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
+
+                if (File.Exists(xmlPath))
+                {
+                    options.IncludeXmlComments(xmlPath);
+                }
+            }
         });
 
         builder.Services.AddHttpContextAccessor();

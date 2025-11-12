@@ -39,9 +39,24 @@ builder.Services.AddScoped<IReviewGrpcClient, ReviewGrpcClient>();
 builder.Services.AddScoped<IClotheAggregateService, ClotheAggregateService>();
 //
 
-builder.Services.AddConfiguredGrpcClient<ClotheFilterServiceGrpc.ClotheFilterServiceGrpcClient>("catalog");
-builder.Services.AddConfiguredGrpcClient<ClotheServiceGrpc.ClotheServiceGrpcClient>("catalog");
-builder.Services.AddConfiguredGrpcClient<ReviewServiceGrpc.ReviewServiceGrpcClient>("reviews");
+builder.Services.AddConfiguredGrpcClient<ClotheFilterServiceGrpc.ClotheFilterServiceGrpcClient>("catalog")
+    .AddStandardResilienceHandler(resilience =>
+    {
+        resilience.Retry.MaxRetryAttempts = 2;
+        resilience.CircuitBreaker.FailureRatio = 0.6;
+    });
+builder.Services.AddConfiguredGrpcClient<ClotheServiceGrpc.ClotheServiceGrpcClient>("catalog")
+    .AddStandardResilienceHandler(resilience =>
+    {
+        resilience.Retry.MaxRetryAttempts = 2;
+        resilience.CircuitBreaker.FailureRatio = 0.4;
+    }); ;
+builder.Services.AddConfiguredGrpcClient<ReviewServiceGrpc.ReviewServiceGrpcClient>("reviews")
+    .AddStandardResilienceHandler(resilience =>
+    {
+        resilience.Retry.MaxRetryAttempts = 3;
+        resilience.CircuitBreaker.FailureRatio = 0.6;
+    }); ;
 
 builder.Services.AddTransient<CorrelationIdDelegatingHandler>();
 
@@ -58,7 +73,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
-app.UseCorrelationId();
+app.UseServiceDefaults();
 app.MapControllers();
 
 await app.RunAsync();

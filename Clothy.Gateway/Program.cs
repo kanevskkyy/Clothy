@@ -34,7 +34,7 @@ builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
-app.UseCorrelationId();
+app.UseServiceDefaults();
 app.UseMiddleware<RouteMetadataMiddleware>();
 
 app.MapDefaultEndpoints();

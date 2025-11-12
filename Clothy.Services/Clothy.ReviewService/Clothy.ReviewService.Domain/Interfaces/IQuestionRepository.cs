@@ -7,7 +7,7 @@ using Clothy.ReviewService.Domain.Entities.QueryParameters;
 using Clothy.ReviewService.Domain.Entities;
 using Clothy.Shared.Helpers;
 
-namespace Clothy.ReviewService.Domain.Interfaces.Repositories
+namespace Clothy.ReviewService.Domain.Interfaces
 {
     public interface IQuestionRepository : IGenericRepository<Question>
     {

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Clothy.ReviewService.Domain.Entities;
 using Clothy.ReviewService.Domain.Helpers;
-using Clothy.ReviewService.Domain.Interfaces.Services;
+using Clothy.ReviewService.Domain.Interfaces;
 using Clothy.Shared.Helpers;
 using MediatR;
 
@@ -13,16 +13,16 @@ namespace Clothy.ReviewService.Application.Features.Reviews.Query.GetReviews
 {
     public class GetReviewsQueryHandler : IRequestHandler<GetReviewsQuery, PagedList<Review>>
     {
-        private IReviewService reviewService;
+        private IReviewRepository reviewRepository;
 
-        public GetReviewsQueryHandler(IReviewService reviewService)
+        public GetReviewsQueryHandler(IReviewRepository reviewRepository)
         {
-            this.reviewService = reviewService;
+            this.reviewRepository = reviewRepository;
         }
 
         public async Task<PagedList<Review>> Handle(GetReviewsQuery request, CancellationToken cancellationToken)
         {
-            return await reviewService.GetReviewsAsync(request.QueryParameters, cancellationToken);
+            return await reviewRepository.GetReviewsAsync(request.QueryParameters, cancellationToken);
         }
     }
 }

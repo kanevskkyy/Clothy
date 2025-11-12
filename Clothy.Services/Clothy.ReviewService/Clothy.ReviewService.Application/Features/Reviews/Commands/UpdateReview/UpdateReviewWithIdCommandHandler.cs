@@ -4,28 +4,29 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Clothy.ReviewService.Application.Interfaces.Commands;
-using Clothy.ReviewService.Domain.Interfaces.Services;
+using Clothy.ReviewService.Domain.Entities;
+using Clothy.ReviewService.Domain.Interfaces;
+using Clothy.Shared.Helpers.Exceptions;
 using MediatR;
 
 namespace Clothy.ReviewService.Application.Features.Reviews.Commands.UpdateReview
 {
     public class UpdateReviewWithIdCommandHandler : ICommandHandler<UpdateReviewWithIdCommand>
     {
-        private IReviewService reviewService;
+        private IReviewRepository reviewRepository;
 
-        public UpdateReviewWithIdCommandHandler(IReviewService reviewService)
+        public UpdateReviewWithIdCommandHandler(IReviewRepository reviewRepository)
         {
-            this.reviewService = reviewService;
+            this.reviewRepository = reviewRepository;
         }
 
         public async Task<Unit> Handle(UpdateReviewWithIdCommand request, CancellationToken cancellationToken)
         {
-            await reviewService.UpdateReviewAsync(
-                request.ReviewId,
-                request.Comment,
-                request.Rating,
-                cancellationToken
-            );
+            Review? review = await reviewRepository.GetByIdAsync(request.ReviewId, cancellationToken);
+            if (review == null) throw new NotFoundException($"Review with ID {request.ReviewId} not found!");
+
+            review.UpdateComment(request.Comment, request.Rating);
+            await reviewRepository.UpdateAsync(review, cancellationToken);
 
             return Unit.Value;
         }

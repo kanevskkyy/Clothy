@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Clothy.ReviewService.Domain.Entities;
 
-namespace Clothy.ReviewService.Domain.Interfaces.Repositories
+namespace Clothy.ReviewService.Domain.Interfaces
 {
     public interface IGenericRepository<T> where T : BaseEntity
     {

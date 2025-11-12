@@ -1,4 +1,4 @@
-﻿using Clothy.ReviewService.Domain.Exceptions;
+﻿
 using Clothy.Shared.Helpers.Exceptions;
 using MongoDB.Driver;
 using System.Net;
@@ -31,8 +31,6 @@ namespace Clothy.ReviewService.API.Middleware
                 {
                     NotFoundException => (int)HttpStatusCode.NotFound,
                     AlreadyExistsException => (int)HttpStatusCode.Conflict,
-                    InvalidRatingException => (int)HttpStatusCode.BadRequest,
-                    EmptyValueException => (int)HttpStatusCode.BadRequest,
                     MongoConnectionException => (int)HttpStatusCode.ServiceUnavailable,
                     MongoWriteException => (int)HttpStatusCode.BadRequest,
                     ValidationFailedException => (int)HttpStatusCode.BadRequest,

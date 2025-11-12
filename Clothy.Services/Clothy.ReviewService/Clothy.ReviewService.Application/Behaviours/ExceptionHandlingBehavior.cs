@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using FluentValidation;
-using Clothy.ReviewService.Domain.Exceptions;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -22,11 +21,6 @@ namespace Clothy.ReviewService.Application.Behaviours
             try
             {
                 return await next();
-            }
-            catch (DomainException domainException)
-            {
-                logger.LogWarning(domainException, "Domain exception in {RequestName}: {@Request}", typeof(TRequest).Name, request);
-                throw;
             }
             catch (FluentValidation.ValidationException validationsErrors)
             {
