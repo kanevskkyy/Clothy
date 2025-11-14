@@ -20,8 +20,16 @@ using Clothy.ServiceDefaults.Middleware;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using MediatR;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddHealthChecks()
+    .AddCheck<MongoHealthCheck>(
+        name: "mongodb",
+        failureStatus: HealthStatus.Unhealthy,
+        tags: new[] { "ready", "db", "mongodb", "nosql" }
+    );
 
 builder.AddServiceDefaults();
 
@@ -30,9 +38,6 @@ ValueObjectMappings.Register();
 builder.Services.AddMongoDb(builder.Configuration);
 
 builder.Services.AddGrpc();
-
-builder.Services.AddHealthChecks()
-    .AddCheck<MongoHealthCheck>("MongoDB");
 
 // MediatR
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<UpdateQuestionWithIdCommandHandler>());
@@ -71,9 +76,6 @@ builder.Services.AddSingleton(meter);
 //
 
 var app = builder.Build();
-app.MapHealthChecks("/health");
-
-app.MapDefaultEndpoints();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 

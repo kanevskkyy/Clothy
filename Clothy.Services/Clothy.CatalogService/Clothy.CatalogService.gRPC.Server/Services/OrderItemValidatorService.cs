@@ -54,17 +54,25 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                             errorMessage = $"Invalid ClotheItemId: {item.ClotheId}. Cannot find in DB or invalid GUID format";
                             logger.LogWarning("Clothe item not found or invalid GUID format: {ClotheId}", item.ClotheId);
                         }
-                        else if (!Guid.TryParse(item.ColorId, out var colorId) || await unitOfWork.Colors.GetByIdAsync(colorId, context.CancellationToken) == null)
+                        if (!Guid.TryParse(item.ColorId, out var colorId) || await unitOfWork.Colors.GetByIdAsync(colorId, context.CancellationToken) == null)
                         {
                             isValid = false;
                             errorMessage = $"Invalid ColorId: {item.ColorId}. Cannot find in DB or invalid GUID format";
                             logger.LogWarning("Color not found or invalid GUID format: {ColorId}", item.ColorId);
                         }
-                        else if (!Guid.TryParse(item.SizeId, out var sizeId) || await unitOfWork.Sizes.GetByIdAsync(sizeId, context.CancellationToken) == null)
+                        if (!Guid.TryParse(item.SizeId, out var sizeId) || await unitOfWork.Sizes.GetByIdAsync(sizeId, context.CancellationToken) == null)
                         {
                             isValid = false;
                             errorMessage = $"Invalid SizeId: {item.SizeId}. Cannot find in DB or invalid GUID format";
                             logger.LogWarning("Size not found or invalid GUID format: {SizeId}", item.SizeId);
+                        }
+                        bool comboExists = await unitOfWork.ClothesStocks.IsSizeAndColorAndClotheIdsExists(sizeId, colorId, clotheId, context.CancellationToken);
+
+                        if (!comboExists)
+                        {
+                            isValid = false;
+                            errorMessage = $"Combination of ClotheId: {item.ClotheId}, ColorId: {item.ColorId}, SizeId: {item.SizeId} does not exist in stock";
+                            logger.LogWarning("Stock combo not found: ClotheId={ClotheId}, ColorId={ColorId}, SizeId={SizeId}", clotheId, colorId, sizeId);
                         }
                     }
                     catch (Exception ex)

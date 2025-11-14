@@ -21,6 +21,7 @@ using System.Text.Json;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using System.Diagnostics.Metrics;
+using Microsoft.AspNetCore.Http;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -260,6 +261,31 @@ public static class Extensions
             app.MapHealthChecks("/alive", new HealthCheckOptions
             {
                 Predicate = r => r.Tags.Contains("live")
+            });
+
+            app.MapHealthChecks("/health/live", new HealthCheckOptions
+            {
+                Predicate = hc => hc.Tags.Contains("live")
+            });
+
+            app.MapHealthChecks("/health/ready", new HealthCheckOptions
+            {
+                Predicate = hc => hc.Tags.Contains("ready"),
+                ResponseWriter = async (context, report) =>
+                {
+                    context.Response.ContentType = "application/json";
+                    var result = new
+                    {
+                        status = report.Status.ToString(),
+                        checks = report.Entries.Select(e => new
+                        {
+                            name = e.Key,
+                            status = e.Value.Status.ToString(),
+                            description = e.Value.Description
+                        })
+                    };
+                    await context.Response.WriteAsync(JsonSerializer.Serialize(result));
+                }
             });
         }
 

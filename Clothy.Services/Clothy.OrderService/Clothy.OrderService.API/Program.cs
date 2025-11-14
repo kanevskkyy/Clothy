@@ -29,6 +29,23 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//HEALTH CHECK FOR POSTGRES
+builder.Services.AddHealthChecks()
+    .AddNpgSql(
+        connectionString: builder.Configuration.GetConnectionString("ClothyOrder")!,
+        name: "order-postgres-db",
+        healthQuery: "SELECT 1;",
+        failureStatus: HealthStatus.Unhealthy,
+        tags: new[] { "ready", "db", "sql", "postgres" }
+    )
+    .AddRedis(
+        redisConnectionString: builder.Configuration.GetConnectionString("clothy-redis")!,
+        name: "redis-cache",
+        failureStatus: HealthStatus.Degraded,
+        tags: new[] { "ready", "cache", "redis" },
+        timeout: TimeSpan.FromSeconds(3)
+    );
+//
 builder.AddServiceDefaults();
 
 builder.Services.AddSingleton<IConnectionFactory>(sp =>
@@ -106,7 +123,6 @@ builder.Services.AddConfiguredGrpcClient<OrderItemValidator.OrderItemValidatorCl
         resilience.Retry.MaxRetryAttempts = 3;
         resilience.CircuitBreaker.FailureRatio = 0.3;
     });
-//
 
 // OPEN TELEMETRY CONFIG
 builder.Services.AddConfiguredOpenTelemetry("OrderService", builder.Configuration);
@@ -114,27 +130,7 @@ Meter meter = builder.Services.AddOrGetMeter("OrderService");
 builder.Services.AddSingleton(meter);
 //
 
-//HEALTH CHECK FOR POSTGRES
-builder.Services.AddHealthChecks()
-    .AddNpgSql(
-        connectionString: builder.Configuration.GetConnectionString("ClothyOrder"),
-        name: "postgres",
-        healthQuery: "SELECT 1;",
-        failureStatus: HealthStatus.Unhealthy,
-        tags: new[] { "db", "sql", "postgres" }
-    )
-    .AddRedis(
-        redisConnectionString: builder.Configuration.GetConnectionString("clothy-redis"),
-        name: "redis",
-        failureStatus: HealthStatus.Unhealthy,
-        tags: new[] { "cache", "redis" }
-    );
-//
-
 var app = builder.Build();
-app.MapHealthChecks("/health");
-
-app.MapDefaultEndpoints();
 
 await app.PreloadCachesAsync();
 

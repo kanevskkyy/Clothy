@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Clothy.CatalogService.BLL.Interfaces;
+﻿using Clothy.CatalogService.BLL.Interfaces;
 using Clothy.CatalogService.BLL.Mapper;
 using Clothy.CatalogService.BLL.Services;
 using Clothy.CatalogService.DAL.DB;
@@ -22,8 +21,21 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using System.Diagnostics.Metrics;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<ClothyCatalogDbContext>(
+        name: "catalog-db-check",
+        tags: new[] { "ready", "db", "postgres" },
+        failureStatus: HealthStatus.Unhealthy)
+    .AddRedis(
+        redisConnectionString: builder.Configuration.GetConnectionString("clothy-redis"),
+        name: "redis",
+        failureStatus: HealthStatus.Degraded,
+        tags: new[] { "ready", "cache", "redis" },
+        timeout: TimeSpan.FromSeconds(3));
 
 builder.AddServiceDefaults();
 builder.Services.AddEndpointsApiExplorer();
@@ -63,26 +75,20 @@ builder.Services.AddScoped<IClothesStockService, ClothesStockService>();
 // REDIS
 builder.Services.AddTransient<IEntityCacheInvalidationService<ClotheItem>, ClotheItemCacheInvalidationService>();
 builder.Services.AddTransient<IEntityCacheInvalidationService<ClothesStock>, ClothesStockCacheInvalidationService>();
-//
 
 // CLOUDINARY CONFIG
 builder.Services.AddCloudinary(builder.Configuration);
-//
 
-//FILTERS CACHE SERVICE
+// FILTERS CACHE SERVICE
 builder.Services.AddScoped<IFilterCacheInvalidationService, FilterCacheInvalidationService>();
-//
 
 // FLUENT VALIDATION
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssembly(typeof(BrandCreateDTOValidator).Assembly);
 
-//GRPC 
 builder.Services.AddGrpc();
-//
 
 builder.AddNpgsqlDbContext<ClothyCatalogDbContext>("ClothyCatalogDb");
-
 builder.AddRedisClient("clothy-redis");
 
 await using (var scope = builder.Services.BuildServiceProvider().CreateAsyncScope())
@@ -97,24 +103,7 @@ Meter meter = builder.Services.AddOrGetMeter("CatalogService");
 builder.Services.AddSingleton(meter);
 //
 
-//HEALTH CHECK
-builder.Services.AddHealthChecks()
-    .AddDbContextCheck<ClothyCatalogDbContext>(
-        name: "catalog-db-check",
-        tags: new[] { "db", "postgres" }
-    )
-    .AddRedis(
-        redisConnectionString: builder.Configuration.GetConnectionString("clothy-redis"),
-        name: "redis",
-        failureStatus: HealthStatus.Unhealthy,
-        tags: new[] { "cache", "redis" }
-    );
-//
-
 var app = builder.Build();
-
-app.MapDefaultEndpoints();
-app.MapHealthChecks("/health");
 
 app.MapGrpcService<OrderItemValidatorService>();
 app.MapGrpcService<ClotheItemValidatorService>();
