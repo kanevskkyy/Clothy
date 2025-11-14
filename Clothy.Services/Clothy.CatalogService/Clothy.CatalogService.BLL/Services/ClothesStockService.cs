@@ -93,8 +93,8 @@ namespace Clothy.CatalogService.BLL.Services
 
         public async Task<ClothesStockReadDTO> CreateAsync(ClothesStockCreateDTO dto, CancellationToken cancellationToken = default)
         {
-            bool exists = await unitOfWork.ClothesStocks.IsSizeAndColorAndClotheIdsExists(dto.SizeId, dto.ColorId, dto.ClotheId, cancellationToken);
-            if (exists) throw new AlreadyExistsException("Clothes stock with this Size, Color and Clothe already exists");
+            ClothesStock? clothesStock = await unitOfWork.ClothesStocks.GetByClotheColorSizeAsync(dto.ClotheId, dto.ColorId, dto.SizeId, cancellationToken);
+            if (clothesStock != null) throw new AlreadyExistsException("Clothes stock with this Size, Color and Clothe already exists");
 
             ClotheItem? clotheItem = await unitOfWork.ClotheItems.GetByIdAsync(dto.ClotheId, cancellationToken);
             if (clotheItem == null) throw new NotFoundException($"ClotheItem not found with ID: {dto.ClotheId}");

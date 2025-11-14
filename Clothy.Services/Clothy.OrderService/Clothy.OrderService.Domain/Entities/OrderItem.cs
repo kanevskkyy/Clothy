@@ -14,7 +14,7 @@ namespace Clothy.OrderService.Domain.Entities
         public Guid ClotheId { get; set; }
         public string? ClotheName { get; set; }
 
-        public double Price { get; set; }
+        public decimal Price { get; set; }
         public string? MainPhoto { get; set; }
 
         public Guid ColorId { get; set; }

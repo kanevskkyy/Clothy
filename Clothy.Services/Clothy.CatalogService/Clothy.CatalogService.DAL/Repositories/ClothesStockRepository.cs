@@ -21,6 +21,11 @@ namespace Clothy.CatalogService.DAL.Repositories
 
         }
 
+        public async Task<ClothesStock?> GetByClotheColorSizeAsync(Guid clotheId, Guid colorId, Guid sizeId, CancellationToken cancellationToken = default)
+        {
+            return await dbSet.FirstOrDefaultAsync(s => s.ClotheId == clotheId && s.ColorId == colorId && s.SizeId == sizeId, cancellationToken);
+        }
+
         public async Task<ClothesStock?> GetByIdWithDetailsAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await dbSet
@@ -42,11 +47,6 @@ namespace Clothy.CatalogService.DAL.Repositories
                 .ToListAsync(cancellationToken);
 
             return new PagedList<ClothesStock>(stocks, count, parameters.PageNumber, parameters.PageSize);
-        }
-
-        public async Task<bool> IsSizeAndColorAndClotheIdsExists(Guid sizeId, Guid colorId, Guid clotheId, CancellationToken cancellationToken = default)
-        {
-            return await dbSet.AnyAsync(property => property.SizeId == sizeId && property.ColorId == colorId && property.ClotheId == clotheId, cancellationToken);
         }
     }
 }

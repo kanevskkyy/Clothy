@@ -4,6 +4,7 @@ message OrderItemToValidate {
     string clotheId = 1;
     string colorId = 2;
     string sizeId = 3;
+    int32 quantity = 4;
 }
 
 message ValidateOrderItemsRequest {
@@ -13,6 +14,11 @@ message ValidateOrderItemsRequest {
 message ValidateOrderItemResponse {
     bool isValid = 1;
     string errorMessage = 2;
+    string clotheName = 3;
+    string price = 4;
+    string mainPhotoUrl = 5;
+    string colorHexCode = 6;
+    string sizeName = 7;
 }
 
 message ValidateOrderItemsResponse {
