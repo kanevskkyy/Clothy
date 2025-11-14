@@ -25,15 +25,15 @@ namespace Clothy.ReviewService.Infrastructure.Repositories
             var filterBuilder = Builders<Question>.Filter;
             var filter = filterBuilder.Empty;
 
-            if (queryParameters.UserId.HasValue) filter &= filterBuilder.Eq(q => q.User.UserId, queryParameters.UserId.Value);
+            if (queryParameters.UserId.HasValue) filter &= filterBuilder.Eq(question => question.User.UserId, queryParameters.UserId.Value);
 
-            if (queryParameters.ClotheItemId.HasValue) filter &= filterBuilder.Eq(q => q.ClotheItemId, queryParameters.ClotheItemId.Value);
+            if (queryParameters.ClotheItemId.HasValue) filter &= filterBuilder.Eq(question => question.ClotheItemId, queryParameters.ClotheItemId.Value);
 
             IFindFluent<Question, Question> findFluent = collection.Find(filter);
 
             if (!string.IsNullOrWhiteSpace(queryParameters.OrderBy))
             {
-                var sortHelper = new MongoSortHelper<Question>();
+                MongoSortHelper<Question> sortHelper = new MongoSortHelper<Question>();
                 findFluent = findFluent.Sort(sortHelper.ApplySort(queryParameters.OrderBy));
             }
 
@@ -42,22 +42,22 @@ namespace Clothy.ReviewService.Infrastructure.Repositories
 
         public async Task AddAnswerAsync(string questionId, Answer answer, CancellationToken cancellationToken = default)
         {
-            var update = Builders<Question>.Update.Push(q => q.Answers, answer)
-                                                .CurrentDate(q => q.UpdatedAt);
+            var update = Builders<Question>.Update.Push(question => question.Answers, answer)
+                                                .CurrentDate(question => question.UpdatedAt);
 
-            await collection.UpdateOneAsync(q => q.Id == questionId, update, cancellationToken: cancellationToken);
+            await collection.UpdateOneAsync(question => question.Id == questionId, update, cancellationToken: cancellationToken);
         }
 
         public async Task UpdateAnswerAsync(string questionId, Answer answer, CancellationToken cancellationToken = default)
         {
             var filter = Builders<Question>.Filter.And(
-                Builders<Question>.Filter.Eq(q => q.Id, questionId),
-                Builders<Question>.Filter.ElemMatch(q => q.Answers, a => a.Id == answer.Id)
+                Builders<Question>.Filter.Eq(question => question.Id, questionId),
+                Builders<Question>.Filter.ElemMatch(question => question.Answers, a => a.Id == answer.Id)
             );
 
             var update = Builders<Question>.Update
                 .Set(q => q.Answers[-1], answer) 
-                .CurrentDate(q => q.UpdatedAt);
+                .CurrentDate(question => question.UpdatedAt);
 
             await collection.UpdateOneAsync(filter, update, cancellationToken: cancellationToken);
         }
@@ -65,18 +65,18 @@ namespace Clothy.ReviewService.Infrastructure.Repositories
         public async Task UpdateQuestionAsync(Question question, CancellationToken cancellationToken = default)
         {
             var update = Builders<Question>.Update
-                .Set(q => q.QuestionText, question.QuestionText)
-                .CurrentDate(q => q.UpdatedAt);
+                .Set(tempQuestion => tempQuestion.QuestionText, question.QuestionText)
+                .CurrentDate(question => question.UpdatedAt);
 
             await collection.UpdateOneAsync(q => q.Id == question.Id, update, cancellationToken: cancellationToken);
         }
 
         public async Task DeleteAnswerAsync(string questionId, string answerId, CancellationToken cancellationToken = default)
         {
-            var update = Builders<Question>.Update.PullFilter(q => q.Answers, a => a.Id == answerId)
-                                                .CurrentDate(q => q.UpdatedAt);
+            var update = Builders<Question>.Update.PullFilter(question => question.Answers, answer => answer.Id == answerId)
+                                                .CurrentDate(question => question.UpdatedAt);
 
-            await collection.UpdateOneAsync(q => q.Id == questionId, update, cancellationToken: cancellationToken);
+            await collection.UpdateOneAsync(question => question.Id == questionId, update, cancellationToken: cancellationToken);
         }
     }
 }

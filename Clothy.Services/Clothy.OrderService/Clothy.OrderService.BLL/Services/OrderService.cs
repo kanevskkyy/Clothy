@@ -15,6 +15,8 @@ using Clothy.Shared.Cache.Interfaces;
 using Microsoft.Extensions.Logging;
 using Clothy.Shared.Helpers.Exceptions;
 using Clothy.OrderService.gRPC.Client.Services.Interfaces;
+using System.Diagnostics.Metrics;
+using System.Diagnostics;
 
 namespace Clothy.OrderService.BLL.Services
 {
@@ -32,59 +34,99 @@ namespace Clothy.OrderService.BLL.Services
         private static TimeSpan MEMORY_TTL_PAGED_ORDERS = TimeSpan.FromMinutes(10);
         private static TimeSpan REDIS_TTL_PAGED_ORDERS = TimeSpan.FromHours(1);
 
-        public OrderService(IUnitOfWork unitOfWork, IMapper mapper, IEntityCacheService cacheService, IEntityCacheInvalidationService<Order> cacheInvalidationService, IOrderItemValidatorGrpcClient validatorGrpcClient)
+        private Counter<long> ordersCreated;
+        private Histogram<double> operationLatency;
+
+        public OrderService(IUnitOfWork unitOfWork, IMapper mapper, IEntityCacheService cacheService, IEntityCacheInvalidationService<Order> cacheInvalidationService, IOrderItemValidatorGrpcClient validatorGrpcClient, Meter meter)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
             this.cacheService = cacheService;
             this.cacheInvalidationService = cacheInvalidationService;
             this.validatorGrpcClient = validatorGrpcClient;
+            ordersCreated = meter.CreateCounter<long>(
+                "clothy.orderservice.orders.created-succesfully",
+                "items",
+                "Total count of created orders");
+            operationLatency = meter.CreateHistogram<double>(
+                "clothy.orderservice.orders.operation-duration",
+                "ms",
+                "Duration of created orders");
         }
 
         public async Task<OrderDetailDTO> CreateAsync(OrderCreateDTO dto, CancellationToken cancellationToken = default)
         {
-            if(dto.Items.Count > 0)
+            Stopwatch stopwatch = new Stopwatch();
+            string statusType = "Success";
+            string failureReason = string.Empty;
+            stopwatch.Start();
+
+            try
             {
-                List<OrderItemToValidate> targetValidateRequest = dto.Items.Select(p => new OrderItemToValidate
+                if (dto.Items.Count > 0)
                 {
-                    ClotheId = p.ClotheId.ToString(),
-                    ColorId = p.ColorId.ToString(),
-                    SizeId = p.SizeId.ToString(),
-                }).ToList();
+                    List<OrderItemToValidate> targetValidateRequest = dto.Items.Select(p => new OrderItemToValidate
+                    {
+                        ClotheId = p.ClotheId.ToString(),
+                        ColorId = p.ColorId.ToString(),
+                        SizeId = p.SizeId.ToString(),
+                    }).ToList();
 
-                var validationResponse = await validatorGrpcClient.ValidateOrderItemsAsync(targetValidateRequest);
-                
-                var invalidItem = validationResponse.Results.FirstOrDefault(r => !r.IsValid);
-                if (invalidItem != null) throw new ValidationFailedException($"Order item validation failed: {invalidItem.ErrorMessage}");
+                    var validationResponse = await validatorGrpcClient.ValidateOrderItemsAsync(targetValidateRequest);
+
+                    var invalidItem = validationResponse.Results.FirstOrDefault(r => !r.IsValid);
+                    if (invalidItem != null) throw new ValidationFailedException($"Order item validation failed: {invalidItem.ErrorMessage}");
+                }
+
+                OrderStatus? pendingStatus = await unitOfWork.OrderStatuses.GetByNameAsync("Pending", cancellationToken);
+                if (pendingStatus == null) throw new NotFoundException($"Pending status not found");
+
+                Order order = mapper.Map<Order>(dto);
+                order.StatusId = pendingStatus.Id;
+
+                await unitOfWork.Orders.AddAsync(order, cancellationToken);
+
+                foreach (var itemDto in dto.Items)
+                {
+                    OrderItem item = mapper.Map<OrderItem>(itemDto);
+                    item.OrderId = order.Id;
+                    await unitOfWork.OrderItems.AddAsync(item, cancellationToken);
+                }
+
+                PickupPoints? pickupPoints = await unitOfWork.PickupPoint.GetByIdAsync(dto.DeliveryDetail.PickupPointId, cancellationToken);
+                if (pickupPoints == null) throw new NotFoundException($"PickupPoint not found with ID: {dto.DeliveryDetail.PickupPointId}");
+
+                DeliveryDetail delivery = mapper.Map<DeliveryDetail>(dto.DeliveryDetail);
+                delivery.OrderId = order.Id;
+                await unitOfWork.DeliveryDetails.AddAsync(delivery, cancellationToken);
+
+                await unitOfWork.CommitAsync();
+                ordersCreated.Add(1, new KeyValuePair<string, object?>("status", "Pending"),
+                    new KeyValuePair<string, object?>("pickupPointAddress", pickupPoints.Address));
+
+                await cacheInvalidationService.InvalidateAllAsync();
+
+                operationLatency.Record(
+                    stopwatch.ElapsedMilliseconds,
+                    new KeyValuePair<string, object?>("operation", "order_create"),
+                    new KeyValuePair<string, object?>("status", statusType),
+                    new KeyValuePair<string, object?>("failureReason", failureReason),
+                    new KeyValuePair<string, object?>("itemsCount", dto.Items.Count)
+                );
+
+                return await GetByIdAsync(order.Id, cancellationToken);
             }
-
-            OrderStatus? pendingStatus = await unitOfWork.OrderStatuses.GetByNameAsync("Pending", cancellationToken);
-            if (pendingStatus == null) throw new NotFoundException($"Pending status not found");
-
-            Order order = mapper.Map<Order>(dto);
-            order.StatusId = pendingStatus.Id;
-
-            await unitOfWork.Orders.AddAsync(order, cancellationToken);
-
-            foreach (var itemDto in dto.Items)
+            catch (Exception ex)
             {
-                OrderItem item = mapper.Map<OrderItem>(itemDto);
-                item.OrderId = order.Id;
-                await unitOfWork.OrderItems.AddAsync(item, cancellationToken);
+                operationLatency.Record(
+                    stopwatch.ElapsedMilliseconds,
+                    new KeyValuePair<string, object?>("operation", "order_create"),
+                    new KeyValuePair<string, object?>("status", "failed"),
+                    new KeyValuePair<string, object?>("failureReason", ex.GetType().Name),
+                    new KeyValuePair<string, object?>("itemsCount", dto.Items.Count)
+                );
+                throw;
             }
-
-            PickupPoints? pickupPoints = await unitOfWork.PickupPoint.GetByIdAsync(dto.DeliveryDetail.PickupPointId, cancellationToken);
-            if (pickupPoints == null) throw new NotFoundException($"PickupPoint not found with ID: {dto.DeliveryDetail.PickupPointId}");
-
-            DeliveryDetail delivery = mapper.Map<DeliveryDetail>(dto.DeliveryDetail);
-            delivery.OrderId = order.Id;
-            await unitOfWork.DeliveryDetails.AddAsync(delivery, cancellationToken);
-
-            await unitOfWork.CommitAsync();
-
-            await cacheInvalidationService.InvalidateAllAsync();
-
-            return await GetByIdAsync(order.Id, cancellationToken);
         }
 
         public async Task<OrderDetailDTO> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)

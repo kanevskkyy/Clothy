@@ -1,4 +1,5 @@
-﻿using Clothy.ReviewService.Application.Features.Reviews.Commands.CreateReview;
+﻿using Clothy.ReviewService.Application.Features.Reviews.Commands.ConfirmReview;
+using Clothy.ReviewService.Application.Features.Reviews.Commands.CreateReview;
 using Clothy.ReviewService.Application.Features.Reviews.Commands.DeleteReview;
 using Clothy.ReviewService.Application.Features.Reviews.Commands.UpdateReview;
 using Clothy.ReviewService.Application.Features.Reviews.Query.GetReviewById;
@@ -116,6 +117,27 @@ namespace Clothy.ReviewService.API.Controllers
 
             logger.LogInformation("Review statistics successfully fetched for ClotheItemId: {ClotheItemId}", clotheItemId);
             return Ok(stats);
+        }
+
+        /// <summary>
+        /// Confirm a review by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the review to confirm.</param>
+        /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
+        /// <returns>
+        /// The confirmed review object.
+        /// </returns>
+        /// <response code="200">Returns the review after it has been confirmed.</response>
+        [HttpPatch("status/{id}/confirm")]
+        public async Task<IActionResult> ConfirmReview(string id, CancellationToken cancellationToken)
+        {
+            logger.LogInformation("Confirming review with ID: {Id}", id);
+
+            ConfirmReviewCommand command = new ConfirmReviewCommand(id);
+            var result = await mediator.Send(command, cancellationToken);
+
+            logger.LogInformation("Review with ID {Id} successfully confirmed.", id);
+            return Ok(result);
         }
 
         /// <summary>

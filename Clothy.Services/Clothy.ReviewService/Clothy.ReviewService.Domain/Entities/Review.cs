@@ -20,7 +20,11 @@ namespace Clothy.ReviewService.Domain.Entities
         public int Rating { get; private set; }  
 
         [BsonElement("comment")]
-        public string Comment { get; private set; }  
+        public string Comment { get; private set; }
+
+        [BsonElement("status")]
+        [BsonRepresentation(MongoDB.Bson.BsonType.String)]
+        public ReviewStatus Status { get; private set; }
 
         private Review() 
         {
@@ -33,7 +37,15 @@ namespace Clothy.ReviewService.Domain.Entities
             User = user;
             Rating = rating;
             Comment = comment.Trim();
+            Status = ReviewStatus.Pending;
         }
+
+        public void ConfirmStatus()
+        {
+            Status = ReviewStatus.Confirmed;
+            UpdateTimestamp();
+        }
+
 
         public void UpdateComment(string newComment, int newRating)
         {

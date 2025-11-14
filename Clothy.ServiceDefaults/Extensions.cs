@@ -19,6 +19,8 @@ using Clothy.Shared.Cache.Interfaces;
 using StackExchange.Redis;
 using System.Text.Json;
 using System.Reflection;
+using System.Text.Json.Serialization;
+using System.Diagnostics.Metrics;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -31,8 +33,8 @@ public static class Extensions
         builder.Services.AddControllers().AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-            options.JsonSerializerOptions.DefaultIgnoreCondition =
-                System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+            options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         });
 
         builder.Services.AddSerilog((ctx, lc) => lc
@@ -255,8 +257,6 @@ public static class Extensions
     {
         if (app.Environment.IsDevelopment())
         {
-            app.MapHealthChecks("/health");
-
             app.MapHealthChecks("/alive", new HealthCheckOptions
             {
                 Predicate = r => r.Tags.Contains("live")

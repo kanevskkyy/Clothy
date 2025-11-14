@@ -11,6 +11,8 @@ using Clothy.Shared.Helpers.CloudinaryConfig;
 using Clothy.Shared.Cache.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Clothy.Shared.Helpers.Exceptions;
+using System.Diagnostics.Metrics;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 
 namespace Clothy.CatalogService.BLL.Services
 {
@@ -26,14 +28,19 @@ namespace Clothy.CatalogService.BLL.Services
         private static TimeSpan REDIS_TTL_CLOTHE_PAGE = TimeSpan.FromHours(1);
         private static TimeSpan MEMORY_TTL_CLOTHE_DETAIL = TimeSpan.FromMinutes(15);
         private static TimeSpan REDIS_TTL_CLOTHE_DETAIL = TimeSpan.FromMinutes(30);
+        private Counter<long> clotheCreatedMetric;
 
-        public ClotheService(IUnitOfWork unitOfWork,IMapper mapper, IImageService imageService, IEntityCacheService cacheService, IEntityCacheInvalidationService<ClotheItem> cacheInvalidationService)
+        public ClotheService(IUnitOfWork unitOfWork,IMapper mapper, IImageService imageService, IEntityCacheService cacheService, IEntityCacheInvalidationService<ClotheItem> cacheInvalidationService, Meter meter)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
             this.imageService = imageService;
             this.cacheService = cacheService;
             this.cacheInvalidationService = cacheInvalidationService;
+            clotheCreatedMetric = meter.CreateCounter<long>(
+                "clothy.catalog.clotheItem.created_total",
+                "items",
+                "Total numbers of clothes created");
         }
 
         public async Task<PagedList<ClotheSummaryDTO>> GetPagedClotheItemsAsync(ClotheItemSpecificationParameters parameters, CancellationToken cancellationToken = default)
@@ -94,6 +101,15 @@ namespace Clothy.CatalogService.BLL.Services
             int totalPercentage = dto.Materials.Sum(p => p.Percentage);
             if (totalPercentage != 100) throw new InvalidMaterialPercentageException("Total material percentage must be exactly 100.");
 
+            Brand? brand = await unitOfWork.Brands.GetByIdAsync(dto.BrandId, cancellationToken);
+            if (brand == null) throw new NotFoundException($"Brand with ID: {dto.BrandId} not found");
+
+            ClothingType? clothingType = await unitOfWork.ClothingTypes.GetByIdAsync(dto.ClothingTypeId, cancellationToken);
+            if (clothingType == null) throw new NotFoundException($"Clothing type with ID: {dto.ClothingTypeId} not found");
+
+            Collection? collection = await unitOfWork.Collections.GetByIdAsync(dto.CollectionId, cancellationToken);
+            if (collection == null) throw new NotFoundException($"Collection with ID: {dto.CollectionId} not found");
+
             ClotheItem clothe = mapper.Map<ClotheItem>(dto);
             clothe.MainPhotoURL = await imageService.UploadAsync(dto.MainPhoto, "clothes");
 
@@ -127,6 +143,9 @@ namespace Clothy.CatalogService.BLL.Services
             await unitOfWork.ClotheItems.AddAsync(clothe, cancellationToken);
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
+            clotheCreatedMetric.Add(1, new KeyValuePair<string, object?>("collection", collection.Name),
+                              new KeyValuePair<string, object?>("clotheType", clothingType.Name));
+
             await cacheInvalidationService.InvalidateAllAsync();
 
             return await GetDetailByIdAsync(clothe.Id, cancellationToken);
@@ -141,6 +160,15 @@ namespace Clothy.CatalogService.BLL.Services
 
             int totalPercentage = dto.Materials.Sum(percentage => percentage.Percentage);
             if (totalPercentage != 100) throw new InvalidMaterialPercentageException("Total material percentage must be exactly 100.");
+
+            Brand? brand = await unitOfWork.Brands.GetByIdAsync(dto.BrandId, cancellationToken);
+            if (brand == null) throw new NotFoundException($"Brand with ID: {dto.BrandId} not found");
+
+            ClothingType? clothingType = await unitOfWork.ClothingTypes.GetByIdAsync(dto.ClothingTypeId, cancellationToken);
+            if (clothingType == null) throw new NotFoundException($"Clothing type with ID: {dto.ClothingTypeId} not found");
+
+            Collection? collection = await unitOfWork.Collections.GetByIdAsync(dto.CollectionId, cancellationToken);
+            if (collection == null) throw new NotFoundException($"Collection with ID: {dto.CollectionId} not found");
 
             mapper.Map(dto, clotheItem);
 

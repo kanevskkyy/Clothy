@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,13 +23,19 @@ namespace Clothy.CatalogService.BLL.Services
         private IMapper mapper;
         private IImageService imageService;
         private IFilterCacheInvalidationService filterCacheInvalidationService;
+        private Counter<long> brandsCreatedCounter;
 
-        public BrandService(IUnitOfWork unitOfWork, IMapper mapper, IImageService imageService, IFilterCacheInvalidationService filterCacheInvalidationService)
+        public BrandService(IUnitOfWork unitOfWork, IMapper mapper, IImageService imageService, IFilterCacheInvalidationService filterCacheInvalidationService, Meter meter)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
             this.filterCacheInvalidationService = filterCacheInvalidationService;
             this.imageService = imageService;
+            brandsCreatedCounter = meter.CreateCounter<long>(
+                    "clothy.catalog.brands.createdBrands",
+                    "items",
+                    "Number of brands created"
+                );
         }
 
         public async Task<List<BrandReadDTO>> GetAllAsync(CancellationToken cancellationToken = default)
@@ -59,6 +66,8 @@ namespace Clothy.CatalogService.BLL.Services
 
             await unitOfWork.Brands.AddAsync(brand, cancellationToken);
             await unitOfWork.SaveChangesAsync(cancellationToken);
+
+            brandsCreatedCounter.Add(1, new KeyValuePair<string, object?>("userType", "Admin"));
 
             await filterCacheInvalidationService.InvalidateAsync();
             return mapper.Map<BrandReadDTO>(brand);

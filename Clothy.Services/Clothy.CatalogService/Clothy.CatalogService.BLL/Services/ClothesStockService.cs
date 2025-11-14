@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,12 +29,18 @@ namespace Clothy.CatalogService.BLL.Services
         private static TimeSpan MEMORY_TTL_ITEM = TimeSpan.FromMinutes(5);
         private static TimeSpan REDIS_TTL_ITEM = TimeSpan.FromMinutes(30);
 
-        public ClothesStockService(IUnitOfWork unitOfWork, IMapper mapper, IEntityCacheService cacheService, IEntityCacheInvalidationService<ClothesStock> cacheInvalidationService)
+        private Counter<long> stockUpdatedCounter;
+
+        public ClothesStockService(IUnitOfWork unitOfWork, IMapper mapper, IEntityCacheService cacheService, IEntityCacheInvalidationService<ClothesStock> cacheInvalidationService, Meter meter)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
             this.cacheService = cacheService;
             this.cacheInvalidationService = cacheInvalidationService;
+            stockUpdatedCounter = meter.CreateCounter<long>(
+                "clothy.catalog.clotheStock.updated",
+                "items",
+                "Number of stock changes (add/update)");
         }
 
         public async Task<PagedList<ClothesStockReadDTO>> GetPagedClothesStockAsync(ClothesStockSpecificationParameters parameters, CancellationToken cancellationToken = default)
@@ -101,7 +108,9 @@ namespace Clothy.CatalogService.BLL.Services
             ClothesStock stock = mapper.Map<ClothesStock>(dto);
             await unitOfWork.ClothesStocks.AddAsync(stock, cancellationToken);
             await unitOfWork.SaveChangesAsync(cancellationToken);
-            
+
+            stockUpdatedCounter.Add(1, new KeyValuePair<string, object?>("operation", "create"));
+
             await cacheInvalidationService.InvalidateAllAsync();
             return await GetByIdWithDetailsAsync(stock.Id, cancellationToken);
         }
@@ -114,6 +123,8 @@ namespace Clothy.CatalogService.BLL.Services
             mapper.Map(dto, stock);
             unitOfWork.ClothesStocks.Update(stock);
             await unitOfWork.SaveChangesAsync(cancellationToken);
+
+            stockUpdatedCounter.Add(1, new KeyValuePair<string, object?>("operation", "update"));
 
             await cacheInvalidationService.InvalidateByIdAsync(id);
             return await GetByIdWithDetailsAsync(stock.Id, cancellationToken);

@@ -11,5 +11,6 @@ namespace Clothy.ReviewService.Domain.Entities.QueryParameters
         public Guid? UserId { get; set; }
         public Guid? ClotheItemId { get; set; }
         public int? Rating { get; set; }
+        public ReviewStatus? Status { get; set; }
     }
 }

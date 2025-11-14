@@ -24,6 +24,8 @@ using Clothy.OrderService.BLL.RedisCache.RegionCache;
 using Clothy.OrderService.BLL.RedisCache.PickupPointsCache;
 using Clothy.OrderService.BLL.RedisCache.SettlementCache;
 using System.Text.Json;
+using System.Diagnostics.Metrics;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -106,7 +108,31 @@ builder.Services.AddConfiguredGrpcClient<OrderItemValidator.OrderItemValidatorCl
     });
 //
 
+// OPEN TELEMETRY CONFIG
+builder.Services.AddConfiguredOpenTelemetry("OrderService", builder.Configuration);
+Meter meter = builder.Services.AddOrGetMeter("OrderService");
+builder.Services.AddSingleton(meter);
+//
+
+//HEALTH CHECK FOR POSTGRES
+builder.Services.AddHealthChecks()
+    .AddNpgSql(
+        connectionString: builder.Configuration.GetConnectionString("ClothyOrder"),
+        name: "postgres",
+        healthQuery: "SELECT 1;",
+        failureStatus: HealthStatus.Unhealthy,
+        tags: new[] { "db", "sql", "postgres" }
+    )
+    .AddRedis(
+        redisConnectionString: builder.Configuration.GetConnectionString("clothy-redis"),
+        name: "redis",
+        failureStatus: HealthStatus.Unhealthy,
+        tags: new[] { "cache", "redis" }
+    );
+//
+
 var app = builder.Build();
+app.MapHealthChecks("/health");
 
 app.MapDefaultEndpoints();
 

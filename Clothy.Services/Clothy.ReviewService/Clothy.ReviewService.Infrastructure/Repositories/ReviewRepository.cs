@@ -23,7 +23,9 @@ namespace Clothy.ReviewService.Infrastructure.Repositories
 
         public async Task<ReviewStatistics> GetReviewStatisticsAsync(Guid clotheItemId, CancellationToken cancellationToken = default)
         {
-            var filter = Builders<Review>.Filter.Eq(r => r.ClotheItemId, clotheItemId);
+            var filter = Builders<Review>.Filter.Eq(review => review.ClotheItemId, clotheItemId) & 
+                Builders<Review>.Filter.Eq(r => r.Status, ReviewStatus.Confirmed);
+
             var reviews = await collection.Find(filter).ToListAsync(cancellationToken);
 
             if (reviews.Count == 0)
@@ -45,12 +47,12 @@ namespace Clothy.ReviewService.Infrastructure.Repositories
             {
                 ClotheItemId = clotheItemId,
                 TotalReviews = reviews.Count,
-                FiveStars = reviews.Count(r => r.Rating == 5),
-                FourStars = reviews.Count(r => r.Rating == 4),
-                ThreeStars = reviews.Count(r => r.Rating == 3),
-                TwoStars = reviews.Count(r => r.Rating == 2),
-                OneStar = reviews.Count(r => r.Rating == 1),
-                AverageRating = reviews.Average(r => r.Rating)
+                FiveStars = reviews.Count(review => review.Rating == 5),
+                FourStars = reviews.Count(review => review.Rating == 4),
+                ThreeStars = reviews.Count(review => review.Rating == 3),
+                TwoStars = reviews.Count(review => review.Rating == 2),
+                OneStar = reviews.Count(review => review.Rating == 1),
+                AverageRating = reviews.Average(review => review.Rating)
             };
         }
 
@@ -59,11 +61,21 @@ namespace Clothy.ReviewService.Infrastructure.Repositories
             var filterBuilder = Builders<Review>.Filter;
             var filter = filterBuilder.Empty;
 
-            if (queryParameters.UserId.HasValue) filter &= filterBuilder.Eq(r => r.User.UserId, queryParameters.UserId.Value);
+            if (queryParameters.UserId.HasValue) filter &= filterBuilder.Eq(review => review.User.UserId, queryParameters.UserId.Value);
 
-            if (queryParameters.ClotheItemId.HasValue) filter &= filterBuilder.Eq(r => r.ClotheItemId, queryParameters.ClotheItemId.Value);
+            if (queryParameters.ClotheItemId.HasValue)
+            {
+                filter &= filterBuilder.Eq(review => review.ClotheItemId, queryParameters.ClotheItemId.Value);
 
-            if (queryParameters.Rating.HasValue) filter &= filterBuilder.Eq(r => r.Rating, queryParameters.Rating.Value);
+                if (!queryParameters.Status.HasValue)
+                {
+                    filter &= filterBuilder.Eq(review => review.Status, ReviewStatus.Confirmed);
+                }
+            }
+
+            if (queryParameters.Status.HasValue) filter &= filterBuilder.Eq(review => review.Status, queryParameters.Status.Value);
+
+            if (queryParameters.Rating.HasValue) filter &= filterBuilder.Eq(review => review.Rating, queryParameters.Rating.Value);
 
             IFindFluent<Review, Review> findFluent = collection.Find(filter);
 
@@ -79,8 +91,8 @@ namespace Clothy.ReviewService.Infrastructure.Repositories
         public async Task<bool> HasUserReviewedClotheAsync(Guid userId, Guid clotheItemId, CancellationToken cancellationToken = default)
         {
             var filterBuilder = Builders<Review>.Filter;
-            var filter = filterBuilder.Eq(r => r.User.UserId, userId) &
-                         filterBuilder.Eq(r => r.ClotheItemId, clotheItemId);
+            var filter = filterBuilder.Eq(review => review.User.UserId, userId) &
+                         filterBuilder.Eq(review => review.ClotheItemId, clotheItemId);
 
             long count = await collection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
             return count > 0;
@@ -88,7 +100,7 @@ namespace Clothy.ReviewService.Infrastructure.Repositories
 
         public async Task<bool> ClotheItemExistsAsync(Guid clotheItemId, CancellationToken cancellationToken = default)
         {
-            var filterBuilder = Builders<Review>.Filter.Eq(p => p.ClotheItemId, clotheItemId);
+            var filterBuilder = Builders<Review>.Filter.Eq(review => review.ClotheItemId, clotheItemId);
             long count = await collection.CountDocumentsAsync(filterBuilder, cancellationToken: cancellationToken);
             return count > 0;
         }

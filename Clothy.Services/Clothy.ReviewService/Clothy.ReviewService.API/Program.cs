@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics.Metrics;
+using System.Reflection;
 using System.Text.Json;
 using Clothy.ReviewService.API.Middleware;
 using Clothy.ReviewService.Application.Behaviours;
@@ -51,7 +52,7 @@ builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssembly(typeof(UpdateAnswerCommandValidator).Assembly);
 //
 
-builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddEndpointsApiExplorer()  ;
 
 // GRPC
 builder.Services.AddScoped<IClotheItemIdValidatorGrpcClient, ClotheItemIdValidatorGrpcClient>();
@@ -63,7 +64,14 @@ builder.Services.AddConfiguredGrpcClient<ClotheItemIdValidator.ClotheItemIdValid
     });
 //
 
+// OPEN TELEMETRY CONFIG
+builder.Services.AddConfiguredOpenTelemetry("ReviewService", builder.Configuration);
+Meter meter = builder.Services.AddOrGetMeter("ReviewService");
+builder.Services.AddSingleton(meter);
+//
+
 var app = builder.Build();
+app.MapHealthChecks("/health");
 
 app.MapDefaultEndpoints();
 

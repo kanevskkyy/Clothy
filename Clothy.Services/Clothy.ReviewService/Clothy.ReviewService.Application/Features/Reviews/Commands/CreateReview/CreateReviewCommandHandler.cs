@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,11 +17,16 @@ namespace Clothy.ReviewService.Application.Features.Reviews.Commands.CreateRevie
     {
         private IReviewRepository reviewRepository;
         private IClotheItemIdValidatorGrpcClient clotheItemIdValidatorGrpcClient;
+        private Counter<long> reviewsCreated;
 
-        public CreateReviewCommandHandler(IReviewRepository reviewRepository, IClotheItemIdValidatorGrpcClient clotheItemIdValidatorGrpcClient)
+        public CreateReviewCommandHandler(IReviewRepository reviewRepository, IClotheItemIdValidatorGrpcClient clotheItemIdValidatorGrpcClient, Meter meter)
         {
             this.reviewRepository = reviewRepository;
             this.clotheItemIdValidatorGrpcClient = clotheItemIdValidatorGrpcClient;
+            reviewsCreated = meter.CreateCounter<long>(
+                "clothy.reviewservice.reviews-created",
+                "count",
+                "Total numbers of reviews created");
         }
 
         public async Task<Review> Handle(CreateReviewCommand request, CancellationToken cancellationToken)
@@ -36,6 +42,8 @@ namespace Clothy.ReviewService.Application.Features.Reviews.Commands.CreateRevie
             if (alreadyExists) throw new AlreadyExistsException("User has already reviewed this clothe!");
 
             await reviewRepository.AddAsync(review, cancellationToken);
+            reviewsCreated.Add(1, new KeyValuePair<string, object?>("ClotheId", review.ClotheItemId));
+
             return review;
         }
     }

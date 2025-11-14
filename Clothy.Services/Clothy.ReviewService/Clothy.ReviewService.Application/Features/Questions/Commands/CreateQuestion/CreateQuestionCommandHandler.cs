@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,11 +16,16 @@ namespace Clothy.ReviewService.Application.Features.Questions.Commands.CreateQue
     {
         private IQuestionRepository questionRepository;
         private IClotheItemIdValidatorGrpcClient clotheItemIdValidatorGrpcClient;
+        private Counter<long> questionsCreated;
 
-        public CreateQuestionCommandHandler(IQuestionRepository questionRepository, IClotheItemIdValidatorGrpcClient clotheItemIdValidatorGrpcClient)
+        public CreateQuestionCommandHandler(IQuestionRepository questionRepository, IClotheItemIdValidatorGrpcClient clotheItemIdValidatorGrpcClient, Meter meter)
         {
             this.clotheItemIdValidatorGrpcClient = clotheItemIdValidatorGrpcClient;
             this.questionRepository = questionRepository;
+            questionsCreated = meter.CreateCounter<long>(
+                "clothy.reviewservice.questions-created",
+                "count",
+                "Total number of questions created");
         }
 
         public async Task<Question> Handle(CreateQuestionCommand request, CancellationToken cancellationToken)
@@ -33,6 +39,7 @@ namespace Clothy.ReviewService.Application.Features.Questions.Commands.CreateQue
             if (!clotheItemResponse.IsValid) throw new ValidationFailedException($"Clothe item ID validation failed: {clotheItemResponse.ErrorMessage}");
 
             await questionRepository.AddAsync(question, cancellationToken);
+            questionsCreated.Add(1, new KeyValuePair<string, object?>("ClotheItemId", question.ClotheItemId));
 
             return question;
         }

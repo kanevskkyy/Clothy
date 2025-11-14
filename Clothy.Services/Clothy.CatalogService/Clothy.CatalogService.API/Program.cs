@@ -20,6 +20,8 @@ using Clothy.CatalogService.gRPC.Server.Services;
 using Clothy.Aggregator.Aggregate.RedisCache;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
+using System.Diagnostics.Metrics;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -89,9 +91,30 @@ await using (var scope = builder.Services.BuildServiceProvider().CreateAsyncScop
     await dbContext.Database.MigrateAsync();
 }
 
+// OPEN TELEMETRY CONFIG
+builder.Services.AddConfiguredOpenTelemetry("CatalogService", builder.Configuration);
+Meter meter = builder.Services.AddOrGetMeter("CatalogService");
+builder.Services.AddSingleton(meter);
+//
+
+//HEALTH CHECK
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<ClothyCatalogDbContext>(
+        name: "catalog-db-check",
+        tags: new[] { "db", "postgres" }
+    )
+    .AddRedis(
+        redisConnectionString: builder.Configuration.GetConnectionString("clothy-redis"),
+        name: "redis",
+        failureStatus: HealthStatus.Unhealthy,
+        tags: new[] { "cache", "redis" }
+    );
+//
+
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
+app.MapHealthChecks("/health");
 
 app.MapGrpcService<OrderItemValidatorService>();
 app.MapGrpcService<ClotheItemValidatorService>();

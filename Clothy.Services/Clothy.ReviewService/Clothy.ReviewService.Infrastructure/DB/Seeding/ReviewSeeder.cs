@@ -63,6 +63,11 @@ namespace Clothy.ReviewService.Infrastructure.DB.Seeding
                 )
             };
 
+            for(int i = 0; i < fakeData.Count; i++)
+            {
+                if (i % 2 == 0) fakeData[i].ConfirmStatus();
+            }
+
             await reviews.InsertManyAsync(fakeData, cancellationToken: cancellationToken);
         }
     }
