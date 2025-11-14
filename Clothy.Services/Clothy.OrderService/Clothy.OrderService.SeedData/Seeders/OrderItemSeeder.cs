@@ -32,7 +32,7 @@ namespace Clothy.OrderService.SeedData.Seeders
                         OrderId = order.Id,
                         ClotheId = Guid.NewGuid(),
                         ClotheName = faker.Commerce.ProductName(),
-                        Price = faker.Random.Double(10, 200),
+                        Price = faker.Random.Decimal(10, 200),
                         Quantity = faker.Random.Int(1, 3),
                         MainPhoto = faker.Image.PicsumUrl(),
                         ColorId = Guid.NewGuid(),

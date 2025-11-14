@@ -63,37 +63,53 @@ namespace Clothy.OrderService.BLL.Services
 
             try
             {
-                if (dto.Items.Count > 0)
+                if (dto.Items == null || dto.Items.Count == 0) throw new ValidationFailedException("Order must contain at least one item");
+
+                List<OrderItemToValidate> targetValidateRequest = dto.Items.Select(p => new OrderItemToValidate
                 {
-                    List<OrderItemToValidate> targetValidateRequest = dto.Items.Select(p => new OrderItemToValidate
-                    {
-                        ClotheId = p.ClotheId.ToString(),
-                        ColorId = p.ColorId.ToString(),
-                        SizeId = p.SizeId.ToString(),
-                    }).ToList();
+                    ClotheId = p.ClotheId.ToString(),
+                    ColorId = p.ColorId.ToString(),
+                    SizeId = p.SizeId.ToString(),
+                    Quantity = p.Quantity
+                }).ToList();
 
-                    var validationResponse = await validatorGrpcClient.ValidateOrderItemsAsync(targetValidateRequest);
+                var validationResponse = await validatorGrpcClient.ValidateOrderItemsAsync(targetValidateRequest);
 
-                    var invalidItem = validationResponse.Results.FirstOrDefault(r => !r.IsValid);
-                    if (invalidItem != null) throw new ValidationFailedException($"Order item validation failed: {invalidItem.ErrorMessage}");
+                for (int i = 0; i < validationResponse.Results.Count; i++)
+                {
+                    ValidateOrderItemResponse validationResult = validationResponse.Results[i];
+
+                    if (!validationResult.IsValid) throw new ValidationFailedException($"Order item validation failed: {validationResult.ErrorMessage}");
                 }
 
                 OrderStatus? pendingStatus = await unitOfWork.OrderStatuses.GetByNameAsync("Pending", cancellationToken);
-                if (pendingStatus == null) throw new NotFoundException($"Pending status not found");
+                if (pendingStatus == null) throw new NotFoundException("Pending status not found");
 
                 Order order = mapper.Map<Order>(dto);
                 order.StatusId = pendingStatus.Id;
-
                 await unitOfWork.Orders.AddAsync(order, cancellationToken);
 
-                foreach (var itemDto in dto.Items)
+                for (int i = 0; i < validationResponse.Results.Count; i++)
                 {
-                    OrderItem item = mapper.Map<OrderItem>(itemDto);
-                    item.OrderId = order.Id;
-                    await unitOfWork.OrderItems.AddAsync(item, cancellationToken);
+                    ValidateOrderItemResponse validationResult = validationResponse.Results[i];
+                    OrderItem orderItem = new OrderItem
+                    {
+                        ClotheId = dto.Items[i].ClotheId,
+                        SizeId = dto.Items[i].SizeId,
+                        ColorId = dto.Items[i].ColorId,
+                        ClotheName = validationResult.ClotheName,
+                        Price = decimal.Parse(validationResult.Price),
+                        MainPhoto = validationResult.MainPhotoUrl,
+                        SizeName = validationResult.SizeName,
+                        HexCode = validationResult.ColorHexCode,
+                        Quantity = dto.Items[i].Quantity,
+                        OrderId = order.Id
+                    };
+                    await unitOfWork.OrderItems.AddAsync(orderItem, cancellationToken);
                 }
 
                 PickupPoints? pickupPoints = await unitOfWork.PickupPoint.GetByIdAsync(dto.DeliveryDetail.PickupPointId, cancellationToken);
+
                 if (pickupPoints == null) throw new NotFoundException($"PickupPoint not found with ID: {dto.DeliveryDetail.PickupPointId}");
 
                 DeliveryDetail delivery = mapper.Map<DeliveryDetail>(dto.DeliveryDetail);
@@ -101,7 +117,9 @@ namespace Clothy.OrderService.BLL.Services
                 await unitOfWork.DeliveryDetails.AddAsync(delivery, cancellationToken);
 
                 await unitOfWork.CommitAsync();
-                ordersCreated.Add(1, new KeyValuePair<string, object?>("status", "Pending"),
+
+                ordersCreated.Add(1,
+                    new KeyValuePair<string, object?>("status", "Pending"),
                     new KeyValuePair<string, object?>("pickupPointAddress", pickupPoints.Address));
 
                 await cacheInvalidationService.InvalidateAllAsync();
@@ -128,6 +146,7 @@ namespace Clothy.OrderService.BLL.Services
                 throw;
             }
         }
+
 
         public async Task<OrderDetailDTO> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {

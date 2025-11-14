@@ -13,7 +13,7 @@ namespace Clothy.OrderService.BLL.DTOs.OrderDTOs
         public OrderStatusReadDTO? Status { get; set; }
         public string? UserFirstName { get; set; }
         public string? UserLastName { get; set; }
-        public double TotalAmount { get; set; }
+        public decimal TotalAmount { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
     }

@@ -91,7 +91,7 @@ namespace Clothy.OrderService.DAL.Repositories
                 UserLastName = r.userlastname,
                 CreatedAt = r.createdat,
                 UpdatedAt = r.updatedat,
-                TotalAmount = (double)r.totalamount,
+                TotalAmount = (decimal)r.totalamount,
                 Status = new OrderStatus
                 {
                     Id = r.statusid,
