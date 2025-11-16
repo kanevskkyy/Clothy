@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Clothy.Shared.Events.ClotheItem;
+using Clothy.Shared.Events.ClotheItemEvents;
 
 namespace Clothy.OrderService.BLL.Interfaces
 {

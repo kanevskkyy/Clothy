@@ -18,11 +18,11 @@ namespace Clothy.CatalogService.BLL.Mapper
         {
             CreateMap<ClotheItem, ClotheSummaryDTO>()
                 .ForMember(dto => dto.AdditionalPhotosCount, map => map.MapFrom(c => c.Photos.Count))
-                .ForMember(dto => dto.ColorsCount, map => map.MapFrom(c =>
-                    Math.Max(c.Stocks
-                        .Select(s => s.ColorId)     
-                        .Distinct()                 
-                        .Count() - 1, 0)))          
+                .ForMember(dto => dto.ColorsCount, map => map.MapFrom(c => c.Stocks
+                    .Where(s => s.Quantity > 0) 
+                    .Select(s => s.ColorId)
+                    .Distinct()
+                    .Count()))
                 .ForMember(dto => dto.IsAvailable, map => map.MapFrom(c => c.Stocks.Any(s => s.Quantity > 0)))
                 .ForMember(dto => dto.Brand, map => map.MapFrom(c => c.Brand))
                 .ForMember(dto => dto.Collection, map => map.MapFrom(c => c.Collection))
@@ -38,10 +38,10 @@ namespace Clothy.CatalogService.BLL.Mapper
                 .ForMember(dto => dto.ClothyType, map => map.MapFrom(c => c.ClothyType));
 
             CreateMap<ClothesStock, ClotheStockDTO>()
-                .ForMember(dto => dto.StockId, map => map.MapFrom(s => s.Id))
-                .ForMember(dto => dto.Size, map => map.MapFrom(s => s.Size))
-                .ForMember(dto => dto.Color, map => map.MapFrom(s => s.Color))
-                .ForMember(dto => dto.Quantity, map => map.MapFrom(s => s.Quantity));
+                .ForMember(dest => dest.StockId, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Size, opt => opt.MapFrom(src => src.Size))   
+                .ForMember(dest => dest.Color, opt => opt.MapFrom(src => src.Color)) 
+                .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.Quantity));
 
             CreateMap<PhotoClothes, PhotoReadDTO>()
                 .ForMember(dto => dto.Id, map => map.MapFrom(c => c.Id))
@@ -49,7 +49,8 @@ namespace Clothy.CatalogService.BLL.Mapper
 
             CreateMap<ClotheTag, TagReadDTO>()
                 .ForMember(dto => dto.Id, map => map.MapFrom(ct => ct.Tag.Id))
-                .ForMember(dto => dto.Name, map => map.MapFrom(ct => ct.Tag.Name));
+                .ForMember(dto => dto.Name, map => map.MapFrom(ct => ct.Tag.Name))
+                .ForMember(dto => dto.CreatedAt, map => map.MapFrom(ct => ct.Tag.CreatedAt));
 
             CreateMap<ClotheCreateDTO, ClotheItem>()
                 .ForMember(dto => dto.Photos, map => map.Ignore())

@@ -9,14 +9,12 @@ using Clothy.CatalogService.Domain.QueryParameters;
 using Clothy.Shared.Helpers;
 using Clothy.Shared.Helpers.CloudinaryConfig;
 using Clothy.Shared.Cache.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Clothy.Shared.Helpers.Exceptions;
 using System.Diagnostics.Metrics;
-using Microsoft.EntityFrameworkCore.Migrations.Operations;
-using Clothy.Shared.Events.PublisherService;
-using Clothy.Shared.Events.ClotheItem;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using MassTransit;
+using Clothy.Shared.Events.ClotheItemEvents;
 
 namespace Clothy.CatalogService.BLL.Services
 {
@@ -27,8 +25,9 @@ namespace Clothy.CatalogService.BLL.Services
         private IImageService imageService;
         private IEntityCacheService cacheService;
         private IEntityCacheInvalidationService<ClotheItem> cacheInvalidationService;
-        private IEventPublisher eventPublisher;
+        private IPublishEndpoint publishEndpoint;
         private ILogger<ClotheService> logger;
+        private IEntityCacheInvalidationService<ClothesStock> cacheInvalidatonClotheStock;
 
         private const int MAX_CASHED_PAGES = 10;
         private static TimeSpan MEMORY_TTL_CLOTHE_PAGE = TimeSpan.FromMinutes(30);
@@ -38,19 +37,27 @@ namespace Clothy.CatalogService.BLL.Services
         
         private Counter<long> clotheCreatedMetric;
 
-        public ClotheService(IUnitOfWork unitOfWork,IMapper mapper, IImageService imageService, IEntityCacheService cacheService, IEntityCacheInvalidationService<ClotheItem> cacheInvalidationService, Meter meter, IEventPublisher eventPublisher, ILogger<ClotheService> logger)
+        public ClotheService(IUnitOfWork unitOfWork, 
+            IMapper mapper, 
+            IImageService imageService, 
+            IEntityCacheService cacheService, 
+            IEntityCacheInvalidationService<ClotheItem> cacheInvalidationService, 
+            Meter meter, ILogger<ClotheService> logger, 
+            IEntityCacheInvalidationService<ClothesStock> cacheInvalidatonClotheStock, 
+            IPublishEndpoint publishEndpoint)
         {
             this.logger = logger;
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
             this.imageService = imageService;
-            this.eventPublisher = eventPublisher;
             this.cacheService = cacheService;
             this.cacheInvalidationService = cacheInvalidationService;
             clotheCreatedMetric = meter.CreateCounter<long>(
                 "clothy.catalog.clotheItem.created_total",
                 "items",
                 "Total numbers of clothes created");
+            this.cacheInvalidatonClotheStock = cacheInvalidatonClotheStock;
+            this.publishEndpoint = publishEndpoint;
         }
 
         public async Task<PagedList<ClotheSummaryDTO>> GetPagedClotheItemsAsync(ClotheItemSpecificationParameters parameters, CancellationToken cancellationToken = default)
@@ -81,7 +88,6 @@ namespace Clothy.CatalogService.BLL.Services
                 MEMORY_TTL_CLOTHE_PAGE,
                 REDIS_TTL_CLOTHE_PAGE
             );
-
 
             return cached!;
         }
@@ -157,6 +163,7 @@ namespace Clothy.CatalogService.BLL.Services
                               new KeyValuePair<string, object?>("clotheType", clothingType.Name));
 
             await cacheInvalidationService.InvalidateAllAsync();
+            await cacheInvalidatonClotheStock.InvalidateAllAsync();
 
             return await GetDetailByIdAsync(clothe.Id, cancellationToken);
         }
@@ -197,7 +204,8 @@ namespace Clothy.CatalogService.BLL.Services
                 Price = clotheItem.Price,
                 MainPhoto = clotheItem.MainPhotoURL
             };
-            await eventPublisher.PublishAsync(clotheItemUpdatedEvent, "clothe-item-updated", "clothe-item-updated-key");
+            await publishEndpoint.Publish(clotheItemUpdatedEvent, cancellationToken);
+            await cacheInvalidatonClotheStock.InvalidateAllAsync();
 
             return await GetDetailByIdAsync(clotheItem.Id, cancellationToken);
         }
@@ -227,13 +235,13 @@ namespace Clothy.CatalogService.BLL.Services
             unitOfWork.ClotheItems.Delete(clothe);
             await unitOfWork.SaveChangesAsync(cancellationToken);
             await cacheInvalidationService.InvalidateByIdAsync(id);
+            await cacheInvalidatonClotheStock.InvalidateAllAsync();
 
             ClotheItemDeletedEvent clotheItemDeletedEvent = new ClotheItemDeletedEvent
             {
                 ClotheId = id,
             };
-            await eventPublisher.PublishAsync(clotheItemDeletedEvent, "clothe-item-deleted", "clothe-item-deleted-orders-key");
-            await eventPublisher.PublishAsync(clotheItemDeletedEvent, "clothe-item-deleted", "clothe-item-deleted-reviews-key");
+            await publishEndpoint.Publish(clotheItemDeletedEvent, cancellationToken);
         }
     }
 }

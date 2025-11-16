@@ -110,8 +110,10 @@ namespace Clothy.CatalogService.BLL.Services
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
             stockUpdatedCounter.Add(1, new KeyValuePair<string, object?>("operation", "create"));
-
+            
+            await cacheService.RemoveAsync($"clothe:{stock.ClotheId}");
             await cacheInvalidationService.InvalidateAllAsync();
+
             return await GetByIdWithDetailsAsync(stock.Id, cancellationToken);
         }
 
@@ -127,6 +129,8 @@ namespace Clothy.CatalogService.BLL.Services
             stockUpdatedCounter.Add(1, new KeyValuePair<string, object?>("operation", "update"));
 
             await cacheInvalidationService.InvalidateByIdAsync(id);
+            await cacheService.RemoveAsync($"clothe:{stock.ClotheId}");
+
             return await GetByIdWithDetailsAsync(stock.Id, cancellationToken);
         }
 
@@ -137,8 +141,22 @@ namespace Clothy.CatalogService.BLL.Services
 
             unitOfWork.ClothesStocks.Delete(stock);
             await unitOfWork.SaveChangesAsync(cancellationToken);
+            await cacheService.RemoveAsync($"clothe:{stock.ClotheId}");
 
             await cacheInvalidationService.InvalidateByIdAsync(id);
+        }
+
+        public async Task UpdateStockAsync(Guid clotheId, Guid colorId, Guid sizeId, int orderedQuantity, CancellationToken cancellationToken = default)
+        {
+            ClothesStock? clotheStock = await unitOfWork.ClothesStocks.GetByClotheColorSizeAsync(clotheId, colorId, sizeId, cancellationToken);
+            if (clotheStock != null)
+            {
+                clotheStock.Quantity -= orderedQuantity;
+                unitOfWork.ClothesStocks.Update(clotheStock);
+                await unitOfWork.SaveChangesAsync();
+                await cacheService.RemoveAsync($"clothe:{clotheId}");
+            }
+            await cacheInvalidationService.InvalidateAllAsync();
         }
     }
 }

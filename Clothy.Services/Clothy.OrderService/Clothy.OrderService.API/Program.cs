@@ -26,10 +26,9 @@ using Clothy.OrderService.BLL.RedisCache.SettlementCache;
 using System.Text.Json;
 using System.Diagnostics.Metrics;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Clothy.OrderService.BLL.Consumers.ClotheItemUpdateEvent;
-using Clothy.Shared.Events.ClotheItem;
-using Clothy.Shared.Events.ConsumerService;
-using Clothy.OrderService.BLL.Consumers.ClotheItemDeleteEvent;
+using MassTransit;
+using Clothy.OrderService.BLL.Consumers;
+using Clothy.Shared.Events.OrderEvents;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -88,11 +87,31 @@ builder.Services.AddScoped<IPickupPointService, PickupPointService>();
 builder.Services.AddScoped<IOrderItemService, OrderItemService>();
 
 //RabbitMQ
-builder.Services.AddHostedService<OrderItemUpdatedListenerService>();
-builder.Services.AddScoped<IEventHandler<ClotheItemUpdatedEvent>, UpdateOrderItemConsumerService>();
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<DeleteOrderItemConsumerService>();
+    x.AddConsumer<UpdateOrderItemConsumerService>();
 
-builder.Services.AddHostedService<OrderItemDeletedListenerService>();
-builder.Services.AddScoped<IEventHandler<ClotheItemDeletedEvent>, DeleteOrderItemConsumerService>();
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(builder.Configuration.GetConnectionString("rabbitmq"));
+        cfg.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));
+
+        cfg.ReceiveEndpoint("order-service-clothe-updated-queue", e =>
+        {
+            e.ConfigureConsumer<UpdateOrderItemConsumerService>(context);
+            e.Bind("clothe-item-updated");
+        });
+
+        cfg.ReceiveEndpoint("order-service-clothe-deleted-queue", e =>
+        {
+            e.ConfigureConsumer<DeleteOrderItemConsumerService>(context);
+            e.Bind("clothe-item-deleted");
+        });
+
+        cfg.Message<OrderCreatedEvent>(e => e.SetEntityName("order-created"));
+    });
+});
 //
 
 // CLOUDINARY CONFIG

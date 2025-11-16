@@ -8,7 +8,7 @@ using Clothy.OrderService.BLL.Interfaces;
 using Clothy.OrderService.DAL.UOW;
 using Clothy.OrderService.Domain.Entities;
 using Clothy.Shared.Cache.Interfaces;
-using Clothy.Shared.Events.ClotheItem;
+using Clothy.Shared.Events.ClotheItemEvents;
 
 namespace Clothy.OrderService.BLL.Services
 {

@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Clothy.OrderService.BLL.Interfaces;
-using Clothy.Shared.Events.ClotheItem;
-using Clothy.Shared.Events.ConsumerService;
+using Clothy.Shared.Events.ClotheItemEvents;
 using DnsClient.Internal;
+using MassTransit;
 using Microsoft.Extensions.Logging;
 
-namespace Clothy.OrderService.BLL.Consumers.ClotheItemDeleteEvent
+namespace Clothy.OrderService.BLL.Consumers
 {
-    public class DeleteOrderItemConsumerService : IEventHandler<ClotheItemDeletedEvent>
+    public class DeleteOrderItemConsumerService : IConsumer<ClotheItemDeletedEvent>
     {
         private ILogger<DeleteOrderItemConsumerService> logger;
         private IOrderItemService orderItemService;
@@ -22,11 +22,12 @@ namespace Clothy.OrderService.BLL.Consumers.ClotheItemDeleteEvent
             this.orderItemService = orderItemService;
         }
 
-        public async Task HandleAsync(ClotheItemDeletedEvent clotheItemDeletedEvent, CancellationToken cancellationToken = default)
+        public async Task Consume(ConsumeContext<ClotheItemDeletedEvent> context)
         {
-            logger.LogInformation("Received ClotheItemDeleteEvent for ClotheId: {ClotheId}", clotheItemDeletedEvent.ClotheId);
+            ClotheItemDeletedEvent clotheItemDeletedEvent = context.Message;
+            logger.LogInformation("Received ClotheItemDeletedEvent for ClotheId: {ClotheId}", clotheItemDeletedEvent.ClotheId);
 
-            await orderItemService.SoftDeleteOrderItemsAsync(clotheItemDeletedEvent, cancellationToken);
+            await orderItemService.SoftDeleteOrderItemsAsync(clotheItemDeletedEvent);
 
             logger.LogInformation("OrderItems are soft deleted for ClotheId: {ClotheId}", clotheItemDeletedEvent.ClotheId);
         }
