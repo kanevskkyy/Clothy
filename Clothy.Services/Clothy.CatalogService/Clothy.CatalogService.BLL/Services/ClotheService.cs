@@ -9,10 +9,12 @@ using Clothy.CatalogService.Domain.QueryParameters;
 using Clothy.Shared.Helpers;
 using Clothy.Shared.Helpers.CloudinaryConfig;
 using Clothy.Shared.Cache.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Clothy.Shared.Helpers.Exceptions;
 using System.Diagnostics.Metrics;
-using Microsoft.EntityFrameworkCore.Migrations.Operations;
+using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
+using MassTransit;
+using Clothy.Shared.Events.ClotheItemEvents;
 
 namespace Clothy.CatalogService.BLL.Services
 {
@@ -23,15 +25,28 @@ namespace Clothy.CatalogService.BLL.Services
         private IImageService imageService;
         private IEntityCacheService cacheService;
         private IEntityCacheInvalidationService<ClotheItem> cacheInvalidationService;
+        private IPublishEndpoint publishEndpoint;
+        private ILogger<ClotheService> logger;
+        private IEntityCacheInvalidationService<ClothesStock> cacheInvalidatonClotheStock;
+
         private const int MAX_CASHED_PAGES = 10;
         private static TimeSpan MEMORY_TTL_CLOTHE_PAGE = TimeSpan.FromMinutes(30);
         private static TimeSpan REDIS_TTL_CLOTHE_PAGE = TimeSpan.FromHours(1);
         private static TimeSpan MEMORY_TTL_CLOTHE_DETAIL = TimeSpan.FromMinutes(15);
         private static TimeSpan REDIS_TTL_CLOTHE_DETAIL = TimeSpan.FromMinutes(30);
+        
         private Counter<long> clotheCreatedMetric;
 
-        public ClotheService(IUnitOfWork unitOfWork,IMapper mapper, IImageService imageService, IEntityCacheService cacheService, IEntityCacheInvalidationService<ClotheItem> cacheInvalidationService, Meter meter)
+        public ClotheService(IUnitOfWork unitOfWork, 
+            IMapper mapper, 
+            IImageService imageService, 
+            IEntityCacheService cacheService, 
+            IEntityCacheInvalidationService<ClotheItem> cacheInvalidationService, 
+            Meter meter, ILogger<ClotheService> logger, 
+            IEntityCacheInvalidationService<ClothesStock> cacheInvalidatonClotheStock, 
+            IPublishEndpoint publishEndpoint)
         {
+            this.logger = logger;
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
             this.imageService = imageService;
@@ -41,6 +56,8 @@ namespace Clothy.CatalogService.BLL.Services
                 "clothy.catalog.clotheItem.created_total",
                 "items",
                 "Total numbers of clothes created");
+            this.cacheInvalidatonClotheStock = cacheInvalidatonClotheStock;
+            this.publishEndpoint = publishEndpoint;
         }
 
         public async Task<PagedList<ClotheSummaryDTO>> GetPagedClotheItemsAsync(ClotheItemSpecificationParameters parameters, CancellationToken cancellationToken = default)
@@ -71,7 +88,6 @@ namespace Clothy.CatalogService.BLL.Services
                 MEMORY_TTL_CLOTHE_PAGE,
                 REDIS_TTL_CLOTHE_PAGE
             );
-
 
             return cached!;
         }
@@ -147,19 +163,17 @@ namespace Clothy.CatalogService.BLL.Services
                               new KeyValuePair<string, object?>("clotheType", clothingType.Name));
 
             await cacheInvalidationService.InvalidateAllAsync();
+            await cacheInvalidatonClotheStock.InvalidateAllAsync();
 
             return await GetDetailByIdAsync(clothe.Id, cancellationToken);
         }
 
         public async Task<ClotheDetailDTO> UpdateAsync(Guid id, ClotheUpdateDTO dto, CancellationToken cancellationToken = default)
         {
-            ClotheItem? clotheItem = await unitOfWork.ClotheItems.GetByIdWithDetailsAsync(id, cancellationToken);
+            ClotheItem? clotheItem = await unitOfWork.ClotheItems.GetByIdAsync(id, cancellationToken);
             if (clotheItem == null) throw new NotFoundException($"Clothe item not found with ID: {id}");
 
             if (await unitOfWork.ClotheItems.IsSlugAlreadyExistsAsync(dto.Slug, id, cancellationToken)) throw new AlreadyExistsException("Clothe with this slug already exists");
-
-            int totalPercentage = dto.Materials.Sum(percentage => percentage.Percentage);
-            if (totalPercentage != 100) throw new InvalidMaterialPercentageException("Total material percentage must be exactly 100.");
 
             Brand? brand = await unitOfWork.Brands.GetByIdAsync(dto.BrandId, cancellationToken);
             if (brand == null) throw new NotFoundException($"Brand with ID: {dto.BrandId} not found");
@@ -178,41 +192,20 @@ namespace Clothy.CatalogService.BLL.Services
                 clotheItem.MainPhotoURL = await imageService.UploadAsync(dto.MainPhoto, "clothes");
             }
 
-            if (dto.AdditionalPhotos?.Any() == true)
-            {
-                foreach (IFormFile photo in dto.AdditionalPhotos)
-                {
-                    string url = await imageService.UploadAsync(photo, "clothes");
-                    clotheItem.Photos.Add(new PhotoClothes { 
-                        PhotoURL = url 
-                    });
-                }
-            }
-
-            if (!await unitOfWork.Materials.AreAllExistAsync(dto.Materials.Select(material => material.MaterialId), cancellationToken)) throw new NotFoundException("One or more materials do not exist.");
-            if (!await unitOfWork.Tags.AreAllExistAsync(dto.TagIds, cancellationToken)) throw new NotFoundException("One or more tags do not exist.");
-
-            clotheItem.ClotheMaterials.Clear();
-            foreach (ClotheMaterialCreateDTO material in dto.Materials)
-            {
-                clotheItem.ClotheMaterials.Add(new ClotheMaterial { 
-                    MaterialId = material.MaterialId, 
-                    Percentage = material.Percentage 
-                });
-            }
-
-            clotheItem.ClotheTags.Clear();
-            foreach (Guid tagId in dto.TagIds)
-            {
-                clotheItem.ClotheTags.Add(new ClotheTag { 
-                    TagId = tagId 
-                });
-            }
-
             unitOfWork.ClotheItems.Update(clotheItem);
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
             await cacheInvalidationService.InvalidateByIdAsync(id);
+
+            ClotheItemUpdatedEvent clotheItemUpdatedEvent = new ClotheItemUpdatedEvent
+            {
+                ClotheId = clotheItem.Id,
+                ClotheName = clotheItem.Name,
+                Price = clotheItem.Price,
+                MainPhoto = clotheItem.MainPhotoURL
+            };
+            await publishEndpoint.Publish(clotheItemUpdatedEvent, cancellationToken);
+            await cacheInvalidatonClotheStock.InvalidateAllAsync();
 
             return await GetDetailByIdAsync(clotheItem.Id, cancellationToken);
         }
@@ -242,6 +235,13 @@ namespace Clothy.CatalogService.BLL.Services
             unitOfWork.ClotheItems.Delete(clothe);
             await unitOfWork.SaveChangesAsync(cancellationToken);
             await cacheInvalidationService.InvalidateByIdAsync(id);
+            await cacheInvalidatonClotheStock.InvalidateAllAsync();
+
+            ClotheItemDeletedEvent clotheItemDeletedEvent = new ClotheItemDeletedEvent
+            {
+                ClotheId = id,
+            };
+            await publishEndpoint.Publish(clotheItemDeletedEvent, cancellationToken);
         }
     }
 }

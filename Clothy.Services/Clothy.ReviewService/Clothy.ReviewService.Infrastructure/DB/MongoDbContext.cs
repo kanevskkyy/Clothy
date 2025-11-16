@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Clothy.ReviewService.Domain.Entities;
 using Clothy.ReviewService.Infrastructure.DB.Settings;
+using Clothy.Shared.Events;
 using MongoDB.Driver;
 
 namespace Clothy.ReviewService.Infrastructure.DB
@@ -15,6 +16,7 @@ namespace Clothy.ReviewService.Infrastructure.DB
         public IMongoClient Client { get; }
         public IMongoCollection<Review> Reviews => database.GetCollection<Review>("Reviews");
         public IMongoCollection<Question> Questions => database.GetCollection<Question>("Questions");
+        public IMongoCollection<ProcessedEvent> ProcessedEvents => database.GetCollection<ProcessedEvent>("ProcessedEvents");
 
         public MongoDbContext(MongoDbSettings settings)
         {

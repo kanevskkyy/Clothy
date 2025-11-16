@@ -18,11 +18,11 @@ namespace Clothy.CatalogService.BLL.Mapper
         {
             CreateMap<ClotheItem, ClotheSummaryDTO>()
                 .ForMember(dto => dto.AdditionalPhotosCount, map => map.MapFrom(c => c.Photos.Count))
-                .ForMember(dto => dto.ColorsCount, map => map.MapFrom(c =>
-                    Math.Max(c.Stocks
-                        .Select(s => s.ColorId)     
-                        .Distinct()                 
-                        .Count() - 1, 0)))          
+                .ForMember(dto => dto.ColorsCount, map => map.MapFrom(c => c.Stocks
+                    .Where(s => s.Quantity > 0) 
+                    .Select(s => s.ColorId)
+                    .Distinct()
+                    .Count()))
                 .ForMember(dto => dto.IsAvailable, map => map.MapFrom(c => c.Stocks.Any(s => s.Quantity > 0)))
                 .ForMember(dto => dto.Brand, map => map.MapFrom(c => c.Brand))
                 .ForMember(dto => dto.Collection, map => map.MapFrom(c => c.Collection))
@@ -38,33 +38,35 @@ namespace Clothy.CatalogService.BLL.Mapper
                 .ForMember(dto => dto.ClothyType, map => map.MapFrom(c => c.ClothyType));
 
             CreateMap<ClothesStock, ClotheStockDTO>()
-                .ForMember(dto => dto.StockId, map => map.MapFrom(s => s.Id))
-                .ForMember(dto => dto.Size, map => map.MapFrom(s => s.Size))
-                .ForMember(dto => dto.Color, map => map.MapFrom(s => s.Color))
-                .ForMember(dto => dto.Quantity, map => map.MapFrom(s => s.Quantity));
+                .ForMember(dest => dest.StockId, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Size, opt => opt.MapFrom(src => src.Size))   
+                .ForMember(dest => dest.Color, opt => opt.MapFrom(src => src.Color)) 
+                .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.Quantity));
 
             CreateMap<PhotoClothes, PhotoReadDTO>()
                 .ForMember(dto => dto.Id, map => map.MapFrom(c => c.Id))
                 .ForMember(dto => dto.PhotoURL, map => map.MapFrom(c => c.PhotoURL));
 
-            CreateMap<ClotheMaterial, MaterialWithPercentageDTO>()
-                .ForMember(dto => dto.Name, map => map.MapFrom(cm => cm.Material.Name))
-                .ForMember(dto => dto.Percentage, map => map.MapFrom(cm => cm.Percentage));
-
             CreateMap<ClotheTag, TagReadDTO>()
                 .ForMember(dto => dto.Id, map => map.MapFrom(ct => ct.Tag.Id))
-                .ForMember(dto => dto.Name, map => map.MapFrom(ct => ct.Tag.Name));
+                .ForMember(dto => dto.Name, map => map.MapFrom(ct => ct.Tag.Name))
+                .ForMember(dto => dto.CreatedAt, map => map.MapFrom(ct => ct.Tag.CreatedAt));
 
             CreateMap<ClotheCreateDTO, ClotheItem>()
                 .ForMember(dto => dto.Photos, map => map.Ignore())
                 .ForMember(dto => dto.ClotheMaterials, map => map.Ignore())
                 .ForMember(dto => dto.ClotheTags, map => map.Ignore());
 
+            CreateMap<ClotheMaterial, MaterialWithPercentageDTO>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Material.Id))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Material.Name))
+                .ForMember(dest => dest.Percentage, opt => opt.MapFrom(src => src.Percentage));
+
             CreateMap<ClotheUpdateDTO, ClotheItem>()
-                .ForMember(dto => dto.Photos, map => map.Ignore())
-                .ForMember(dto => dto.UpdatedAt, map => DateTime.UtcNow.ToUniversalTime())
-                .ForMember(dto => dto.ClotheMaterials, map => map.Ignore())
-                .ForMember(dto => dto.ClotheTags, map => map.Ignore());
+                .ForMember(dest => dest.UpdatedAt, map => map.MapFrom(time => DateTime.UtcNow.ToUniversalTime()))
+                .ForMember(dest => dest.BrandId, opt => opt.MapFrom(src => src.BrandId))
+                .ForMember(dest => dest.CollectionId, opt => opt.MapFrom(src => src.CollectionId))
+                .ForMember(dest => dest.ClothingTypeId, opt => opt.MapFrom(src => src.ClothingTypeId));
         }
     }
 }

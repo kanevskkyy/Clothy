@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Text.Json;
 using Clothy.ReviewService.API.Middleware;
 using Clothy.ReviewService.Application.Behaviours;
+using Clothy.ReviewService.Application.Consumers.DeleteReviewsAndQuestions;
 using Clothy.ReviewService.Application.Features.Questions.Commands.UpdateQuestion;
 using Clothy.ReviewService.Application.Validations.Additional;
 using Clothy.ReviewService.Application.Validations.Questions;
@@ -15,10 +16,13 @@ using Clothy.ReviewService.Infrastructure.DB.Extension;
 using Clothy.ReviewService.Infrastructure.DB.MappingConfig;
 using Clothy.ReviewService.Infrastructure.DB.MongoHeathCheck;
 using Clothy.ReviewService.Infrastructure.DB.Seeding;
+using Clothy.ReviewService.Infrastructure.EventLog;
 using Clothy.ReviewService.Infrastructure.Repositories;
 using Clothy.ServiceDefaults.Middleware;
+using Clothy.Shared.Events;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using MassTransit;
 using MediatR;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
@@ -57,7 +61,28 @@ builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssembly(typeof(UpdateAnswerCommandValidator).Assembly);
 //
 
-builder.Services.AddEndpointsApiExplorer()  ;
+// RABBIT MQ
+builder.Services.AddScoped<IEventLogService, EventLogService>();
+
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<ReviewsAndQuestionsDeletionConsumer>();
+
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(builder.Configuration.GetConnectionString("rabbitmq"));
+        cfg.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));
+
+        cfg.ReceiveEndpoint("review-service-clothe-deleted-queue", e =>
+        {
+            e.ConfigureConsumer<ReviewsAndQuestionsDeletionConsumer>(context);
+            e.Bind("clothe-item-deleted");
+        });
+    });
+});
+//
+
+builder.Services.AddEndpointsApiExplorer();
 
 // GRPC
 builder.Services.AddScoped<IClotheItemIdValidatorGrpcClient, ClotheItemIdValidatorGrpcClient>();

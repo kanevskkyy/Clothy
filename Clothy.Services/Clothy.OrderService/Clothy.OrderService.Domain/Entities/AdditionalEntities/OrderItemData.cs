@@ -13,6 +13,8 @@ namespace Clothy.OrderService.Domain.Entities.AdditionalEntities
         public string? ClotheName { get; set; }
         public decimal Price { get; set; }
         public int Quantity { get; set; }
+        public bool IsClotheDeleted { get; set; }
+        public bool IsClotheUpdated { get; set; }
         public string? MainPhoto { get; set; }
         public Guid ColorId { get; set; }
         public string? HexCode { get; set; }

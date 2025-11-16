@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Clothy.CatalogService.DAL.EntityConfigurations;
 using Clothy.CatalogService.Domain.Entities;
+using Clothy.Shared.Events;
 using Microsoft.EntityFrameworkCore;
 
 namespace Clothy.CatalogService.DAL.DB
@@ -28,6 +29,7 @@ namespace Clothy.CatalogService.DAL.DB
         public DbSet<Size> Sizes { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<ClothingType> ClothingTypes { get; set; }
+        public DbSet<ProcessedEvent> ProcessedEvents { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -42,6 +44,7 @@ namespace Clothy.CatalogService.DAL.DB
             modelBuilder.ApplyConfiguration(new PhotoClothesConfiguration());
             modelBuilder.ApplyConfiguration(new SizeConfiguration());
             modelBuilder.ApplyConfiguration(new TagConfiguration());
+            modelBuilder.ApplyConfiguration(new ProcessedEventConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }

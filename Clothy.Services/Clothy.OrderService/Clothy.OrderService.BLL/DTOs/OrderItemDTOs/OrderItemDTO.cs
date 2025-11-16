@@ -18,5 +18,7 @@ namespace Clothy.OrderService.BLL.DTOs.OrderItemDTOs
         public string? HexCode { get; set; }
         public Guid SizeId { get; set; }
         public string? SizeName { get; set; }
+        public bool? IsClotheDeleted { get; set; }
+        public bool IsClotheUpdated { get; set; }
     }
 }

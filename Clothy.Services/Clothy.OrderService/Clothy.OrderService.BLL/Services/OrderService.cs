@@ -17,6 +17,8 @@ using Clothy.Shared.Helpers.Exceptions;
 using Clothy.OrderService.gRPC.Client.Services.Interfaces;
 using System.Diagnostics.Metrics;
 using System.Diagnostics;
+using MassTransit;
+using Clothy.Shared.Events.OrderEvents;
 
 namespace Clothy.OrderService.BLL.Services
 {
@@ -25,6 +27,7 @@ namespace Clothy.OrderService.BLL.Services
         private IUnitOfWork unitOfWork;
         private IMapper mapper;
         private IEntityCacheService cacheService;
+        private IPublishEndpoint publishEndpoint;
         private IEntityCacheInvalidationService<Order> cacheInvalidationService;
         private IOrderItemValidatorGrpcClient validatorGrpcClient;
         private const int MAX_CASHED_PAGES = 3;
@@ -37,13 +40,20 @@ namespace Clothy.OrderService.BLL.Services
         private Counter<long> ordersCreated;
         private Histogram<double> operationLatency;
 
-        public OrderService(IUnitOfWork unitOfWork, IMapper mapper, IEntityCacheService cacheService, IEntityCacheInvalidationService<Order> cacheInvalidationService, IOrderItemValidatorGrpcClient validatorGrpcClient, Meter meter)
+        public OrderService(IUnitOfWork unitOfWork, 
+            IMapper mapper, 
+            IEntityCacheService cacheService, 
+            IEntityCacheInvalidationService<Order> cacheInvalidationService, 
+            IOrderItemValidatorGrpcClient validatorGrpcClient, 
+            Meter meter,
+            IPublishEndpoint publishEndpoint)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
             this.cacheService = cacheService;
             this.cacheInvalidationService = cacheInvalidationService;
             this.validatorGrpcClient = validatorGrpcClient;
+            this.publishEndpoint = publishEndpoint;
             ordersCreated = meter.CreateCounter<long>(
                 "clothy.orderservice.orders.created-succesfully",
                 "items",
@@ -132,6 +142,19 @@ namespace Clothy.OrderService.BLL.Services
                     new KeyValuePair<string, object?>("itemsCount", dto.Items.Count)
                 );
 
+                OrderCreatedEvent orderCreatedEvent = new OrderCreatedEvent
+                {
+                    OrderId = order.Id,
+                    Items = dto.Items.Select(orderItem => new OrderItemEvent
+                    {
+                        ClotheId = orderItem.ClotheId,
+                        ColorId = orderItem.ColorId,
+                        SizeId = orderItem.SizeId,
+                        Quantity = orderItem.Quantity,
+                    }).ToList()
+                };
+                await publishEndpoint.Publish(orderCreatedEvent, cancellationToken);
+
                 return await GetByIdAsync(order.Id, cancellationToken);
             }
             catch (Exception ex)
@@ -144,6 +167,10 @@ namespace Clothy.OrderService.BLL.Services
                     new KeyValuePair<string, object?>("itemsCount", dto.Items.Count)
                 );
                 throw;
+            }
+            finally
+            {
+                stopwatch.Stop();
             }
         }
 

@@ -22,6 +22,8 @@ using System.Reflection;
 using System.Text.Json.Serialization;
 using System.Diagnostics.Metrics;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using RabbitMQ.Client;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -70,6 +72,15 @@ public static class Extensions
         builder.Services.AddSingleton<IEntityCacheService, EntityCacheService>();
 
         builder.Services.AddHealthChecks();
+        //
+
+        //RABBIT MQ
+        builder.AddRabbitMQClient(connectionName: "rabbitmq");
+        builder.Services.AddHealthChecks()
+            .AddRabbitMQ(
+                name: "rabbitmq",
+                tags: new[] { "ready" }
+            );
         //
 
         builder.ConfigureOpenTelemetry();

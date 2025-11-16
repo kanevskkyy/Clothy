@@ -18,6 +18,11 @@ namespace Clothy.CatalogService.DAL.Repositories
 
         }
 
+        public async Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            return await dbSet.AnyAsync(property => property.Id == id, cancellationToken);
+        }
+
         public async Task<Dictionary<Collection, int>> GetCollectionsCountWithStockAsync(CancellationToken cancellationToken = default)
         {
             List<Collection> collections = await dbSet

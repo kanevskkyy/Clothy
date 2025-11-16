@@ -20,7 +20,7 @@ namespace Clothy.OrderService.BLL.Mapper
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status));
 
             CreateMap<OrderWithDetailsData, OrderDetailDTO>()
-                .ForMember(dest => dest.TotalAmount, opt => opt.MapFrom(src => src.TotalAmount))
+                .ForMember(dest => dest.TotalPrice, opt => opt.MapFrom(src => src.TotalAmount))
                 .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items))
                 .ForMember(dest => dest.DeliveryDetail, opt => opt.MapFrom(src => src.DeliveryDetail));
 
@@ -30,7 +30,7 @@ namespace Clothy.OrderService.BLL.Mapper
                 .ForMember(dest => dest.UserLastName, opt => opt.MapFrom(src => src.UserLastName))
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
-                .ForMember(dest => dest.TotalAmount, opt => opt.MapFrom(src => src.TotalAmount))
+                .ForMember(dest => dest.TotalPrice, opt => opt.MapFrom(src => src.TotalPrice))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status));
 
             CreateMap<OrderCreateDTO, Order>()
@@ -43,7 +43,9 @@ namespace Clothy.OrderService.BLL.Mapper
             CreateMap<DeliveryDetailCreateDTO, DeliveryDetail>()
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow.ToUniversalTime()));
 
-            CreateMap<OrderItemData, OrderItemDTO>();
+            CreateMap<OrderItemData, OrderItemDTO>()
+                .ForMember(dest => dest.IsClotheUpdated, opt => opt.MapFrom(order => order.IsClotheUpdated))
+                .ForMember(dest => dest.IsClotheDeleted, opt => opt.MapFrom(order => order.IsClotheDeleted));
 
             CreateMap<DeliveryDetailData, DeliveryDetailDTO>();
         }

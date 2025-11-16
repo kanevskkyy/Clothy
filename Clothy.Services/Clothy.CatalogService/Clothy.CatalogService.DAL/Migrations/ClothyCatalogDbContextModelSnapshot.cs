@@ -17,7 +17,7 @@ namespace Clothy.CatalogService.DAL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "8.0.20")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -407,6 +407,20 @@ namespace Clothy.CatalogService.DAL.Migrations
                         .IsUnique();
 
                     b.ToTable("tag", (string)null);
+                });
+
+            modelBuilder.Entity("Clothy.Shared.Events.ProcessedEvent", b =>
+                {
+                    b.Property<Guid>("EventId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("ProcessedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("EventId");
+
+                    b.ToTable("processed_events", (string)null);
                 });
 
             modelBuilder.Entity("Clothy.CatalogService.Domain.Entities.ClotheItem", b =>

@@ -9,6 +9,6 @@ namespace Clothy.OrderService.DAL.Interfaces
 {
     public interface IOrderItemRepository : IGenericRepository<OrderItem>
     {
-        
+        Task<List<OrderItem>> GetByClotheIdAsync(Guid clotheId, CancellationToken cancellationToken = default);
     }
 }

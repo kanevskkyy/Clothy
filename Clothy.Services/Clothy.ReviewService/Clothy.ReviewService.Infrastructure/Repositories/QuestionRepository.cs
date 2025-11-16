@@ -78,5 +78,12 @@ namespace Clothy.ReviewService.Infrastructure.Repositories
 
             await collection.UpdateOneAsync(question => question.Id == questionId, update, cancellationToken: cancellationToken);
         }
+
+        public async Task DeleteAllQuestionsByClotheId(Guid clotheId, CancellationToken cancellationToken = default)
+        {
+            var questionsByClotheId = Builders<Question>.Filter.Eq(tempQuestion => tempQuestion.ClotheItemId, clotheId);
+
+            await collection.DeleteManyAsync(questionsByClotheId, cancellationToken);
+        }
     }
 }

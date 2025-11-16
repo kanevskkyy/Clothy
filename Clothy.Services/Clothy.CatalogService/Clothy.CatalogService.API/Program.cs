@@ -22,6 +22,11 @@ using System.Text.Json;
 using System.Diagnostics.Metrics;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using MassTransit;
+using Clothy.CatalogService.BLL.Consumers;
+using Clothy.Shared.Events.ClotheItemEvents;
+using Clothy.Shared.Events;
+using Clothy.CatalogService.DAL.EventLog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -101,6 +106,32 @@ await using (var scope = builder.Services.BuildServiceProvider().CreateAsyncScop
 builder.Services.AddConfiguredOpenTelemetry("CatalogService", builder.Configuration);
 Meter meter = builder.Services.AddOrGetMeter("CatalogService");
 builder.Services.AddSingleton(meter);
+//
+
+//RabbitMQ 
+builder.Services.AddScoped<IEventLogService, EventLogService>();
+
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<ClotheStockConsumerService>();
+
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(builder.Configuration.GetConnectionString("rabbitmq"));
+        cfg.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));
+
+        cfg.Message<ClotheItemUpdatedEvent>(e => e.SetEntityName("clothe-item-updated"));
+        cfg.Message<ClotheItemDeletedEvent>(e => e.SetEntityName("clothe-item-deleted"));
+
+        cfg.ReceiveEndpoint("catalog-service-order-created-queue", e =>
+        {
+            e.ConfigureConsumer<ClotheStockConsumerService>(context);
+            e.Bind("order-created"); 
+        });
+
+        cfg.ConfigureEndpoints(context);
+    });
+});
 //
 
 var app = builder.Build();

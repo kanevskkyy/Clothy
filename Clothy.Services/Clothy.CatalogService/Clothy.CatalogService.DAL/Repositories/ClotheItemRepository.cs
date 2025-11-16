@@ -42,20 +42,29 @@ namespace Clothy.CatalogService.DAL.Repositories
 
         public async Task<ClotheItem?> GetByIdWithDetailsAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            return await dbSet
+            var clotheItem = await dbSet
                 .Include(property => property.Collection)
                 .Include(property => property.Brand)
                 .Include(property => property.ClothyType)
                 .Include(property => property.Photos)
-                .Include(property => property.Stocks.Where(stock => stock.Quantity > 0))
+                .Include(property => property.Stocks) 
                     .ThenInclude(stock => stock.Color)
-                .Include(property => property.Stocks.Where(stock => stock.Quantity > 0))
+                .Include(property => property.Stocks)
                     .ThenInclude(stock => stock.Size)
                 .Include(property => property.ClotheTags)
                     .ThenInclude(property => property.Tag)
                 .Include(property => property.ClotheMaterials)
                     .ThenInclude(property => property.Material)
                 .FirstOrDefaultAsync(property => property.Id == id, cancellationToken);
+
+            if (clotheItem != null)
+            {
+                clotheItem.Stocks = clotheItem.Stocks
+                    .Where(stock => stock.Quantity > 0)
+                    .ToList();
+            }
+
+            return clotheItem;
         }
 
         public async Task<PagedList<ClotheItem>> GetPagedClotheItemsAsync(ClotheItemSpecificationParameters parameters, CancellationToken cancellationToken = default)

@@ -26,6 +26,11 @@ using Clothy.OrderService.BLL.RedisCache.SettlementCache;
 using System.Text.Json;
 using System.Diagnostics.Metrics;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using MassTransit;
+using Clothy.OrderService.BLL.Consumers;
+using Clothy.Shared.Events.OrderEvents;
+using Clothy.Shared.Events;
+using Clothy.OrderService.DAL.EventLog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -81,6 +86,37 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IRegionService, RegionService>();
 builder.Services.AddScoped<ISettlementService, SettlementService>();
 builder.Services.AddScoped<IPickupPointService, PickupPointService>();
+builder.Services.AddScoped<IOrderItemService, OrderItemService>();
+
+//RabbitMQ
+builder.Services.AddScoped<IEventLogService, EventLogService>();
+
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<DeleteOrderItemConsumerService>();
+    x.AddConsumer<UpdateOrderItemConsumerService>();
+
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(builder.Configuration.GetConnectionString("rabbitmq"));
+        cfg.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));
+
+        cfg.ReceiveEndpoint("order-service-clothe-updated-queue", e =>
+        {
+            e.ConfigureConsumer<UpdateOrderItemConsumerService>(context);
+            e.Bind("clothe-item-updated");
+        });
+
+        cfg.ReceiveEndpoint("order-service-clothe-deleted-queue", e =>
+        {
+            e.ConfigureConsumer<DeleteOrderItemConsumerService>(context);
+            e.Bind("clothe-item-deleted");
+        });
+
+        cfg.Message<OrderCreatedEvent>(e => e.SetEntityName("order-created"));
+    });
+});
+//
 
 // CLOUDINARY CONFIG
 builder.Services.AddCloudinary(builder.Configuration);

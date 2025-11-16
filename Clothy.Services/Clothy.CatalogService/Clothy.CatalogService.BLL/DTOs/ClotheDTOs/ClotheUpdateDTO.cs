@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Clothy.CatalogService.BLL.Helpers.ModelBinder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Clothy.CatalogService.BLL.DTOs.ClotheDTOs
 {
@@ -18,9 +20,5 @@ namespace Clothy.CatalogService.BLL.DTOs.ClotheDTOs
         public Guid BrandId { get; set; }
         public Guid ClothingTypeId { get; set; }
         public Guid CollectionId { get; set; }
-
-        public List<IFormFile>? AdditionalPhotos { get; set; }
-        public List<Guid>? TagIds { get; set; }
-        public List<ClotheMaterialCreateDTO>? Materials { get; set; }
     }
 }
