@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Clothy.CatalogService.DAL.DB;
 using Clothy.CatalogService.DAL.Interfaces;
 using Clothy.CatalogService.DAL.Repositories;
+using Clothy.CatalogService.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Clothy.CatalogService.DAL.UOW
@@ -51,23 +52,7 @@ namespace Clothy.CatalogService.DAL.UOW
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            var strategy = context.Database.CreateExecutionStrategy();
-
-            return await strategy.ExecuteAsync(async () =>
-            {
-                await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
-                try
-                {
-                    var result = await context.SaveChangesAsync(cancellationToken);
-                    await transaction.CommitAsync(cancellationToken);
-                    return result;
-                }
-                catch
-                {
-                    await transaction.RollbackAsync(cancellationToken);
-                    throw;
-                }
-            });
+            return await context.SaveChangesAsync(cancellationToken);
         }
 
         public void Dispose()

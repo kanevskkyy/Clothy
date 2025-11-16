@@ -1,5 +1,4 @@
-﻿using Aspire.Hosting;
-using Projects;
+﻿using Projects;
 using DotNetEnv;
 
 var builder = DistributedApplication.CreateBuilder(args);
@@ -7,7 +6,9 @@ var builder = DistributedApplication.CreateBuilder(args);
 string ENV_PATH = Path.Combine(Directory.GetCurrentDirectory(), ".env");
 Env.Load(ENV_PATH);
 
-var postgresPassword = builder.AddParameter("postgres-password");
+var postgresPassword = builder.AddParameter("postgres-password", secret: true);
+var rabbitMQUsername = builder.AddParameter("username", secret: true);
+var rabbitMQpassword = builder.AddParameter("password", secret: true);
 
 var postgres = builder.AddPostgres("clothy-postgres", password: postgresPassword)
     .WithImage("postgres:16")
@@ -25,30 +26,40 @@ var mongo = builder.AddMongoDB("clothy-mongo")
     .WithDataVolume("mongodata")
     .AddDatabase("ClothyReviewsDb");
 
+var rabbitmq = builder.AddRabbitMQ("rabbitmq", rabbitMQUsername, rabbitMQpassword)
+    .WithManagementPlugin()
+    .WithDataVolume();
+
 var catalogService = builder.AddProject<Clothy_CatalogService_API>("catalog")
     .WithReference(postgresCatalog)
     .WithReference(redis)
+    .WithReference(rabbitmq)
     .WithEnvironment("CLOUDINARYSETTINGS__CLOUDNAME", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__CLOUDNAME"))
     .WithEnvironment("CLOUDINARYSETTINGS__APIKEY", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APIKEY"))
     .WithEnvironment("CLOUDINARYSETTINGS__APISECRET", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APISECRET"))
     .WaitFor(redis)
+    .WaitFor(rabbitmq)
     .WaitFor(postgresCatalog);
 
 var ordersService = builder.AddProject<Clothy_OrderService_API>("orders")
     .WithReference(postgresOrders)
     .WithReference(catalogService)
     .WithReference(redis)
+    .WithReference(rabbitmq)
     .WithEnvironment("CLOUDINARYSETTINGS__CLOUDNAME", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__CLOUDNAME"))
     .WithEnvironment("CLOUDINARYSETTINGS__APIKEY", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APIKEY"))
     .WithEnvironment("CLOUDINARYSETTINGS__APISECRET", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APISECRET"))
     .WaitFor(redis)
+    .WaitFor(rabbitmq)
     .WaitFor(catalogService)
     .WaitFor(postgresOrders);
 
 var reviewsService = builder.AddProject<Clothy_ReviewService_API>("reviews")
     .WithReference(mongo)
+    .WithReference(rabbitmq)
     .WithReference(catalogService)
     .WaitFor(mongo)
+    .WaitFor(rabbitmq)
     .WaitFor(catalogService);
 
 var seedCatalog = builder.AddProject<Clothy_CatalogService_SeedData>("catalog-seed")

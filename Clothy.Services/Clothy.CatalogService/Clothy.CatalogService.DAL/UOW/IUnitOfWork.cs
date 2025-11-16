@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Clothy.CatalogService.DAL.Interfaces;
+using Clothy.CatalogService.Domain.Entities;
 
 namespace Clothy.CatalogService.DAL.UOW
 {
@@ -18,7 +19,6 @@ namespace Clothy.CatalogService.DAL.UOW
         ISizeRepository Sizes { get; }
         ITagRepository Tags { get; }
         IClothingTypeRepository ClothingTypes { get; }
-
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }

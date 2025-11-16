@@ -26,6 +26,9 @@ using Clothy.OrderService.BLL.RedisCache.SettlementCache;
 using System.Text.Json;
 using System.Diagnostics.Metrics;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Clothy.OrderService.BLL.Consumers.ClotheItemUpdateEvent;
+using Clothy.Shared.Events.ClotheItem;
+using Clothy.Shared.Events.ConsumerService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -81,6 +84,12 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IRegionService, RegionService>();
 builder.Services.AddScoped<ISettlementService, SettlementService>();
 builder.Services.AddScoped<IPickupPointService, PickupPointService>();
+builder.Services.AddScoped<IOrderItemService, OrderItemService>();
+
+//RabbitMQ
+builder.Services.AddHostedService<ClotheItemUpdatedListenerService>();
+builder.Services.AddScoped<IEventHandler<ClotheItemUpdatedEvent>, UpdateOrderItemConsumerService>();
+//
 
 // CLOUDINARY CONFIG
 builder.Services.AddCloudinary(builder.Configuration);

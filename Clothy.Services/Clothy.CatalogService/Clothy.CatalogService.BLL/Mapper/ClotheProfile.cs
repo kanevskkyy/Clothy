@@ -47,10 +47,6 @@ namespace Clothy.CatalogService.BLL.Mapper
                 .ForMember(dto => dto.Id, map => map.MapFrom(c => c.Id))
                 .ForMember(dto => dto.PhotoURL, map => map.MapFrom(c => c.PhotoURL));
 
-            CreateMap<ClotheMaterial, MaterialWithPercentageDTO>()
-                .ForMember(dto => dto.Name, map => map.MapFrom(cm => cm.Material.Name))
-                .ForMember(dto => dto.Percentage, map => map.MapFrom(cm => cm.Percentage));
-
             CreateMap<ClotheTag, TagReadDTO>()
                 .ForMember(dto => dto.Id, map => map.MapFrom(ct => ct.Tag.Id))
                 .ForMember(dto => dto.Name, map => map.MapFrom(ct => ct.Tag.Name));
@@ -60,11 +56,16 @@ namespace Clothy.CatalogService.BLL.Mapper
                 .ForMember(dto => dto.ClotheMaterials, map => map.Ignore())
                 .ForMember(dto => dto.ClotheTags, map => map.Ignore());
 
+            CreateMap<ClotheMaterial, MaterialWithPercentageDTO>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Material.Id))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Material.Name))
+                .ForMember(dest => dest.Percentage, opt => opt.MapFrom(src => src.Percentage));
+
             CreateMap<ClotheUpdateDTO, ClotheItem>()
-                .ForMember(dto => dto.Photos, map => map.Ignore())
-                .ForMember(dto => dto.UpdatedAt, map => DateTime.UtcNow.ToUniversalTime())
-                .ForMember(dto => dto.ClotheMaterials, map => map.Ignore())
-                .ForMember(dto => dto.ClotheTags, map => map.Ignore());
+                .ForMember(dest => dest.UpdatedAt, map => map.MapFrom(time => DateTime.UtcNow.ToUniversalTime()))
+                .ForMember(dest => dest.BrandId, opt => opt.MapFrom(src => src.BrandId))
+                .ForMember(dest => dest.CollectionId, opt => opt.MapFrom(src => src.CollectionId))
+                .ForMember(dest => dest.ClothingTypeId, opt => opt.MapFrom(src => src.ClothingTypeId));
         }
     }
 }

@@ -22,6 +22,9 @@ using System.Reflection;
 using System.Text.Json.Serialization;
 using System.Diagnostics.Metrics;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using RabbitMQ.Client;
+using Clothy.Shared.Events.PublisherService;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -70,6 +73,38 @@ public static class Extensions
         builder.Services.AddSingleton<IEntityCacheService, EntityCacheService>();
 
         builder.Services.AddHealthChecks();
+        //
+
+        //RABBIT MQ
+        builder.AddRabbitMQClient(connectionName: "rabbitmq");
+        builder.Services.AddHealthChecks()
+            .AddRabbitMQ(
+                name: "rabbitmq",
+                tags: new[] { "ready" }
+            );
+
+        builder.Services.AddSingleton<IConnectionFactory>(p =>
+        {
+            var configuration = p.GetRequiredService<IConfiguration>();
+            string? connectionString = configuration.GetConnectionString("rabbitmq");
+
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                throw new InvalidOperationException("RabbitMQ connection string not found");
+            }
+
+            ConnectionFactory factory = new ConnectionFactory
+            {
+                Uri = new Uri(connectionString),
+                AutomaticRecoveryEnabled = true,
+                NetworkRecoveryInterval = TimeSpan.FromSeconds(10),
+                RequestedHeartbeat = TimeSpan.FromSeconds(60),
+            };
+
+            return factory;
+        });
+
+        builder.Services.AddSingleton<IEventPublisher, RabbitMQEventPublisher>();
         //
 
         builder.ConfigureOpenTelemetry();

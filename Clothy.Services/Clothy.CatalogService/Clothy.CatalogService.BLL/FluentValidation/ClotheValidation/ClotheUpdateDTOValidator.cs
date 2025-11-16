@@ -38,22 +38,6 @@ namespace Clothy.CatalogService.BLL.FluentValidation.ClotheValidation
                 .Must(HavePermittedExtension).WithMessage($"Main photo must be one of: {string.Join(", ", permittedExtensions)}")
                 .Must(HaveValidSize).WithMessage("Main photo must be smaller than 5 MB")
                 .When(x => x.MainPhoto != null);
-
-            RuleForEach(x => x.AdditionalPhotos)
-                .Must(HavePermittedExtension).WithMessage($"Additional photo must be one of: {string.Join(", ", permittedExtensions)}")
-                .Must(HaveValidSize).WithMessage("Additional photo must be smaller than 5 MB")
-                .When(x => x.AdditionalPhotos != null && x.AdditionalPhotos.Any());
-
-            RuleForEach(x => x.Materials).SetValidator(new ClotheMaterialCreateDTOValidator());
-
-            RuleFor(x => x.TagIds)
-                .NotEmpty().WithMessage("At least one tag must be selected.");
-
-            RuleFor(x => x.Materials)
-                .NotEmpty().WithMessage("Materials are required.")
-                .Must(materials => materials.Sum(m => m.Percentage) == 100)
-                .WithMessage("Total materials percentage must equal 100.")
-                .When(x => x.Materials != null && x.Materials.Any());
         }
 
         private bool HavePermittedExtension(IFormFile file)

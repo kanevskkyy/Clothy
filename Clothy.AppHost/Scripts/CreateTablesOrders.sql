@@ -57,6 +57,7 @@ CREATE TABLE order_item (
     quantity INT NOT NULL CHECK (quantity > 0),
     createdat TIMESTAMP WITHOUT TIME ZONE DEFAULT (NOW() AT TIME ZONE 'utc'),
     updatedat TIMESTAMP WITHOUT TIME ZONE,
+    isclothedeleted BOOLEAN NOT NULL DEFAULT false
     CONSTRAINT fk_orderitem_order FOREIGN KEY (orderid)
         REFERENCES orders(id)
         ON UPDATE CASCADE
