@@ -43,7 +43,9 @@ namespace Clothy.OrderService.BLL.Mapper
             CreateMap<DeliveryDetailCreateDTO, DeliveryDetail>()
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow.ToUniversalTime()));
 
-            CreateMap<OrderItemData, OrderItemDTO>();
+            CreateMap<OrderItemData, OrderItemDTO>()
+                .ForMember(dest => dest.IsClotheUpdated, opt => opt.MapFrom(order => order.IsClotheUpdated))
+                .ForMember(dest => dest.IsClotheDeleted, opt => opt.MapFrom(order => order.IsClotheDeleted));
 
             CreateMap<DeliveryDetailData, DeliveryDetailDTO>();
         }

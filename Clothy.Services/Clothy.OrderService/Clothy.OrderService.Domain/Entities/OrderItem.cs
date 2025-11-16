@@ -23,6 +23,7 @@ namespace Clothy.OrderService.Domain.Entities
         public Guid SizeId { get; set; }
         public string? SizeName { get; set; }
         public bool IsClotheDeleted { get; set; }
+        public bool IsClotheUpdated { get; set; }
 
         public int Quantity { get; set; }
     }

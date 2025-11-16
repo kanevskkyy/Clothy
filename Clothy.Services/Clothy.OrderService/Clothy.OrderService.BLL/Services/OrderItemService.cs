@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Clothy.OrderService.BLL.Interfaces;
@@ -22,6 +23,20 @@ namespace Clothy.OrderService.BLL.Services
             this.cacheInvalidationService = cacheInvalidationService;
         }
 
+        public async Task SoftDeleteOrderItemsAsync(ClotheItemDeletedEvent clotheItemDeletedEvent, CancellationToken cancellationToken = default)
+        {
+            List<OrderItem> orderItems = await unitOfWork.OrderItems.GetByClotheIdAsync(clotheItemDeletedEvent.ClotheId, cancellationToken);
+            if (orderItems.Count == 0) return;
+
+            foreach (OrderItem item in orderItems)
+            {
+                item.IsClotheDeleted = true;
+                await unitOfWork.OrderItems.UpdateAsync(item, cancellationToken);
+            }
+            await unitOfWork.CommitAsync();
+            await cacheInvalidationService.InvalidateAllAsync();
+        }
+
         public async Task UpdateOrderItemsAsync(ClotheItemUpdatedEvent clotheItemUpdatedEvent, CancellationToken cancellationToken = default)
         {
             List<OrderItem> orderItems = await unitOfWork.OrderItems.GetByClotheIdAsync(clotheItemUpdatedEvent.ClotheId, cancellationToken);
@@ -33,6 +48,7 @@ namespace Clothy.OrderService.BLL.Services
                 item.ClotheName = clotheItemUpdatedEvent.ClotheName;
                 item.Price = clotheItemUpdatedEvent.Price;
                 item.MainPhoto = clotheItemUpdatedEvent.MainPhoto;
+                item.IsClotheUpdated = true;
 
                 await unitOfWork.OrderItems.UpdateAsync(item, cancellationToken);
             }

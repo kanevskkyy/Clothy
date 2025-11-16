@@ -14,7 +14,8 @@ namespace Clothy.OrderService.BLL.FluentValidation.DeliveryDetailValidation
         {
             RuleFor(x => x.PhoneNumber)
                 .NotEmpty().WithMessage("PhoneNumber is required")
-                .MaximumLength(20).WithMessage("PhoneNumber cannot exceed 20 characters");
+                .MaximumLength(20).WithMessage("PhoneNumber cannot exceed 20 characters")
+                .Matches(@"^(\+380|0)\d{9}$").WithMessage("PhoneNumber must be a valid Ukrainian number");
 
             RuleFor(x => x.FirstName)
                 .NotEmpty().WithMessage("FirstName is required")

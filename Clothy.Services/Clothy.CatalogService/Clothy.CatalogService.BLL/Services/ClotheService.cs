@@ -227,6 +227,13 @@ namespace Clothy.CatalogService.BLL.Services
             unitOfWork.ClotheItems.Delete(clothe);
             await unitOfWork.SaveChangesAsync(cancellationToken);
             await cacheInvalidationService.InvalidateByIdAsync(id);
+
+            ClotheItemDeletedEvent clotheItemDeletedEvent = new ClotheItemDeletedEvent
+            {
+                ClotheId = id,
+            };
+            await eventPublisher.PublishAsync(clotheItemDeletedEvent, "clothe-item-deleted", "clothe-item-deleted-orders-key");
+            await eventPublisher.PublishAsync(clotheItemDeletedEvent, "clothe-item-deleted", "clothe-item-deleted-reviews-key");
         }
     }
 }

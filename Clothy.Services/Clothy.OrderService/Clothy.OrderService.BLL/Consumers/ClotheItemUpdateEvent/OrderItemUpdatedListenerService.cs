@@ -11,13 +11,13 @@ using RabbitMQ.Client;
 
 namespace Clothy.OrderService.BLL.Consumers.ClotheItemUpdateEvent
 {
-    public class ClotheItemUpdatedListenerService : BaseEventListenerService<ClotheItemUpdatedEvent>
+    public class OrderItemUpdatedListenerService : BaseEventListenerService<ClotheItemUpdatedEvent>
     {
         protected override string ExchangeName => "clothe-item-updated";
         protected override string QueueName => "order-service-clothe-item-updated-queue";
         protected override string RoutingKey => "clothe-item-updated-key";
 
-        public ClotheItemUpdatedListenerService(IConnectionFactory connectionFactory, ILogger<ClotheItemUpdatedListenerService> logger, IServiceScopeFactory serviceScopeFactory): base(connectionFactory, logger, serviceScopeFactory)
+        public OrderItemUpdatedListenerService(IConnectionFactory connectionFactory, ILogger<OrderItemUpdatedListenerService> logger, IServiceScopeFactory serviceScopeFactory): base(connectionFactory, logger, serviceScopeFactory)
         {
 
         }

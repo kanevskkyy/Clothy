@@ -8,6 +8,6 @@ namespace Clothy.Shared.Events.ConsumerService
 {
     public interface IEventHandler<T>
     {
-        Task HandleAsync(T newEvent);
+        Task HandleAsync(T newEvent, CancellationToken cancellationToken = default);
     }
 }

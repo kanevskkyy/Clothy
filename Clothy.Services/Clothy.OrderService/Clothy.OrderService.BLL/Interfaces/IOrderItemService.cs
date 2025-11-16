@@ -9,6 +9,7 @@ namespace Clothy.OrderService.BLL.Interfaces
 {
     public interface IOrderItemService
     {
+        Task SoftDeleteOrderItemsAsync(ClotheItemDeletedEvent clotheItemDeletedEvent, CancellationToken cancellationToken = default);
         Task UpdateOrderItemsAsync(ClotheItemUpdatedEvent clotheItemUpdatedEvent, CancellationToken cancellationToken = default);
     }
 }

@@ -23,11 +23,11 @@ namespace Clothy.OrderService.BLL.Consumers.ClotheItemUpdateEvent
             this.orderItemService = orderItemService;
         }
 
-        public async Task HandleAsync(ClotheItemUpdatedEvent clotheItemUpdatedEvent)
+        public async Task HandleAsync(ClotheItemUpdatedEvent clotheItemUpdatedEvent, CancellationToken cancellationToken = default)
         {
             logger.LogInformation("Received ClotheItemUpdatedEvent for ClotheId: {ClotheId}", clotheItemUpdatedEvent.ClotheId);
 
-            await orderItemService.UpdateOrderItemsAsync(clotheItemUpdatedEvent);
+            await orderItemService.UpdateOrderItemsAsync(clotheItemUpdatedEvent, cancellationToken);
             
             logger.LogInformation("Orders updated for ClotheId: {ClotheId}", clotheItemUpdatedEvent.ClotheId);
         }

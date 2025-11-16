@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Text.Json;
 using Clothy.ReviewService.API.Middleware;
 using Clothy.ReviewService.Application.Behaviours;
+using Clothy.ReviewService.Application.Consumers.DeleteReviewsAndQuestions;
 using Clothy.ReviewService.Application.Features.Questions.Commands.UpdateQuestion;
 using Clothy.ReviewService.Application.Validations.Additional;
 using Clothy.ReviewService.Application.Validations.Questions;
@@ -17,6 +18,8 @@ using Clothy.ReviewService.Infrastructure.DB.MongoHeathCheck;
 using Clothy.ReviewService.Infrastructure.DB.Seeding;
 using Clothy.ReviewService.Infrastructure.Repositories;
 using Clothy.ServiceDefaults.Middleware;
+using Clothy.Shared.Events.ClotheItem;
+using Clothy.Shared.Events.ConsumerService;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using MediatR;
@@ -57,7 +60,12 @@ builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssembly(typeof(UpdateAnswerCommandValidator).Assembly);
 //
 
-builder.Services.AddEndpointsApiExplorer()  ;
+// RABBIT MQ
+builder.Services.AddHostedService<ReviewsAndQuestionListenerEvent>();
+builder.Services.AddScoped<IEventHandler<ClotheItemDeletedEvent>, ReviewsAndQuestionsDeletionConsumer>();
+//
+
+builder.Services.AddEndpointsApiExplorer();
 
 // GRPC
 builder.Services.AddScoped<IClotheItemIdValidatorGrpcClient, ClotheItemIdValidatorGrpcClient>();

@@ -13,6 +13,7 @@ namespace Clothy.ReviewService.Domain.Interfaces
 {
     public interface IReviewRepository : IGenericRepository<Review>
     {
+        Task DeleteAllReviewsByClotheId(Guid clotheId, CancellationToken cancellationToken = default);
         Task<ReviewStatistics> GetReviewStatisticsAsync(Guid clotheItemId, CancellationToken cancellationToken = default);
         Task<bool> HasUserReviewedClotheAsync(Guid userId, Guid clotheItemId, CancellationToken cancellationToken = default);
         Task<PagedList<Review>> GetReviewsAsync(ReviewQueryParameters queryParameters, CancellationToken cancellationToken = default);

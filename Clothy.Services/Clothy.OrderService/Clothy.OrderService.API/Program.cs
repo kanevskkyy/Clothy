@@ -29,6 +29,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Clothy.OrderService.BLL.Consumers.ClotheItemUpdateEvent;
 using Clothy.Shared.Events.ClotheItem;
 using Clothy.Shared.Events.ConsumerService;
+using Clothy.OrderService.BLL.Consumers.ClotheItemDeleteEvent;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -87,8 +88,11 @@ builder.Services.AddScoped<IPickupPointService, PickupPointService>();
 builder.Services.AddScoped<IOrderItemService, OrderItemService>();
 
 //RabbitMQ
-builder.Services.AddHostedService<ClotheItemUpdatedListenerService>();
+builder.Services.AddHostedService<OrderItemUpdatedListenerService>();
 builder.Services.AddScoped<IEventHandler<ClotheItemUpdatedEvent>, UpdateOrderItemConsumerService>();
+
+builder.Services.AddHostedService<OrderItemDeletedListenerService>();
+builder.Services.AddScoped<IEventHandler<ClotheItemDeletedEvent>, DeleteOrderItemConsumerService>();
 //
 
 // CLOUDINARY CONFIG
