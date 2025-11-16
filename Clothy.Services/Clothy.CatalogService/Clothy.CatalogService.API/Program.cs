@@ -25,6 +25,8 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using MassTransit;
 using Clothy.CatalogService.BLL.Consumers;
 using Clothy.Shared.Events.ClotheItemEvents;
+using Clothy.Shared.Events;
+using Clothy.CatalogService.DAL.EventLog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -107,6 +109,8 @@ builder.Services.AddSingleton(meter);
 //
 
 //RabbitMQ 
+builder.Services.AddScoped<IEventLogService, EventLogService>();
+
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<ClotheStockConsumerService>();

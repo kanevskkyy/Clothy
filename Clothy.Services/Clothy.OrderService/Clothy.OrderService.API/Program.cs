@@ -29,6 +29,8 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using MassTransit;
 using Clothy.OrderService.BLL.Consumers;
 using Clothy.Shared.Events.OrderEvents;
+using Clothy.Shared.Events;
+using Clothy.OrderService.DAL.EventLog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -87,6 +89,8 @@ builder.Services.AddScoped<IPickupPointService, PickupPointService>();
 builder.Services.AddScoped<IOrderItemService, OrderItemService>();
 
 //RabbitMQ
+builder.Services.AddScoped<IEventLogService, EventLogService>();
+
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<DeleteOrderItemConsumerService>();

@@ -16,8 +16,10 @@ using Clothy.ReviewService.Infrastructure.DB.Extension;
 using Clothy.ReviewService.Infrastructure.DB.MappingConfig;
 using Clothy.ReviewService.Infrastructure.DB.MongoHeathCheck;
 using Clothy.ReviewService.Infrastructure.DB.Seeding;
+using Clothy.ReviewService.Infrastructure.EventLog;
 using Clothy.ReviewService.Infrastructure.Repositories;
 using Clothy.ServiceDefaults.Middleware;
+using Clothy.Shared.Events;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using MassTransit;
@@ -60,6 +62,8 @@ builder.Services.AddValidatorsFromAssembly(typeof(UpdateAnswerCommandValidator).
 //
 
 // RABBIT MQ
+builder.Services.AddScoped<IEventLogService, EventLogService>();
+
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<ReviewsAndQuestionsDeletionConsumer>();

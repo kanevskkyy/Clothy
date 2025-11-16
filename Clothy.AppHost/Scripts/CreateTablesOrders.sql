@@ -101,6 +101,11 @@ CREATE TABLE pickup_points (
     UNIQUE (address, deliveryproviderid)
 );
 
+CREATE TABLE processed_events(
+    eventid UUID PRIMARY KEY,
+    processedat TIMESTAMP WITHOUT TIME ZONE DEFAULT (NOW() AT TIME ZONE 'utc')
+);
+
 CREATE TABLE delivery_detail (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     orderid UUID NOT NULL,

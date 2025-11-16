@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Clothy.ReviewService.Domain.Interfaces;
+using Clothy.Shared.Events;
 using Clothy.Shared.Events.ClotheItemEvents;
+using DnsClient.Internal;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
@@ -15,9 +17,11 @@ namespace Clothy.ReviewService.Application.Consumers.DeleteReviewsAndQuestions
         private ILogger<ReviewsAndQuestionsDeletionConsumer> logger;
         private IReviewRepository reviewRepository;
         private IQuestionRepository questionRepository;
+        private IEventLogService eventLogService;
 
-        public ReviewsAndQuestionsDeletionConsumer(IReviewRepository reviewRepository, IQuestionRepository questionRepository, ILogger<ReviewsAndQuestionsDeletionConsumer> logger)
+        public ReviewsAndQuestionsDeletionConsumer(IReviewRepository reviewRepository, IQuestionRepository questionRepository, ILogger<ReviewsAndQuestionsDeletionConsumer> logger, IEventLogService eventLogService)
         {
+            this.eventLogService = eventLogService;
             this.reviewRepository = reviewRepository;
             this.questionRepository = questionRepository;
             this.logger = logger;
@@ -25,14 +29,23 @@ namespace Clothy.ReviewService.Application.Consumers.DeleteReviewsAndQuestions
 
         public async Task Consume(ConsumeContext<ClotheItemDeletedEvent> context)
         {
-            var message = context.Message;
+            Guid eventId = context.Message.EventId;
+            if (await eventLogService.HasEventProcessedAsync(eventId, context.CancellationToken))
+            {
+                logger.LogWarning("Duplicate ClotheItemDeletedEvent detected: {EventId}", eventId);
+                return;
+            }
 
-            logger.LogInformation("ReviewService: Received ClotheItemDeletedEvent for ClotheId: {ClotheId}", message.ClotheId);
+            ClotheItemDeletedEvent clotheItemDeletedEvent = context.Message;
 
-            await reviewRepository.DeleteAllReviewsByClotheId(message.ClotheId, context.CancellationToken);
-            await questionRepository.DeleteAllQuestionsByClotheId(message.ClotheId, context.CancellationToken);
+            logger.LogInformation("ReviewService: Received ClotheItemDeletedEvent for ClotheId: {ClotheId}", clotheItemDeletedEvent.ClotheId);
 
-            logger.LogInformation("ReviewService: Deleted all reviews and questions for ClotheId: {ClotheId}", message.ClotheId);
+            await reviewRepository.DeleteAllReviewsByClotheId(clotheItemDeletedEvent.ClotheId, context.CancellationToken);
+            await questionRepository.DeleteAllQuestionsByClotheId(clotheItemDeletedEvent.ClotheId, context.CancellationToken);
+
+            await eventLogService.MarkEventAsProcessedAsync(eventId, context.CancellationToken);
+
+            logger.LogInformation("ReviewService: Deleted all reviews and questions for ClotheId: {ClotheId}", clotheItemDeletedEvent.ClotheId);
         }
     }
 }
