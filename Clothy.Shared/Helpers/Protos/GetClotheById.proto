@@ -1,0 +1,77 @@
+﻿syntax = "proto3";
+
+service ClotheServiceGrpc {
+	rpc GetClotheById (ClotheIdGrpcRequest) returns (ClotheDetailGrpcResponse);
+}
+
+message ClotheIdGrpcRequest {
+	string id = 1;
+}
+
+message BrandDetailGrpcResponse {
+	string id = 1;
+	string name = 2;
+	string slug = 3;
+	string photoUrl = 4;
+}
+
+message ClothingTypeGrpcResponse {
+	string id = 1;
+	string name = 2;
+	string slug = 3;
+}
+
+message CollectionGrpcResponse {
+	string id = 1;
+	string name = 2;
+	string slug = 3;
+}
+
+message AdditionalPhotoGrpcResponse {
+	string id = 1;
+	string photoUrl = 2;
+}
+
+message TagGrpcResponse {
+	string id = 1;
+	string name = 2;
+}
+
+message MaterialWithPercentageGrpcResponse {
+	string id = 1;
+	string name = 2;
+	int32 percentage = 3;
+}
+
+message SizeGrpc {
+	string id = 1;
+	string name = 2;
+}
+
+message ColorGrpc {
+	string id = 1;
+	string hexCode = 2;
+}
+
+message ClotheStockGrpcResponse {
+	string id = 1;
+	SizeGrpc size = 2;
+	ColorGrpc color = 3;
+	int32 quantity = 4;
+}
+
+message ClotheDetailGrpcResponse {
+	string id = 1;
+	string name = 2;
+	string slug = 3;
+	string description = 4;
+	string mainPhotoUrl = 5;
+	string price = 6; 
+	BrandDetailGrpcResponse brand = 7;
+	ClothingTypeGrpcResponse clothingType = 8;
+	CollectionGrpcResponse collection = 9;
+	repeated AdditionalPhotoGrpcResponse additionalPhotos = 10;
+	repeated TagGrpcResponse tags = 11;
+	repeated MaterialWithPercentageGrpcResponse materials = 12;
+	repeated ClotheStockGrpcResponse stocks = 13;
+}

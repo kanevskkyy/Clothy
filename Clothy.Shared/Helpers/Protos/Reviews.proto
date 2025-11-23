@@ -1,0 +1,58 @@
+﻿syntax = "proto3";
+
+message ReviewClotheIdGrpcRequest {
+    string id = 1;
+}
+
+message UserGrpcResponse {
+    string id = 1;
+    string firstName = 2;
+    string lastName = 3;
+    string photoUrl = 4;
+}
+
+message ReviewGrpcResponse {
+    string id = 1;
+    UserGrpcResponse user = 2;
+    int32 rating = 3;
+    string comment = 4;
+    string createdAt = 5;
+}
+
+message ReviewsListGrpcResponse {
+    repeated ReviewGrpcResponse reviews = 1;
+}
+
+message ReviewStatisticGrpcResponse {
+    string clotheItemId = 1;
+    int32 totalReviews = 2;
+    int32 fiveStars = 3;
+    int32 fourStars = 4;
+    int32 threeStars = 5;
+    int32 twoStars = 6;
+    int32 oneStars = 7;
+    double averageRating = 8;
+}
+
+message AnswerGrpcResponse {
+    string id = 1;
+    UserGrpcResponse user = 2;
+    string answerText = 3;
+}
+
+message QuestionGrpcResponse {
+    string id = 1;
+    UserGrpcResponse user = 2;
+    string questionText = 3;
+    repeated AnswerGrpcResponse answers = 4;
+}
+
+message QuestionsListGrpcResponse {
+    repeated QuestionGrpcResponse questions = 1;
+}
+
+service ReviewServiceGrpc {
+    rpc GetReviewsByClotheId (ReviewClotheIdGrpcRequest) returns (ReviewsListGrpcResponse);
+    rpc GetAnswersAndQuestionByClotheId (ReviewClotheIdGrpcRequest) returns (QuestionsListGrpcResponse);
+    rpc GetStatisticsByClotheId (ReviewClotheIdGrpcRequest) returns (ReviewStatisticGrpcResponse);
+}

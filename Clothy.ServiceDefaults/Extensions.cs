@@ -4,15 +4,11 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.ServiceDiscovery;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using Serilog;
-using Serilog.Filters;
-using Serilog.Formatting.Compact;
 using Serilog.Events;
-using System.Diagnostics;
 using OpenTelemetry.Resources;
 using Clothy.Shared.Cache;
 using Clothy.Shared.Cache.Interfaces;
@@ -20,10 +16,7 @@ using StackExchange.Redis;
 using System.Text.Json;
 using System.Reflection;
 using System.Text.Json.Serialization;
-using System.Diagnostics.Metrics;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using RabbitMQ.Client;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -113,6 +106,9 @@ public static class Extensions
 
         builder.Services.AddHttpContextAccessor();
         builder.Services.AddTransient<CorrelationIdDelegatingHandler>();
+
+        builder.Services.AddJwtAuthentication(builder.Configuration);
+        builder.Services.AddSwaggerWithAuth();
 
         return builder;
     }

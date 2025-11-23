@@ -1,4 +1,4 @@
-﻿using Projects;
+using Projects;
 using DotNetEnv;
 
 var builder = DistributedApplication.CreateBuilder(args);
@@ -20,6 +20,7 @@ var redis = builder.AddRedis("clothy-redis")
 
 var postgresCatalog = postgres.AddDatabase("ClothyCatalogDb");
 var postgresOrders = postgres.AddDatabase("ClothyOrder");
+var postgresUsers = postgres.AddDatabase("ClothyUsers");
 
 var mongo = builder.AddMongoDB("clothy-mongo")
     .WithImage("mongo:7")
@@ -61,6 +62,18 @@ var reviewsService = builder.AddProject<Clothy_ReviewService_API>("reviews")
     .WaitFor(mongo)
     .WaitFor(rabbitmq)
     .WaitFor(catalogService);
+
+var usersService = builder.AddProject<Clothy_UserService_API>("users")
+    .WithReference(postgresUsers)
+    .WithEnvironment("CLOUDINARYSETTINGS__CLOUDNAME", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__CLOUDNAME"))
+    .WithEnvironment("CLOUDINARYSETTINGS__APIKEY", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APIKEY"))
+    .WithEnvironment("CLOUDINARYSETTINGS__APISECRET", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APISECRET"))
+    .WithEnvironment("JWTSETTINGS__Key", Environment.GetEnvironmentVariable("JWTSETTINGS__Key"))
+    .WithEnvironment("JWTSETTINGS__Audience", Environment.GetEnvironmentVariable("JWTSETTINGS__Audience"))
+    .WithEnvironment("JWTSETTINGS__Issuer", Environment.GetEnvironmentVariable("JWTSETTINGS__Issuer"))
+    .WithEnvironment("JWTSETTINGS__AccessTokenDurationMinutes", Environment.GetEnvironmentVariable("JWTSETTINGS__AccessTokenDurationMinutes"))
+    .WithEnvironment("JWTSETTINGS__RefreshTokenDurationDays", Environment.GetEnvironmentVariable("JWTSETTINGS__RefreshTokenDurationDays"))
+    .WaitFor(postgresUsers);
 
 var seedCatalog = builder.AddProject<Clothy_CatalogService_SeedData>("catalog-seed")
     .WithReference(postgresCatalog)
