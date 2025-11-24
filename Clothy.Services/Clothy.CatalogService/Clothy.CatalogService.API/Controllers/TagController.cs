@@ -1,5 +1,6 @@
 ﻿using Clothy.CatalogService.BLL.DTOs.TagDTOs;
 using Clothy.CatalogService.BLL.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Clothy.CatalogService.API.Controllers
@@ -65,6 +66,7 @@ namespace Clothy.CatalogService.API.Controllers
         /// <param name="ct">Cancellation token.</param>
         /// <returns>Created tag.</returns>
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(TagCreateDTO dto, CancellationToken ct)
         {
             logger.LogInformation("Creating tag with name: {Name}", dto.Name);
@@ -82,6 +84,7 @@ namespace Clothy.CatalogService.API.Controllers
         /// <param name="ct">Cancellation token.</param>
         /// <returns>Updated tag.</returns>
         [HttpPut("{id:guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(Guid id, TagUpdateDTO dto, CancellationToken ct)
         {
             logger.LogInformation("Updating tag with ID: {Id}", id);
@@ -98,6 +101,7 @@ namespace Clothy.CatalogService.API.Controllers
         /// <param name="ct">Cancellation token.</param>
         /// <returns>No content.</returns>
         [HttpDelete("{id:guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
         {
             logger.LogInformation("Deleting tag with ID: {Id}", id);

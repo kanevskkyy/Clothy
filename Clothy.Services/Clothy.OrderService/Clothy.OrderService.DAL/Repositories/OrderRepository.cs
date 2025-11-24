@@ -26,7 +26,7 @@ namespace Clothy.OrderService.DAL.Repositories
             IDbConnection connection = await GetOpenConnectionAsync();
 
             StringBuilder sql = new StringBuilder(@"
-                SELECT o.id, o.userfirstname, o.userlastname, o.createdat, o.updatedat,
+                SELECT o.id, o.userid, o.userfirstname, o.userlastname, o.createdat, o.updatedat,
                        s.id AS StatusId, s.name AS StatusName, s.iconurl AS StatusIconUrl,
                        COALESCE(SUM(oi.price * oi.quantity), 0) AS TotalAmount
                 FROM orders o
@@ -87,6 +87,7 @@ namespace Clothy.OrderService.DAL.Repositories
             var items = rows.Select(r => new OrderSummaryData
             {
                 Id = r.id,
+                UserId = r.userid,
                 UserFirstName = r.userfirstname,
                 UserLastName = r.userlastname,
                 CreatedAt = r.createdat,
@@ -109,8 +110,8 @@ namespace Clothy.OrderService.DAL.Repositories
 
             string orderSql = @"
                 SELECT 
-                    o.id, o.userfirstname, o.userlastname, o.createdat, o.updatedat,
-                    s.id, s.name, s.iconurl
+                    o.id, o.userid, o.userfirstname, o.userlastname, o.createdat, o.updatedat,
+                    s.id AS StatusId, s.name, s.iconurl
                 FROM orders o
                 LEFT JOIN order_status s ON o.statusid = s.id
                 WHERE o.id = @Id;
@@ -125,10 +126,11 @@ namespace Clothy.OrderService.DAL.Repositories
                     return tempOrder;
                 },
                 new { Id = id },
-                splitOn: "id" 
+                splitOn: "StatusId"  
             );
 
             OrderWithDetailsData? order = orderResult.FirstOrDefault();
+
             if (order == null) return null;
 
             string itemsSql = @"SELECT * FROM order_item WHERE orderid = @Id;";

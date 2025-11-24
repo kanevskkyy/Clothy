@@ -30,6 +30,7 @@ namespace Clothy.OrderService.API.Middleware
                     NotFoundException => (int)HttpStatusCode.NotFound,
                     AlreadyExistsException => (int)HttpStatusCode.Conflict,
                     ValidationFailedException => (int)HttpStatusCode.BadRequest,
+                    ForbiddenException => (int)HttpStatusCode.Forbidden,
                     _ => (int)HttpStatusCode.InternalServerError
                 };
 

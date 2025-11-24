@@ -1,5 +1,6 @@
 ﻿using Clothy.CatalogService.BLL.DTOs.SizeDTOs;
 using Clothy.CatalogService.BLL.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Clothy.CatalogService.API.Controllers
@@ -51,6 +52,7 @@ namespace Clothy.CatalogService.API.Controllers
         /// <param name="ct">Cancellation token.</param>
         /// <returns>Created size.</returns>
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<SizeReadDTO>> Create([FromBody] SizeCreateDTO dto, CancellationToken ct)
         {
             logger.LogInformation("Creating size with name: {Name}", dto.Name);
@@ -67,6 +69,7 @@ namespace Clothy.CatalogService.API.Controllers
         /// <param name="ct">Cancellation token.</param>
         /// <returns>Updated size.</returns>
         [HttpPut("{id:guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<SizeReadDTO>> Update(Guid id, [FromBody] SizeUpdateDTO dto, CancellationToken ct)
         {
             logger.LogInformation("Updating size with ID: {Id}", id);
@@ -83,6 +86,7 @@ namespace Clothy.CatalogService.API.Controllers
         /// <param name="ct">Cancellation token.</param>
         /// <returns>No content.</returns>
         [HttpDelete("{id:guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> Delete(Guid id, CancellationToken ct)
         {
             logger.LogInformation("Deleting size with ID: {Id}", id);

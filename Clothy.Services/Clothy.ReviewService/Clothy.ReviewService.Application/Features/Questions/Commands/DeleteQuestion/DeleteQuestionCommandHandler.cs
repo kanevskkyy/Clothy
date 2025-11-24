@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Clothy.ReviewService.Application.Interfaces.Commands;
@@ -24,6 +25,8 @@ namespace Clothy.ReviewService.Application.Features.Questions.Commands.DeleteQue
         {
             Question? question = await questionRepository.GetByIdAsync(request.QuestionId, cancellationToken);
             if (question == null) throw new NotFoundException($"Question with ID {request.QuestionId} not found!");
+
+            if (question.User.UserId != request.UserId && !request.IsAdmin) throw new ForbiddenException("You are not allowed to delete this question");
 
             await questionRepository.DeleteAsync(request.QuestionId, cancellationToken);
             return Unit.Value;

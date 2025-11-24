@@ -1,5 +1,6 @@
 ﻿using Clothy.OrderService.BLL.DTOs.DeliveryProviderDTOs;
 using Clothy.OrderService.BLL.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Clothy.OrderService.API.Controllers
@@ -45,6 +46,7 @@ namespace Clothy.OrderService.API.Controllers
         /// Create a new delivery provider.
         /// </summary>
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<DeliveryProviderReadDTO>> Create([FromForm] DeliveryProviderCreateDTO dto, CancellationToken cancelletionToken)
         {
             logger.LogInformation("Creating delivery provider with name: {Name}", dto.Name);
@@ -61,6 +63,7 @@ namespace Clothy.OrderService.API.Controllers
         /// Update an existing delivery provider.
         /// </summary>
         [HttpPut("{id:guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<DeliveryProviderReadDTO>> Update(Guid id, [FromForm] DeliveryProviderUpdateDTO dto, CancellationToken cancelletionToken)
         {
             logger.LogInformation("Updating delivery provider with ID: {Id}", id);
@@ -74,6 +77,7 @@ namespace Clothy.OrderService.API.Controllers
         /// Delete a delivery provider by ID.
         /// </summary>
         [HttpDelete("{id:guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> Delete(Guid id, CancellationToken cancelletionToken)
         {
             logger.LogInformation("Deleting delivery provider with ID: {Id}", id);

@@ -14,14 +14,6 @@ namespace Clothy.OrderService.BLL.FluentValidation.OrderValidation
     {
         public OrderCreateDTOValidator()
         {
-            RuleFor(x => x.UserFirstName)
-                .NotEmpty().WithMessage("UserFirstName is required.")
-                .MaximumLength(100).WithMessage("UserFirstName cannot exceed 100 characters.");
-
-            RuleFor(x => x.UserLastName)
-                .NotEmpty().WithMessage("UserLastName is required.")
-                .MaximumLength(100).WithMessage("UserLastName cannot exceed 100 characters.");
-
             RuleFor(x => x.Items).NotEmpty().WithMessage("Order must have at least one item.");
             
             RuleForEach(x => x.Items).SetValidator(new OrderItemCreateDTOValidator());

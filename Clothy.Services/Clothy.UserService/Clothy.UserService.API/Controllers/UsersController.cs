@@ -12,8 +12,8 @@ namespace Clothy.UserService.API.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly IUserService userService;
-        private readonly ILogger<UsersController> logger;
+        private IUserService userService;
+        private ILogger<UsersController> logger;
 
         public UsersController(IUserService userService, ILogger<UsersController> logger)
         {

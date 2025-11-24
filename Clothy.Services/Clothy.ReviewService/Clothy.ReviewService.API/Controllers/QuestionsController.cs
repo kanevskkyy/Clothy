@@ -8,7 +8,10 @@ using Clothy.ReviewService.Application.Features.Questions.Query.GetQuestionById;
 using Clothy.ReviewService.Application.Features.Questions.Query.GetQuestions;
 using Clothy.ReviewService.Domain.Entities;
 using Clothy.ReviewService.Domain.Entities.QueryParameters;
+using Clothy.Shared.Helpers;
+using Clothy.Shared.Helpers.JWT;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Clothy.ReviewService.API.Controllers
@@ -19,11 +22,13 @@ namespace Clothy.ReviewService.API.Controllers
     {
         private IMediator mediator;
         private ILogger<QuestionsController> logger;
+        private IUserClaimsExtractor userClaimsExtractor;
 
-        public QuestionsController(IMediator mediator, ILogger<QuestionsController> logger)
+        public QuestionsController(IMediator mediator, ILogger<QuestionsController> logger, IUserClaimsExtractor userClaimsExtractor)
         {
             this.mediator = mediator;
             this.logger = logger;
+            this.userClaimsExtractor = userClaimsExtractor;
         }
 
         /// <summary>
@@ -38,7 +43,7 @@ namespace Clothy.ReviewService.API.Controllers
             logger.LogInformation("Fetching paged questions. Page: {PageNumber}, PageSize: {PageSize}", queryParams.PageNumber, queryParams.PageSize);
             GetQuestionsQuery query = new GetQuestionsQuery(queryParams);
             
-            var result = await mediator.Send(query, cancellationToken);
+            PagedList<Question> result = await mediator.Send(query, cancellationToken);
             return Ok(result);
         }
 
@@ -54,27 +59,33 @@ namespace Clothy.ReviewService.API.Controllers
             logger.LogInformation("Fetching question with ID: {Id}", id);
             GetQuestionByIdQuery query = new GetQuestionByIdQuery(id);
             
-            var result = await mediator.Send(query, cancellationToken);
+            Question? result = await mediator.Send(query, cancellationToken);
             return Ok(result);
         }
 
         /// <summary>
         /// Create a new question.
         /// </summary>
-        /// <param name="command">Question creation data.</param>
+        /// <param name="questionDTO">Question creation data.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Created question ID.</returns>
         [HttpPost]
-        public async Task<IActionResult> CreateQuestion([FromBody] CreateQuestionCommand command, CancellationToken cancellationToken)
+        [Authorize]
+        public async Task<IActionResult> CreateQuestion([FromBody] CreateQuestionDTO questionDTO, CancellationToken cancellationToken)
         {
-            logger.LogInformation("Creating question for ClotheItemId: {ClotheItemId}", command.ClotheItemId);
+            logger.LogInformation("Creating question for ClotheItemId: {ClotheItemId}", questionDTO.ClotheItemId);
 
-            var question = await mediator.Send(command, cancellationToken);
+            Guid userId = userClaimsExtractor.GetUserId(User);
+            string firstName = userClaimsExtractor.GetFirstName(User);
+            string lastName = userClaimsExtractor.GetLastName(User);
+            string photoUrl = userClaimsExtractor.GetPhotoUrl(User);
+
+            CreateQuestionCommand command = new CreateQuestionCommand(questionDTO.ClotheItemId, userId, firstName, lastName, photoUrl, questionDTO.QuestionText);
+
+            Question question = await mediator.Send(command, cancellationToken);
 
             logger.LogInformation("Question created with ID: {Id}", question.Id);
-            return CreatedAtAction(nameof(GetQuestionById), new { 
-                id = question.Id 
-            }, question);
+            return CreatedAtAction(nameof(GetQuestionById), new { id = question.Id }, question);
         }
 
 
@@ -82,15 +93,19 @@ namespace Clothy.ReviewService.API.Controllers
         /// Update an existing question by its ID.
         /// </summary>
         /// <param name="id">Question ID.</param>
-        /// <param name="command">Update data for the question.</param>
+        /// <param name="dto">Update data for the question.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>No content.</returns>
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateQuestion(string id, [FromBody] UpdateQuestionCommand command, CancellationToken cancellationToken)
+        [Authorize]
+        public async Task<IActionResult> UpdateQuestion(string id, [FromBody] UpdateQuestionDTO dto, CancellationToken cancellationToken)
         {
             logger.LogInformation("Updating question with ID: {Id}", id);
 
-            await mediator.Send(new UpdateQuestionWithIdCommand(id, command.QuestionText), cancellationToken);
+            Guid userId = userClaimsExtractor.GetUserId(User);
+            UpdateQuestionWithIdCommand command = new UpdateQuestionWithIdCommand(id, dto.QuestionText, userId);
+
+            await mediator.Send(command, cancellationToken);
 
             logger.LogInformation("Question with ID {Id} updated.", id);
             return NoContent();
@@ -104,11 +119,15 @@ namespace Clothy.ReviewService.API.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>No content.</returns>
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteQuestion(string id, CancellationToken cancellationToken)
         {
             logger.LogInformation("Deleting question with ID: {Id}", id);
-            DeleteQuestionCommand command = new DeleteQuestionCommand(id);
-            
+            Guid userId = userClaimsExtractor.GetUserId(User);
+            bool isAdmin = userClaimsExtractor.IsInRole(User, "Admin");
+
+            DeleteQuestionCommand command = new DeleteQuestionCommand(id, userId, isAdmin);
+
             await mediator.Send(command, cancellationToken);
             
             logger.LogInformation("Question with ID {Id} deleted.", id);
@@ -119,15 +138,22 @@ namespace Clothy.ReviewService.API.Controllers
         /// Add an answer to a question.
         /// </summary>
         /// <param name="id">Question ID.</param>
-        /// <param name="command">Answer data.</param>
+        /// <param name="dto">Answer data.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Created answer object.</returns>
         [HttpPost("{id}/answers")]
-        public async Task<IActionResult> AddAnswer(string id, [FromBody] AddAnswerCommand command, CancellationToken cancellationToken)
+        [Authorize]
+        public async Task<IActionResult> AddAnswer(string id, [FromBody] AddAnswerDTO dto, CancellationToken cancellationToken)
         {
             logger.LogInformation("Adding answer to question ID: {Id}", id);
 
-            Answer answer = await mediator.Send(new AddAnswerWithQuestionIdCommand(id, command.User, command.AnswerText), cancellationToken);
+            Guid userId = userClaimsExtractor.GetUserId(User);
+            string firstName = userClaimsExtractor.GetFirstName(User);
+            string lastName = userClaimsExtractor.GetLastName(User);
+            string photoUrl = userClaimsExtractor.GetPhotoUrl(User);
+
+            AddAnswerWithQuestionIdCommand command = new AddAnswerWithQuestionIdCommand(id, userId, firstName, lastName, photoUrl, dto.AnswerText);
+            Answer answer = await mediator.Send(command, cancellationToken);
 
             logger.LogInformation("Answer added to question ID {Id}", id);
 
@@ -141,15 +167,19 @@ namespace Clothy.ReviewService.API.Controllers
         /// </summary>
         /// <param name="questionId">Question ID.</param>
         /// <param name="answerId">Answer ID.</param>
-        /// <param name="command">Updated answer data.</param>
+        /// <param name="dto">Updated answer data.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>No content.</returns>
         [HttpPut("{questionId}/answers/{answerId}")]
-        public async Task<IActionResult> UpdateAnswer(string questionId, string answerId, [FromBody] UpdateAnswerCommand command, CancellationToken cancellationToken)
+        [Authorize]
+        public async Task<IActionResult> UpdateAnswer(string questionId, string answerId, [FromBody] UpdateAnswerDTO dto, CancellationToken cancellationToken)
         {
             logger.LogInformation("Updating answer {AnswerId} for question {QuestionId}", answerId, questionId);
 
-            await mediator.Send(new UpdateAnswerWithIdsCommand(questionId, answerId, command.AnswerText), cancellationToken);
+            Guid userId = userClaimsExtractor.GetUserId(User);
+            UpdateAnswerWithIdsCommand command = new UpdateAnswerWithIdsCommand(questionId, answerId, dto.AnswerText, userId);
+
+            await mediator.Send(command, cancellationToken);
 
             logger.LogInformation("Answer {AnswerId} updated for question {QuestionId}", answerId, questionId);
             return NoContent();
@@ -164,11 +194,15 @@ namespace Clothy.ReviewService.API.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>No content.</returns>
         [HttpDelete("{questionId}/answers/{answerId}")]
+        [Authorize]
         public async Task<IActionResult> DeleteAnswer(string questionId, string answerId, CancellationToken cancellationToken)
         {
             logger.LogInformation("Deleting answer {AnswerId} from question {QuestionId}", answerId, questionId);
-            DeleteAnswerToQuestionCommand command = new DeleteAnswerToQuestionCommand(questionId, answerId);
-            
+            Guid userId = userClaimsExtractor.GetUserId(User);
+            bool isAdmin = userClaimsExtractor.IsInRole(User, "Admin");
+
+            DeleteAnswerToQuestionCommand command = new DeleteAnswerToQuestionCommand(questionId, answerId, userId, isAdmin);
+
             await mediator.Send(command, cancellationToken);
             
             logger.LogInformation("Answer {AnswerId} deleted from question {QuestionId}", answerId, questionId);

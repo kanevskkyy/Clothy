@@ -28,12 +28,6 @@ namespace Clothy.UserService.BLL.Services
             this.userManager = userManager;
             this.refreshTokenRepository = refreshTokenRepository;
             jwtConfig = jwtOptions.Value;
-
-            Console.WriteLine("\n=== TokenService Constructor ===");
-            Console.WriteLine($"Key: {jwtConfig.Key} (is null: {jwtConfig.Key == null})");
-            Console.WriteLine($"Issuer: {jwtConfig.Issuer} (is null: {jwtConfig.Issuer == null})");
-            Console.WriteLine($"Audience: {jwtConfig.Audience} (is null: {jwtConfig.Audience == null})");
-            Console.WriteLine("=== END ===\n");
         }
 
         public async Task<TokenResponseDTO> GenerateTokensAsync(ApplicationUser user, CancellationToken cancellationToken = default)
@@ -90,6 +84,7 @@ namespace Clothy.UserService.BLL.Services
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.GivenName, user.FirstName),
                 new Claim(ClaimTypes.Surname, user.LastName),
+                new Claim(ClaimTypes.MobilePhone, user.PhoneNumber),
                 new Claim("PhotoUrl", user.PhotoUrl),
             };
 

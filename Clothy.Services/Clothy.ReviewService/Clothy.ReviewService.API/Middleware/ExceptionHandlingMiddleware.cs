@@ -25,24 +25,23 @@ namespace Clothy.ReviewService.API.Middleware
             catch (Exception ex)
             {
                 logger.LogError(ex, "Unhandled exception caught by middleware.");
-
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = ex switch
                 {
                     NotFoundException => (int)HttpStatusCode.NotFound,
                     AlreadyExistsException => (int)HttpStatusCode.Conflict,
+                    ValidationFailedException => (int)HttpStatusCode.BadRequest,
+                    ForbiddenException => (int)HttpStatusCode.Forbidden,
                     MongoConnectionException => (int)HttpStatusCode.ServiceUnavailable,
                     MongoWriteException => (int)HttpStatusCode.BadRequest,
-                    ValidationFailedException => (int)HttpStatusCode.BadRequest,
                     MongoException => (int)HttpStatusCode.ServiceUnavailable,
-
                     _ => (int)HttpStatusCode.InternalServerError
                 };
 
                 var response = new
                 {
-                    type = ex.GetType().Name,
-                    message = ex.Message,
+                    error = ex.Message,
+                    type = ex.GetType().Name
                 };
 
                 await context.Response.WriteAsJsonAsync(response);

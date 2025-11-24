@@ -17,6 +17,7 @@ using System.Text.Json;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
+using Clothy.Shared.Helpers.JWT;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -29,7 +30,7 @@ public static class Extensions
         builder.Services.AddControllers().AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-            options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+            options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         });
 
@@ -89,26 +90,14 @@ public static class Extensions
             http.AddHttpMessageHandler<CorrelationIdDelegatingHandler>();
         });
 
-        builder.Services.AddSwaggerGen(options =>
-        {
-            var entryAssembly = Assembly.GetEntryAssembly();
-            if (entryAssembly != null)
-            {
-                string xmlFilename = $"{entryAssembly.GetName().Name}.xml";
-                string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
-
-                if (File.Exists(xmlPath))
-                {
-                    options.IncludeXmlComments(xmlPath);
-                }
-            }
-        });
+        builder.Services.AddSwaggerWithXmlComments();
 
         builder.Services.AddHttpContextAccessor();
         builder.Services.AddTransient<CorrelationIdDelegatingHandler>();
 
         builder.Services.AddJwtAuthentication(builder.Configuration);
         builder.Services.AddSwaggerWithAuth();
+        builder.Services.AddScoped<IUserClaimsExtractor, UserClaimsExtractor>();
 
         return builder;
     }

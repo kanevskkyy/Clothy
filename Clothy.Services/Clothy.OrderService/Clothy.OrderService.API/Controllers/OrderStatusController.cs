@@ -1,5 +1,6 @@
 ﻿using Clothy.OrderService.BLL.DTOs.OrderStatusDTOs;
 using Clothy.OrderService.BLL.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Clothy.OrderService.API.Controllers
@@ -53,6 +54,7 @@ namespace Clothy.OrderService.API.Controllers
         /// <param name="cancelletionToken">Cancellation token.</param>
         /// <returns>Created order status.</returns>
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<OrderStatusReadDTO>> Create([FromForm] OrderStatusCreateDTO dto, CancellationToken cancelletionToken)
         {
             logger.LogInformation("Creating order status with name: {Name}", dto.Name);
@@ -70,6 +72,7 @@ namespace Clothy.OrderService.API.Controllers
         /// <param name="cancelletionToken">Cancellation token.</param>
         /// <returns>Updated order status.</returns>
         [HttpPut("{id:guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<OrderStatusReadDTO>> Update(Guid id, [FromForm] OrderStatusUpdateDTO dto, CancellationToken cancelletionToken)
         {
             logger.LogInformation("Updating order status with ID: {Id}", id);
@@ -86,6 +89,7 @@ namespace Clothy.OrderService.API.Controllers
         /// <param name="cancelletionToken">Cancellation token.</param>
         /// <returns>No content.</returns>
         [HttpDelete("{id:guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> Delete(Guid id, CancellationToken cancelletionToken)
         {
             logger.LogInformation("Deleting order status with ID: {Id}", id);

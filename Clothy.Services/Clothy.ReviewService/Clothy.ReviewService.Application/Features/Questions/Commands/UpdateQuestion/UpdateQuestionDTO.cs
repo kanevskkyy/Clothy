@@ -9,7 +9,8 @@ using MediatR;
 
 namespace Clothy.ReviewService.Application.Features.Questions.Commands.UpdateQuestion
 {
-    public record UpdateQuestionCommand(
-        string QuestionText
-    ) : ICommand;
+    public class UpdateQuestionDTO
+    {
+        public string QuestionText { get; set; }
+    }
 }

@@ -7,7 +7,8 @@ using Clothy.ReviewService.Application.Interfaces.Commands;
 
 namespace Clothy.ReviewService.Application.Features.Questions.Commands.UpdateAnswer
 {
-    public record UpdateAnswerCommand(
-        string AnswerText
-    ) : ICommand;
+    public class UpdateAnswerDTO
+    {
+        public string AnswerText { get; set; }
+    }
 }

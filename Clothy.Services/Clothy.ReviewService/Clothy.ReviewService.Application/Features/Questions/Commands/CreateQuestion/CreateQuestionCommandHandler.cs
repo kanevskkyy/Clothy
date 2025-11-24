@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Clothy.ReviewService.Application.Interfaces.Commands;
 using Clothy.ReviewService.Domain.Entities;
 using Clothy.ReviewService.Domain.Interfaces;
+using Clothy.ReviewService.Domain.ValueObjects;
 using Clothy.ReviewService.gRPC.Client.Services.Interfaces;
 using Clothy.Shared.Helpers.Exceptions;
 
@@ -30,7 +32,8 @@ namespace Clothy.ReviewService.Application.Features.Questions.Commands.CreateQue
 
         public async Task<Question> Handle(CreateQuestionCommand request, CancellationToken cancellationToken)
         {
-            Question question = new Question(request.ClotheItemId, request.User, request.QuestionText);
+            UserInfo userInfo = new UserInfo(request.UserId, request.FirstName, request.LastName, request.PhotoUrl);
+            Question question = new Question(request.ClotheItemId, userInfo, request.QuestionText);
 
             ClotheItemIdToValidate clotheItemIdToValidate = new ClotheItemIdToValidate();
             clotheItemIdToValidate.ClotheId = question.ClotheItemId.ToString();

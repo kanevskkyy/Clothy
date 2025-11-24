@@ -5,7 +5,6 @@ using Clothy.ReviewService.API.Middleware;
 using Clothy.ReviewService.Application.Behaviours;
 using Clothy.ReviewService.Application.Consumers.DeleteReviewsAndQuestions;
 using Clothy.ReviewService.Application.Features.Questions.Commands.UpdateQuestion;
-using Clothy.ReviewService.Application.Validations.Additional;
 using Clothy.ReviewService.Application.Validations.Questions;
 using Clothy.ReviewService.Application.Validations.Reviews;
 using Clothy.ReviewService.Domain.Interfaces;
@@ -58,7 +57,7 @@ builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
 
 // FLUENT VALIDATION
 builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddValidatorsFromAssembly(typeof(UpdateAnswerCommandValidator).Assembly);
+builder.Services.AddValidatorsFromAssembly(typeof(CreateQuestionDTOValidator).Assembly);
 //
 
 // RABBIT MQ

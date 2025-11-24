@@ -1,7 +1,9 @@
-﻿using Clothy.OrderService.BLL.DTOs.OrderDTOs;
+﻿using System.Security.Claims;
+using Clothy.OrderService.BLL.DTOs.OrderDTOs;
 using Clothy.OrderService.BLL.Interfaces;
 using Clothy.OrderService.DAL.FilterDTOs;
 using Clothy.Shared.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Clothy.OrderService.API.Controllers
@@ -23,11 +25,25 @@ namespace Clothy.OrderService.API.Controllers
         /// Get paged orders with filtering and sorting.
         /// </summary>
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<PagedList<OrderReadDTO>>> GetPaged([FromQuery] OrderFilterDTO filter, CancellationToken ct)
         {
             logger.LogInformation("Fetching paged orders.");
-            PagedList<OrderReadDTO> pagedOrders = await orderService.GetPagedAsync(filter, ct);
+            PagedList<OrderReadDTO> pagedOrders = await orderService.GetPagedAsync(filter, cancellationToken: ct);
             
+            return Ok(pagedOrders);
+        }
+
+        /// <summary>
+        /// Get paged orders with filtering and sorting.
+        /// </summary>
+        [HttpGet("my")]
+        [Authorize]
+        public async Task<ActionResult<PagedList<OrderReadDTO>>> GetPagedMyOrders([FromQuery] OrderFilterDTO filter, CancellationToken ct)
+        {
+            logger.LogInformation("Fetching paged orders.");
+            PagedList<OrderReadDTO> pagedOrders = await orderService.GetPagedAsync(filter, User, ct);
+
             return Ok(pagedOrders);
         }
 
@@ -35,10 +51,11 @@ namespace Clothy.OrderService.API.Controllers
         /// Get a single order by ID with details.
         /// </summary>
         [HttpGet("{id:guid}")]
+        [Authorize]
         public async Task<ActionResult<OrderDetailDTO>> GetById(Guid id, CancellationToken ct)
         {
             logger.LogInformation("Fetching order with ID: {Id}", id);
-            OrderDetailDTO? order = await orderService.GetByIdAsync(id, ct);
+            OrderDetailDTO? order = await orderService.GetByIdAsync(id, User, ct);
             
             return Ok(order);
         }
@@ -47,10 +64,11 @@ namespace Clothy.OrderService.API.Controllers
         /// Create a new order.
         /// </summary>
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<OrderReadDTO>> Create([FromBody] OrderCreateDTO dto, CancellationToken ct)
         {
-            logger.LogInformation("Creating order for user: {FirstName} {LastName}", dto.UserFirstName, dto.UserLastName);
-            OrderDetailDTO created = await orderService.CreateAsync(dto, ct);
+            logger.LogInformation("Creating order for user");
+            OrderDetailDTO created = await orderService.CreateAsync(dto, User, cancellationToken: ct);
             
             logger.LogInformation("Order created with ID: {Id}", created.Id);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
@@ -60,6 +78,7 @@ namespace Clothy.OrderService.API.Controllers
         /// Update status of an existing order.
         /// </summary>
         [HttpPut("{id:guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<OrderDetailDTO>> UpdateStatus(Guid id, [FromBody] OrderUpdateStatusDTO dto, CancellationToken ct)
         {
             logger.LogInformation("Updating status of order ID: {Id} to StatusId: {StatusId}", id, dto.StatusId);
@@ -73,6 +92,7 @@ namespace Clothy.OrderService.API.Controllers
         /// Delete an order by ID.
         /// </summary>
         [HttpDelete("{id:guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> Delete(Guid id, CancellationToken ct)
         {
             logger.LogInformation("Deleting order with ID: {Id}", id);

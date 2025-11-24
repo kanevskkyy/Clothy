@@ -51,7 +51,7 @@ namespace Clothy.OrderService.BLL.RedisCache.OrdersCache
                         StatusId = pendingStatus.Id
                     };
 
-                    PagedList<OrderReadDTO> pagedResult = await orderService.GetPagedAsync(filter, cancellationToken);
+                    PagedList<OrderReadDTO> pagedResult = await orderService.GetPagedAsync(filter, cancellationToken: cancellationToken);
                     if (pagedResult == null)
                     {
                         logger.LogWarning("Paged orders is null for page {Page}. Skipping cache.", page);

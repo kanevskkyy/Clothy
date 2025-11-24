@@ -2,6 +2,7 @@
 using Clothy.CatalogService.BLL.Interfaces;
 using Clothy.CatalogService.Domain.QueryParameters;
 using Clothy.Shared.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Clothy.CatalogService.API.Controllers
@@ -56,6 +57,7 @@ namespace Clothy.CatalogService.API.Controllers
         /// <param name="ct">Cancellation token.</param>
         /// <returns>Created clothe item.</returns>
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ClotheDetailDTO>> Create([FromForm] ClotheCreateDTO dto, CancellationToken ct)
         {
             logger.LogInformation("Creating clothe with name: {Name}", dto.Name);
@@ -73,6 +75,7 @@ namespace Clothy.CatalogService.API.Controllers
         /// <param name="ct">Cancellation token.</param>
         /// <returns>Updated clothe item.</returns>
         [HttpPut("{id:guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ClotheDetailDTO>> Update(Guid id, [FromForm] ClotheUpdateDTO dto, CancellationToken ct)
         {
             logger.LogInformation("Updating clothe with ID: {Id}", id);
@@ -103,6 +106,7 @@ namespace Clothy.CatalogService.API.Controllers
         /// <param name="ct">Cancellation token.</param>
         /// <returns>No content.</returns>
         [HttpDelete("{id:guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> Delete(Guid id, CancellationToken ct)
         {
             logger.LogInformation("Deleting clothe with ID: {Id}", id);

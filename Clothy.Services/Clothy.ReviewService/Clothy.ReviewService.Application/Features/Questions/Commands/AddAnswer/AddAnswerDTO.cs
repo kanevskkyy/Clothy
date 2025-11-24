@@ -8,5 +8,8 @@ using Clothy.ReviewService.Domain.ValueObjects;
 
 namespace Clothy.ReviewService.Application.Features.Questions.Commands.AddAnswer
 {
-    public record AddAnswerCommand(UserInfo User, string AnswerText) : ICommand<string>;
+    public class AddAnswerDTO
+    {
+        public string AnswerText {  get; set; }
+    }
 }

@@ -7,7 +7,7 @@ using Clothy.ReviewService.Application.Interfaces.Commands;
 
 namespace Clothy.ReviewService.Application.Features.Reviews.Commands.UpdateReview
 {
-    public record UpdateReviewCommand(
+    public record UpdateReviewDTO(
         string Comment,
         int Rating
     ) : ICommand;

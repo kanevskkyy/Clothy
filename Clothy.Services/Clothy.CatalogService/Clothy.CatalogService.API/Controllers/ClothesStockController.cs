@@ -2,11 +2,13 @@
 using Clothy.CatalogService.BLL.Interfaces;
 using Clothy.CatalogService.Domain.QueryParameters;
 using Clothy.Shared.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Clothy.CatalogService.API.Controllers
 {
     [ApiController]
+    [Authorize(Roles = "Admin")]
     [Route("api/clothes-stock")]
     public class ClothesStockController : ControllerBase
     {

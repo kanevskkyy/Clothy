@@ -14,10 +14,14 @@ namespace Clothy.ReviewService.Application.Features.Reviews.Query.GetReviews
     public class GetReviewsQuery : IRequest<PagedList<Review>>
     {
         public ReviewQueryParameters QueryParameters { get; }
+        public Guid? UserId { get; }
+        public bool IsAdmin { get; }
 
-        public GetReviewsQuery(ReviewQueryParameters queryParameters)
+        public GetReviewsQuery(ReviewQueryParameters queryParameters, Guid? userId = null, bool isAdmin = false)
         {
             QueryParameters = queryParameters;
+            UserId = userId;
+            IsAdmin = isAdmin;
         }
     }
 }

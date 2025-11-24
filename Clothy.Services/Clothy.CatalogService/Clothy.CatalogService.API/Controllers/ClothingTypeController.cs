@@ -1,5 +1,6 @@
 ﻿using Clothy.CatalogService.BLL.DTOs.ClothingTypeDTOs;
 using Clothy.CatalogService.BLL.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Clothy.CatalogService.API.Controllers
@@ -53,6 +54,7 @@ namespace Clothy.CatalogService.API.Controllers
         /// <param name="ct">Cancellation token.</param>
         /// <returns>Created clothing type.</returns>
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ClothingTypeReadDTO>> Create([FromBody] ClothingTypeCreateDTO dto, CancellationToken ct)
         {
             logger.LogInformation("Creating clothing type with name: {Name}", dto.Name);
@@ -70,6 +72,7 @@ namespace Clothy.CatalogService.API.Controllers
         /// <param name="ct">Cancellation token.</param>
         /// <returns>Updated clothing type.</returns>
         [HttpPut("{id:guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ClothingTypeReadDTO>> Update(Guid id, [FromBody] ClothingTypeUpdateDTO dto, CancellationToken ct)
         {
             logger.LogInformation("Updating clothing type with ID: {Id}", id);
@@ -86,6 +89,7 @@ namespace Clothy.CatalogService.API.Controllers
         /// <param name="ct">Cancellation token.</param>
         /// <returns>No content.</returns>
         [HttpDelete("{id:guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> Delete(Guid id, CancellationToken ct)
         {
             logger.LogInformation("Deleting clothing type with ID: {Id}", id);

@@ -10,6 +10,7 @@ namespace Clothy.OrderService.Domain.Entities.AdditionalEntities
     {
         public Guid Id { get; set; }
         public OrderStatus? Status { get; set; }
+        public Guid UserId { get; set; }
         public string? UserFirstName { get; set; }
         public string? UserLastName { get; set; }
         public decimal TotalPrice { get; set; }

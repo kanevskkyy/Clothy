@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Clothy.ReviewService.Application.Interfaces.Commands;
 using Clothy.ReviewService.Domain.Entities;
 using Clothy.ReviewService.Domain.Interfaces;
+using Clothy.ReviewService.Domain.ValueObjects;
 using Clothy.ReviewService.gRPC.Client.Services.Interfaces;
 using Clothy.Shared.Helpers.Exceptions;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
@@ -31,7 +33,9 @@ namespace Clothy.ReviewService.Application.Features.Reviews.Commands.CreateRevie
 
         public async Task<Review> Handle(CreateReviewCommand request, CancellationToken cancellationToken)
         {
-            Review review = new Review(request.ClotheItemId, request.User, request.Rating, request.Comment);
+            UserInfo userInfo = new UserInfo(request.UserId, request.FirstName, request.LastName, request.PhotoUrl);
+            Review review = new Review(request.ClotheItemId, userInfo, request.Rating, request.Comment);
+
             ClotheItemIdToValidate clotheItemIdToValidate = new ClotheItemIdToValidate();
             clotheItemIdToValidate.ClotheId = review.ClotheItemId.ToString();
             ClotheItemResponse clotheItemResponse = await clotheItemIdValidatorGrpcClient.ValidateClotheItemIdAsync(clotheItemIdToValidate);

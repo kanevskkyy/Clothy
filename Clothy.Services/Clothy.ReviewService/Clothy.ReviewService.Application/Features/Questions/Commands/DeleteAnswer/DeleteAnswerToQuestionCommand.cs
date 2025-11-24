@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Clothy.ReviewService.Application.Interfaces.Commands;
@@ -10,6 +11,8 @@ namespace Clothy.ReviewService.Application.Features.Questions.Commands.DeleteAns
 {
     public record DeleteAnswerToQuestionCommand(
         string QuestionId,
-        string AnswerId
+        string AnswerId,
+        Guid UserId,
+        bool IsAdmin
     ) : ICommand;
 }

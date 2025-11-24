@@ -2,6 +2,7 @@
 using Clothy.OrderService.BLL.Interfaces;
 using Clothy.OrderService.DAL.FilterDTOs;
 using Clothy.Shared.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Clothy.OrderService.API.Controllers
@@ -47,6 +48,7 @@ namespace Clothy.OrderService.API.Controllers
         /// Create a new pickup point.
         /// </summary>
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<PickupPointReadDTO>> Create([FromBody] PickupPointCreateDTO pickupPointCreateDTO, CancellationToken cancellationToken)
         {
             logger.LogInformation("Creating pickup point at address: {Address}", pickupPointCreateDTO.Address);
@@ -60,6 +62,7 @@ namespace Clothy.OrderService.API.Controllers
         /// Update an existing pickup point by its ID.
         /// </summary>
         [HttpPut("{id:guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<PickupPointReadDTO>> Update(Guid id, [FromBody] PickupPointUpdateDTO pickupPointUpdateDTO, CancellationToken cancellationToken)
         {
             logger.LogInformation("Updating pickup point with ID: {Id}", id);
@@ -73,6 +76,7 @@ namespace Clothy.OrderService.API.Controllers
         /// Delete a pickup point by its ID.
         /// </summary>
         [HttpDelete("{id:guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
             logger.LogInformation("Deleting pickup point with ID: {Id}", id);

@@ -19,6 +19,8 @@ using System.Diagnostics.Metrics;
 using System.Diagnostics;
 using MassTransit;
 using Clothy.Shared.Events.OrderEvents;
+using System.Security.Claims;
+using Clothy.Shared.Helpers.JWT;
 
 namespace Clothy.OrderService.BLL.Services
 {
@@ -30,8 +32,9 @@ namespace Clothy.OrderService.BLL.Services
         private IPublishEndpoint publishEndpoint;
         private IEntityCacheInvalidationService<Order> cacheInvalidationService;
         private IOrderItemValidatorGrpcClient validatorGrpcClient;
-        private const int MAX_CASHED_PAGES = 3;
+        private IUserClaimsExtractor userClaimsExtractor;
 
+        private const int MAX_CASHED_PAGES = 3;
         private static TimeSpan MEMORY_TTL_ORDER_DETAIL = TimeSpan.FromMinutes(30);
         private static TimeSpan REDIS_TTL_ORDER_DETAIL = TimeSpan.FromHours(2);
         private static TimeSpan MEMORY_TTL_PAGED_ORDERS = TimeSpan.FromMinutes(10);
@@ -46,7 +49,8 @@ namespace Clothy.OrderService.BLL.Services
             IEntityCacheInvalidationService<Order> cacheInvalidationService, 
             IOrderItemValidatorGrpcClient validatorGrpcClient, 
             Meter meter,
-            IPublishEndpoint publishEndpoint)
+            IPublishEndpoint publishEndpoint,
+            IUserClaimsExtractor userClaimsExtractor)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
@@ -62,9 +66,10 @@ namespace Clothy.OrderService.BLL.Services
                 "clothy.orderservice.orders.operation-duration",
                 "ms",
                 "Duration of created orders");
+            this.userClaimsExtractor = userClaimsExtractor;
         }
 
-        public async Task<OrderDetailDTO> CreateAsync(OrderCreateDTO dto, CancellationToken cancellationToken = default)
+        public async Task<OrderDetailDTO> CreateAsync(OrderCreateDTO dto, ClaimsPrincipal claimsPrincipal, CancellationToken cancellationToken = default)
         {
             Stopwatch stopwatch = new Stopwatch();
             string statusType = "Success";
@@ -96,6 +101,11 @@ namespace Clothy.OrderService.BLL.Services
                 if (pendingStatus == null) throw new NotFoundException("Pending status not found");
 
                 Order order = mapper.Map<Order>(dto);
+
+                order.UserId = userClaimsExtractor.GetUserId(claimsPrincipal);
+                order.UserFirstName = userClaimsExtractor.GetFirstName(claimsPrincipal);
+                order.UserLastName = userClaimsExtractor.GetLastName(claimsPrincipal);
+
                 order.StatusId = pendingStatus.Id;
                 await unitOfWork.Orders.AddAsync(order, cancellationToken);
 
@@ -155,7 +165,7 @@ namespace Clothy.OrderService.BLL.Services
                 };
                 await publishEndpoint.Publish(orderCreatedEvent, cancellationToken);
 
-                return await GetByIdAsync(order.Id, cancellationToken);
+                return await GetByIdAsync(order.Id, cancellationToken: cancellationToken);
             }
             catch (Exception ex)
             {
@@ -175,7 +185,7 @@ namespace Clothy.OrderService.BLL.Services
         }
 
 
-        public async Task<OrderDetailDTO> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<OrderDetailDTO> GetByIdAsync(Guid id, ClaimsPrincipal? claimsPrincipal = null, CancellationToken cancellationToken = default)
         {
             string cacheKey = $"order:{id}";
             TimeSpan memoryTTL = TimeSpan.FromMinutes(30); 
@@ -187,6 +197,15 @@ namespace Clothy.OrderService.BLL.Services
                 {
                     OrderWithDetailsData? orderData = await unitOfWork.Orders.GetByIdWithDetailsAsync(id, cancellationToken);
                     if (orderData == null) throw new NotFoundException($"Order not found with ID: {id}");
+
+                    if(claimsPrincipal != null)
+                    {
+                        bool isAdmin = userClaimsExtractor.IsInRole(claimsPrincipal, "Admin");
+                        Guid userId = userClaimsExtractor.GetUserId(claimsPrincipal);
+
+                        if (!isAdmin && orderData.UserId != userId) throw new ForbiddenException("You do not have access to this order.");
+                    }
+
                     return mapper.Map<OrderDetailDTO>(orderData);
                 },
                 MEMORY_TTL_ORDER_DETAIL,
@@ -196,8 +215,10 @@ namespace Clothy.OrderService.BLL.Services
             return cached!;
         }
 
-        public async Task<PagedList<OrderReadDTO>> GetPagedAsync(OrderFilterDTO filter, CancellationToken cancellationToken = default)
+        public async Task<PagedList<OrderReadDTO>> GetPagedAsync(OrderFilterDTO filter, ClaimsPrincipal? user, CancellationToken cancellationToken = default)
         {
+            if (user != null && !user.IsInRole("Admin")) filter.UserId = userClaimsExtractor.GetUserId(user);
+           
             bool usePageCache = filter.StatusId.HasValue && filter.PageNumber <= MAX_CASHED_PAGES;
 
             if (usePageCache)
@@ -243,7 +264,7 @@ namespace Clothy.OrderService.BLL.Services
 
             await cacheInvalidationService.InvalidateByIdAsync(updatedOrder.Id);
 
-            return await GetByIdAsync(updatedOrder.Id, cancellationToken);
+            return await GetByIdAsync(updatedOrder.Id, cancellationToken: cancellationToken);
         }
 
         public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)

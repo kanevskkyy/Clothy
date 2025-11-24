@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Clothy.ReviewService.Application.Interfaces.Commands;
@@ -24,8 +25,11 @@ namespace Clothy.ReviewService.Application.Features.Reviews.Commands.DeleteRevie
         {
             Review? review = await reviewRepository.GetByIdAsync(request.ReviewId, cancellationToken);
             if (review == null) throw new NotFoundException($"Review with ID {request.ReviewId} not found!");
+            
+            if (review.User.UserId != request.UserId && !request.IsAdmin) throw new ForbiddenException("You are not allowed to delete this review");
 
             await reviewRepository.DeleteAsync(request.ReviewId, cancellationToken);
+
             return Unit.Value;
         }
     }

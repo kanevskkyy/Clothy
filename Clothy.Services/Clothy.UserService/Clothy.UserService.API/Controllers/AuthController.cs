@@ -12,9 +12,9 @@ namespace Clothy.UserService.API.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IAuthService authService;
-        private readonly ITokenService tokenService;
-        private readonly ILogger<AuthController> logger;
+        private IAuthService authService;
+        private ITokenService tokenService;
+        private ILogger<AuthController> logger;
 
         public AuthController(IAuthService authService, ITokenService tokenService, ILogger<AuthController> logger)
         {

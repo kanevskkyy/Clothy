@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Clothy.ReviewService.Application.Interfaces.Commands;
@@ -28,6 +29,8 @@ namespace Clothy.ReviewService.Application.Features.Questions.Commands.UpdateAns
             Answer? answer = question.Answers.FirstOrDefault(tempAnswer => tempAnswer.Id == request.AnswerId);
             if (answer == null) throw new NotFoundException($"Answer with ID {request.AnswerId} not found!");
 
+            if (answer.User.UserId != request.UserId) throw new ForbiddenException("You are not allowed to update this answer");
+            
             answer.UpdateAnswer(request.AnswerText);
             await questionRepository.UpdateAnswerAsync(request.QuestionId, answer, cancellationToken);
             return Unit.Value;
