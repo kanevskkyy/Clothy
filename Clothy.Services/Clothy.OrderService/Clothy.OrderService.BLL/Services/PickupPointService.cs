@@ -39,6 +39,9 @@ namespace Clothy.OrderService.BLL.Services
             bool exists = await unitOfWork.PickupPoint.ExistsByAddressAndProviderIdAsync(dto.Address, dto.DeliveryProviderId, cancellationToken: cancellationToken);
             if (exists) throw new AlreadyExistsException($"Pickup point with address {dto.Address} for this provider already exists");
 
+            Settlement? settlement = await unitOfWork.Settlement.GetByIdAsync(dto.SettlementId, cancellationToken);
+            if(settlement == null) throw new NotFoundException($"Settlement with ID: {dto.SettlementId}");
+
             DeliveryProvider? deliveryProvider = await unitOfWork.DeliveryProviders.GetByIdAsync(dto.DeliveryProviderId, cancellationToken);
             if (deliveryProvider == null) throw new NotFoundException($"DeliveryProvider with ID: {dto.DeliveryProviderId}");
 
@@ -106,6 +109,9 @@ namespace Clothy.OrderService.BLL.Services
 
             bool exists = await unitOfWork.PickupPoint.ExistsByAddressAndProviderIdAsync(dto.Address, dto.DeliveryProviderId, id, cancellationToken);
             if (exists) throw new AlreadyExistsException($"Pickup point with address: {dto.Address} for this provider already exists");
+
+            Settlement? settlement = await unitOfWork.Settlement.GetByIdAsync(dto.SettlementId, cancellationToken);
+            if (settlement == null) throw new NotFoundException($"Settlement with ID: {dto.SettlementId}");
 
             DeliveryProvider? provider = await unitOfWork.DeliveryProviders.GetByIdAsync(dto.DeliveryProviderId, cancellationToken);
             if (provider == null) throw new NotFoundException($"DeliveryProvider not found with ID: {dto.DeliveryProviderId}");

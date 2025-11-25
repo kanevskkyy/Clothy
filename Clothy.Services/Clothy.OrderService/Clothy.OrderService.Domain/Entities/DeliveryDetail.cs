@@ -14,7 +14,6 @@ namespace Clothy.OrderService.Domain.Entities
         public PickupPoints? PickupPoints { get; set; }
 
         public string? PhoneNumber { get; set; }
-
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string? MiddleName { get; set; }

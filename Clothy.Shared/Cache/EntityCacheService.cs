@@ -11,16 +11,16 @@ namespace Clothy.Shared.Cache
 {
     public class EntityCacheService : IEntityCacheService, IDisposable
     {
-        private readonly IMemoryCache memoryCache;
-        private readonly IDatabase redisDb;
-        private readonly ISubscriber subscriber;
-        private readonly ILogger<EntityCacheService> logger;
+        private IMemoryCache memoryCache;
+        private IDatabase redisDb;
+        private ISubscriber subscriber;
+        private ILogger<EntityCacheService> logger;
 
         private const string INVALIDATION_CHANNEL = "entity-cache-invalidation";
         private const string CLEAR_ALL_MESSAGES = "__CLEAR_ALL__";
         private bool disposed;
 
-        private static readonly JsonSerializerOptions JsonOptions = new()
+        private static JsonSerializerOptions JsonOptions = new()
         {
             PropertyNamingPolicy = null, 
             WriteIndented = false,

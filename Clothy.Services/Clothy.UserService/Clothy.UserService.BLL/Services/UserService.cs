@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Clothy.Shared.Events.UserEvents;
 using Clothy.Shared.Helpers.CloudinaryConfig;
 using Clothy.Shared.Helpers.Exceptions;
 using Clothy.UserService.BLL.DTOs.RoleDTOs;
@@ -13,6 +14,7 @@ using Clothy.UserService.BLL.DTOs.UserDTOs;
 using Clothy.UserService.BLL.Exceptions;
 using Clothy.UserService.BLL.Services.Interfaces;
 using Clothy.UserService.Domain.Entities;
+using MassTransit;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,9 +26,16 @@ namespace Clothy.UserService.BLL.Services
         private RoleManager<ApplicationRole> roleManager;
         private IMapper mapper;
         private IImageService imageService;
+        private IPublishEndpoint publishEndpoint;
+        private static string DEFAULT_PHOTO_URL = "https://res.cloudinary.com/dkdljnfja/image/upload/v1763818143/Profile_Avatar_cfazhc.png";
 
-        public UserService(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, IMapper mapper, IImageService imageService)
+        public UserService(UserManager<ApplicationUser> userManager, 
+            RoleManager<ApplicationRole> roleManager, 
+            IMapper mapper, 
+            IImageService imageService,
+            IPublishEndpoint publishEndpoint)
         {
+            this.publishEndpoint = publishEndpoint;
             this.imageService = imageService;
             this.userManager = userManager;
             this.roleManager = roleManager;
@@ -80,6 +89,14 @@ namespace Clothy.UserService.BLL.Services
             var result = await userManager.UpdateAsync(user);
             if (!result.Succeeded) throw new IdentityOperationException("Failed to update user", result.Errors);
 
+            UserUpdatedEvent userUpdatedEvent = new UserUpdatedEvent
+            {
+                UserId = Guid.Parse(currentUserId),
+                FirstName = userUpdateDTO.FirstName,
+                LastName = userUpdateDTO.LastName,
+            };
+            await publishEndpoint.Publish(userUpdatedEvent, cancellationToken);
+
             return mapper.Map<UserReadDTO>(user);
         }
         public async Task<IdentityResult> DeleteUserByIdAsync(Guid userId, ClaimsPrincipal claimsPrincipal, CancellationToken cancellationToken = default)
@@ -92,7 +109,18 @@ namespace Clothy.UserService.BLL.Services
             ApplicationUser? user = await userManager.FindByIdAsync(userId.ToString());
             if (user == null) return IdentityResult.Failed(new IdentityError { Description = $"User with ID {userId} not found." });
 
+            if (user.PhotoUrl != DEFAULT_PHOTO_URL) await imageService.DeleteImageAsync(user.PhotoUrl);
+
             var result = await userManager.DeleteAsync(user);
+            if (!result.Succeeded) throw new IdentityOperationException("Failed to update user", result.Errors);
+
+
+            UserDeletedEvent userDeletedEvent = new UserDeletedEvent 
+            {
+                UserId = userId
+            };
+            await publishEndpoint.Publish(userDeletedEvent, cancellationToken);
+            
             return result;
         }
 

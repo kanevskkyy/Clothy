@@ -19,11 +19,15 @@ namespace Clothy.OrderService.SeedData.Seeders
             IEnumerable<DeliveryProvider> providers = await uow.DeliveryProviders.GetAllAsync();
             if (!providers.Any()) return;
 
+            IEnumerable<Settlement> settlements = await uow.Settlement.GetAllAsync();
+            if (!settlements.Any()) return;
+
             Faker faker = new Faker();
 
             Faker<PickupPoints> pickupPointFaker = new Faker<PickupPoints>()
                 .RuleFor(p => p.Address, f => f.Address.StreetAddress())
                 .RuleFor(p => p.DeliveryProviderId, f => f.PickRandom(providers).Id)
+                .RuleFor(p => p.SettlementId, f => f.PickRandom(settlements).Id)
                 .RuleFor(p => p.CreatedAt, f => f.Date.Past(2).ToUniversalTime())
                 .RuleFor(p => p.UpdatedAt, f => f.Date.Recent(10).ToUniversalTime());
 

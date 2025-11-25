@@ -47,9 +47,23 @@ var catalogService = builder.AddProject<Clothy_CatalogService_API>("catalog")
     .WaitFor(rabbitmq)
     .WaitFor(postgresCatalog);
 
+var basketService = builder.AddProject<Clothy_BasketService_API>("basket")
+    .WithReference(redis)
+    .WithReference(catalogService)
+    .WithReference(rabbitmq)
+    .WithEnvironment("JWTSETTINGS__Key", Environment.GetEnvironmentVariable("JWTSETTINGS__Key"))
+    .WithEnvironment("JWTSETTINGS__Audience", Environment.GetEnvironmentVariable("JWTSETTINGS__Audience"))
+    .WithEnvironment("JWTSETTINGS__Issuer", Environment.GetEnvironmentVariable("JWTSETTINGS__Issuer"))
+    .WithEnvironment("JWTSETTINGS__AccessTokenDurationMinutes", Environment.GetEnvironmentVariable("JWTSETTINGS__AccessTokenDurationMinutes"))
+    .WithEnvironment("JWTSETTINGS__RefreshTokenDurationDays", Environment.GetEnvironmentVariable("JWTSETTINGS__RefreshTokenDurationDays"))
+    .WaitFor(rabbitmq)
+    .WaitFor(catalogService)
+    .WaitFor(redis);
+
 var ordersService = builder.AddProject<Clothy_OrderService_API>("orders")
     .WithReference(postgresOrders)
     .WithReference(catalogService)
+    .WithReference(basketService)
     .WithReference(redis)
     .WithReference(rabbitmq)
     .WithEnvironment("CLOUDINARYSETTINGS__CLOUDNAME", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__CLOUDNAME"))
@@ -61,6 +75,7 @@ var ordersService = builder.AddProject<Clothy_OrderService_API>("orders")
     .WithEnvironment("JWTSETTINGS__AccessTokenDurationMinutes", Environment.GetEnvironmentVariable("JWTSETTINGS__AccessTokenDurationMinutes"))
     .WithEnvironment("JWTSETTINGS__RefreshTokenDurationDays", Environment.GetEnvironmentVariable("JWTSETTINGS__RefreshTokenDurationDays"))
     .WaitFor(redis)
+    .WaitFor(basketService)
     .WaitFor(rabbitmq)
     .WaitFor(catalogService)
     .WaitFor(postgresOrders);
@@ -80,6 +95,7 @@ var reviewsService = builder.AddProject<Clothy_ReviewService_API>("reviews")
 
 var usersService = builder.AddProject<Clothy_UserService_API>("users")
     .WithReference(postgresUsers)
+    .WithReference(rabbitmq)
     .WithEnvironment("CLOUDINARYSETTINGS__CLOUDNAME", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__CLOUDNAME"))
     .WithEnvironment("CLOUDINARYSETTINGS__APIKEY", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APIKEY"))
     .WithEnvironment("CLOUDINARYSETTINGS__APISECRET", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APISECRET"))
@@ -88,6 +104,7 @@ var usersService = builder.AddProject<Clothy_UserService_API>("users")
     .WithEnvironment("JWTSETTINGS__Issuer", Environment.GetEnvironmentVariable("JWTSETTINGS__Issuer"))
     .WithEnvironment("JWTSETTINGS__AccessTokenDurationMinutes", Environment.GetEnvironmentVariable("JWTSETTINGS__AccessTokenDurationMinutes"))
     .WithEnvironment("JWTSETTINGS__RefreshTokenDurationDays", Environment.GetEnvironmentVariable("JWTSETTINGS__RefreshTokenDurationDays"))
+    .WaitFor(rabbitmq)
     .WaitFor(postgresUsers);
 
 var seedCatalog = builder.AddProject<Clothy_CatalogService_SeedData>("catalog-seed")
@@ -102,12 +119,14 @@ var aggregator = builder.AddProject<Clothy_Aggregator_API>("aggregator")
     .WithReference(catalogService)
     .WithReference(redis)
     .WithReference(ordersService)
+    .WithReference(basketService)
     .WithReference(usersService)
     .WithReference(reviewsService)
     .WaitFor(catalogService)
     .WaitFor(ordersService)
     .WaitFor(redis)
     .WaitFor(usersService)
+    .WaitFor(basketService)
     .WaitFor(reviewsService);
 
 var gateway = builder.AddProject<Clothy_Gateway>("gateway")
@@ -115,9 +134,11 @@ var gateway = builder.AddProject<Clothy_Gateway>("gateway")
     .WithReference(usersService)
     .WithReference(ordersService)
     .WithReference(reviewsService)
+    .WithReference(basketService)
     .WithReference(aggregator)
     .WithExternalHttpEndpoints()
     .WaitFor(aggregator);
+
 
 var app = builder.Build();
 await app.RunAsync();

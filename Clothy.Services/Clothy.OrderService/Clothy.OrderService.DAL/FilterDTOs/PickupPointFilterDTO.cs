@@ -9,5 +9,6 @@ namespace Clothy.OrderService.DAL.FilterDTOs
     public class PickupPointFilterDTO : BaseFilterDTO
     {
         public Guid? DeliveryProviderId { get; set; }
+        public Guid? SettlementId { get; set; }
     }
 }

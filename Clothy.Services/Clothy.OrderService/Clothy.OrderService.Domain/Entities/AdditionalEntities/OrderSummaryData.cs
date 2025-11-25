@@ -14,7 +14,7 @@ namespace Clothy.OrderService.Domain.Entities.AdditionalEntities
         public string? UserFirstName { get; set; }
         public string? UserLastName { get; set; }
         public decimal TotalPrice { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
     }
 }

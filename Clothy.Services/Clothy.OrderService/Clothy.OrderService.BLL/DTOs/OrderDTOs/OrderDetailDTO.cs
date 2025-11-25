@@ -20,7 +20,7 @@ namespace Clothy.OrderService.BLL.DTOs.OrderDTOs
         public decimal TotalPrice { get; set; }
         public List<OrderItemDTO> Items { get; set; } = new();
         public DeliveryDetailDTO? DeliveryDetail { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
     }
 }

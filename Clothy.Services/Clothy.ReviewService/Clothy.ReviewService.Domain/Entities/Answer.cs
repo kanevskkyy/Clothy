@@ -10,8 +10,6 @@ namespace Clothy.ReviewService.Domain.Entities
 {
     public class Answer : BaseEntity
     {
-        [BsonElement("user")]
-        public UserInfo User { get; private set; }
 
         [BsonElement("answerText")]
         public string AnswerText { get; private set; }  

@@ -110,8 +110,15 @@ namespace Clothy.OrderService.DAL.Repositories
 
             string orderSql = @"
                 SELECT 
-                    o.id, o.userid, o.userfirstname, o.userlastname, o.createdat, o.updatedat,
-                    s.id AS StatusId, s.name, s.iconurl
+                    o.id, 
+                    o.userid, 
+                    o.userfirstname, 
+                    o.userlastname, 
+                    o.createdat, 
+                    o.updatedat,
+                    s.id,       
+                    s.name, 
+                    s.iconurl
                 FROM orders o
                 LEFT JOIN order_status s ON o.statusid = s.id
                 WHERE o.id = @Id;
@@ -119,14 +126,13 @@ namespace Clothy.OrderService.DAL.Repositories
 
             var orderResult = await connection.QueryAsync<OrderWithDetailsData, OrderStatus, OrderWithDetailsData>(
                 orderSql,
-                (tempOrder, status) =>
-                {
+                (tempOrder, status) => {
                     tempOrder.Status = status;
                     tempOrder.TotalAmount = 0;
                     return tempOrder;
                 },
                 new { Id = id },
-                splitOn: "StatusId"  
+                splitOn: "id"
             );
 
             OrderWithDetailsData? order = orderResult.FirstOrDefault();
@@ -138,24 +144,36 @@ namespace Clothy.OrderService.DAL.Repositories
             order.Items = items.ToList();
             order.TotalAmount = order.Items.Sum(item => item.Price * item.Quantity);
 
+            Console.WriteLine($"===== DEBUG: Getting delivery for order {id} =====");
+
             string deliverySql = @"
                 SELECT 
-                    dd.id AS DeliveryDetailId, dd.phonenumber, dd.firstname, dd.lastname, dd.middlename,
-                    dd.createdat AS DeliveryCreatedAt, dd.updatedat AS DeliveryUpdatedAt,
-                    pp.id AS PickupPointId, pp.address, pp.deliveryproviderid,
-                    dp.id AS DeliveryProviderId, dp.name AS DeliveryProviderName, dp.iconurl AS DeliveryProviderIconUrl,
-                    s.id AS SettlementId, s.name AS SettlementName, s.regionid,
-                    r.id AS RegionId, r.name AS RegionName, r.cityid,
-                    c.id AS CityId, c.name AS CityName
+                    dd.id AS DeliveryDetailId, 
+                    dd.phonenumber, 
+                    dd.firstname, 
+                    dd.lastname, 
+                    dd.middlename,
+                    dd.createdat AS DeliveryCreatedAt, 
+                    dd.updatedat AS DeliveryUpdatedAt,
+                    pp.id AS PickupPointId, 
+                    pp.address, 
+                    pp.deliveryproviderid,
+                    pp.settlementid,
+                    dp.id AS DeliveryProviderId, 
+                    dp.name AS DeliveryProviderName, 
+                    dp.iconurl AS DeliveryProviderIconUrl,
+                    s.id AS SettlementId, 
+                    s.name AS SettlementName, 
+                    s.regionid,
+                    r.id AS RegionId, 
+                    r.name AS RegionName, 
+                    r.cityid,
+                    c.id AS CityId, 
+                    c.name AS CityName
                 FROM delivery_detail dd
                 JOIN pickup_points pp ON dd.pickuppointid = pp.id
                 JOIN delivery_provider dp ON pp.deliveryproviderid = dp.id
-                JOIN settlements s ON s.id = (
-                    SELECT st.id FROM settlements st 
-                    JOIN regions rg ON rg.id = st.regionid 
-                    JOIN city ct ON ct.id = rg.cityid 
-                    LIMIT 1
-                )
+                JOIN settlements s ON pp.settlementid = s.id
                 JOIN regions r ON s.regionid = r.id
                 JOIN city c ON r.cityid = c.id
                 WHERE dd.orderid = @Id
@@ -167,6 +185,7 @@ namespace Clothy.OrderService.DAL.Repositories
 
             if (delivery != null)
             {
+
                 order.DeliveryDetail = new DeliveryDetailData
                 {
                     Id = (Guid)delivery.deliverydetailid,
@@ -174,14 +193,15 @@ namespace Clothy.OrderService.DAL.Repositories
                     FirstName = delivery.firstname,
                     LastName = delivery.lastname,
                     MiddleName = delivery.middlename,
-                    CreatedAt = delivery.deliverycreatedat,
-                    UpdatedAt = delivery.deliveryupdatedat,
+                    CreatedAt = delivery.deliverycreatedat != null ? (DateTime)delivery.deliverycreatedat : DateTime.UtcNow, 
+                    UpdatedAt = delivery.deliveryupdatedat != null ? (DateTime?)delivery.deliveryupdatedat : null,
 
                     PickupPoint = new PickupPoints
                     {
                         Id = (Guid)delivery.pickuppointid,
                         Address = delivery.address,
                         DeliveryProviderId = delivery.deliveryproviderid,
+                        SettlementId = (Guid)delivery.settlementid
                     },
                     DeliveryProvider = new DeliveryProvider
                     {
@@ -207,9 +227,29 @@ namespace Clothy.OrderService.DAL.Repositories
                         Name = delivery.cityname
                     }
                 };
+
+                Console.WriteLine("===== DeliveryDetailData created successfully =====");
             }
 
             return order;
+        }
+
+        public async Task UpdateUserNameAsync(Guid userId, string firstName, string lastName)
+        {
+            IDbConnection connection = await GetOpenConnectionAsync();
+
+            string sql = @"
+                UPDATE orders
+                SET userfirstname = @FirstName,
+                    userlastname = @LastName,
+                    updatedat = NOW() AT TIME ZONE 'utc'
+                WHERE userid = @UserId;
+            ";
+            await connection.ExecuteAsync(sql, new { 
+                UserId = userId, 
+                FirstName = firstName, 
+                LastName = lastName 
+            });
         }
     }
 }

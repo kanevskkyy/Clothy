@@ -95,6 +95,7 @@ builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<DeleteOrderItemConsumerService>();
     x.AddConsumer<UpdateOrderItemConsumerService>();
+    x.AddConsumer<UserUpdatedConsumer>();
 
     x.UsingRabbitMq((context, cfg) =>
     {
@@ -111,6 +112,12 @@ builder.Services.AddMassTransit(x =>
         {
             e.ConfigureConsumer<DeleteOrderItemConsumerService>(context);
             e.Bind("clothe-item-deleted");
+        });
+
+        cfg.ReceiveEndpoint("order-service-user-consumer-queue", e =>
+        {
+            e.ConfigureConsumer<UserUpdatedConsumer>(context);
+            e.Bind("user-updated");
         });
 
         cfg.Message<OrderCreatedEvent>(e => e.SetEntityName("order-created"));
@@ -153,7 +160,16 @@ builder.Services.AddEndpointsApiExplorer();
 
 //GRPC 
 builder.Services.AddScoped<IOrderItemValidatorGrpcClient, OrderItemValidatorGrpcClient>();
+builder.Services.AddScoped<IBasketGrpcClient, BasketGrpcClient>();
+
 builder.Services.AddConfiguredGrpcClient<OrderItemValidator.OrderItemValidatorClient>("catalog")
+    .AddStandardResilienceHandler(resilience =>
+    {
+        resilience.Retry.MaxRetryAttempts = 3;
+        resilience.CircuitBreaker.FailureRatio = 0.3;
+    });
+
+builder.Services.AddConfiguredGrpcClient<BasketGrpc.BasketGrpcClient>("basket")
     .AddStandardResilienceHandler(resilience =>
     {
         resilience.Retry.MaxRetryAttempts = 3;

@@ -12,6 +12,9 @@ using FluentValidation;
 using Clothy.UserService.BLL.Validation.UserValidation;
 using FluentValidation.AspNetCore;
 using Clothy.UserService.API.Middleware;
+using MassTransit;
+using Clothy.Shared.Events.ClotheItemEvents;
+using Clothy.Shared.Events.UserEvents;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,6 +60,20 @@ builder.Services.AddCloudinary(builder.Configuration);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddMassTransit(x =>
+{
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(builder.Configuration.GetConnectionString("rabbitmq"));
+        cfg.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));
+
+        cfg.Message<UserDeletedEvent>(e => e.SetEntityName("user-deleted"));
+        cfg.Message<UserUpdatedEvent>(e => e.SetEntityName("user-updated"));
+
+        cfg.ConfigureEndpoints(context);
+    });
+});
 
 var app = builder.Build();
 app.UseMiddleware<ErrorHandlingMiddleware>();

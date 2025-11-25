@@ -11,6 +11,7 @@ namespace Clothy.OrderService.BLL.DTOs.PickupPointsDTOs
         public Guid Id { get; set; }
         public string? Address { get; set; }
         public Guid DeliveryProviderId { get; set; }
+        public Guid SettlementId { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
     }

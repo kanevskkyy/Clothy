@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Clothy.ReviewService.Domain.ValueObjects;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -20,6 +21,9 @@ namespace Clothy.ReviewService.Domain.Entities
 
         [BsonElement("updatedAt")]
         public DateTime UpdatedAt { get; private set; } = DateTime.UtcNow;
+
+        [BsonElement("user")]
+        public UserInfo User { get; set; }
 
         public void UpdateTimestamp()
         {

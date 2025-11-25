@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Text.Json;
 using Clothy.ReviewService.API.Middleware;
 using Clothy.ReviewService.Application.Behaviours;
+using Clothy.ReviewService.Application.Consumers;
 using Clothy.ReviewService.Application.Consumers.DeleteReviewsAndQuestions;
 using Clothy.ReviewService.Application.Features.Questions.Commands.UpdateQuestion;
 using Clothy.ReviewService.Application.Validations.Questions;
@@ -66,6 +67,7 @@ builder.Services.AddScoped<IEventLogService, EventLogService>();
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<ReviewsAndQuestionsDeletionConsumer>();
+    x.AddConsumer<UserDeletedConsumer>();
 
     x.UsingRabbitMq((context, cfg) =>
     {
@@ -76,6 +78,12 @@ builder.Services.AddMassTransit(x =>
         {
             e.ConfigureConsumer<ReviewsAndQuestionsDeletionConsumer>(context);
             e.Bind("clothe-item-deleted");
+        });
+
+        cfg.ReceiveEndpoint("review-service-user-delete-queue", e =>
+        {
+            e.ConfigureConsumer<UserDeletedConsumer>(context);
+            e.Bind("user-deleted");
         });
     });
 });
@@ -103,7 +111,7 @@ var app = builder.Build();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-//grpc server
+//Grpc server
 app.MapGrpcService<ReviewServiceGrpcImpl>();
 //
 

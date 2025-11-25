@@ -58,6 +58,13 @@ namespace Clothy.OrderService.DAL.Repositories
                 parameters.Add("DeliveryProviderId", filterDTO.DeliveryProviderId.Value);
             }
 
+            if (filterDTO.SettlementId.HasValue)
+            {
+                sql.Append(" AND settlementid = @SettlementId");
+                countSql.Append(" AND settlementid = @SettlementId");
+                parameters.Add("SettlementId", filterDTO.SettlementId.Value);
+            }
+
             string sortBy = filterDTO.SortBy?.ToLower() ?? "address";
             string direction = filterDTO.SortDescending ? "DESC" : "ASC";
             sql.Append($" ORDER BY {sortBy} {direction} ");

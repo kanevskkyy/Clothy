@@ -111,5 +111,12 @@ namespace Clothy.ReviewService.Infrastructure.Repositories
 
             await collection.DeleteManyAsync(reviewsByClotheId, cancellationToken);
         }
+
+        public async Task DeleteAllReviewsByUserId(Guid userId, CancellationToken cancellationToken = default)
+        {
+            var reviewsByUserId = Builders<Review>.Filter.Eq(tempReview => tempReview.User.UserId, userId);
+
+            await collection.DeleteManyAsync(reviewsByUserId, cancellationToken);
+        }
     }
 }

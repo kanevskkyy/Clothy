@@ -15,7 +15,7 @@ namespace Clothy.OrderService.BLL.DTOs.OrderDTOs
         public string? UserFirstName { get; set; }
         public string? UserLastName { get; set; }
         public decimal TotalPrice { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
     }
 }

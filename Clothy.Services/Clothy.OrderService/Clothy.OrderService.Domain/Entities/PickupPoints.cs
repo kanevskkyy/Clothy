@@ -10,6 +10,8 @@ namespace Clothy.OrderService.Domain.Entities
     {
         public string? Address {  get; set; }
         public Guid DeliveryProviderId { get; set; }
+        public Guid SettlementId { get; set; }
         public DeliveryProvider? DeliveryProvider { get; set; }
+        public Settlement? Settlement { get; set; }
     }
 }

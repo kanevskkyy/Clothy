@@ -16,16 +16,19 @@ namespace Clothy.UserService.BLL.Validation.UserValidation
         public UserUpdateDTOValidation()
         {
             RuleFor(x => x.FirstName)
+                .NotEmpty()
+                .WithMessage("First name is required.")
                 .MaximumLength(50)
                 .WithMessage("First name should be less than 50 symbols");
 
             RuleFor(x => x.LastName)
+                .NotEmpty().WithMessage("Last name is required.")
                 .MaximumLength(50)
                 .WithMessage("Last name should be less than 50 symbols");
 
             RuleFor(x => x.PhoneNumber)
+                .NotEmpty().WithMessage("Phone number is required.")
                 .Matches(@"^(\+380|0)\d{9}$")
-                .When(x => !string.IsNullOrEmpty(x.PhoneNumber))
                 .WithMessage("Phone number must be a valid Ukrainian number");
 
             RuleFor(x => x.Photo)
@@ -36,14 +39,14 @@ namespace Clothy.UserService.BLL.Validation.UserValidation
 
         private bool HavePermittedExtension(IFormFile file)
         {
-            if (file == null) return true;
+            if (file == null) return true; 
             string? extension = Path.GetExtension(file.FileName)?.ToLowerInvariant();
             return extension != null && permittedExtensions.Contains(extension);
         }
 
         private bool HaveValidSize(IFormFile file)
         {
-            if (file == null) return true;
+            if (file == null) return true; 
             return file.Length > 0 && file.Length <= 5 * 1024 * 1024;
         }
     }

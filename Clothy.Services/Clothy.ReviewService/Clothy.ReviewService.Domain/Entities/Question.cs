@@ -13,9 +13,6 @@ namespace Clothy.ReviewService.Domain.Entities
         [BsonElement("clotheItemId")]
         public Guid ClotheItemId { get; private set; }
 
-        [BsonElement("user")]
-        public UserInfo User { get; private set; }
-
         [BsonElement("questionText")]
         public string QuestionText { get; private set; }  
 

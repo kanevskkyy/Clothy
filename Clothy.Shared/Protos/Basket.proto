@@ -1,0 +1,30 @@
+﻿syntax = "proto3";
+
+service BasketGrpc {
+    rpc GetUserBasket (GetUserBasketRequest) returns (GetUserBasketResponse);
+    rpc ClearUserBasket (ClearUserBasketRequest) returns (ClearUserBasketResponse);
+}
+
+message GetUserBasketRequest {
+    string userId = 1;
+}
+
+message GetUserBasketResponse {
+    string userId = 1;
+    repeated BasketItemMessage items = 2;
+}
+
+message BasketItemMessage {
+    string clotheId = 1;
+    string sizeId = 2;
+    string colorId = 3;
+    int32 quantity = 4;
+}
+
+message ClearUserBasketRequest {
+    string userId = 1;
+}
+
+message ClearUserBasketResponse {
+    bool success = 1;
+}

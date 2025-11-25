@@ -20,7 +20,7 @@ namespace Clothy.OrderService.Domain.Entities.AdditionalEntities
         public string? HexCode { get; set; }
         public Guid SizeId { get; set; }
         public string? SizeName { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
     }
 }

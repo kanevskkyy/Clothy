@@ -127,7 +127,7 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                         response.ErrorMessage = string.Empty;
                         response.ClotheName = clotheItem.Name;
                         response.Price = clotheItem.Price.ToString();
-                        response.MainPhotoUrl = clotheItem.MainPhotoURL ?? string.Empty;
+                        response.MainPhotoUrl = clotheItem.MainPhotoURL;
                         response.ColorHexCode = color.HexCode;
                         response.SizeName = size.Name;
 

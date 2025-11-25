@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Clothy.ServiceDefaults\Clothy.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\..\..\Clothy.Shared\Clothy.Shared.csproj" />
     <ProjectReference Include="..\Clothy.UserService.BLL\Clothy.UserService.BLL.csproj" />
     <ProjectReference Include="..\Clothy.UserService.DAL\Clothy.UserService.DAL.csproj" />
   </ItemGroup>

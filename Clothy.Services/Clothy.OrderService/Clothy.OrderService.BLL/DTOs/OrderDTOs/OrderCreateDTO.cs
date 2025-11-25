@@ -10,7 +10,10 @@ namespace Clothy.OrderService.BLL.DTOs.OrderDTOs
 {
     public class OrderCreateDTO
     {
-        public List<OrderItemCreateDTO> Items { get; set; } = new();
-        public DeliveryDetailCreateDTO? DeliveryDetail { get; set; }
+        public Guid PickupPointId { get; set; }
+        public string? PhoneNumber { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public string? MiddleName { get; set; }
     }
 }

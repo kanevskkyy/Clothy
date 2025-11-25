@@ -93,9 +93,13 @@ CREATE TABLE pickup_points (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     address VARCHAR(100) NOT NULL,
     deliveryproviderid UUID NOT NULL,
+    settlementid UUID NOT NULL,
     createdat TIMESTAMP WITHOUT TIME ZONE DEFAULT (NOW() AT TIME ZONE 'utc'),
     updatedat TIMESTAMP WITHOUT TIME ZONE,
     FOREIGN KEY (deliveryproviderid) REFERENCES delivery_provider(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    FOREIGN KEY (settlementid) REFERENCES settlements(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
     UNIQUE (address, deliveryproviderid)
