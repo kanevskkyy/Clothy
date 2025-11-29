@@ -272,9 +272,10 @@ namespace Clothy.OrderService.BLL.Services
                     if(claimsPrincipal != null)
                     {
                         bool isAdmin = userClaimsExtractor.IsInRole(claimsPrincipal, "Admin");
+                        bool isManager = userClaimsExtractor.IsInRole(claimsPrincipal, "Manager");
                         Guid userId = userClaimsExtractor.GetUserId(claimsPrincipal);
 
-                        if (!isAdmin && orderData.UserId != userId) throw new ForbiddenException("You do not have access to this order.");
+                        if (!isAdmin && !isManager && orderData.UserId != userId) throw new ForbiddenException("You do not have access to this order.");
                     }
 
                     return mapper.Map<OrderDetailDTO>(orderData);
@@ -288,7 +289,7 @@ namespace Clothy.OrderService.BLL.Services
 
         public async Task<PagedList<OrderReadDTO>> GetPagedAsync(OrderFilterDTO filter, ClaimsPrincipal? user, CancellationToken cancellationToken = default)
         {
-            if (user != null && !user.IsInRole("Admin")) filter.UserId = userClaimsExtractor.GetUserId(user);
+            if (user != null && !user.IsInRole("Admin") && !user.IsInRole("Manager")) filter.UserId = userClaimsExtractor.GetUserId(user);
            
             bool usePageCache = filter.StatusId.HasValue && filter.PageNumber <= MAX_CASHED_PAGES;
 

@@ -1,4 +1,4 @@
-using Clothy.ServiceDefaults.Middleware;
+using Clothy.ServiceDefaults.Middleware.Routes;
 using Yarp.ReverseProxy.Transforms;
 
 var builder = WebApplication.CreateBuilder(args);

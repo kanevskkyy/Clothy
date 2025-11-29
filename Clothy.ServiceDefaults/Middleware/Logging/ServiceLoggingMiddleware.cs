@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Serilog;
 
-namespace Clothy.ServiceDefaults.Middleware
+namespace Clothy.ServiceDefaults.Middleware.Logging
 {
     public class ServiceLoggingMiddleware
     {

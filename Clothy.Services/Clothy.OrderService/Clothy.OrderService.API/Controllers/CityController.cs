@@ -57,7 +57,7 @@ namespace Clothy.OrderService.API.Controllers
         /// <param name="cancelletionToken">Cancellation token.</param>
         /// <returns>Created city.</returns>
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "ManagerOrAdmin")]
         public async Task<ActionResult<CityReadDTO>> Create([FromBody] CityCreateDTO dto, CancellationToken cancelletionToken)
         {
             logger.LogInformation("Creating city with name: {Name}", dto.Name);
@@ -78,7 +78,7 @@ namespace Clothy.OrderService.API.Controllers
         /// <param name="cancelletionToken">Cancellation token.</param>
         /// <returns>Updated city.</returns>
         [HttpPut("{id:guid}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "ManagerOrAdmin")]
         public async Task<ActionResult<CityReadDTO>> Update(Guid id, [FromBody] CityUpdateDTO dto, CancellationToken cancelletionToken)
         {
             logger.LogInformation("Updating city with ID: {Id}", id);
@@ -95,7 +95,7 @@ namespace Clothy.OrderService.API.Controllers
         /// <param name="cancelletionToken">Cancellation token.</param>
         /// <returns>No content.</returns>
         [HttpDelete("{id:guid}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult> Delete(Guid id, CancellationToken cancelletionToken)
         {
             logger.LogInformation("Deleting city with ID: {Id}", id);

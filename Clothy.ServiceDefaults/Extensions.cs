@@ -18,6 +18,13 @@ using System.Reflection;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
 using Clothy.Shared.Helpers.JWT;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Clothy.ServiceDefaults.Middleware.CorrelationId;
+using Clothy.ServiceDefaults.Middleware.Keycloak;
+using Clothy.ServiceDefaults.Middleware.Logging;
+using Clothy.ServiceDefaults.Middleware.JWT;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -95,7 +102,37 @@ public static class Extensions
         builder.Services.AddHttpContextAccessor();
         builder.Services.AddTransient<CorrelationIdDelegatingHandler>();
 
-        builder.Services.AddJwtAuthentication(builder.Configuration);
+        // OLD USER MICROSERVICE
+
+        //builder.Services.AddJwtAuthentication(builder.Configuration);
+
+        //
+
+        // KEYCLOAK
+        builder.Services.AddTransient<IClaimsTransformation, KeycloakRolesClaimsTransformation>();
+
+        builder.Services
+            .AddAuthentication()
+            .AddKeycloakJwtBearer(serviceName: "keycloak", realm: "clothy-realm",  
+                configureOptions: options =>
+                {
+                    options.RequireHttpsMetadata = false; 
+                    options.Audience = "clothy-api";
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        RoleClaimType = ClaimTypes.Role
+                    };
+                });
+        builder.Services.AddAuthorization(options =>
+        {
+            options.AddPolicy("AdminOnly", policy =>
+                policy.RequireRole("Admin"));
+
+            options.AddPolicy("ManagerOrAdmin", policy =>
+                policy.RequireRole("Admin", "Manager"));
+        });
+        // KEYCLOAK
+
         builder.Services.AddSwaggerWithAuth();
         builder.Services.AddScoped<IUserClaimsExtractor, UserClaimsExtractor>();
 

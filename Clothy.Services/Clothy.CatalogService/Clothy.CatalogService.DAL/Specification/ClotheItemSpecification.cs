@@ -22,7 +22,11 @@ namespace Clothy.CatalogService.DAL.Specification
 
             if (!string.IsNullOrEmpty(parameters.Name))
             {
-                Query.Where(property => property.Name.ToLower().Contains(parameters.Name.ToLower()));
+                string filterName = parameters.Name.ToLower();
+
+                Query.Where(property => property.Name.ToLower().Contains(filterName) 
+                || property.Brand.Name.Contains(filterName) 
+                || property.ClothyType.Name.Contains(filterName));
             }
 
             if (parameters.MinPrice.HasValue)

@@ -10,7 +10,7 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
-namespace Clothy.ServiceDefaults.Middleware
+namespace Clothy.ServiceDefaults.Middleware.OpenTelemetry
 {
     public static class OpenTelemetryExtensions
     {

@@ -29,7 +29,7 @@ namespace Clothy.ReviewService.Application.Features.Questions.Commands.DeleteAns
             Answer? answer = question.Answers.FirstOrDefault(tempAnswer => tempAnswer.Id == request.AnswerId);
             if (answer == null) throw new NotFoundException($"Answer with ID {request.AnswerId} not found!");
 
-            if (question.User.UserId != request.UserId && !request.IsAdmin) throw new ForbiddenException("You are not allowed to delete this answer");
+            if (question.User.UserId != request.UserId && !request.IsAdmin && !request.IsManager) throw new ForbiddenException("You are not allowed to delete this answer");
 
             await questionRepository.DeleteAnswerAsync(request.QuestionId, request.AnswerId, cancellationToken);
             return Unit.Value;

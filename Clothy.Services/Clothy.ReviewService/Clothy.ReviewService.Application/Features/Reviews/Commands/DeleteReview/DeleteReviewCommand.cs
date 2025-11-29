@@ -12,6 +12,7 @@ namespace Clothy.ReviewService.Application.Features.Reviews.Commands.DeleteRevie
     public record DeleteReviewCommand(
         string ReviewId,
         Guid UserId,
-        bool IsAdmin
+        bool IsAdmin,
+        bool IsManager
     ) : ICommand;
 }

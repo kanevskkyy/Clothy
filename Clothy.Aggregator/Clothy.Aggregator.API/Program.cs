@@ -2,7 +2,8 @@ using Clothy.Aggregator.Aggregate.Clients;
 using Clothy.Aggregator.Aggregate.Clients.Interfaces;
 using Clothy.Aggregator.Aggregate.Services;
 using Clothy.Aggregator.Aggregate.Services.Interfaces;
-using Clothy.ServiceDefaults.Middleware;
+using Clothy.ServiceDefaults.Middleware.CorrelationId;
+using Clothy.ServiceDefaults.Middleware.Grpc;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);

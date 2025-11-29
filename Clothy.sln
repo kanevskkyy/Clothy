@@ -83,6 +83,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.BaskteService.Domain
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.BasketService.gRPC.Server", "Clothy.Services\Clothy.BasketService\Clothy.BasketService.gRPC.Server\Clothy.BasketService.gRPC.Server.csproj", "{0D6F17C2-3364-40F1-9604-8B4A9622A9BA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.Pulumi", "Clothy.Pulumi\Clothy.Pulumi.csproj", "{CD442A07-18BC-1242-BF29-AE659E46A452}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -489,6 +491,18 @@ Global
 		{0D6F17C2-3364-40F1-9604-8B4A9622A9BA}.Release|x64.Build.0 = Release|Any CPU
 		{0D6F17C2-3364-40F1-9604-8B4A9622A9BA}.Release|x86.ActiveCfg = Release|Any CPU
 		{0D6F17C2-3364-40F1-9604-8B4A9622A9BA}.Release|x86.Build.0 = Release|Any CPU
+		{CD442A07-18BC-1242-BF29-AE659E46A452}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD442A07-18BC-1242-BF29-AE659E46A452}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD442A07-18BC-1242-BF29-AE659E46A452}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CD442A07-18BC-1242-BF29-AE659E46A452}.Debug|x64.Build.0 = Debug|Any CPU
+		{CD442A07-18BC-1242-BF29-AE659E46A452}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CD442A07-18BC-1242-BF29-AE659E46A452}.Debug|x86.Build.0 = Debug|Any CPU
+		{CD442A07-18BC-1242-BF29-AE659E46A452}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD442A07-18BC-1242-BF29-AE659E46A452}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD442A07-18BC-1242-BF29-AE659E46A452}.Release|x64.ActiveCfg = Release|Any CPU
+		{CD442A07-18BC-1242-BF29-AE659E46A452}.Release|x64.Build.0 = Release|Any CPU
+		{CD442A07-18BC-1242-BF29-AE659E46A452}.Release|x86.ActiveCfg = Release|Any CPU
+		{CD442A07-18BC-1242-BF29-AE659E46A452}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

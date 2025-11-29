@@ -8,6 +8,7 @@ namespace Clothy.CatalogService.Domain.QueryParameters
 {
     public class ClothesStockSpecificationParameters : BaseSpecificationParameters
     {
+        public string? Name { get; set; }
         public Guid? ClotheId { get; set; }
         public Guid? SizeId { get; set; }
         public Guid? ColorId { get; set; }

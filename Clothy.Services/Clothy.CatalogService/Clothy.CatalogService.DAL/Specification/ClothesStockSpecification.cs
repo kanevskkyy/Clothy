@@ -28,6 +28,14 @@ namespace Clothy.CatalogService.DAL.Specification
                 Query.Where(property => property.ClotheId == parameters.ClotheId.Value);
             }
 
+            if (!string.IsNullOrEmpty(parameters.Name))
+            {
+                string filterName = parameters.Name.ToLower();
+
+                Query.Where(property => property.Clothe.ClothyType.Name.ToLower().Contains(filterName)
+                || property.Clothe.Brand.Name.Contains(filterName));
+            }
+
             if (parameters.SizeId.HasValue)
             {
                 Query.Where(property => property.SizeId == parameters.SizeId.Value);

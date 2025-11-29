@@ -13,7 +13,6 @@ using Clothy.OrderService.DAL.Interfaces;
 using Clothy.OrderService.DAL.Repositories;
 using Clothy.OrderService.DAL.UOW;
 using Clothy.OrderService.Domain.Entities;
-using Clothy.ServiceDefaults.Middleware;
 using Clothy.Shared.Cache.Interfaces;
 using Clothy.Shared.Helpers;
 using FluentValidation;
@@ -31,6 +30,9 @@ using Clothy.OrderService.BLL.Consumers;
 using Clothy.Shared.Events.OrderEvents;
 using Clothy.Shared.Events;
 using Clothy.OrderService.DAL.EventLog;
+using Clothy.ServiceDefaults.Middleware.Grpc;
+using Clothy.ServiceDefaults.Middleware.OpenTelemetry;
+using Clothy.ServiceDefaults.Middleware.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 

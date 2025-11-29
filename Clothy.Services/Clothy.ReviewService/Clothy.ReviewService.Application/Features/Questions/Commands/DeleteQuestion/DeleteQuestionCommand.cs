@@ -12,6 +12,7 @@ namespace Clothy.ReviewService.Application.Features.Questions.Commands.DeleteQue
     public record DeleteQuestionCommand(
         string QuestionId,
         Guid UserId,
-        bool IsAdmin
+        bool IsAdmin,
+        bool IsManager
     ) : ICommand;
 }

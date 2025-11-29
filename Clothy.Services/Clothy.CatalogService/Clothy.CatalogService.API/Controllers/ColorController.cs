@@ -68,7 +68,7 @@ namespace Clothy.CatalogService.API.Controllers
         /// <param name="ct">Cancellation token.</param>
         /// <returns>Created color.</returns>
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "ManagerOrAdmin")]
         public async Task<ActionResult<ColorReadDTO>> Create([FromBody] ColorCreateDTO dto, CancellationToken ct)
         {
             logger.LogInformation("Creating color with hex code: {HexCode}", dto.HexCode);
@@ -86,7 +86,7 @@ namespace Clothy.CatalogService.API.Controllers
         /// <param name="ct">Cancellation token.</param>
         /// <returns>Updated color.</returns>
         [HttpPut("{id:guid}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "ManagerOrAdmin")]
         public async Task<ActionResult<ColorReadDTO>> Update(Guid id, [FromBody] ColorUpdateDTO dto, CancellationToken ct)
         {
             logger.LogInformation("Updating color with ID: {Id}", id);
@@ -103,7 +103,7 @@ namespace Clothy.CatalogService.API.Controllers
         /// <param name="ct">Cancellation token.</param>
         /// <returns>No content.</returns>
         [HttpDelete("{id:guid}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult> Delete(Guid id, CancellationToken ct)
         {
             logger.LogInformation("Deleting color with ID: {Id}", id);

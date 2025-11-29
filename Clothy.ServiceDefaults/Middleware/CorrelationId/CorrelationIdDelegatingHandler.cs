@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace Clothy.ServiceDefaults.Middleware
+namespace Clothy.ServiceDefaults.Middleware.CorrelationId
 {
     public class CorrelationIdDelegatingHandler : DelegatingHandler
     {

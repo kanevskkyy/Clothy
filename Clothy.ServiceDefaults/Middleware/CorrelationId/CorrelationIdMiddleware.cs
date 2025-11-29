@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Serilog.Context;
 
-namespace Clothy.ServiceDefaults.Middleware
+namespace Clothy.ServiceDefaults.Middleware.CorrelationId
 {
     public class CorrelationIdMiddleware
     {

@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
-namespace Clothy.ServiceDefaults.Middleware
+namespace Clothy.ServiceDefaults.Middleware.JWT
 {
     public static class JwtExtensions
     {

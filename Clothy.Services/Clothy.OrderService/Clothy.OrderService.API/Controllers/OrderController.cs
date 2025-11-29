@@ -78,7 +78,7 @@ namespace Clothy.OrderService.API.Controllers
         /// Update status of an existing order.
         /// </summary>
         [HttpPut("{id:guid}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "ManagerOrAdmin")]
         public async Task<ActionResult<OrderDetailDTO>> UpdateStatus(Guid id, [FromBody] OrderUpdateStatusDTO dto, CancellationToken ct)
         {
             logger.LogInformation("Updating status of order ID: {Id} to StatusId: {StatusId}", id, dto.StatusId);
@@ -92,7 +92,7 @@ namespace Clothy.OrderService.API.Controllers
         /// Delete an order by ID.
         /// </summary>
         [HttpDelete("{id:guid}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult> Delete(Guid id, CancellationToken ct)
         {
             logger.LogInformation("Deleting order with ID: {Id}", id);

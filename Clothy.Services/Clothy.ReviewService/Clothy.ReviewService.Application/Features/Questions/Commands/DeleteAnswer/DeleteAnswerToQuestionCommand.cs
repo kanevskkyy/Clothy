@@ -13,6 +13,7 @@ namespace Clothy.ReviewService.Application.Features.Questions.Commands.DeleteAns
         string QuestionId,
         string AnswerId,
         Guid UserId,
-        bool IsAdmin
+        bool IsAdmin,
+        bool IsManager
     ) : ICommand;
 }

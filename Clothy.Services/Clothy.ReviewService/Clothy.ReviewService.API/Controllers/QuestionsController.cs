@@ -125,8 +125,9 @@ namespace Clothy.ReviewService.API.Controllers
             logger.LogInformation("Deleting question with ID: {Id}", id);
             Guid userId = userClaimsExtractor.GetUserId(User);
             bool isAdmin = userClaimsExtractor.IsInRole(User, "Admin");
+            bool isManager = userClaimsExtractor.IsInRole(User, "Manager");
 
-            DeleteQuestionCommand command = new DeleteQuestionCommand(id, userId, isAdmin);
+            DeleteQuestionCommand command = new DeleteQuestionCommand(id, userId, isAdmin, isManager);
 
             await mediator.Send(command, cancellationToken);
             
@@ -200,8 +201,9 @@ namespace Clothy.ReviewService.API.Controllers
             logger.LogInformation("Deleting answer {AnswerId} from question {QuestionId}", answerId, questionId);
             Guid userId = userClaimsExtractor.GetUserId(User);
             bool isAdmin = userClaimsExtractor.IsInRole(User, "Admin");
+            bool isManager = userClaimsExtractor.IsInRole(User, "Manager");
 
-            DeleteAnswerToQuestionCommand command = new DeleteAnswerToQuestionCommand(questionId, answerId, userId, isAdmin);
+            DeleteAnswerToQuestionCommand command = new DeleteAnswerToQuestionCommand(questionId, answerId, userId, isAdmin, isManager);
 
             await mediator.Send(command, cancellationToken);
             

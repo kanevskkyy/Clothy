@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Clothy.CatalogService.API.Controllers
 {
     [ApiController]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Policy = "ManagerOrAdmin")]
     [Route("api/clothes-stock")]
     public class ClothesStockController : ControllerBase
     {

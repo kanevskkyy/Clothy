@@ -57,7 +57,7 @@ namespace Clothy.OrderService.API.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Created region.</returns>
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "ManagerOrAdmin")]
         public async Task<ActionResult<RegionReadDTO>> Create([FromBody] RegionCreateDTO regionCreateDTO, CancellationToken cancellationToken)
         {
             logger.LogInformation("Creating region with name: {Name}", regionCreateDTO.Name);
@@ -77,7 +77,7 @@ namespace Clothy.OrderService.API.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Updated region.</returns>
         [HttpPut("{id:guid}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "ManagerOrAdmin")]
         public async Task<ActionResult<RegionReadDTO>> Update(Guid id, [FromBody] RegionUpdateDTO regionUpdateDTO, CancellationToken cancellationToken)
         {
             logger.LogInformation("Updating region with ID: {Id}", id);
@@ -94,7 +94,7 @@ namespace Clothy.OrderService.API.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>No content.</returns>
         [HttpDelete("{id:guid}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
             logger.LogInformation("Deleting region with ID: {Id}", id);

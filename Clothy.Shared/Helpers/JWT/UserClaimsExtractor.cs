@@ -29,8 +29,9 @@ namespace Clothy.Shared.Helpers.JWT
         public string GetLastName(ClaimsPrincipal claimsPrincipal)
         {
             string? lastName = claimsPrincipal.FindFirst(ClaimTypes.Surname)?.Value;
+            if (string.IsNullOrEmpty(lastName)) lastName = claimsPrincipal.FindFirst("family_name")?.Value;
             if (string.IsNullOrEmpty(lastName)) throw new ValidationFailedException("Cannot find User LastName in claims");
-            
+
             return lastName;
         }
 
@@ -41,10 +42,10 @@ namespace Clothy.Shared.Helpers.JWT
 
         public string GetPhotoUrl(ClaimsPrincipal claimsPrincipal)
         {
-            string? photoUrl = claimsPrincipal.FindFirst("PhotoUrl")?.Value;
-            if (string.IsNullOrEmpty(photoUrl)) throw new ValidationFailedException("Cannot find Photo URL in claims");
-            
-            return photoUrl;
+            string? photoUrl = claimsPrincipal.FindFirst("photo_url")?.Value;
+            return string.IsNullOrEmpty(photoUrl)
+                ? "https://res.cloudinary.com/dkdljnfja/image/upload/v1763818143/Profile_Avatar_cfazhc.png"
+                : photoUrl;
         }
     }
 }

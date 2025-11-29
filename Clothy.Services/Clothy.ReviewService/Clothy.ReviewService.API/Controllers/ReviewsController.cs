@@ -160,7 +160,7 @@ namespace Clothy.ReviewService.API.Controllers
         /// </returns>
         /// <response code="200">Returns the review after it has been confirmed.</response>
         [HttpPatch("status/{id}/confirm")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "ManagerOrAdmin")]
         public async Task<IActionResult> ConfirmReview(string id, CancellationToken cancellationToken)
         {
             logger.LogInformation("Confirming review with ID: {Id}", id);
@@ -186,8 +186,9 @@ namespace Clothy.ReviewService.API.Controllers
 
             Guid userId = userClaimsExtractor.GetUserId(User);
             bool isAdmin = userClaimsExtractor.IsInRole(User, "Admin");
+            bool isManager = userClaimsExtractor.IsInRole(User, "Manager");
 
-            DeleteReviewCommand command = new DeleteReviewCommand(id, userId, isAdmin);
+            DeleteReviewCommand command = new DeleteReviewCommand(id, userId, isAdmin, isManager);
 
             await mediator.Send(command, cancellationToken);
 

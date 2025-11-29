@@ -48,7 +48,7 @@ namespace Clothy.OrderService.API.Controllers
         /// Create a new pickup point.
         /// </summary>
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "ManagerOrAdmin")]
         public async Task<ActionResult<PickupPointReadDTO>> Create([FromBody] PickupPointCreateDTO pickupPointCreateDTO, CancellationToken cancellationToken)
         {
             logger.LogInformation("Creating pickup point at address: {Address}", pickupPointCreateDTO.Address);
@@ -62,7 +62,7 @@ namespace Clothy.OrderService.API.Controllers
         /// Update an existing pickup point by its ID.
         /// </summary>
         [HttpPut("{id:guid}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "ManagerOrAdmin")]
         public async Task<ActionResult<PickupPointReadDTO>> Update(Guid id, [FromBody] PickupPointUpdateDTO pickupPointUpdateDTO, CancellationToken cancellationToken)
         {
             logger.LogInformation("Updating pickup point with ID: {Id}", id);
@@ -76,7 +76,7 @@ namespace Clothy.OrderService.API.Controllers
         /// Delete a pickup point by its ID.
         /// </summary>
         [HttpDelete("{id:guid}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
             logger.LogInformation("Deleting pickup point with ID: {Id}", id);

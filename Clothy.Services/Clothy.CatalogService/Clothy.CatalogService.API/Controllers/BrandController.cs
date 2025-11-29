@@ -54,7 +54,7 @@ namespace Clothy.CatalogService.API.Controllers
         /// <param name="ct">Cancellation token.</param>
         /// <returns>Created brand.</returns>
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "ManagerOrAdmin")]
         public async Task<ActionResult<BrandReadDTO>> Create([FromForm] BrandCreateDTO dto, CancellationToken ct)
         {
             logger.LogInformation("Creating brand with name: {Name}", dto.Name);
@@ -72,7 +72,7 @@ namespace Clothy.CatalogService.API.Controllers
         /// <param name="ct">Cancellation token.</param>
         /// <returns>Updated brand.</returns>
         [HttpPut("{id:guid}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "ManagerOrAdmin")]
         public async Task<ActionResult<BrandReadDTO>> Update(Guid id, [FromForm] BrandUpdateDTO dto, CancellationToken ct)
         {
             logger.LogInformation("Updating brand with ID: {Id}", id);
@@ -89,7 +89,7 @@ namespace Clothy.CatalogService.API.Controllers
         /// <param name="ct">Cancellation token.</param>
         /// <returns>No content.</returns>
         [HttpDelete("{id:guid}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult> Delete(Guid id, CancellationToken ct)
         {
             logger.LogInformation("Deleting brand with ID: {Id}", id);

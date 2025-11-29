@@ -26,7 +26,7 @@ namespace Clothy.ReviewService.Application.Features.Reviews.Commands.DeleteRevie
             Review? review = await reviewRepository.GetByIdAsync(request.ReviewId, cancellationToken);
             if (review == null) throw new NotFoundException($"Review with ID {request.ReviewId} not found!");
             
-            if (review.User.UserId != request.UserId && !request.IsAdmin) throw new ForbiddenException("You are not allowed to delete this review");
+            if (review.User.UserId != request.UserId && !request.IsAdmin && !request.IsManager) throw new ForbiddenException("You are not allowed to delete this review");
 
             await reviewRepository.DeleteAsync(request.ReviewId, cancellationToken);
 

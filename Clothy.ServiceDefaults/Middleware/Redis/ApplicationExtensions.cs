@@ -7,7 +7,7 @@ using Clothy.Shared.Cache.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Clothy.ServiceDefaults.Middleware
+namespace Clothy.ServiceDefaults.Middleware.Redis
 {
     public static class ApplicationExtensions
     {

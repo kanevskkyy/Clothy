@@ -59,7 +59,7 @@ namespace Clothy.OrderService.API.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Created settlement.</returns>
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "ManagerOrAdmin")]
         public async Task<ActionResult<SettlementReadDTO>> CreateAsync([FromBody] SettlementCreateDTO settlementCreateDTO, CancellationToken cancellationToken)
         {
             logger.LogInformation("Creating region with name: {Name}", settlementCreateDTO.Name);
@@ -78,7 +78,7 @@ namespace Clothy.OrderService.API.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Updated settlement.</returns>
         [HttpPut("{id:guid}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "ManagerOrAdmin")]
         public async Task<ActionResult<SettlementReadDTO>> UpdateAsync(Guid id, [FromBody] SettlementUpdateDTO settlementUpdateDTO, CancellationToken cancellationToken)
         {
             logger.LogInformation("Updating settlement with ID: {Id}", id);
@@ -96,7 +96,7 @@ namespace Clothy.OrderService.API.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>No content.</returns>
         [HttpDelete("{id:guid}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult> DeleteAsync(Guid id, CancellationToken cancellationToken)
         {
             logger.LogInformation("Deleting settlement with ID: {Id}", id);

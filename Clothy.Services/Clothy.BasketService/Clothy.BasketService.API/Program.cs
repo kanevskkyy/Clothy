@@ -4,7 +4,6 @@ using Clothy.BasketService.BLL.Services.Interfaces;
 using Clothy.BasketService.BLL.Services;
 using Clothy.OrderService.gRPC.Client.Services.Interfaces;
 using Clothy.OrderService.gRPC.Client.Services;
-using Clothy.ServiceDefaults.Middleware;
 using Clothy.BasketService.API.Middleware;
 using Clothy.BasketService.BLL.Mapper;
 using Clothy.BasketService.BLL.DTOs;
@@ -12,6 +11,9 @@ using Clothy.BasketService.BLL.Validation;
 using FluentValidation.AspNetCore;
 using FluentValidation;
 using Clothy.BasketService.gRPC.Server.Server;
+using MassTransit;
+using Clothy.BasketService.BLL.Consumers;
+using Clothy.ServiceDefaults.Middleware.Grpc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +46,23 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<UserDeletedConsumer>();
+
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(builder.Configuration.GetConnectionString("rabbitmq"));
+        cfg.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));
+
+        cfg.ReceiveEndpoint("basket-service-user-delete-queue", e =>
+        {
+            e.ConfigureConsumer<UserDeletedConsumer>(context);
+            e.Bind("user-deleted");
+        });
+    });
+});
 
 var app = builder.Build();
 
