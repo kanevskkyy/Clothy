@@ -10,12 +10,6 @@ return await Deployment.RunAsync(() =>
     var keycloakUrl = config.Get("keycloakUrl") ?? "http://localhost:8080";
     var realmName = "clothy-realm";
     var clientId = "clothy-api";
-
-    var smtpHost = "smtp.sendgrid.net";
-    var smtpPort = "587";
-    var smtpFrom = config.Require("smtpFrom");
-    var smtpUser = "apikey";
-    var smtpPassword = config.RequireSecret("sendgridApiKey");
     var defaultPhotoUrl = "https://res.cloudinary.com/dkdljnfja/image/upload/v1763818143/Profile_Avatar_cfazhc.png";
 
     var realm = new Realm("clothy-realm", new RealmArgs
@@ -30,35 +24,39 @@ return await Deployment.RunAsync(() =>
         RegistrationAllowed = true,
         RegistrationEmailAsUsername = true,
         EditUsernameAllowed = false,
-        ResetPasswordAllowed = true,
+        ResetPasswordAllowed = false,
         RememberMe = true,
-        VerifyEmail = true,
+        VerifyEmail = false,
 
         SslRequired = "none",
         PasswordPolicy = "length(8) and digits(1) and lowerCase(1) and upperCase(1) and specialChars(1)",
 
-        AccessTokenLifespan = "5m",
+        AccessTokenLifespan = "15m",
         AccessTokenLifespanForImplicitFlow = "15m",
         SsoSessionIdleTimeout = "30m",
         SsoSessionMaxLifespan = "10h",
         OfflineSessionIdleTimeout = "720h",
         OfflineSessionMaxLifespan = "1440h",
 
+        // SMTP налаштування для SendGrid
         SmtpServer = new RealmSmtpServerArgs
         {
-            Host = smtpHost,
-            Port = smtpPort,
-            From = smtpFrom,
+            Host = "smtp.sendgrid.net",
+            Port = "587",
+            From = config.Require("smtpFrom"),
             FromDisplayName = "Clothy Application",
-            ReplyTo = smtpFrom,
+            ReplyTo = config.Get("smtpReplyTo") ?? config.Require("smtpFrom"),
             ReplyToDisplayName = "Clothy Support",
 
             Auth = new RealmSmtpServerAuthArgs
             {
-                Username = smtpUser,
-                Password = smtpPassword,
+                Username = "apikey",
+                Password = config.RequireSecret("sendGridApiKey")
             },
+
             Starttls = true,
+            Ssl = false,
+            EnvelopeFrom = config.Get("smtpEnvelopeFrom")
         },
 
         Attributes = new InputMap<string>
@@ -329,8 +327,8 @@ return await Deployment.RunAsync(() =>
     {
         RealmId = realm.Id,
         Username = "manager",
-        Email = "manager@clothy.local",
-        EmailVerified = false,
+        Email = config.Require("managerEmail"),
+        EmailVerified = true,
         Enabled = true,
 
         FirstName = "Manager",
@@ -356,8 +354,8 @@ return await Deployment.RunAsync(() =>
     {
         RealmId = realm.Id,
         Username = "user",
-        Email = "user@clothy.local",
-        EmailVerified = false,
+        Email = config.Require("userEmail"),
+        EmailVerified = true,
         Enabled = true,
 
         FirstName = "Regular",
@@ -423,7 +421,10 @@ return await Deployment.RunAsync(() =>
         ["userInfoEndpoint"] = Output.Format($"{keycloakUrl}/realms/{realmName}/protocol/openid-connect/userinfo"),
         ["logoutEndpoint"] = Output.Format($"{keycloakUrl}/realms/{realmName}/protocol/openid-connect/logout"),
         ["adminUsername"] = adminUser.Username,
+        ["adminEmail"] = adminUser.Email,
         ["managerUsername"] = managerUser.Username,
+        ["managerEmail"] = managerUser.Email,
         ["regularUsername"] = regularUser.Username,
+        ["regularEmail"] = regularUser.Email,
     };
 });

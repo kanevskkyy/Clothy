@@ -12,7 +12,7 @@ namespace Clothy.Shared.Helpers.JWT
     {
         public Guid GetUserId(ClaimsPrincipal claimsPrincipal)
         {
-            string? claimsUserId = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            string? claimsUserId = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? claimsPrincipal.FindFirst("sub")?.Value;
             if (string.IsNullOrEmpty(claimsUserId)) throw new ValidationFailedException("Cannot find User ID in claims");
             
             return Guid.Parse(claimsUserId);
@@ -46,6 +46,13 @@ namespace Clothy.Shared.Helpers.JWT
             return string.IsNullOrEmpty(photoUrl)
                 ? "https://res.cloudinary.com/dkdljnfja/image/upload/v1763818143/Profile_Avatar_cfazhc.png"
                 : photoUrl;
+        }
+
+        public string GetEmail(ClaimsPrincipal claimsPrincipal)
+        {
+            return claimsPrincipal.FindFirst("email")?.Value 
+                ?? claimsPrincipal.FindFirst(ClaimTypes.Email)?.Value
+                ?? throw new UnauthorizedAccessException("Email not found in token");
         }
     }
 }

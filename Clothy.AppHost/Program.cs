@@ -27,7 +27,6 @@ var postgresCatalogDB = postgres.AddDatabase("ClothyCatalogDb");
 var postgresOrdersDB = postgres.AddDatabase("ClothyOrder");
 var postgresUsersDB = postgres.AddDatabase("ClothyUsers");
 
-
 var mongo = builder.AddMongoDB("clothy-mongo")
     .WithImage("mongo:7")
     .WithDataVolume("mongodata")
@@ -41,28 +40,39 @@ var rabbitmq = builder.AddRabbitMQ("rabbitmq", rabbitMQUsername, rabbitMQpasswor
 var keycloak = builder.AddKeycloak("keycloak", port: 8080, keycloakAdminUsername, keycloakAdminPassword)
     .WithDataVolume();
 
+var authService = builder.AddProject<Clothy_AuthService_API>("auth")
+    .WithReference(keycloak)
+    .WithEnvironment("CLOUDINARYSETTINGS__CLOUDNAME", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__CLOUDNAME"))
+    .WithEnvironment("CLOUDINARYSETTINGS__APIKEY", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APIKEY"))
+    .WithEnvironment("CLOUDINARYSETTINGS__APISECRET", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APISECRET"))
+    .WithEnvironment("KEYCLOAK__URL", Environment.GetEnvironmentVariable("KEYCLOAK__URL"))
+    .WithEnvironment("KEYCLOAK__REALM", Environment.GetEnvironmentVariable("KEYCLOAK__REALM"))
+    .WithEnvironment("KEYCLOAK__CLIENTID", Environment.GetEnvironmentVariable("KEYCLOAK__CLIENTID"))
+    .WithEnvironment("KEYCLOAK__CLIENTSECRET", Environment.GetEnvironmentVariable("KEYCLOAK__CLIENTSECRET"))
+    .WaitFor(keycloak);
+
 var catalogService = builder.AddProject<Clothy_CatalogService_API>("catalog")
     .WithReference(postgresCatalogDB)
     .WithReference(redis)
     .WithReference(rabbitmq)
-    .WithReference(keycloak)
+    .WithReference(authService)
     .WithEnvironment("CLOUDINARYSETTINGS__CLOUDNAME", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__CLOUDNAME"))
     .WithEnvironment("CLOUDINARYSETTINGS__APIKEY", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APIKEY"))
     .WithEnvironment("CLOUDINARYSETTINGS__APISECRET", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APISECRET"))
     .WaitFor(redis)
     .WaitFor(rabbitmq)
     .WaitFor(postgresCatalogDB)
-    .WaitFor(keycloak);
+    .WaitFor(authService);
 
 var basketService = builder.AddProject<Clothy_BasketService_API>("basket")
     .WithReference(redis)
     .WithReference(catalogService)
     .WithReference(rabbitmq)
-    .WithReference(keycloak)
+    .WithReference(authService)
     .WaitFor(rabbitmq)
     .WaitFor(catalogService)
     .WaitFor(redis)
-    .WaitFor(keycloak);
+    .WaitFor(authService);
 
 var ordersService = builder.AddProject<Clothy_OrderService_API>("orders")
     .WithReference(postgresOrdersDB)
@@ -70,7 +80,7 @@ var ordersService = builder.AddProject<Clothy_OrderService_API>("orders")
     .WithReference(basketService)
     .WithReference(redis)
     .WithReference(rabbitmq)
-    .WithReference(keycloak)
+    .WithReference(authService)
     .WithEnvironment("CLOUDINARYSETTINGS__CLOUDNAME", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__CLOUDNAME"))
     .WithEnvironment("CLOUDINARYSETTINGS__APIKEY", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APIKEY"))
     .WithEnvironment("CLOUDINARYSETTINGS__APISECRET", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APISECRET"))
@@ -79,17 +89,17 @@ var ordersService = builder.AddProject<Clothy_OrderService_API>("orders")
     .WaitFor(rabbitmq)
     .WaitFor(catalogService)
     .WaitFor(postgresOrdersDB)
-    .WaitFor(keycloak);
+    .WaitFor(authService);
 
 var reviewsService = builder.AddProject<Clothy_ReviewService_API>("reviews")
     .WithReference(mongo)
     .WithReference(rabbitmq)
     .WithReference(catalogService)
-    .WithReference(keycloak)
+    .WithReference(authService)
     .WaitFor(mongo)
     .WaitFor(rabbitmq)
     .WaitFor(catalogService)
-    .WaitFor(keycloak);
+    .WaitFor(authService);
 
 // OLD USER SERVICE BEFORE KEYCLOAK
 
@@ -120,13 +130,13 @@ var aggregator = builder.AddProject<Clothy_Aggregator_API>("aggregator")
     .WithReference(ordersService)
     .WithReference(basketService)
     .WithReference(reviewsService)
-    .WithReference(keycloak)
+    .WithReference(authService)
     .WaitFor(catalogService)
     .WaitFor(ordersService)
     .WaitFor(redis)
     .WaitFor(basketService)
     .WaitFor(reviewsService)
-    .WaitFor(keycloak);
+    .WaitFor(authService);
 
 var gateway = builder.AddProject<Clothy_Gateway>("gateway")
     .WithReference(catalogService)
@@ -134,10 +144,9 @@ var gateway = builder.AddProject<Clothy_Gateway>("gateway")
     .WithReference(reviewsService)
     .WithReference(basketService)
     .WithReference(aggregator)
-    .WithReference(keycloak)
+    .WithReference(authService)
     .WithExternalHttpEndpoints()
     .WaitFor(aggregator);
-
 
 var app = builder.Build();
 await app.RunAsync();

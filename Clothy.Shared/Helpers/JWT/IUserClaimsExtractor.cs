@@ -13,6 +13,7 @@ namespace Clothy.Shared.Helpers.JWT
         string GetFirstName(ClaimsPrincipal claimsPrincipal);
         string GetLastName(ClaimsPrincipal claimsPrincipal);
         string GetPhotoUrl(ClaimsPrincipal claimsPrincipal);
+        string GetEmail(ClaimsPrincipal claimsPrincipal);
         bool IsInRole(ClaimsPrincipal claimsPrincipal, string role);
     }
 }

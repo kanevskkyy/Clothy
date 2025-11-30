@@ -5,19 +5,27 @@ config:
   keycloakUrl:
     description: Keycloak server URL for realm configuration
     default: http://localhost:8080
-  smtpFrom:
-    description: SMTP From email address (must be verified sender in SendGrid)
-  sendgridApiKey:
-    description: SendGrid API key for email sending
-    secret: true
   adminEmail:
     description: Admin user email address (must be verified sender in SendGrid)
   adminPassword:
     description: Admin user password
     secret: true
+  managerEmail:
+    description: Manager user email address
   managerPassword:
     description: Manager user password
     secret: true
+  userEmail:
+    description: Regular user email address
   userPassword:
     description: Regular user password
+    secret: true
+  smtpFrom:
+    description: SMTP From email address (must be verified in SendGrid)
+  smtpReplyTo:
+    description: SMTP Reply-To email address (optional)
+  smtpEnvelopeFrom:
+    description: SMTP Envelope From email address (optional)
+  sendGridApiKey:
+    description: SendGrid API Key for SMTP authentication
     secret: true
