@@ -33,6 +33,7 @@ using Clothy.OrderService.DAL.EventLog;
 using Clothy.ServiceDefaults.Middleware.Grpc;
 using Clothy.ServiceDefaults.Middleware.OpenTelemetry;
 using Clothy.ServiceDefaults.Middleware.Redis;
+using Clothy.OrderService.gRPC.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -76,6 +77,8 @@ builder.Services.AddScoped<IPickupPointRepository, PickupPointRepository>();
 
 // REGISTER UNIT OF WORK
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+builder.Services.AddGrpc();
 
 // AUTO MAPPER REGISTER
 builder.Services.AddAutoMapper(typeof(CityProfile).Assembly);
@@ -190,6 +193,8 @@ await app.PreloadCachesAsync();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseServiceDefaults();
+
+app.MapGrpcService<CheckUserPurchasedGrpcImpl>();
 
 if (app.Environment.IsDevelopment())
 {

@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using MassTransit;
 using Clothy.Shared.Events.ClotheItemEvents;
+using Clothy.CatalogService.BLL.DTOs.TagDTOs;
 
 namespace Clothy.CatalogService.BLL.Services
 {
@@ -114,7 +115,12 @@ namespace Clothy.CatalogService.BLL.Services
         {
             if (await unitOfWork.ClotheItems.IsSlugAlreadyExistsAsync(dto.Slug, null, cancellationToken)) throw new AlreadyExistsException("Clothe with this slug already exists");
 
-            int totalPercentage = dto.Materials.Sum(p => p.Percentage);
+            List<ClotheMaterialCreateDTO> distinctMaterials = dto.Materials
+                .GroupBy(m => m.MaterialId)
+                .Select(g => g.First())
+                .ToList();
+
+            int totalPercentage = distinctMaterials.Sum(p => p.Percentage);
             if (totalPercentage != 100) throw new InvalidMaterialPercentageException("Total material percentage must be exactly 100.");
 
             Brand? brand = await unitOfWork.Brands.GetByIdAsync(dto.BrandId, cancellationToken);
@@ -139,10 +145,12 @@ namespace Clothy.CatalogService.BLL.Services
                 });
             }
 
-            if (!await unitOfWork.Materials.AreAllExistAsync(dto.Materials.Select(material => material.MaterialId), cancellationToken)) throw new NotFoundException("One or more materials do not exist.");
+            if (!await unitOfWork.Materials.AreAllExistAsync(distinctMaterials.Select(material => material.MaterialId), cancellationToken)) throw new NotFoundException("One or more materials do not exist.");
             if (!await unitOfWork.Tags.AreAllExistAsync(dto.TagIds, cancellationToken)) throw new NotFoundException("One or more tags do not exist.");
 
-            clothe.ClotheMaterials = dto.Materials
+            List<Guid> distinctTags = dto.TagIds.Distinct().ToList();
+
+            clothe.ClotheMaterials = distinctMaterials
                 .Select(clotheMaterial => new ClotheMaterial 
                 { 
                     MaterialId = clotheMaterial.MaterialId, 
@@ -150,7 +158,7 @@ namespace Clothy.CatalogService.BLL.Services
                 })
                 .ToList();
 
-            clothe.ClotheTags = dto.TagIds
+            clothe.ClotheTags = distinctTags
                 .Select(tagId => new ClotheTag { 
                     TagId = tagId 
                 })

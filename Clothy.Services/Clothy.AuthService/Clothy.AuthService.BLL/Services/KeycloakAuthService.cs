@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using System.Net.Http.Headers;
 using Clothy.Shared.Helpers.Exceptions;
 using Clothy.Shared.Helpers.JWT;
+using Clothy.Shared.Cache.Interfaces;
 
 namespace Clothy.AuthService.BLL.Services
 {
@@ -22,6 +23,7 @@ namespace Clothy.AuthService.BLL.Services
         private ILogger<KeycloakAuthService> logger;
         private IUserClaimsExtractor userClaimsExtractor;
         private KeycloakSettings keycloakSettings;
+        
         private const string DEFAULT_PHOTO_URL = "https://res.cloudinary.com/dkdljnfja/image/upload/v1763818143/Profile_Avatar_cfazhc.png";
 
         public KeycloakAuthService(
@@ -72,7 +74,7 @@ namespace Clothy.AuthService.BLL.Services
             string json = JsonSerializer.Serialize(newUser);
             StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await httpClient.PostAsync(url, content, cancellationToken);
+            HttpResponseMessage response = await httpClient.PostAsync(url, content, cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -107,7 +109,7 @@ namespace Clothy.AuthService.BLL.Services
 
             string tokenUrl = $"{keycloakSettings.Url}/realms/{keycloakSettings.Realm}/protocol/openid-connect/token";
 
-            var formData = new Dictionary<string, string>
+            Dictionary<string, string> formData = new Dictionary<string, string>
             {
                 ["grant_type"] = "password",
                 ["client_id"] = keycloakSettings.ClientId,
@@ -117,12 +119,12 @@ namespace Clothy.AuthService.BLL.Services
                 ["scope"] = "openid profile email"
             };
 
-            var content = new FormUrlEncodedContent(formData);
-            var response = await httpClient.PostAsync(tokenUrl, content, cancellationToken);
+            FormUrlEncodedContent content = new FormUrlEncodedContent(formData);
+            HttpResponseMessage response = await httpClient.PostAsync(tokenUrl, content, cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {
-                var error = await response.Content.ReadAsStringAsync(cancellationToken);
+                string error = await response.Content.ReadAsStringAsync(cancellationToken);
                 logger.LogWarning("Login failed for email: {Email}. Error: {Error}", loginDTO.Email, error);
                 throw new UnauthorizedAccessException("Invalid email or password");
             }
@@ -141,7 +143,7 @@ namespace Clothy.AuthService.BLL.Services
 
             string tokenUrl = $"{keycloakSettings.Url}/realms/{keycloakSettings.Realm}/protocol/openid-connect/token";
 
-            var formData = new Dictionary<string, string>
+            Dictionary<string, string> formData = new Dictionary<string, string>
             {
                 ["grant_type"] = "refresh_token",
                 ["client_id"] = keycloakSettings.ClientId,
@@ -149,12 +151,12 @@ namespace Clothy.AuthService.BLL.Services
                 ["refresh_token"] = refreshTokenDTO.RefreshToken
             };
 
-            var content = new FormUrlEncodedContent(formData);
-            var response = await httpClient.PostAsync(tokenUrl, content, cancellationToken);
+            FormUrlEncodedContent content = new FormUrlEncodedContent(formData);
+            HttpResponseMessage response = await httpClient.PostAsync(tokenUrl, content, cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {
-                var error = await response.Content.ReadAsStringAsync(cancellationToken);
+                string error = await response.Content.ReadAsStringAsync(cancellationToken);
                 logger.LogWarning("Token refresh failed. Error: {Error}", error);
                 throw new UnauthorizedAccessException("Invalid refresh token");
             }
@@ -169,19 +171,19 @@ namespace Clothy.AuthService.BLL.Services
 
             string logoutUrl = $"{keycloakSettings.Url}/realms/{keycloakSettings.Realm}/protocol/openid-connect/logout";
 
-            var formData = new Dictionary<string, string>
+            Dictionary<string, string> formData = new Dictionary<string, string>
             {
                 ["client_id"] = keycloakSettings.ClientId,
                 ["client_secret"] = keycloakSettings.ClientSecret,
                 ["refresh_token"] = refreshToken
             };
 
-            var content = new FormUrlEncodedContent(formData);
-            var response = await httpClient.PostAsync(logoutUrl, content, cancellationToken);
+            FormUrlEncodedContent content = new FormUrlEncodedContent(formData);
+            HttpResponseMessage response = await httpClient.PostAsync(logoutUrl, content, cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {
-                var error = await response.Content.ReadAsStringAsync(cancellationToken);
+                string error = await response.Content.ReadAsStringAsync(cancellationToken);
                 logger.LogWarning("Logout failed. Error: {Error}", error);
             }
 
@@ -205,15 +207,15 @@ namespace Clothy.AuthService.BLL.Services
 
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
 
-            var actions = new[] { "UPDATE_PASSWORD" };
+            string[] actions = new[] { "UPDATE_PASSWORD" };
             string json = JsonSerializer.Serialize(actions);
             StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await httpClient.PutAsync(url, content, cancellationToken);
+            HttpResponseMessage response = await httpClient.PutAsync(url, content, cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {
-                var error = await response.Content.ReadAsStringAsync(cancellationToken);
+                string error = await response.Content.ReadAsStringAsync(cancellationToken);
                 logger.LogError("Failed to send password reset email: {Error}", error);
                 throw new Exception($"Failed to send password reset email: {error}");
             }
@@ -238,7 +240,7 @@ namespace Clothy.AuthService.BLL.Services
                 throw new UnauthorizedAccessException("Current password is incorrect");
             }
 
-            var adminToken = await GetAdminTokenAsync(cancellationToken);
+            string adminToken = await GetAdminTokenAsync(cancellationToken);
             string url = $"{keycloakSettings.Url}/admin/realms/{keycloakSettings.Realm}/users/{userId}/reset-password";
 
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
@@ -253,11 +255,11 @@ namespace Clothy.AuthService.BLL.Services
             string json = JsonSerializer.Serialize(passwordData);
             StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await httpClient.PutAsync(url, content, cancellationToken);
+            HttpResponseMessage response = await httpClient.PutAsync(url, content, cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {
-                var error = await response.Content.ReadAsStringAsync(cancellationToken);
+                string error = await response.Content.ReadAsStringAsync(cancellationToken);
                 logger.LogError("Failed to reset password: {Error}", error);
                 throw new Exception($"Failed to reset password: {error}");
             }
@@ -281,36 +283,36 @@ namespace Clothy.AuthService.BLL.Services
 
         private async Task<string> GetAdminTokenAsync(CancellationToken cancellationToken = default)
         {
-            var tokenUrl = $"{keycloakSettings.Url}/realms/{keycloakSettings.Realm}/protocol/openid-connect/token";
+            string tokenUrl = $"{keycloakSettings.Url}/realms/{keycloakSettings.Realm}/protocol/openid-connect/token";
 
             httpClient.DefaultRequestHeaders.Authorization = null;
 
-            var formData = new Dictionary<string, string>
+            Dictionary<string, string> formData = new Dictionary<string, string>
             {
                 ["grant_type"] = "client_credentials",
                 ["client_id"] = keycloakSettings.ClientId,
                 ["client_secret"] = keycloakSettings.ClientSecret
             };
 
-            var content = new FormUrlEncodedContent(formData);
-            var response = await httpClient.PostAsync(tokenUrl, content, cancellationToken);
+            FormUrlEncodedContent content = new FormUrlEncodedContent(formData);
+            HttpResponseMessage response = await httpClient.PostAsync(tokenUrl, content, cancellationToken);
             response.EnsureSuccessStatusCode();
 
-            var json = await response.Content.ReadAsStringAsync(cancellationToken);
-            var tokenResponse = JsonSerializer.Deserialize<JsonElement>(json);
+            string json = await response.Content.ReadAsStringAsync(cancellationToken);
+            JsonElement tokenResponse = JsonSerializer.Deserialize<JsonElement>(json);
             return tokenResponse.GetProperty("access_token").GetString()!;
         }
 
         internal async Task<string> GetUserIdByEmailAsync(string email, string adminToken, CancellationToken cancellationToken = default)
         {
-            var url = $"{keycloakSettings.Url}/admin/realms/{keycloakSettings.Realm}/users?email={email}&exact=true";
+            string url = $"{keycloakSettings.Url}/admin/realms/{keycloakSettings.Realm}/users?email={email}&exact=true";
 
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
-            var response = await httpClient.GetAsync(url, cancellationToken);
+            HttpResponseMessage response = await httpClient.GetAsync(url, cancellationToken);
             response.EnsureSuccessStatusCode();
 
             string json = await response.Content.ReadAsStringAsync(cancellationToken);
-            var users = JsonSerializer.Deserialize<JsonElement[]>(json);
+            JsonElement[]? users = JsonSerializer.Deserialize<JsonElement[]>(json);
 
             if (users == null || users.Length == 0) return string.Empty;
 
@@ -322,7 +324,7 @@ namespace Clothy.AuthService.BLL.Services
             string url = $"{keycloakSettings.Url}/admin/realms/{keycloakSettings.Realm}/users/{userId}/send-verify-email";
 
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
-            var response = await httpClient.PutAsync(url, null, cancellationToken);
+            HttpResponseMessage response = await httpClient.PutAsync(url, null, cancellationToken);
             response.EnsureSuccessStatusCode();
         }
 
@@ -331,19 +333,19 @@ namespace Clothy.AuthService.BLL.Services
             string roleUrl = $"{keycloakSettings.Url}/admin/realms/{keycloakSettings.Realm}/roles/{roleName}";
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
 
-            var roleResponse = await httpClient.GetAsync(roleUrl, cancellationToken);
+            HttpResponseMessage roleResponse = await httpClient.GetAsync(roleUrl, cancellationToken);
             roleResponse.EnsureSuccessStatusCode();
 
-            var roleJson = await roleResponse.Content.ReadAsStringAsync(cancellationToken);
-            var role = JsonSerializer.Deserialize<JsonElement>(roleJson);
+            string roleJson = await roleResponse.Content.ReadAsStringAsync(cancellationToken);
+            JsonElement role = JsonSerializer.Deserialize<JsonElement>(roleJson);
 
             string assignUrl = $"{keycloakSettings.Url}/admin/realms/{keycloakSettings.Realm}/users/{userId}/role-mappings/realm";
 
             var roles = new[] { new { id = role.GetProperty("id").GetString(), name = roleName } };
-            var json = JsonSerializer.Serialize(roles);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            string json = JsonSerializer.Serialize(roles);
+            StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await httpClient.PostAsync(assignUrl, content, cancellationToken);
+            HttpResponseMessage response = await httpClient.PostAsync(assignUrl, content, cancellationToken);
             response.EnsureSuccessStatusCode();
         }
     }

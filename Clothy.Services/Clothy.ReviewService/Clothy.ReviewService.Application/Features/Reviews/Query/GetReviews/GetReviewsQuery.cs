@@ -16,12 +16,14 @@ namespace Clothy.ReviewService.Application.Features.Reviews.Query.GetReviews
         public ReviewQueryParameters QueryParameters { get; }
         public Guid? UserId { get; }
         public bool IsAdmin { get; }
+        public bool IsManager { get; }
 
-        public GetReviewsQuery(ReviewQueryParameters queryParameters, Guid? userId = null, bool isAdmin = false)
+        public GetReviewsQuery(ReviewQueryParameters queryParameters, Guid? userId = null, bool isAdmin = false, bool isManager = false)
         {
             QueryParameters = queryParameters;
             UserId = userId;
             IsAdmin = isAdmin;
+            IsManager = isManager;
         }
     }
 }

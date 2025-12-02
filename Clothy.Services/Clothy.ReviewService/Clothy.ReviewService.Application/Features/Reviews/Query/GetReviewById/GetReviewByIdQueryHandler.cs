@@ -24,6 +24,8 @@ namespace Clothy.ReviewService.Application.Features.Reviews.Query.GetReviewById
             Review? review = await reviewRepository.GetByIdAsync(request.ReviewId, cancellationToken);
             if (review == null) throw new NotFoundException($"Review with ID {request.ReviewId} not found!");
 
+            if (!request.IsAdmin && !request.IsManager && review.Status == ReviewStatus.Pending) throw new ForbiddenException("You do not have permission to access this review.");
+
             return review;
         }
     }

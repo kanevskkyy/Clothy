@@ -22,6 +22,8 @@ namespace Clothy.ReviewService.Application.Features.Reviews.Query.GetReviews
 
         public async Task<PagedList<Review>> Handle(GetReviewsQuery request, CancellationToken cancellationToken)
         {
+            if (!request.IsAdmin && !request.IsManager) request.QueryParameters.Status = ReviewStatus.Confirmed;
+
             return await reviewRepository.GetReviewsAsync(request.QueryParameters, cancellationToken);
         }
     }

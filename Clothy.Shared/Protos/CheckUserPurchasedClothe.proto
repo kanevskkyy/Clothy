@@ -1,0 +1,14 @@
+﻿syntax = "proto3";
+
+message CheckUserPurchasedRequest{
+	string userId = 1;
+	string clotheId = 2;
+}
+
+message CheckUserPurchasedResponse{
+	bool purchased = 1;
+}
+
+service CheckUserPurchasedGrpc{
+	rpc CheckUserPurchased(CheckUserPurchasedRequest) returns (CheckUserPurchasedResponse);
+} 

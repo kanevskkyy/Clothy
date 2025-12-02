@@ -46,14 +46,16 @@ namespace Clothy.ReviewService.API.Controllers
             
             Guid? userId = null;
             bool isAdmin = false;
+            bool isManager = false;
 
             if (User.Identity?.IsAuthenticated == true)
             {
                 userId = userClaimsExtractor.GetUserId(User);
                 isAdmin = userClaimsExtractor.IsInRole(User, "Admin");
+                isManager = userClaimsExtractor.IsInRole(User, "Manager");
             }
 
-            GetReviewsQuery query = new GetReviewsQuery(queryParams, userId, isAdmin);
+            GetReviewsQuery query = new GetReviewsQuery(queryParams, userId, isAdmin, isManager);
             PagedList<Review> result = await mediator.Send(query, cancellationToken);
 
             return Ok(result);
@@ -69,9 +71,19 @@ namespace Clothy.ReviewService.API.Controllers
         public async Task<IActionResult> GetReviewById(string id, CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching review with ID: {Id}", id);
-            GetReviewByIdQuery query = new GetReviewByIdQuery(id);
-            
-            Review result = await mediator.Send(query, cancellationToken);
+
+            bool isAdmin = false;
+            bool isManager = false;
+
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                isAdmin = userClaimsExtractor.IsInRole(User, "Admin");
+                isManager = userClaimsExtractor.IsInRole(User, "Manager");
+            }
+
+            GetReviewByIdQuery query = new GetReviewByIdQuery(id, isAdmin, isManager);
+
+            Review? result = await mediator.Send(query, cancellationToken);
             return Ok(result);
         }
 

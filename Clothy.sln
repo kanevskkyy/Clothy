@@ -91,6 +91,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.AuthService.API", "C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.AuthService.BLL", "Clothy.Services\Clothy.AuthService\Clothy.AuthService.BLL\Clothy.AuthService.BLL.csproj", "{3976F328-36F5-4F3C-8112-61A19D1255D3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.OrderService.gRPC.Server", "Clothy.Services\Clothy.OrderService\Clothy.OrderService.gRPC.Server\Clothy.OrderService.gRPC.Server.csproj", "{EE161405-1234-43E0-AECC-6DE787112C75}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -533,6 +535,18 @@ Global
 		{3976F328-36F5-4F3C-8112-61A19D1255D3}.Release|x64.Build.0 = Release|Any CPU
 		{3976F328-36F5-4F3C-8112-61A19D1255D3}.Release|x86.ActiveCfg = Release|Any CPU
 		{3976F328-36F5-4F3C-8112-61A19D1255D3}.Release|x86.Build.0 = Release|Any CPU
+		{EE161405-1234-43E0-AECC-6DE787112C75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE161405-1234-43E0-AECC-6DE787112C75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE161405-1234-43E0-AECC-6DE787112C75}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EE161405-1234-43E0-AECC-6DE787112C75}.Debug|x64.Build.0 = Debug|Any CPU
+		{EE161405-1234-43E0-AECC-6DE787112C75}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EE161405-1234-43E0-AECC-6DE787112C75}.Debug|x86.Build.0 = Debug|Any CPU
+		{EE161405-1234-43E0-AECC-6DE787112C75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE161405-1234-43E0-AECC-6DE787112C75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE161405-1234-43E0-AECC-6DE787112C75}.Release|x64.ActiveCfg = Release|Any CPU
+		{EE161405-1234-43E0-AECC-6DE787112C75}.Release|x64.Build.0 = Release|Any CPU
+		{EE161405-1234-43E0-AECC-6DE787112C75}.Release|x86.ActiveCfg = Release|Any CPU
+		{EE161405-1234-43E0-AECC-6DE787112C75}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -575,6 +589,7 @@ Global
 		{2578A251-2EA8-4E6B-92C5-E680974D24E8} = {C77944B0-0D3A-86CF-E301-0389399A2286}
 		{9C84E2C0-2341-278D-FF49-56010E1C12A0} = {2578A251-2EA8-4E6B-92C5-E680974D24E8}
 		{3976F328-36F5-4F3C-8112-61A19D1255D3} = {2578A251-2EA8-4E6B-92C5-E680974D24E8}
+		{EE161405-1234-43E0-AECC-6DE787112C75} = {5C3EB1F2-72C7-87C2-61E6-FC27803A142B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F15FA95A-2976-493B-AA4A-033ECCBFD759}

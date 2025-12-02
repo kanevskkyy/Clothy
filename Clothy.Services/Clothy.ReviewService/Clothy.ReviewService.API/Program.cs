@@ -93,6 +93,14 @@ builder.Services.AddMassTransit(x =>
 builder.Services.AddEndpointsApiExplorer();
 
 // GRPC
+builder.Services.AddScoped<ICheckUserPurchasedClotheGrpcClient, CheckUserPurchasedClotheGrpcClient>();
+builder.Services.AddConfiguredGrpcClient<CheckUserPurchasedGrpc.CheckUserPurchasedGrpcClient>("orders")
+    .AddStandardResilienceHandler(resilience =>
+    {
+        resilience.Retry.MaxRetryAttempts = 3;
+        resilience.CircuitBreaker.FailureRatio = 0.4;
+    });
+
 builder.Services.AddScoped<IClotheItemIdValidatorGrpcClient, ClotheItemIdValidatorGrpcClient>();
 builder.Services.AddConfiguredGrpcClient<ClotheItemIdValidator.ClotheItemIdValidatorClient>("catalog")
     .AddStandardResilienceHandler(resilience =>

@@ -19,9 +19,13 @@ namespace Clothy.ReviewService.Application.Features.Reviews.Commands.CreateRevie
     {
         private IReviewRepository reviewRepository;
         private IClotheItemIdValidatorGrpcClient clotheItemIdValidatorGrpcClient;
+        private ICheckUserPurchasedClotheGrpcClient checkUserPurchasedClotheGrpcClient;
         private Counter<long> reviewsCreated;
 
-        public CreateReviewCommandHandler(IReviewRepository reviewRepository, IClotheItemIdValidatorGrpcClient clotheItemIdValidatorGrpcClient, Meter meter)
+        public CreateReviewCommandHandler(IReviewRepository reviewRepository, 
+            IClotheItemIdValidatorGrpcClient clotheItemIdValidatorGrpcClient, 
+            Meter meter, 
+            ICheckUserPurchasedClotheGrpcClient checkUserPurchasedClotheGrpcClient)
         {
             this.reviewRepository = reviewRepository;
             this.clotheItemIdValidatorGrpcClient = clotheItemIdValidatorGrpcClient;
@@ -29,6 +33,7 @@ namespace Clothy.ReviewService.Application.Features.Reviews.Commands.CreateRevie
                 "clothy.reviewservice.reviews-created",
                 "count",
                 "Total numbers of reviews created");
+            this.checkUserPurchasedClotheGrpcClient = checkUserPurchasedClotheGrpcClient;
         }
 
         public async Task<Review> Handle(CreateReviewCommand request, CancellationToken cancellationToken)
@@ -41,6 +46,14 @@ namespace Clothy.ReviewService.Application.Features.Reviews.Commands.CreateRevie
             ClotheItemResponse clotheItemResponse = await clotheItemIdValidatorGrpcClient.ValidateClotheItemIdAsync(clotheItemIdToValidate);
 
             if (!clotheItemResponse.IsValid) throw new ValidationFailedException($"Clothe item ID validation failed: {clotheItemResponse.ErrorMessage}");
+
+            CheckUserPurchasedRequest purchasedRequest = new CheckUserPurchasedRequest()
+            { 
+                UserId = request.UserId.ToString(), 
+                ClotheId = request.ClotheItemId.ToString()
+            };
+            CheckUserPurchasedResponse userPurchasedResponse = await checkUserPurchasedClotheGrpcClient.CheckUserPurchasedAsync(purchasedRequest);
+            if (!userPurchasedResponse.Purchased) throw new ForbiddenException($"You cannot rate clothes that you did not order!");
 
             bool alreadyExists = await reviewRepository.HasUserReviewedClotheAsync(review.User.UserId, review.ClotheItemId, cancellationToken);
             if (alreadyExists) throw new AlreadyExistsException("User has already reviewed this clothe!");

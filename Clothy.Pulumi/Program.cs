@@ -38,7 +38,6 @@ return await Deployment.RunAsync(() =>
         OfflineSessionIdleTimeout = "720h",
         OfflineSessionMaxLifespan = "1440h",
 
-        // SMTP налаштування для SendGrid
         SmtpServer = new RealmSmtpServerArgs
         {
             Host = "smtp.sendgrid.net",
