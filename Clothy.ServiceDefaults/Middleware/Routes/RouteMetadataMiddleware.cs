@@ -8,13 +8,13 @@ namespace Clothy.ServiceDefaults.Middleware.Routes
 {
     public class RouteMetadataMiddleware
     {
-        private readonly RequestDelegate _next;
+        private RequestDelegate next;
         private const long MAX_REQUEST_SIZE = 10 * 1024 * 1024;
-        private static readonly MemoryCache _rateLimitCache = new(new MemoryCacheOptions());
+        private static MemoryCache rateLimitCache = new(new MemoryCacheOptions());
 
         public RouteMetadataMiddleware(RequestDelegate next)
         {
-            _next = next;
+            this.next = next;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -26,10 +26,10 @@ namespace Clothy.ServiceDefaults.Middleware.Routes
                 return;
             }
 
-            var endpoint = context.GetEndpoint();
+            Endpoint? endpoint = context.GetEndpoint();
             if (endpoint != null)
             {
-                var metadata = endpoint.Metadata.GetMetadata<IDictionary<string, string>>();
+                IDictionary<string, string>? metadata = endpoint.Metadata.GetMetadata<IDictionary<string, string>>();
                 if (metadata != null)
                 {
                     if (metadata.TryGetValue("priority", out var priority))
@@ -60,7 +60,7 @@ namespace Clothy.ServiceDefaults.Middleware.Routes
                         if (int.TryParse(rateLimit, out var limit))
                         {
                             string clientKey = GetClientKey(context);
-                            int counter = _rateLimitCache.GetOrCreate(clientKey, entry =>
+                            int counter = rateLimitCache.GetOrCreate(clientKey, entry =>
                             {
                                 entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1);
                                 return 0;
@@ -74,7 +74,7 @@ namespace Clothy.ServiceDefaults.Middleware.Routes
                             }
                             else
                             {
-                                _rateLimitCache.Set(clientKey, counter + 1, TimeSpan.FromMinutes(1));
+                                rateLimitCache.Set(clientKey, counter + 1, TimeSpan.FromMinutes(1));
                                 context.Items["RouteRateLimit"] = limit;
                             }
                         }
@@ -82,7 +82,7 @@ namespace Clothy.ServiceDefaults.Middleware.Routes
                 }
             }
 
-            await _next(context);
+            await next(context);
         }
 
         private string GetClientKey(HttpContext context)

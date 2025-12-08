@@ -35,6 +35,7 @@
 		<ProjectReference Include="..\Clothy.Services\Clothy.CatalogService\Clothy.CatalogService.API\Clothy.CatalogService.API.csproj" />
 		<ProjectReference Include="..\Clothy.Services\Clothy.CatalogService\Clothy.CatalogService.DAL\Clothy.CatalogService.DAL.csproj" />
 		<ProjectReference Include="..\Clothy.Services\Clothy.CatalogService\Clothy.CatalogService.SeedData\Clothy.CatalogService.SeedData.csproj" />
+		<ProjectReference Include="..\Clothy.Services\Clothy.IdentityServer\Clothy.IdentityServer.API\Clothy.IdentityServer.API.csproj" />
 		<ProjectReference Include="..\Clothy.Services\Clothy.OrderService\Clothy.OrderService.API\Clothy.OrderService.API.csproj" />
 		<ProjectReference Include="..\Clothy.Services\Clothy.OrderService\Clothy.OrderService.SeedData\Clothy.OrderService.SeedData.csproj" />
 		<ProjectReference Include="..\Clothy.Services\Clothy.ReviewService\Clothy.ReviewService.API\Clothy.ReviewService.API.csproj" />

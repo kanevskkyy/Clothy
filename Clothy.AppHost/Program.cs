@@ -1,6 +1,5 @@
 using Projects;
 using DotNetEnv;
-using k8s.Models;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
@@ -17,6 +16,7 @@ var keycloakAdminPassword = builder.AddParameter("keycloak-admin-password", secr
 
 var postgres = builder.AddPostgres("clothy-postgres", password: postgresPassword)
     .WithImage("postgres:16")
+    .WithPgAdmin()
     .WithDataVolume("pgdata")
     .WithBindMount("./Scripts", "/docker-entrypoint-initdb.d");
 
@@ -27,6 +27,10 @@ var postgresCatalogDB = postgres.AddDatabase("ClothyCatalogDb");
 var postgresOrdersDB = postgres.AddDatabase("ClothyOrder");
 var postgresUsersDB = postgres.AddDatabase("ClothyUsers");
 
+// Duende IdentityServer (Unused due to keycloak)
+// var identityServerDb = postgres.AddDatabase("IdentityServerDb");
+// 
+
 var mongo = builder.AddMongoDB("clothy-mongo")
     .WithImage("mongo:7")
     .WithDataVolume("mongodata")
@@ -35,7 +39,6 @@ var mongo = builder.AddMongoDB("clothy-mongo")
 var rabbitmq = builder.AddRabbitMQ("rabbitmq", rabbitMQUsername, rabbitMQpassword)
     .WithManagementPlugin()
     .WithDataVolume();
-
 
 var keycloak = builder.AddKeycloak("keycloak", port: 8080, keycloakAdminUsername, keycloakAdminPassword)
     .WithDataVolume();
@@ -50,6 +53,12 @@ var authService = builder.AddProject<Clothy_AuthService_API>("auth")
     .WithEnvironment("KEYCLOAK__CLIENTID", Environment.GetEnvironmentVariable("KEYCLOAK__CLIENTID"))
     .WithEnvironment("KEYCLOAK__CLIENTSECRET", Environment.GetEnvironmentVariable("KEYCLOAK__CLIENTSECRET"))
     .WaitFor(keycloak);
+
+// UNUSED
+//var identityServer = builder.AddProject<Clothy_IdentityServer_API>("identity")
+//    .WithReference(identityServerDb)
+//    .WaitFor(identityServerDb);
+//
 
 var catalogService = builder.AddProject<Clothy_CatalogService_API>("catalog")
     .WithReference(postgresCatalogDB)
