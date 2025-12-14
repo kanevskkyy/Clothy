@@ -1,0 +1,75 @@
+﻿@using Clothy.Shared.Events.EmailEvents.OrderCreated
+@model OrderCreatedEmailEvent
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clothy - Order Summary</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; background-color: #f3f4f6;">
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f3f4f6;">
+        <tr>
+            <td style="padding: 20px 0;">
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="700" style="margin: 0 auto; background-color: #ffffff; border-radius: 14px; max-width: 100%;">
+                    <tr>
+                        <td style="padding: 25px 25px 20px 25px;">
+                            <h1 style="margin: 0; font-size: 26px; font-weight: 700; color: #111111;">Clothy - Order Summary</h1>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding: 0 25px;">
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                @foreach (OrderItemEmailEvent orderItemModel in Model.Items)
+                                {
+                                    <tr>
+                                        <td style="padding: 18px 0; border-bottom: 1px solid #e5e7eb;">
+                                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                                <tr>
+                                                    <td style="vertical-align: top;">
+                                                        <h2 style="margin: 0 0 6px 0; font-size: 18px; font-weight: 600; color: #111111;">@orderItemModel.ClotheName</h2>
+                                                        <p style="margin: 0; font-size: 14px; color: #6b7280; line-height: 1.5;">
+                                                            Size: @orderItemModel.Size<br>
+                                                            Color: @orderItemModel.Color<br>
+                                                            Quantity: @orderItemModel.Quantity
+                                                        </p>
+                                                    </td>
+
+                                                    <td width="80" style="vertical-align: top; text-align: right; white-space: nowrap;">
+                                                        <span style="font-size: 16px; font-weight: 600; color: #111111;">$@orderItemModel.Price.ToString("0.00")</span>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                }
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding: 20px 25px;">
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                <tr>
+                                    <td style="font-size: 16px; font-weight: 600; color: #111111;">Total</td>
+                                    <td style="font-size: 16px; font-weight: 600; color: #111111; text-align: right;">$@Model.TotalPrice.ToString("0.00")</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding: 30px 25px 25px 25px; text-align: center;">
+                            <p style="margin: 0; font-size: 14px; color: #6b7280; line-height: 1.5;">
+                                Stay stylish,<br>
+                                — The Clothy Team <span style="font-size: 12px;">🖤</span>
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

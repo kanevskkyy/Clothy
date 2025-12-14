@@ -11,5 +11,6 @@ namespace Clothy.Shared.Events.UserEvents
         public Guid UserId { get; init; }
         public string? FirstName { get; init; }
         public string? LastName { get; init; }
+        public string? PhotoUrl { get; init; }
     }
 }

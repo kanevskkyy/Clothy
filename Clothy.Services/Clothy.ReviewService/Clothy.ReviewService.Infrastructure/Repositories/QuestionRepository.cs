@@ -1,15 +1,17 @@
-﻿using System;
+﻿using Clothy.ReviewService.Domain.Entities;
+using Clothy.ReviewService.Domain.Entities.QueryParameters;
+using Clothy.ReviewService.Domain.Helpers;
+using Clothy.ReviewService.Domain.Interfaces;
+using Clothy.ReviewService.Infrastructure.DB;
+using Clothy.Shared.Events.UserEvents;
+using Clothy.Shared.Helpers;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Clothy.ReviewService.Domain.Entities.QueryParameters;
-using Clothy.ReviewService.Domain.Entities;
-using Clothy.ReviewService.Domain.Helpers;
-using Clothy.ReviewService.Infrastructure.DB;
-using MongoDB.Driver;
-using Clothy.Shared.Helpers;
-using Clothy.ReviewService.Domain.Interfaces;
 
 namespace Clothy.ReviewService.Infrastructure.Repositories
 {
@@ -103,6 +105,49 @@ namespace Clothy.ReviewService.Infrastructure.Repositories
             );
 
             await collection.UpdateManyAsync(filter, update, cancellationToken: cancellationToken);
+        }
+
+        public async Task UpdateUserInfoAsync(UserUpdatedEvent userUpdatedEvent, bool newPhoto = false, CancellationToken cancellationToken = default)
+        {
+            var questionByUserId = Builders<Question>.Filter.Eq(temp => temp.User.UserId, userUpdatedEvent.UserId);
+            var questionUpdate = Builders<Question>.Update
+                .Set(user => user.User.FirstName, userUpdatedEvent.FirstName)
+                .Set(user => user.User.LastName, userUpdatedEvent.LastName)
+                .CurrentDate(date => date.UpdatedAt);
+
+            if (newPhoto) questionUpdate = questionUpdate.Set(user => user.User.PhotoUrl, userUpdatedEvent.PhotoUrl);
+
+            await collection.UpdateManyAsync(questionByUserId, questionUpdate, cancellationToken: cancellationToken);
+
+            var answerByUserId = Builders<Question>.Filter.ElemMatch(
+                q => q.Answers,
+                a => a.User.UserId == userUpdatedEvent.UserId
+            );
+
+            var answerUpdate = Builders<Question>.Update
+                .Set("Answers.$[elem].User.FirstName", userUpdatedEvent.FirstName)
+                .Set("Answers.$[elem].User.LastName", userUpdatedEvent.LastName)
+                .CurrentDate(date => date.UpdatedAt);
+
+            if (newPhoto)
+                answerUpdate = answerUpdate.Set("Answers.$[elem].User.PhotoUrl", userUpdatedEvent.PhotoUrl);
+
+            List<ArrayFilterDefinition> arrayFilters = new List<ArrayFilterDefinition>
+            {
+                new BsonDocumentArrayFilterDefinition<BsonDocument>(
+                    new BsonDocument { 
+                        { 
+                            "elem.User.UserId", BsonValue.Create(userUpdatedEvent.UserId) 
+                        } 
+                    }
+                )
+            };
+
+            UpdateOptions updateOptions = new UpdateOptions { 
+                ArrayFilters = arrayFilters 
+            };
+
+            await collection.UpdateManyAsync(answerByUserId, answerUpdate, updateOptions, cancellationToken);
         }
     }
 }

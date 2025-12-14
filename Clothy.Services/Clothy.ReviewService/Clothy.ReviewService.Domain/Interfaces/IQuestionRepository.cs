@@ -7,12 +7,14 @@ using Clothy.ReviewService.Domain.Entities.QueryParameters;
 using Clothy.ReviewService.Domain.Entities;
 using Clothy.Shared.Helpers;
 using Microsoft.AspNetCore.Authentication.OAuth.Claims;
+using Clothy.Shared.Events.UserEvents;
 
 namespace Clothy.ReviewService.Domain.Interfaces
 {
     public interface IQuestionRepository : IGenericRepository<Question>
     {
-        Task DeleteAllQuestionByUserIdAsync (Guid userId, CancellationToken cancellationToken = default);
+        Task UpdateUserInfoAsync(UserUpdatedEvent userUpdatedEvent, bool newPhoto = false, CancellationToken cancellationToken = default);
+        Task DeleteAllQuestionByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
         Task DeleteAllQuestionsByClotheId(Guid clotheId, CancellationToken cancellationToken = default);
         Task UpdateQuestionAsync(Question question, CancellationToken cancellationToken = default);
         Task<PagedList<Question>> GetQuestionsAsync(QuestionQueryParameters queryParameters, CancellationToken cancellationToken = default);

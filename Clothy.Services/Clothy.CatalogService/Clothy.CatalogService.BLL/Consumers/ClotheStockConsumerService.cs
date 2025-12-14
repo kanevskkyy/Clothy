@@ -19,7 +19,10 @@ namespace Clothy.CatalogService.BLL.Consumers
         private ILogger<ClotheStockConsumerService> logger;
         private IEventLogService eventLogService;
 
-        public ClotheStockConsumerService(IClothesStockService clothesStockService, ILogger<ClotheStockConsumerService> logger, IEventLogService eventLogService)
+        public ClotheStockConsumerService(
+            IClothesStockService clothesStockService, 
+            ILogger<ClotheStockConsumerService> logger, 
+            IEventLogService eventLogService)
         {
             this.eventLogService = eventLogService;
             this.clothesStockService = clothesStockService;

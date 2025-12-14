@@ -1,5 +1,5 @@
-﻿using System.Reflection;
-using Clothy.OrderService.API.Middleware;
+﻿using Clothy.OrderService.API.Middleware;
+using Clothy.OrderService.BLL.Consumers;
 using Clothy.OrderService.BLL.FluentValidation.OrderStatusValidation;
 using Clothy.OrderService.BLL.Interfaces;
 using Clothy.OrderService.BLL.Mapper;
@@ -7,33 +7,35 @@ using Clothy.OrderService.BLL.RedisCache.CityCache;
 using Clothy.OrderService.BLL.RedisCache.DeliveryProviderCache;
 using Clothy.OrderService.BLL.RedisCache.OrdersCache;
 using Clothy.OrderService.BLL.RedisCache.OrderStatusCache;
+using Clothy.OrderService.BLL.RedisCache.PickupPointsCache;
+using Clothy.OrderService.BLL.RedisCache.RegionCache;
+using Clothy.OrderService.BLL.RedisCache.SettlementCache;
 using Clothy.OrderService.BLL.Services;
 using Clothy.OrderService.DAL.ConnectionFactory;
+using Clothy.OrderService.DAL.EventLog;
 using Clothy.OrderService.DAL.Interfaces;
 using Clothy.OrderService.DAL.Repositories;
 using Clothy.OrderService.DAL.UOW;
 using Clothy.OrderService.Domain.Entities;
-using Clothy.Shared.Cache.Interfaces;
-using Clothy.Shared.Helpers;
-using FluentValidation;
-using Clothy.OrderService.gRPC.Client.Services.Interfaces;
 using Clothy.OrderService.gRPC.Client.Services;
-using FluentValidation.AspNetCore;
-using Clothy.OrderService.BLL.RedisCache.RegionCache;
-using Clothy.OrderService.BLL.RedisCache.PickupPointsCache;
-using Clothy.OrderService.BLL.RedisCache.SettlementCache;
-using System.Text.Json;
-using System.Diagnostics.Metrics;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using MassTransit;
-using Clothy.OrderService.BLL.Consumers;
-using Clothy.Shared.Events.OrderEvents;
-using Clothy.Shared.Events;
-using Clothy.OrderService.DAL.EventLog;
+using Clothy.OrderService.gRPC.Client.Services.Interfaces;
+using Clothy.OrderService.gRPC.Server.Services;
 using Clothy.ServiceDefaults.Middleware.Grpc;
 using Clothy.ServiceDefaults.Middleware.OpenTelemetry;
 using Clothy.ServiceDefaults.Middleware.Redis;
-using Clothy.OrderService.gRPC.Server.Services;
+using Clothy.Shared.Cache.Interfaces;
+using Clothy.Shared.Events;
+using Clothy.Shared.Events.EmailEvents.OrderCreated;
+using Clothy.Shared.Events.EmailEvents.OrderDelivered;
+using Clothy.Shared.Events.OrderEvents;
+using Clothy.Shared.Helpers;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using MassTransit;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using System.Diagnostics.Metrics;
+using System.Reflection;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -126,6 +128,8 @@ builder.Services.AddMassTransit(x =>
         });
 
         cfg.Message<OrderCreatedEvent>(e => e.SetEntityName("order-created"));
+        cfg.Message<OrderDeliveredEmailEvent>(e => e.SetEntityName("send-notification-order-delivered"));
+        cfg.Message<OrderCreatedEmailEvent>(e => e.SetEntityName("send-notification-order-created"));
     });
 });
 //
@@ -135,25 +139,12 @@ builder.Services.AddCloudinary(builder.Configuration);
 //
 
 //REDIS
-builder.Services.AddTransient<ICachePreloader, OrderCachePreloader>();
 builder.Services.AddTransient<IEntityCacheInvalidationService<Order>, OrderCacheInvalidationService>();
-
-builder.Services.AddTransient<ICachePreloader, OrderStatusCachePreloader>();
 builder.Services.AddTransient<IEntityCacheInvalidationService<OrderStatus>, OrderStatusCacheInvalidationService>();
-
-builder.Services.AddTransient<ICachePreloader, DeliveryProviderCachePreloader>();
 builder.Services.AddTransient<IEntityCacheInvalidationService<DeliveryProvider>, DeliveryProviderCacheInvalidationService>();
-
-builder.Services.AddTransient<ICachePreloader, CityCachePreloader>();
 builder.Services.AddTransient<IEntityCacheInvalidationService<City>, CityCacheInvalidationService>();
-
-builder.Services.AddTransient<ICachePreloader, RegionCachePreloader>();
 builder.Services.AddTransient<IEntityCacheInvalidationService<Region>, RegionCacheInvalidationService>();
-
-builder.Services.AddTransient<ICachePreloader, PickupPointCachePreloader>();
 builder.Services.AddTransient<IEntityCacheInvalidationService<PickupPoints>, PickupPointCacheInvalidationService>();
-
-builder.Services.AddTransient<ICachePreloader, SettlementCachePreloader>();
 builder.Services.AddTransient<IEntityCacheInvalidationService<Settlement>, SettlementCacheInvalidationService>();
 //
 
@@ -188,8 +179,6 @@ builder.Services.AddSingleton(meter);
 //
 
 var app = builder.Build();
-
-await app.PreloadCachesAsync();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseServiceDefaults();

@@ -118,6 +118,7 @@ CREATE TABLE delivery_detail (
     firstname VARCHAR(100) NOT NULL,
     lastname VARCHAR(100) NOT NULL,
     middlename VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL CHECK (email LIKE '%@%'),
     createdat TIMESTAMP WITHOUT TIME ZONE DEFAULT (NOW() AT TIME ZONE 'utc'),
     updatedat TIMESTAMP WITHOUT TIME ZONE,
     CONSTRAINT fk_deliverydetail_order FOREIGN KEY (orderid)

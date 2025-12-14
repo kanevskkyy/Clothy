@@ -97,6 +97,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Clothy.IdentityServer", "Cl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.IdentityServer.API", "Clothy.Services\Clothy.IdentityServer\Clothy.IdentityServer.API\Clothy.IdentityServer.API.csproj", "{A1DC74B8-F634-2B95-E1FD-25C94050A0AF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Clothy.NotificationService", "Clothy.NotificationService", "{F2876FE3-8296-45D9-9AB7-B55995E83A81}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.NotificationService.API", "Clothy.Services\Clothy.NotificationService\Clothy.NotificationService.API\Clothy.NotificationService.API.csproj", "{5E667C18-9E0D-5982-8ED8-6F9F5D911883}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.NotificationService.BLL", "Clothy.Services\Clothy.NotificationService\Clothy.NotificationService.BLL\Clothy.NotificationService.BLL.csproj", "{0E9D6269-26FC-4FB4-92CF-0A4EE797314B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -563,6 +569,30 @@ Global
 		{A1DC74B8-F634-2B95-E1FD-25C94050A0AF}.Release|x64.Build.0 = Release|Any CPU
 		{A1DC74B8-F634-2B95-E1FD-25C94050A0AF}.Release|x86.ActiveCfg = Release|Any CPU
 		{A1DC74B8-F634-2B95-E1FD-25C94050A0AF}.Release|x86.Build.0 = Release|Any CPU
+		{5E667C18-9E0D-5982-8ED8-6F9F5D911883}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E667C18-9E0D-5982-8ED8-6F9F5D911883}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E667C18-9E0D-5982-8ED8-6F9F5D911883}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5E667C18-9E0D-5982-8ED8-6F9F5D911883}.Debug|x64.Build.0 = Debug|Any CPU
+		{5E667C18-9E0D-5982-8ED8-6F9F5D911883}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5E667C18-9E0D-5982-8ED8-6F9F5D911883}.Debug|x86.Build.0 = Debug|Any CPU
+		{5E667C18-9E0D-5982-8ED8-6F9F5D911883}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E667C18-9E0D-5982-8ED8-6F9F5D911883}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E667C18-9E0D-5982-8ED8-6F9F5D911883}.Release|x64.ActiveCfg = Release|Any CPU
+		{5E667C18-9E0D-5982-8ED8-6F9F5D911883}.Release|x64.Build.0 = Release|Any CPU
+		{5E667C18-9E0D-5982-8ED8-6F9F5D911883}.Release|x86.ActiveCfg = Release|Any CPU
+		{5E667C18-9E0D-5982-8ED8-6F9F5D911883}.Release|x86.Build.0 = Release|Any CPU
+		{0E9D6269-26FC-4FB4-92CF-0A4EE797314B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E9D6269-26FC-4FB4-92CF-0A4EE797314B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E9D6269-26FC-4FB4-92CF-0A4EE797314B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0E9D6269-26FC-4FB4-92CF-0A4EE797314B}.Debug|x64.Build.0 = Debug|Any CPU
+		{0E9D6269-26FC-4FB4-92CF-0A4EE797314B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0E9D6269-26FC-4FB4-92CF-0A4EE797314B}.Debug|x86.Build.0 = Debug|Any CPU
+		{0E9D6269-26FC-4FB4-92CF-0A4EE797314B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E9D6269-26FC-4FB4-92CF-0A4EE797314B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E9D6269-26FC-4FB4-92CF-0A4EE797314B}.Release|x64.ActiveCfg = Release|Any CPU
+		{0E9D6269-26FC-4FB4-92CF-0A4EE797314B}.Release|x64.Build.0 = Release|Any CPU
+		{0E9D6269-26FC-4FB4-92CF-0A4EE797314B}.Release|x86.ActiveCfg = Release|Any CPU
+		{0E9D6269-26FC-4FB4-92CF-0A4EE797314B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -608,6 +638,9 @@ Global
 		{EE161405-1234-43E0-AECC-6DE787112C75} = {5C3EB1F2-72C7-87C2-61E6-FC27803A142B}
 		{85F3335C-2434-4F37-B423-4CCFF36409D8} = {C77944B0-0D3A-86CF-E301-0389399A2286}
 		{A1DC74B8-F634-2B95-E1FD-25C94050A0AF} = {85F3335C-2434-4F37-B423-4CCFF36409D8}
+		{F2876FE3-8296-45D9-9AB7-B55995E83A81} = {C77944B0-0D3A-86CF-E301-0389399A2286}
+		{5E667C18-9E0D-5982-8ED8-6F9F5D911883} = {F2876FE3-8296-45D9-9AB7-B55995E83A81}
+		{0E9D6269-26FC-4FB4-92CF-0A4EE797314B} = {F2876FE3-8296-45D9-9AB7-B55995E83A81}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F15FA95A-2976-493B-AA4A-033ECCBFD759}

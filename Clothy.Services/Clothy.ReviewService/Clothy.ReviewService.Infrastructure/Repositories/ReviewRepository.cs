@@ -11,6 +11,7 @@ using MongoDB.Driver;
 using Clothy.ReviewService.Domain.ValueObjects;
 using Clothy.Shared.Helpers;
 using Clothy.ReviewService.Domain.Interfaces;
+using Clothy.Shared.Events.UserEvents;
 
 namespace Clothy.ReviewService.Infrastructure.Repositories
 {
@@ -117,6 +118,20 @@ namespace Clothy.ReviewService.Infrastructure.Repositories
             var reviewsByUserId = Builders<Review>.Filter.Eq(tempReview => tempReview.User.UserId, userId);
 
             await collection.DeleteManyAsync(reviewsByUserId, cancellationToken);
+        }
+
+        public async Task UpdateUserInfoInReviewsAsync(UserUpdatedEvent userUpdatedEvent, bool newPhoto = false, CancellationToken cancellationToken = default)
+        {
+            var filter = Builders<Review>.Filter.Eq(r => r.User.UserId, userUpdatedEvent.UserId);
+
+            var update = Builders<Review>.Update
+                .Set(review => review.User.FirstName, userUpdatedEvent.FirstName)
+                .Set(review => review.User.LastName, userUpdatedEvent.LastName)
+                .CurrentDate(date => date.UpdatedAt);
+
+            if(newPhoto) update.Set(review => review.User.PhotoUrl, userUpdatedEvent.PhotoUrl);
+
+            await collection.UpdateManyAsync(filter, update, cancellationToken: cancellationToken);
         }
     }
 }

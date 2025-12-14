@@ -4,16 +4,21 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-	<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	  <PreserveCompilationContext>true</PreserveCompilationContext>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DotNetEnv" Version="3.1.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Clothy.ServiceDefaults\Clothy.ServiceDefaults.csproj" />
-    <ProjectReference Include="..\Clothy.AuthService.BLL\Clothy.AuthService.BLL.csproj" />
+    <ProjectReference Include="..\Clothy.NotificationService.BLL\Clothy.NotificationService.BLL.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Controllers\" />
   </ItemGroup>
 
 </Project>

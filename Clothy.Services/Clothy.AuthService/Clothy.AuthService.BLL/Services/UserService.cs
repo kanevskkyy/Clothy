@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MassTransit;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
@@ -13,6 +14,7 @@ using Clothy.Shared.Helpers.CloudinaryConfig;
 using Clothy.Shared.Helpers.JWT;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Clothy.Shared.Events.UserEvents;
 
 namespace Clothy.AuthService.BLL.Services
 {
@@ -22,6 +24,7 @@ namespace Clothy.AuthService.BLL.Services
         private IImageService imageService;
         private IKeycloakAuthService keycloakAuthService;
         private ILogger<UserService> logger;
+        private IPublishEndpoint publishEndpoint;
         private IUserClaimsExtractor userClaimsExtractor;
         private KeycloakSettings keycloakSettings;
         private const string DEFAULT_PHOTO_URL = "https://res.cloudinary.com/dkdljnfja/image/upload/v1763818143/Profile_Avatar_cfazhc.png";
@@ -32,7 +35,8 @@ namespace Clothy.AuthService.BLL.Services
             IImageService imageService,
             IKeycloakAuthService keycloakAuthService,
             ILogger<UserService> logger,
-            IOptions<KeycloakSettings> keycloakOptions)
+            IOptions<KeycloakSettings> keycloakOptions,
+            IPublishEndpoint publishEndpoint)
         {
             this.userClaimsExtractor = userClaimsExtractor;
             this.httpClient = httpClient;
@@ -40,6 +44,7 @@ namespace Clothy.AuthService.BLL.Services
             this.keycloakAuthService = keycloakAuthService;
             this.logger = logger;
             keycloakSettings = keycloakOptions.Value;
+            this.publishEndpoint = publishEndpoint;
         }
 
         public async Task<UserReadDTO> GetCurrentUserAsync(ClaimsPrincipal user, CancellationToken cancellationToken = default)
@@ -117,6 +122,14 @@ namespace Clothy.AuthService.BLL.Services
             }
 
             logger.LogInformation("User updated successfully: {UserId}", userId);
+
+            UserUpdatedEvent userUpdatedEvent = new UserUpdatedEvent() 
+            {
+                FirstName = userUpdateDTO.FirstName,
+                LastName = userUpdateDTO.LastName,
+                PhotoUrl = newPhotoUrl
+            };
+            await publishEndpoint.Publish(userUpdatedEvent, cancellationToken);
 
             return await GetCurrentUserAsync(user, cancellationToken);
         }

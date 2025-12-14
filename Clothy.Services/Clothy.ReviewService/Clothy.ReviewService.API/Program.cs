@@ -1,7 +1,4 @@
-﻿using System.Diagnostics.Metrics;
-using System.Reflection;
-using System.Text.Json;
-using Clothy.ReviewService.API.Middleware;
+﻿using Clothy.ReviewService.API.Middleware;
 using Clothy.ReviewService.Application.Behaviours;
 using Clothy.ReviewService.Application.Consumers;
 using Clothy.ReviewService.Application.Consumers.DeleteReviewsAndQuestions;
@@ -26,6 +23,10 @@ using FluentValidation.AspNetCore;
 using MassTransit;
 using MediatR;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using System.Diagnostics.Metrics;
+using System.Reflection;
+using System.Text.Json;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -69,11 +70,18 @@ builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<ReviewsAndQuestionsDeletionConsumer>();
     x.AddConsumer<UserDeletedConsumer>();
+    x.AddConsumer<UserUpdatedConsumer>();
 
     x.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host(builder.Configuration.GetConnectionString("rabbitmq"));
         cfg.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));
+
+        cfg.ReceiveEndpoint("review-service-user-updated-queue", e =>
+        {
+            e.ConfigureConsumer<UserUpdatedConsumer>(context);
+            e.Bind("user-updated-event");
+        });
 
         cfg.ReceiveEndpoint("review-service-clothe-deleted-queue", e =>
         {

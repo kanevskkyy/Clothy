@@ -19,7 +19,11 @@ namespace Clothy.ReviewService.Application.Consumers.DeleteReviewsAndQuestions
         private IQuestionRepository questionRepository;
         private IEventLogService eventLogService;
 
-        public ReviewsAndQuestionsDeletionConsumer(IReviewRepository reviewRepository, IQuestionRepository questionRepository, ILogger<ReviewsAndQuestionsDeletionConsumer> logger, IEventLogService eventLogService)
+        public ReviewsAndQuestionsDeletionConsumer(
+            IReviewRepository reviewRepository, 
+            IQuestionRepository questionRepository, 
+            ILogger<ReviewsAndQuestionsDeletionConsumer> logger, 
+            IEventLogService eventLogService)
         {
             this.eventLogService = eventLogService;
             this.reviewRepository = reviewRepository;

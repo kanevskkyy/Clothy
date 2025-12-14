@@ -24,6 +24,8 @@ using Clothy.Shared.Helpers.JWT;
 using Clothy.Shared.Events.UserEvents;
 using MassTransit.Middleware;
 using Grpc.Core;
+using Clothy.Shared.Events.EmailEvents.OrderCreated;
+using Clothy.Shared.Events.EmailEvents.OrderDelivered;
 
 namespace Clothy.OrderService.BLL.Services
 {
@@ -208,7 +210,25 @@ namespace Clothy.OrderService.BLL.Services
 
                 logger.LogInformation("Cleared basket for user: {UserId} after order creation", userId);
 
-                return await GetByIdAsync(order.Id, cancellationToken: cancellationToken);
+                OrderDetailDTO? createdOrder = await GetByIdAsync(order.Id, cancellationToken: cancellationToken);
+
+                OrderCreatedEmailEvent orderCreatedEmailEvent = new OrderCreatedEmailEvent()
+                {
+                    OrderId = createdOrder.Id,
+                    UserEmail = userClaimsExtractor.GetEmail(claimsPrincipal),
+                    Items = createdOrder.Items.Select(orderItem => new OrderItemEmailEvent
+                    {
+                        ClotheName = orderItem.ClotheName,
+                        Size = orderItem.SizeName,
+                        Color = orderItem.HexCode,
+                        Quantity = orderItem.Quantity,
+                        Price = orderItem.Price
+                    }).ToList(),
+                    TotalPrice = createdOrder.TotalPrice,
+                };
+                await publishEndpoint.Publish(orderCreatedEmailEvent, cancellationToken);
+
+                return createdOrder;
             }
             catch (RpcException rpcEx)
             {
@@ -336,7 +356,19 @@ namespace Clothy.OrderService.BLL.Services
 
             await cacheInvalidationService.InvalidateByIdAsync(updatedOrder.Id);
 
-            return await GetByIdAsync(updatedOrder.Id, cancellationToken: cancellationToken);
+            OrderDetailDTO orderDetailDTO = await GetByIdAsync(updatedOrder.Id, cancellationToken: cancellationToken);
+
+            if(orderDetailDTO?.Status?.Name?.ToLower() == "completed" || orderDetailDTO?.Status?.Name?.ToLower() == "delivered" || orderDetailDTO?.Status?.Name?.ToLower() == "shipped")
+            {
+                OrderDeliveredEmailEvent orderDeliveredEmailEvent = new OrderDeliveredEmailEvent()
+                {
+                    OrderId = orderDetailDTO.Id,
+                    Email = orderDetailDTO?.DeliveryDetail?.Email
+                };
+                await publishEndpoint.Publish(orderDeliveredEmailEvent, cancellationToken);
+            }
+
+            return orderDetailDTO;
         }
 
         public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)

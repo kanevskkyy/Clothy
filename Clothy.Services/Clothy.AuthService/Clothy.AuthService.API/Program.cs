@@ -3,9 +3,11 @@ using Clothy.AuthService.BLL.Config;
 using Clothy.AuthService.BLL.Services;
 using Clothy.AuthService.BLL.Services.Interfaces;
 using Clothy.Shared.Helpers;
+using MassTransit;
 using FluentValidation.AspNetCore;
 using FluentValidation;
 using Clothy.AuthService.BLL.FluentValidation.Auth;
+using Clothy.Shared.Events.UserEvents;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,9 +31,25 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssembly(typeof(LoginDTOValidator).Assembly);
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
+//RABBIT MQ
+builder.Services.AddMassTransit(x =>
+{
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(builder.Configuration.GetConnectionString("rabbitmq"));
+        cfg.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));
+
+        cfg.Message<UserUpdatedEvent>(e => e.SetEntityName("user-updated-event"));
+
+
+        cfg.ConfigureEndpoints(context);
+    });
+});
+//
 
 var app = builder.Build();
 app.UseServiceDefaults();

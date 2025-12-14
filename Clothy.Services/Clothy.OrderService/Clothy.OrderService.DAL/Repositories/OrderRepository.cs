@@ -34,7 +34,7 @@ namespace Clothy.OrderService.DAL.Repositories
                 LEFT JOIN order_item oi ON oi.orderid = o.id
             ");
 
-                    StringBuilder countSql = new StringBuilder(@"
+            StringBuilder countSql = new StringBuilder(@"
                 SELECT COUNT(DISTINCT o.id)
                 FROM orders o
                 JOIN order_status s ON o.statusid = s.id
@@ -144,8 +144,6 @@ namespace Clothy.OrderService.DAL.Repositories
             order.Items = items.ToList();
             order.TotalAmount = order.Items.Sum(item => item.Price * item.Quantity);
 
-            Console.WriteLine($"===== DEBUG: Getting delivery for order {id} =====");
-
             string deliverySql = @"
                 SELECT 
                     dd.id AS DeliveryDetailId, 
@@ -153,6 +151,7 @@ namespace Clothy.OrderService.DAL.Repositories
                     dd.firstname, 
                     dd.lastname, 
                     dd.middlename,
+                    dd.email,
                     dd.createdat AS DeliveryCreatedAt, 
                     dd.updatedat AS DeliveryUpdatedAt,
                     pp.id AS PickupPointId, 
@@ -193,6 +192,7 @@ namespace Clothy.OrderService.DAL.Repositories
                     FirstName = delivery.firstname,
                     LastName = delivery.lastname,
                     MiddleName = delivery.middlename,
+                    Email = delivery.email,
                     CreatedAt = delivery.deliverycreatedat != null ? (DateTime)delivery.deliverycreatedat : DateTime.UtcNow, 
                     UpdatedAt = delivery.deliveryupdatedat != null ? (DateTime?)delivery.deliveryupdatedat : null,
 
@@ -227,8 +227,6 @@ namespace Clothy.OrderService.DAL.Repositories
                         Name = delivery.cityname
                     }
                 };
-
-                Console.WriteLine("===== DeliveryDetailData created successfully =====");
             }
 
             return order;

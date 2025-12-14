@@ -1,5 +1,6 @@
-using Projects;
+using Aspire.Hosting;
 using DotNetEnv;
+using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
@@ -45,6 +46,7 @@ var keycloak = builder.AddKeycloak("keycloak", port: 8080, keycloakAdminUsername
 
 var authService = builder.AddProject<Clothy_AuthService_API>("auth")
     .WithReference(keycloak)
+    .WithReference(rabbitmq)
     .WithEnvironment("CLOUDINARYSETTINGS__CLOUDNAME", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__CLOUDNAME"))
     .WithEnvironment("CLOUDINARYSETTINGS__APIKEY", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APIKEY"))
     .WithEnvironment("CLOUDINARYSETTINGS__APISECRET", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APISECRET"))
@@ -52,6 +54,7 @@ var authService = builder.AddProject<Clothy_AuthService_API>("auth")
     .WithEnvironment("KEYCLOAK__REALM", Environment.GetEnvironmentVariable("KEYCLOAK__REALM"))
     .WithEnvironment("KEYCLOAK__CLIENTID", Environment.GetEnvironmentVariable("KEYCLOAK__CLIENTID"))
     .WithEnvironment("KEYCLOAK__CLIENTSECRET", Environment.GetEnvironmentVariable("KEYCLOAK__CLIENTSECRET"))
+    .WaitFor(rabbitmq)
     .WaitFor(keycloak);
 
 // UNUSED
@@ -72,6 +75,13 @@ var catalogService = builder.AddProject<Clothy_CatalogService_API>("catalog")
     .WaitFor(rabbitmq)
     .WaitFor(postgresCatalogDB)
     .WaitFor(keycloak);
+
+var notificationService = builder.AddProject<Clothy_NotificationService_API>("notification")
+    .WithReference(rabbitmq)
+    .WithEnvironment("SENDGRID__KEY", Environment.GetEnvironmentVariable("SENDGRID__KEY"))
+    .WithEnvironment("SENDGRID__FROM_EMAIL", Environment.GetEnvironmentVariable("SENDGRID__FROM_EMAIL"))
+    .WithEnvironment("SENDGRID__FROM_NAME", Environment.GetEnvironmentVariable("SENDGRID__FROM_NAME"))
+    .WaitFor(rabbitmq);
 
 var basketService = builder.AddProject<Clothy_BasketService_API>("basket")
     .WithReference(redis)
