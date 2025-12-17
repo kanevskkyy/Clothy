@@ -1,25 +1,39 @@
-﻿using System;
+﻿using Clothy.Shared.Cache;
+using Clothy.Shared.Cache.Interfaces;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Clothy.Shared.Cache.Interfaces;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Clothy.ServiceDefaults.Middleware.Redis
 {
     public static class ApplicationExtensions
     {
-        public static async Task PreloadCachesAsync(this WebApplication app, CancellationToken cancellationToken = default)
+        public static IServiceCollection AddCaching(this IServiceCollection services)
         {
-            using var scope = app.Services.CreateScope();
-            var preloaders = scope.ServiceProvider.GetServices<ICachePreloader>();
-
-            foreach (var preloader in preloaders)
+            services.AddSingleton<IConnectionMultiplexer>(_ =>
             {
-                await preloader.PreloadAsync(cancellationToken);
-            }
+                string redisHost = "clothy-redis";
+                int redisPort = 6379;
+
+                var config = ConfigurationOptions.Parse($"{redisHost}:{redisPort}");
+                config.AbortOnConnectFail = false;
+                return ConnectionMultiplexer.Connect(config);
+            });
+
+            services.AddMemoryCache(options =>
+            {
+                options.SizeLimit = 1024;
+                options.CompactionPercentage = 0.2;
+            });
+
+            services.AddSingleton<IEntityCacheService, EntityCacheService>();
+
+            return services;
         }
     }
 }

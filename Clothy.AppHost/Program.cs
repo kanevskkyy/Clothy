@@ -26,7 +26,7 @@ var redis = builder.AddRedis("clothy-redis")
 
 var postgresCatalogDB = postgres.AddDatabase("ClothyCatalogDb");
 var postgresOrdersDB = postgres.AddDatabase("ClothyOrder");
-var postgresUsersDB = postgres.AddDatabase("ClothyUsers");
+//var postgresUsersDB = postgres.AddDatabase("ClothyUsers");
 
 // Duende IdentityServer (Unused due to keycloak)
 // var identityServerDb = postgres.AddDatabase("IdentityServerDb");

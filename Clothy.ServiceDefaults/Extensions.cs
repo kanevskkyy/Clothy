@@ -53,27 +53,10 @@ public static class Extensions
         );
 
         // REDIS CONFIGURATION
-        builder.Services.AddSingleton<IConnectionMultiplexer>(_ =>
-        {
-            string redisHost = "clothy-redis";
-            int redisPort = 6379;
-
-            ConfigurationOptions config = ConfigurationOptions.Parse($"{redisHost}:{redisPort}");
-            config.AbortOnConnectFail = false;
-            return ConnectionMultiplexer.Connect(config);
-        });
-
-        builder.Services.AddMemoryCache(options =>
-        {
-            options.SizeLimit = 1024;
-
-            options.CompactionPercentage = 0.2;
-        });
         builder.Services.AddMemoryCache();
-        builder.Services.AddSingleton<IEntityCacheService, EntityCacheService>();
+        //
 
         builder.Services.AddHealthChecks();
-        //
 
         //RABBIT MQ
         builder.AddRabbitMQClient(connectionName: "rabbitmq");
@@ -110,28 +93,7 @@ public static class Extensions
 
         // KEYCLOAK
         builder.Services.AddTransient<IClaimsTransformation, KeycloakRolesClaimsTransformation>();
-
-        builder.Services
-            .AddAuthentication()
-            .AddKeycloakJwtBearer(serviceName: "keycloak", realm: "clothy-realm",  
-                configureOptions: options =>
-                {
-                    options.RequireHttpsMetadata = false; 
-                    options.Audience = "clothy-api";
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        RoleClaimType = ClaimTypes.Role
-                    };
-                });
-        builder.Services.AddAuthorization(options =>
-        {
-            options.AddPolicy("AdminOnly", policy =>
-                policy.RequireRole("Admin"));
-
-            options.AddPolicy("ManagerOrAdmin", policy =>
-                policy.RequireRole("Admin", "Manager"));
-        });
-        // KEYCLOAK
+        builder.Services.AddKeycloakAuthentication();
 
         builder.Services.AddSwaggerWithAuth();
         builder.Services.AddScoped<IUserClaimsExtractor, UserClaimsExtractor>();
@@ -262,19 +224,6 @@ public static class Extensions
                     });
                 }
             });
-
-        return builder;
-    }
-
-
-    private static IHostApplicationBuilder AddOpenTelemetryExporters(this IHostApplicationBuilder builder)
-    {
-        var useOtlpExporter = !string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
-
-        if (useOtlpExporter)
-        {
-            builder.Services.AddOpenTelemetry().UseOtlpExporter();
-        }
 
         return builder;
     }

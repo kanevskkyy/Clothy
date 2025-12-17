@@ -22,7 +22,6 @@ using Clothy.OrderService.gRPC.Client.Services.Interfaces;
 using Clothy.OrderService.gRPC.Server.Services;
 using Clothy.ServiceDefaults.Middleware.Grpc;
 using Clothy.ServiceDefaults.Middleware.OpenTelemetry;
-using Clothy.ServiceDefaults.Middleware.Redis;
 using Clothy.Shared.Cache.Interfaces;
 using Clothy.Shared.Events;
 using Clothy.Shared.Events.EmailEvents.OrderCreated;
