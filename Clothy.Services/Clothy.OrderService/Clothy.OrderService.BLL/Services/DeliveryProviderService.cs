@@ -9,7 +9,7 @@ using Clothy.OrderService.BLL.Interfaces;
 using Clothy.OrderService.DAL.UOW;
 using Clothy.OrderService.Domain.Entities;
 using Clothy.Shared.Cache.Interfaces;
-using Clothy.Shared.Helpers.CloudinaryConfig;
+using Clothy.Shared.Helpers.CloudinaryConfig.ImageService;
 using Clothy.Shared.Helpers.Exceptions;
 
 namespace Clothy.OrderService.BLL.Services
@@ -26,7 +26,12 @@ namespace Clothy.OrderService.BLL.Services
         private static TimeSpan REDIS_TTL_DELIVERY_PROVIDER = TimeSpan.FromDays(7);
 
 
-        public DeliveryProviderService(IUnitOfWork unitOfWork, IMapper mapper, IImageService imageService, IEntityCacheService cacheService, IEntityCacheInvalidationService<DeliveryProvider> cacheInvalidationService)
+        public DeliveryProviderService(
+            IUnitOfWork unitOfWork, 
+            IMapper mapper, 
+            IImageService imageService, 
+            IEntityCacheService cacheService, 
+            IEntityCacheInvalidationService<DeliveryProvider> cacheInvalidationService)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;

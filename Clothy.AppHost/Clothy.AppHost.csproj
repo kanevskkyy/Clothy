@@ -39,6 +39,7 @@
 		<ProjectReference Include="..\Clothy.Services\Clothy.NotificationService\Clothy.NotificationService.API\Clothy.NotificationService.API.csproj" />
 		<ProjectReference Include="..\Clothy.Services\Clothy.OrderService\Clothy.OrderService.API\Clothy.OrderService.API.csproj" />
 		<ProjectReference Include="..\Clothy.Services\Clothy.OrderService\Clothy.OrderService.SeedData\Clothy.OrderService.SeedData.csproj" />
+		<ProjectReference Include="..\Clothy.Services\Clothy.PaymentService\Clothy.PaymentService.API\Clothy.PaymentService.API.csproj" />
 		<ProjectReference Include="..\Clothy.Services\Clothy.ReviewService\Clothy.ReviewService.API\Clothy.ReviewService.API.csproj" />
 		<ProjectReference Include="..\Clothy.Services\Clothy.UserService\Clothy.UserService.API\Clothy.UserService.API.csproj" />
 	</ItemGroup>

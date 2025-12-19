@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Clothy.Shared.Events.UserEvents;
-using Clothy.Shared.Helpers.CloudinaryConfig;
+using Clothy.Shared.Helpers.CloudinaryConfig.ImageService;
 using Clothy.Shared.Helpers.Exceptions;
 using Clothy.UserService.BLL.DTOs.RoleDTOs;
 using Clothy.UserService.BLL.DTOs.UserDTOs;

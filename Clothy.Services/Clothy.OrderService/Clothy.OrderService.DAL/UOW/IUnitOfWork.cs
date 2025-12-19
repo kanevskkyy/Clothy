@@ -19,6 +19,7 @@ namespace Clothy.OrderService.DAL.UOW
         IRegionRepository Region { get; }
         ISettlementRepository Settlement { get; }
         IPickupPointRepository PickupPoint { get; }
+        IOrderReservationRepository OrderReservation { get; }
 
         IDbConnection Connection { get; }
         IDbTransaction? Transaction { get; }

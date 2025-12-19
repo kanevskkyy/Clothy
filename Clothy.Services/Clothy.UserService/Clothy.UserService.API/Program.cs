@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Clothy.UserService.DAL.Repositories.Interfaces;
 using Clothy.UserService.DAL.Repositories;
-using Clothy.Shared.Helpers;
 using Clothy.UserService.BLL.Mapper;
 using FluentValidation;
 using Clothy.UserService.BLL.Validation.UserValidation;
@@ -15,6 +14,7 @@ using Clothy.UserService.API.Middleware;
 using MassTransit;
 using Clothy.Shared.Events.ClotheItemEvents;
 using Clothy.Shared.Events.UserEvents;
+using Clothy.Shared.Helpers.CloudinaryConfig;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -25,6 +25,7 @@ using Clothy.ServiceDefaults.Middleware.CorrelationId;
 using Clothy.ServiceDefaults.Middleware.Keycloak;
 using Clothy.ServiceDefaults.Middleware.Logging;
 using Clothy.ServiceDefaults.Middleware.JWT;
+using Clothy.ServiceDefaults.Middleware.Redis;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -54,6 +55,7 @@ public static class Extensions
 
         // REDIS CONFIGURATION
         builder.Services.AddMemoryCache();
+        builder.Services.AddCaching();
         //
 
         builder.Services.AddHealthChecks();

@@ -30,6 +30,7 @@ namespace Clothy.OrderService.BLL.Mapper
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
                 .ForMember(dest => dest.UserFirstName, opt => opt.MapFrom(src => src.UserFirstName))
                 .ForMember(dest => dest.UserLastName, opt => opt.MapFrom(src => src.UserLastName))
+                .ForMember(dest => dest.UserEmail, opt => opt.MapFrom(src => src.UserEmail))
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
                 .ForMember(dest => dest.TotalPrice, opt => opt.MapFrom(src => src.TotalPrice))

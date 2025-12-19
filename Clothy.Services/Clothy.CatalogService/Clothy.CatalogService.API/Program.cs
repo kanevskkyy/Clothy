@@ -9,7 +9,6 @@ using FluentValidation.AspNetCore;
 using FluentValidation;
 using Clothy.CatalogService.BLL.FluentValidation.BrandValidation;
 using Clothy.CatalogService.API.Middleware;
-using Clothy.Shared.Helpers;
 using Clothy.CatalogService.BLL.RedisCache.Clothe;
 using Clothy.CatalogService.BLL.RedisCache.StockCache;
 using Clothy.CatalogService.Domain.Entities;
@@ -27,6 +26,7 @@ using Clothy.Shared.Events.ClotheItemEvents;
 using Clothy.Shared.Events;
 using Clothy.CatalogService.DAL.EventLog;
 using Clothy.ServiceDefaults.Middleware.OpenTelemetry;
+using Clothy.Shared.Helpers.CloudinaryConfig;
 
 var builder = WebApplication.CreateBuilder(args);
 

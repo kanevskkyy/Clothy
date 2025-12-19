@@ -24,6 +24,7 @@ namespace Clothy.OrderService.DAL.UOW
         public IRegionRepository Region { get; }
         public ISettlementRepository Settlement { get; }
         public IPickupPointRepository PickupPoint { get; }
+        public IOrderReservationRepository OrderReservation { get; }
 
         public IDbConnection Connection => connection ??= connectionFactory.CreateConnection();
         public IDbTransaction? Transaction => transaction;
@@ -39,7 +40,8 @@ namespace Clothy.OrderService.DAL.UOW
             IDeliveryDetailRepository deliveryDetails,
             IRegionRepository region,
             ISettlementRepository settlement,
-            IPickupPointRepository pickupPoint)
+            IPickupPointRepository pickupPoint,
+            IOrderReservationRepository orderReservation)
         {
             this.connectionFactory = connectionFactory;
             OrderStatuses = orderStatuses;
@@ -51,6 +53,7 @@ namespace Clothy.OrderService.DAL.UOW
             Region = region;
             Settlement = settlement;
             PickupPoint = pickupPoint;
+            OrderReservation = orderReservation;
         }
 
         public async Task BeginTransactionAsync()

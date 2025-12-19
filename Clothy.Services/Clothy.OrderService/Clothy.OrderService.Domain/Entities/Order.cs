@@ -14,6 +14,7 @@ namespace Clothy.OrderService.Domain.Entities
         public Guid UserId { get; set; }
         public string? UserFirstName { get; set; }
         public string? UserLastName { get; set; }
+        public string? UserEmail { get; set; }
 
         public ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
         public DeliveryDetail? DeliveryDetail { get; set; }

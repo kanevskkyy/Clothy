@@ -30,6 +30,7 @@ namespace Clothy.OrderService.SeedData.Seeders
                     UserId = Guid.NewGuid(),
                     UserFirstName = faker.Name.FirstName(),
                     UserLastName = faker.Name.LastName(),
+                    UserEmail = faker.Internet.Email(),
                     CreatedAt = faker.Date.Past(2).ToUniversalTime(),
                     UpdatedAt = faker.Date.Recent(30).ToUniversalTime()
                 };

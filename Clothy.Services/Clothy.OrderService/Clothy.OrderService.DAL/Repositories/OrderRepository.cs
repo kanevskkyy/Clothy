@@ -26,7 +26,7 @@ namespace Clothy.OrderService.DAL.Repositories
             IDbConnection connection = await GetOpenConnectionAsync();
 
             StringBuilder sql = new StringBuilder(@"
-                SELECT o.id, o.userid, o.userfirstname, o.userlastname, o.createdat, o.updatedat,
+                SELECT o.id, o.userid, o.userfirstname, o.userlastname, o.useremail, o.createdat, o.updatedat,
                        s.id AS StatusId, s.name AS StatusName, s.iconurl AS StatusIconUrl,
                        COALESCE(SUM(oi.price * oi.quantity), 0) AS TotalAmount
                 FROM orders o
@@ -90,6 +90,7 @@ namespace Clothy.OrderService.DAL.Repositories
                 UserId = r.userid,
                 UserFirstName = r.userfirstname,
                 UserLastName = r.userlastname,
+                UserEmail = r.useremail,
                 CreatedAt = r.createdat,
                 UpdatedAt = r.updatedat,
                 TotalPrice = (decimal)r.totalamount,
@@ -114,6 +115,7 @@ namespace Clothy.OrderService.DAL.Repositories
                     o.userid, 
                     o.userfirstname, 
                     o.userlastname, 
+                    o.useremail,
                     o.createdat, 
                     o.updatedat,
                     s.id,       
@@ -230,24 +232,6 @@ namespace Clothy.OrderService.DAL.Repositories
             }
 
             return order;
-        }
-
-        public async Task UpdateUserNameAsync(Guid userId, string firstName, string lastName)
-        {
-            IDbConnection connection = await GetOpenConnectionAsync();
-
-            string sql = @"
-                UPDATE orders
-                SET userfirstname = @FirstName,
-                    userlastname = @LastName,
-                    updatedat = NOW() AT TIME ZONE 'utc'
-                WHERE userid = @UserId;
-            ";
-            await connection.ExecuteAsync(sql, new { 
-                UserId = userId, 
-                FirstName = firstName, 
-                LastName = lastName 
-            });
         }
     }
 }

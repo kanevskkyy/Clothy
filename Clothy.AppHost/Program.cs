@@ -17,7 +17,6 @@ var keycloakAdminPassword = builder.AddParameter("keycloak-admin-password", secr
 
 var postgres = builder.AddPostgres("clothy-postgres", password: postgresPassword)
     .WithImage("postgres:16")
-    .WithPgAdmin()
     .WithDataVolume("pgdata")
     .WithBindMount("./Scripts", "/docker-entrypoint-initdb.d");
 
@@ -26,6 +25,8 @@ var redis = builder.AddRedis("clothy-redis")
 
 var postgresCatalogDB = postgres.AddDatabase("ClothyCatalogDb");
 var postgresOrdersDB = postgres.AddDatabase("ClothyOrder");
+var paymentDB = postgres.AddDatabase("ClothyPaymentDb");
+
 //var postgresUsersDB = postgres.AddDatabase("ClothyUsers");
 
 // Duende IdentityServer (Unused due to keycloak)
@@ -122,6 +123,22 @@ var reviewsService = builder.AddProject<Clothy_ReviewService_API>("reviews")
     .WaitFor(ordersService)
     .WaitFor(keycloak);
 
+var paymentService = builder.AddProject<Clothy_PaymentService_API>("payments")
+    .WithReference(paymentDB)
+    .WithEnvironment("STRIPE__SECRET_KEY", Environment.GetEnvironmentVariable("STRIPE__SECRET_KEY"))
+    .WithEnvironment("STRIPE__PUBLISHABLE_KEY", Environment.GetEnvironmentVariable("STRIPE__PUBLISHABLE_KEY"))
+    .WithEnvironment("STRIPE__SUCCESS_URL", Environment.GetEnvironmentVariable("STRIPE__SUCCESS_URL"))
+    .WithEnvironment("STRIPE__CANCEL_URL", Environment.GetEnvironmentVariable("STRIPE__CANCEL_URL"))
+    .WithEnvironment("STRIPE__WEBHOOK_SECRET", Environment.GetEnvironmentVariable("STRIPE__WEBHOOK_SECRET"))
+    .WithReference(rabbitmq)
+    .WithReference(ordersService)
+    .WithReference(keycloak)
+    .WaitFor(rabbitmq)
+    .WaitFor(ordersService)
+    .WaitFor(keycloak)
+    .WaitFor(paymentDB);
+
+
 // OLD USER SERVICE BEFORE KEYCLOAK
 
 //var usersService = builder.AddProject<Clothy_UserService_API>("users")
@@ -165,6 +182,7 @@ var gateway = builder.AddProject<Clothy_Gateway>("gateway")
     .WithReference(catalogService)
     .WithReference(ordersService)
     .WithReference(reviewsService)
+    .WithReference(paymentService)
     .WithReference(basketService)
     .WithReference(aggregator)
     .WithReference(authService)

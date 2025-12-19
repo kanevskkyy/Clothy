@@ -7,7 +7,6 @@ using Clothy.CatalogService.DAL.UOW;
 using Clothy.CatalogService.Domain.Entities;
 using Clothy.CatalogService.Domain.QueryParameters;
 using Clothy.Shared.Helpers;
-using Clothy.Shared.Helpers.CloudinaryConfig;
 using Clothy.Shared.Cache.Interfaces;
 using Clothy.Shared.Helpers.Exceptions;
 using System.Diagnostics.Metrics;
@@ -16,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using MassTransit;
 using Clothy.Shared.Events.ClotheItemEvents;
 using Clothy.CatalogService.BLL.DTOs.TagDTOs;
+using Clothy.Shared.Helpers.CloudinaryConfig.ImageService;
 
 namespace Clothy.CatalogService.BLL.Services
 {
@@ -96,7 +96,7 @@ namespace Clothy.CatalogService.BLL.Services
         public async Task<ClotheDetailDTO> GetDetailByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             string cacheKey = $"clothe:{id}";
-            var cached = await cacheService.GetOrSetAsync(
+            ClotheDetailDTO? cached = await cacheService.GetOrSetAsync(
                 cacheKey,
                 async () =>
                 {

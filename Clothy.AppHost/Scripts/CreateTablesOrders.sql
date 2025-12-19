@@ -35,6 +35,7 @@ CREATE TABLE orders (
     userid UUID NOT NULL,
     userfirstname VARCHAR(100) NOT NULL,
     userlastname VARCHAR(100) NOT NULL,
+    useremail VARCHAR(100) NOT NULL CHECK (useremail LIKE '%@%'),
     createdat TIMESTAMP WITHOUT TIME ZONE DEFAULT (NOW() AT TIME ZONE 'utc'),
     updatedat TIMESTAMP WITHOUT TIME ZONE,
     CONSTRAINT fk_order_status FOREIGN KEY (statusid)
@@ -131,6 +132,22 @@ CREATE TABLE delivery_detail (
         ON DELETE CASCADE
 );
 
+CREATE TABLE orders_reservations(
+    id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+    orderid uuid NOT NULL,
+    clotheid uuid NOT NULL,
+    colorid uuid NOT NULL,
+    sizeid uuid NOT NULL,
+    quantity INTEGER NOT NULL,
+    reservedat TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT (NOW() AT TIME ZONE 'utc'),
+    expiresat TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    isactive bool DEFAULT true,
+    CONSTRAINT fk_orderid_order FOREIGN KEY (orderid)
+        REFERENCES orders(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
 CREATE INDEX idx_order_statusid ON orders(statusid);
 CREATE INDEX idx_order_userid ON orders(userid);
 CREATE INDEX idx_orderitem_orderid ON order_item(orderid);
@@ -139,3 +156,4 @@ CREATE INDEX idx_settlements_regionid ON settlements(regionid);
 CREATE INDEX idx_pickup_points_providerid ON pickup_points(deliveryproviderid);
 CREATE INDEX idx_deliverydetail_orderid ON delivery_detail(orderid);
 CREATE INDEX idx_deliverydetail_pickuppointsid ON delivery_detail(pickuppointid);
+CREATE INDEX idx_orders_reservations_clothe_size_color_id ON orders_reservations(clotheid, colorid, sizeid);

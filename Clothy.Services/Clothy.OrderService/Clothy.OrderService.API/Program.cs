@@ -11,6 +11,7 @@ using Clothy.OrderService.BLL.RedisCache.PickupPointsCache;
 using Clothy.OrderService.BLL.RedisCache.RegionCache;
 using Clothy.OrderService.BLL.RedisCache.SettlementCache;
 using Clothy.OrderService.BLL.Services;
+using Clothy.OrderService.BLL.Services.BackgroundServices;
 using Clothy.OrderService.DAL.ConnectionFactory;
 using Clothy.OrderService.DAL.EventLog;
 using Clothy.OrderService.DAL.Interfaces;
@@ -27,7 +28,7 @@ using Clothy.Shared.Events;
 using Clothy.Shared.Events.EmailEvents.OrderCreated;
 using Clothy.Shared.Events.EmailEvents.OrderDelivered;
 using Clothy.Shared.Events.OrderEvents;
-using Clothy.Shared.Helpers;
+using Clothy.Shared.Helpers.CloudinaryConfig;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using MassTransit;
@@ -75,6 +76,12 @@ builder.Services.AddScoped<IDeliveryDetailRepository, DeliveryDetailRepository>(
 builder.Services.AddScoped<IRegionRepository, RegionRepository>();
 builder.Services.AddScoped<ISettlementRepository, SettlementRepository>();
 builder.Services.AddScoped<IPickupPointRepository, PickupPointRepository>();
+builder.Services.AddScoped<IOrderReservationRepository, OrderReservationRepository>();
+//
+
+//BACKGROUND SERVICE
+builder.Services.AddHostedService<ExpiredOrdersCleanupService>();
+//
 
 // REGISTER UNIT OF WORK
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -101,7 +108,7 @@ builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<DeleteOrderItemConsumerService>();
     x.AddConsumer<UpdateOrderItemConsumerService>();
-    x.AddConsumer<UserUpdatedConsumer>();
+    x.AddConsumer<OrderPaidConsumerService>();
 
     x.UsingRabbitMq((context, cfg) =>
     {
@@ -120,10 +127,10 @@ builder.Services.AddMassTransit(x =>
             e.Bind("clothe-item-deleted");
         });
 
-        cfg.ReceiveEndpoint("order-service-user-consumer-queue", e =>
+        cfg.ReceiveEndpoint("order-service-order-paid-queue", e =>
         {
-            e.ConfigureConsumer<UserUpdatedConsumer>(context);
-            e.Bind("user-updated");
+            e.ConfigureConsumer<OrderPaidConsumerService>(context);
+            e.Bind("order-paid");
         });
 
         cfg.Message<OrderCreatedEvent>(e => e.SetEntityName("order-created"));
@@ -183,6 +190,7 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseServiceDefaults();
 
 app.MapGrpcService<CheckUserPurchasedGrpcImpl>();
+app.MapGrpcService<GetOrderInfoGrpcServer>();
 
 if (app.Environment.IsDevelopment())
 {

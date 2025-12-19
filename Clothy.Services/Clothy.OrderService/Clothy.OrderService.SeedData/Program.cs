@@ -37,6 +37,7 @@ class Program
         services.AddScoped<ISettlementRepository, SettlementRepository>();
         services.AddScoped<IPickupPointRepository, PickupPointRepository>();
         services.AddScoped<IDeliveryDetailRepository, DeliveryDetailRepository>();
+        services.AddScoped<IOrderReservationRepository, OrderReservationRepository>();
 
         services.AddScoped<ISeeder, OrderStatusSeeder>();
         services.AddScoped<ISeeder, DeliveryProviderSeeder>();
