@@ -9,7 +9,7 @@ using Clothy.OrderService.BLL.Interfaces;
 using Clothy.OrderService.DAL.UOW;
 using Clothy.OrderService.Domain.Entities;
 using Clothy.Shared.Cache.Interfaces;
-using Clothy.Shared.Helpers.CloudinaryConfig;
+using Clothy.Shared.Helpers.CloudinaryConfig.ImageService;
 using Clothy.Shared.Helpers.Exceptions;
 
 namespace Clothy.OrderService.BLL.Services
@@ -25,7 +25,12 @@ namespace Clothy.OrderService.BLL.Services
         private static readonly TimeSpan MEMORY_TTL_ORDER_STATUS = TimeSpan.FromHours(1);
         private static readonly TimeSpan REDIS_TTL_ORDER_STATUS = TimeSpan.FromDays(7);
 
-        public OrderStatusService(IUnitOfWork unitOfWork, IMapper mapper, IImageService imageService, IEntityCacheService cacheService, IEntityCacheInvalidationService<OrderStatus> cacheInvalidationService)
+        public OrderStatusService(
+            IUnitOfWork unitOfWork, 
+            IMapper mapper, 
+            IImageService imageService, 
+            IEntityCacheService cacheService, 
+            IEntityCacheInvalidationService<OrderStatus> cacheInvalidationService)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;

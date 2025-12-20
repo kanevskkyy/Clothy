@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Clothy.Shared.Helpers.CloudinaryConfig.ImageService;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Http;
@@ -10,11 +11,11 @@ using Microsoft.Extensions.Options;
 
 namespace Clothy.Shared.Helpers.CloudinaryConfig
 {
-    public class ImageService : IImageService
+    public class CloudinaryService : IImageService
     {
         private Cloudinary cloudinary;
 
-        public ImageService(IOptions<CloudinarySettings> cloudinarySettings)
+        public CloudinaryService(IOptions<CloudinarySettings> cloudinarySettings)
         {
             CloudinarySettings settings = cloudinarySettings.Value;
             Account cloudinaryAccount = new Account(

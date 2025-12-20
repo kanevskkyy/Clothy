@@ -1,0 +1,16 @@
+﻿syntax = "proto3";
+
+message GetOrderInfoRequest {
+	string orderId = 1;
+}
+
+message GetOrderInfoResponse {
+	string orderId = 1;
+	string price = 2;
+	string userId = 3;
+	string status = 4;
+}
+
+service OrderServiceGrpc {
+	rpc GetOrderInfo (GetOrderInfoRequest) returns (GetOrderInfoResponse);
+}

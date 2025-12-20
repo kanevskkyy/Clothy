@@ -11,7 +11,6 @@ namespace Clothy.OrderService.DAL.Interfaces
 {
     public interface IOrderRepository : IGenericRepository<Order>
     {
-        Task UpdateUserNameAsync(Guid userId, string firstName, string lastName);
         Task<(IEnumerable<OrderSummaryData> Items, int TotalCount)> GetPagedAsync(OrderFilterDTO filter, CancellationToken cancellationToken = default);
         Task<OrderWithDetailsData?> GetByIdWithDetailsAsync(Guid id, CancellationToken cancellationToken = default);
     }

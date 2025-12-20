@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using Clothy.CatalogService.BLL.DTOs.ClotheDTOs;
 using Clothy.CatalogService.BLL.DTOs.ClotheStocksDTOs;
 using Clothy.CatalogService.BLL.Exceptions;
 using Clothy.CatalogService.BLL.Interfaces;
@@ -50,7 +51,7 @@ namespace Clothy.CatalogService.BLL.Services
 
             if (shouldCache)
             {
-                var cached = await cacheService.GetOrSetAsync(
+                PagedList<ClothesStockReadDTO>? cached = await cacheService.GetOrSetAsync(
                     cacheKey,
                     async () =>
                     {
@@ -76,7 +77,7 @@ namespace Clothy.CatalogService.BLL.Services
         {
             string cacheKey = $"clothesstock:{id}";
 
-            var cached = await cacheService.GetOrSetAsync(
+            ClothesStockReadDTO? cached = await cacheService.GetOrSetAsync(
                 cacheKey,
                 async () =>
                 {

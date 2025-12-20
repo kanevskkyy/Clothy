@@ -13,6 +13,7 @@ namespace Clothy.OrderService.Domain.Entities.AdditionalEntities
         public Guid UserId { get; set; }
         public string? UserFirstName { get; set; }
         public string? UserLastName { get; set; }
+        public string? UserEmail { get; set; }
         public decimal TotalAmount { get; set; }
         public List<OrderItemData> Items { get; set; } = new List<OrderItemData>();
         public DeliveryDetailData? DeliveryDetail { get; set; }

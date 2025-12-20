@@ -1,11 +1,11 @@
 ﻿using System;
-using Clothy.Shared.Helpers.CloudinaryConfig;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
+using Clothy.Shared.Helpers.CloudinaryConfig.ImageService;
 
-namespace Clothy.Shared.Helpers
+namespace Clothy.Shared.Helpers.CloudinaryConfig
 {
-    public static class ServiceCollectionExtensions
+    public static class CloudinaryExtensions
     {
         public static IServiceCollection AddCloudinary(this IServiceCollection services, IConfiguration configuration)
         {
@@ -20,7 +20,7 @@ namespace Clothy.Shared.Helpers
                 options.ApiSecret = apiSecret;
             });
 
-            services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<IImageService, CloudinaryService>();
 
             return services;
         }

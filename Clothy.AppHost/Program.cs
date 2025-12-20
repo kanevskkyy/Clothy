@@ -26,6 +26,8 @@ var redis = builder.AddRedis("clothy-redis")
 
 var postgresCatalogDB = postgres.AddDatabase("ClothyCatalogDb");
 var postgresOrdersDB = postgres.AddDatabase("ClothyOrder");
+var paymentDB = postgres.AddDatabase("ClothyPaymentDb");
+
 //var postgresUsersDB = postgres.AddDatabase("ClothyUsers");
 
 // Duende IdentityServer (Unused due to keycloak)
@@ -122,6 +124,25 @@ var reviewsService = builder.AddProject<Clothy_ReviewService_API>("reviews")
     .WaitFor(ordersService)
     .WaitFor(keycloak);
 
+var paymentService = builder.AddProject<Clothy_PaymentService_API>("payments")
+    .WithReference(paymentDB)
+    .WithEnvironment("STRIPE__SECRET_KEY", Environment.GetEnvironmentVariable("STRIPE__SECRET_KEY"))
+    .WithEnvironment("STRIPE__PUBLISHABLE_KEY", Environment.GetEnvironmentVariable("STRIPE__PUBLISHABLE_KEY"))
+    .WithEnvironment("STRIPE__WEBHOOK_SECRET", Environment.GetEnvironmentVariable("STRIPE__WEBHOOK_SECRET"))
+    .WithEnvironment("NOWPAYMENTS__API_KEY", Environment.GetEnvironmentVariable("NOWPAYMENTS__API_KEY"))
+    .WithEnvironment("NOWPAYMENTS__CALLBACK_URL", Environment.GetEnvironmentVariable("NOWPAYMENTS__CALLBACK_URL"))
+    .WithEnvironment("NOWPAYMENTS__WEBHOOK_SECRET", Environment.GetEnvironmentVariable("NOWPAYMENTS__WEBHOOK_SECRET"))
+    .WithEnvironment("SUCCESS__URL", Environment.GetEnvironmentVariable("SUCCESS__URL"))
+    .WithEnvironment("CANCEL__URL", Environment.GetEnvironmentVariable("CANCEL__URL"))
+    .WithReference(rabbitmq)
+    .WithReference(ordersService)
+    .WithReference(keycloak)
+    .WaitFor(rabbitmq)
+    .WaitFor(ordersService)
+    .WaitFor(keycloak)
+    .WaitFor(paymentDB);
+
+
 // OLD USER SERVICE BEFORE KEYCLOAK
 
 //var usersService = builder.AddProject<Clothy_UserService_API>("users")
@@ -165,6 +186,7 @@ var gateway = builder.AddProject<Clothy_Gateway>("gateway")
     .WithReference(catalogService)
     .WithReference(ordersService)
     .WithReference(reviewsService)
+    .WithReference(paymentService)
     .WithReference(basketService)
     .WithReference(aggregator)
     .WithReference(authService)

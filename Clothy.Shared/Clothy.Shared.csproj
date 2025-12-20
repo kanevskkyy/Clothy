@@ -36,6 +36,7 @@
 		<Protobuf Include="Protos/GetFilters.proto" GrpcServices="Both" />
 		<Protobuf Include="Protos/Basket.proto" GrpcServices="Both" />
 		<Protobuf Include="Protos/CheckUserPurchasedClothe.proto" GrpcServices="Both" />
+		<Protobuf Include="Protos/GetOrderInfo.proto" GrpcServices="Both" />
 	</ItemGroup>
 
 </Project>

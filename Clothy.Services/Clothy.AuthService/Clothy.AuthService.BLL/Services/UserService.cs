@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 using Clothy.AuthService.BLL.Config;
 using Clothy.AuthService.BLL.DTOs.Users;
 using Clothy.AuthService.BLL.Services.Interfaces;
-using Clothy.Shared.Helpers.CloudinaryConfig;
 using Clothy.Shared.Helpers.JWT;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Clothy.Shared.Events.UserEvents;
+using Clothy.Shared.Helpers.CloudinaryConfig.ImageService;
 
 namespace Clothy.AuthService.BLL.Services
 {

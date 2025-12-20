@@ -2,12 +2,12 @@ using Clothy.AuthService.API.Middleware;
 using Clothy.AuthService.BLL.Config;
 using Clothy.AuthService.BLL.Services;
 using Clothy.AuthService.BLL.Services.Interfaces;
-using Clothy.Shared.Helpers;
 using MassTransit;
 using FluentValidation.AspNetCore;
 using FluentValidation;
 using Clothy.AuthService.BLL.FluentValidation.Auth;
 using Clothy.Shared.Events.UserEvents;
+using Clothy.Shared.Helpers.CloudinaryConfig;
 
 var builder = WebApplication.CreateBuilder(args);
 
