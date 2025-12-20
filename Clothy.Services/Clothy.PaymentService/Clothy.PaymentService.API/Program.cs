@@ -31,15 +31,25 @@ builder.Services.AddConfiguredGrpcClient<OrderServiceGrpc.OrderServiceGrpcClient
         resilience.CircuitBreaker.FailureRatio = 0.3;
     });
 
-builder.Services.Configure<PaymentSettings>(options =>
+builder.Services.Configure<CardSettings>(options =>
 {
-    options.SecretKey = Environment.GetEnvironmentVariable("STRIPE__SECRET_KEY");
+    options.ApiKey = Environment.GetEnvironmentVariable("STRIPE__SECRET_KEY");
     options.PublishableKey = Environment.GetEnvironmentVariable("STRIPE__PUBLISHABLE_KEY");
-    options.SuccessUrl = Environment.GetEnvironmentVariable("STRIPE__SUCCESS_URL");
-    options.CancelUrl = Environment.GetEnvironmentVariable("STRIPE__CANCEL_URL");
+    options.SuccessURL = Environment.GetEnvironmentVariable("SUCCESS__URL");
+    options.CancelURL = Environment.GetEnvironmentVariable("CANCEL__URL");
     options.WebhookSecret = Environment.GetEnvironmentVariable("STRIPE__WEBHOOK_SECRET");
 });
 
+builder.Services.Configure<CryptoSettings>(options =>
+{
+    options.ApiKey = Environment.GetEnvironmentVariable("NOWPAYMENTS__API_KEY");
+    options.WebhookSecret = Environment.GetEnvironmentVariable("NOWPAYMENTS__WEBHOOK_SECRET");
+    options.CallbackURL = Environment.GetEnvironmentVariable("NOWPAYMENTS__CALLBACK_URL");
+    options.SuccessURL = Environment.GetEnvironmentVariable("SUCCESS__URL");
+    options.CancelURL = Environment.GetEnvironmentVariable("CANCEL__URL");
+});
+
+builder.Services.AddHttpClient("NowPayments");
 
 // FLUENT VALIDATION
 builder.Services.AddFluentValidationAutoValidation();
@@ -47,6 +57,8 @@ builder.Services.AddValidatorsFromAssembly(typeof(CreatePaymentRequestDTOValidat
 //
 
 builder.Services.AddScoped<IPaymentService, StripeService>();
+builder.Services.AddScoped<IPaymentService, NowPaymentsService>();
+builder.Services.AddScoped<IPaymentServiceFactory, PaymentServiceFactory>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

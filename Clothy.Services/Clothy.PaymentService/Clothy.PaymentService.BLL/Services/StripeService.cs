@@ -23,17 +23,19 @@ namespace Clothy.PaymentService.BLL.Services
 {
     public class StripeService : IPaymentService
     {
+        public Domain.Entities.PaymentMethod PaymentMethod => Domain.Entities.PaymentMethod.Card;
+
         public PaymentDbContext dbContext;
         private IGetOrderInfoClient orderInfoClient;
         private ILogger<StripeService> logger;
-        private PaymentSettings stripeSettings;
+        private CardSettings stripeSettings;
         private IUserClaimsExtractor userClaimsExtractor;
         private IPublishEndpoint publishEndpoint;
 
         public StripeService(PaymentDbContext dbContext, 
             IGetOrderInfoClient orderInfoClient, 
             ILogger<StripeService> logger,
-            IOptions<PaymentSettings> stripeSettings,
+            IOptions<CardSettings> stripeSettings,
             IUserClaimsExtractor userClaimsExtractor,
             IPublishEndpoint publishEndpoint)
         {
@@ -65,12 +67,12 @@ namespace Clothy.PaymentService.BLL.Services
                 Status = PaymentStatus.Pending
             };           
 
-            StripeConfiguration.ApiKey = stripeSettings.SecretKey;
+            StripeConfiguration.ApiKey = stripeSettings.ApiKey;
             SessionCreateOptions sessionCreateOptions = new SessionCreateOptions()
             {
                 Mode = "payment",
-                SuccessUrl = stripeSettings.SuccessUrl,
-                CancelUrl = stripeSettings.CancelUrl,
+                SuccessUrl = stripeSettings.SuccessURL,
+                CancelUrl = stripeSettings.CancelURL,
                 LineItems = new List<SessionLineItemOptions>()
                 {
                     new SessionLineItemOptions

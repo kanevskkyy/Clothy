@@ -1,5 +1,6 @@
 ﻿using Clothy.OrderService.DAL.UOW;
 using Clothy.OrderService.Domain.Entities;
+using Clothy.Shared.Cache.Interfaces;
 using DnsClient.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -17,13 +18,16 @@ namespace Clothy.OrderService.BLL.Services.BackgroundServices
         private ILogger<ExpiredOrdersCleanupService> logger;
         private IServiceScopeFactory scopeFactory;
         private TimeSpan INTERVAL = TimeSpan.FromMinutes(1);
+        private IEntityCacheInvalidationService<Order> cacheInvalidationService;    
 
         public ExpiredOrdersCleanupService(
             ILogger<ExpiredOrdersCleanupService> logger,
-            IServiceScopeFactory scopeFactory)
+            IServiceScopeFactory scopeFactory,
+            IEntityCacheInvalidationService<Order> cacheInvalidationService)
         {
             this.logger = logger;
             this.scopeFactory = scopeFactory;
+            this.cacheInvalidationService = cacheInvalidationService;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -54,11 +58,16 @@ namespace Clothy.OrderService.BLL.Services.BackgroundServices
                         }
 
                         await unitOfWork.Orders.DeleteAsync(orderId, stoppingToken);
+                        await cacheInvalidationService.InvalidateByIdAsync(orderId);
 
                         logger.LogInformation("Deleted expired unpaid order {OrderId} with {ReservationCount} reservations", orderId, orderGroup.Count());
                     }
 
-                    if (expiredReservations.Count > 0) await unitOfWork.CommitAsync();
+                    if (expiredReservations.Count > 0)
+                    {
+                        await unitOfWork.CommitAsync();
+                        await cacheInvalidationService.InvalidateAllAsync();
+                    }
                 }
                 catch (Exception ex)
                 {

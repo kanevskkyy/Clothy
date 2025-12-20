@@ -16,7 +16,7 @@ namespace Clothy.OrderService.BLL.RedisCache.OrdersCache
 
         private const string CACHE_KEY_PREFIX = "order:";
         private const string LIST_PATTERN = "orders:pending:page:*";
-        private const string ALL_PATTERN = "order:*";
+        private const string ALL_PATTERN = "orders:*";
 
         public OrderCacheInvalidationService(IEntityCacheService cacheService, ILogger<OrderCacheInvalidationService> logger)
         {

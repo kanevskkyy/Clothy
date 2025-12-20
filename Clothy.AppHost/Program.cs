@@ -17,6 +17,7 @@ var keycloakAdminPassword = builder.AddParameter("keycloak-admin-password", secr
 
 var postgres = builder.AddPostgres("clothy-postgres", password: postgresPassword)
     .WithImage("postgres:16")
+    .WithPgAdmin()
     .WithDataVolume("pgdata")
     .WithBindMount("./Scripts", "/docker-entrypoint-initdb.d");
 
@@ -127,9 +128,12 @@ var paymentService = builder.AddProject<Clothy_PaymentService_API>("payments")
     .WithReference(paymentDB)
     .WithEnvironment("STRIPE__SECRET_KEY", Environment.GetEnvironmentVariable("STRIPE__SECRET_KEY"))
     .WithEnvironment("STRIPE__PUBLISHABLE_KEY", Environment.GetEnvironmentVariable("STRIPE__PUBLISHABLE_KEY"))
-    .WithEnvironment("STRIPE__SUCCESS_URL", Environment.GetEnvironmentVariable("STRIPE__SUCCESS_URL"))
-    .WithEnvironment("STRIPE__CANCEL_URL", Environment.GetEnvironmentVariable("STRIPE__CANCEL_URL"))
     .WithEnvironment("STRIPE__WEBHOOK_SECRET", Environment.GetEnvironmentVariable("STRIPE__WEBHOOK_SECRET"))
+    .WithEnvironment("NOWPAYMENTS__API_KEY", Environment.GetEnvironmentVariable("NOWPAYMENTS__API_KEY"))
+    .WithEnvironment("NOWPAYMENTS__CALLBACK_URL", Environment.GetEnvironmentVariable("NOWPAYMENTS__CALLBACK_URL"))
+    .WithEnvironment("NOWPAYMENTS__WEBHOOK_SECRET", Environment.GetEnvironmentVariable("NOWPAYMENTS__WEBHOOK_SECRET"))
+    .WithEnvironment("SUCCESS__URL", Environment.GetEnvironmentVariable("SUCCESS__URL"))
+    .WithEnvironment("CANCEL__URL", Environment.GetEnvironmentVariable("CANCEL__URL"))
     .WithReference(rabbitmq)
     .WithReference(ordersService)
     .WithReference(keycloak)

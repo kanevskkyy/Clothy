@@ -13,6 +13,7 @@ namespace Clothy.PaymentService.Domain.Entities
         public Guid UserId { get; set; }
         public decimal Price { get; set; }
         public PaymentStatus Status { get; set; } = PaymentStatus.Pending;
+        public PaymentMethod PaymentMethod { get; set; } = PaymentMethod.Card;
         public string? TransactionId { get; set; }  
         public DateTime CreatedAt { get; set; } = DateTime.Now.ToUniversalTime();
         public DateTime? UpdatedAt { get; set; }

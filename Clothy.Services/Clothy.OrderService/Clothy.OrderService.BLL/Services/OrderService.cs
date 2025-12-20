@@ -315,6 +315,7 @@ namespace Clothy.OrderService.BLL.Services
                 await unitOfWork.OrderReservation.UpdateAsync(reservation, cancellationToken);
             }
             await unitOfWork.CommitAsync();
+            await cacheInvalidationService.InvalidateAllAsync();
         }
 
         public async Task<OrderDetailDTO> GetByIdAsync(Guid id, ClaimsPrincipal? claimsPrincipal = null, CancellationToken cancellationToken = default)
