@@ -21,6 +21,5 @@ namespace Clothy.OrderService.Domain.Entities.AdditionalEntities
         public DeliveryProvider? DeliveryProvider { get; set; }
         public Settlement? Settlement { get; set; }
         public Region? Region { get; set; }
-        public City? City { get; set; }
     }
 }

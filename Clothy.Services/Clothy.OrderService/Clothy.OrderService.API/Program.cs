@@ -3,7 +3,6 @@ using Clothy.OrderService.BLL.Consumers;
 using Clothy.OrderService.BLL.FluentValidation.OrderStatusValidation;
 using Clothy.OrderService.BLL.Interfaces;
 using Clothy.OrderService.BLL.Mapper;
-using Clothy.OrderService.BLL.RedisCache.CityCache;
 using Clothy.OrderService.BLL.RedisCache.DeliveryProviderCache;
 using Clothy.OrderService.BLL.RedisCache.OrdersCache;
 using Clothy.OrderService.BLL.RedisCache.OrderStatusCache;
@@ -69,7 +68,6 @@ builder.AddRedisClient("clothy-redis");
 // REGISTER REPOSITORY
 builder.Services.AddScoped<IOrderStatusRepository, OrderStatusRepository>();
 builder.Services.AddScoped<IDeliveryProviderRepository, DeliveryProviderRepository>();
-builder.Services.AddScoped<ICityRepository, CityRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
 builder.Services.AddScoped<IDeliveryDetailRepository, DeliveryDetailRepository>();
@@ -89,10 +87,9 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddGrpc();
 
 // AUTO MAPPER REGISTER
-builder.Services.AddAutoMapper(typeof(CityProfile).Assembly);
+builder.Services.AddAutoMapper(typeof(OrderProfile).Assembly);
 
 // SERVICES REGISTER
-builder.Services.AddScoped<ICityService, CityService>();
 builder.Services.AddScoped<IDeliveryProviderService, DeliveryProviderService>();
 builder.Services.AddScoped<IOrderStatusService, OrderStatusService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
@@ -148,7 +145,6 @@ builder.Services.AddCloudinary(builder.Configuration);
 builder.Services.AddTransient<IEntityCacheInvalidationService<Order>, OrderCacheInvalidationService>();
 builder.Services.AddTransient<IEntityCacheInvalidationService<OrderStatus>, OrderStatusCacheInvalidationService>();
 builder.Services.AddTransient<IEntityCacheInvalidationService<DeliveryProvider>, DeliveryProviderCacheInvalidationService>();
-builder.Services.AddTransient<IEntityCacheInvalidationService<City>, CityCacheInvalidationService>();
 builder.Services.AddTransient<IEntityCacheInvalidationService<Region>, RegionCacheInvalidationService>();
 builder.Services.AddTransient<IEntityCacheInvalidationService<PickupPoints>, PickupPointCacheInvalidationService>();
 builder.Services.AddTransient<IEntityCacheInvalidationService<Settlement>, SettlementCacheInvalidationService>();

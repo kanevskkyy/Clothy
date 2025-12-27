@@ -51,6 +51,9 @@ namespace Clothy.OrderService.DAL.Repositories
             StringBuilder countSql = new StringBuilder("SELECT COUNT(*) FROM pickup_points WHERE 1=1 ");
             DynamicParameters parameters = new DynamicParameters();
 
+            sql.Append(" AND isactive=True");
+            countSql.Append(" AND isactive = true ");
+
             if (filterDTO.DeliveryProviderId.HasValue)
             {
                 sql.Append(" AND deliveryproviderid = @DeliveryProviderId");
@@ -65,7 +68,13 @@ namespace Clothy.OrderService.DAL.Repositories
                 parameters.Add("SettlementId", filterDTO.SettlementId.Value);
             }
 
-            string sortBy = filterDTO.SortBy?.ToLower() ?? "address";
+            string sortBy = filterDTO.SortBy?.ToLower() switch
+            {
+                "address" => "address",
+                "createdat" => "createdat",
+                "updatedat" => "updatedat",
+                _ => "address"
+            };
             string direction = filterDTO.SortDescending ? "DESC" : "ASC";
             sql.Append($" ORDER BY {sortBy} {direction} ");
 

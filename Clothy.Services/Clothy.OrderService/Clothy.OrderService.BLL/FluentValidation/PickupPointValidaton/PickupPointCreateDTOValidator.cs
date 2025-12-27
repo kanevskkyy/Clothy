@@ -21,6 +21,10 @@ namespace Clothy.OrderService.BLL.FluentValidation.PickupPointValidaton
 
             RuleFor(x => x.SettlementId)
                 .NotEmpty().WithMessage("SettlementId is required.");
+
+            RuleFor(x => x.Ref)
+                .NotEmpty().WithMessage("Ref is required.")
+                .MaximumLength(100).WithMessage("Ref must not exceed 100 characters.");
         }
     }
 }

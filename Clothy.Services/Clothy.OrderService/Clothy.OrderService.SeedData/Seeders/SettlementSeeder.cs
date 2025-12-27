@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Bogus;
 using Clothy.OrderService.DAL.UOW;
 using Clothy.OrderService.Domain.Entities;
+using Clothy.OrderService.Domain.Entities.AdditionalEntities;
 
 namespace Clothy.OrderService.SeedData.Seeders
 {
@@ -30,6 +31,8 @@ namespace Clothy.OrderService.SeedData.Seeders
                     {
                         Name = $"{faker.Address.SecondaryAddress()} + {i}",
                         RegionId = region.Id,
+                        Type = SettlementType.City,
+                        Ref = Guid.NewGuid().ToString(),
                         CreatedAt = faker.Date.Past(5).ToUniversalTime(),
                         UpdatedAt = faker.Date.Recent(30).ToUniversalTime()
                     });

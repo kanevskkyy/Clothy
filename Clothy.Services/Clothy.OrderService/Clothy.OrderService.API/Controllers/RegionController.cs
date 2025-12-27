@@ -23,15 +23,14 @@ namespace Clothy.OrderService.API.Controllers
         /// <summary>
         /// Get paginated list of regions with optional filtering and sorting.
         /// </summary>
-        /// <param name="regionFilterDTO">Filter parameters for regions.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Paginated list of regions.</returns>
         [HttpGet]
-        public async Task<ActionResult<PagedList<RegionReadDTO>>> GetPagedAsync([FromQuery] RegionFilterDTO regionFilterDTO, CancellationToken cancellationToken)
+        public async Task<ActionResult<PagedList<RegionReadDTO>>> GetPagedAsync(CancellationToken cancellationToken = default)
         {
-            logger.LogInformation("Fetching paged regions. Page: {PageNumber}, PageSize: {PageSize}",regionFilterDTO.PageNumber, regionFilterDTO.PageSize);
+            logger.LogInformation("Fetching all regions");
 
-            PagedList<RegionReadDTO> pagedList = await regionService.GetPagedAsync(regionFilterDTO, cancellationToken);
+            List<RegionReadDTO> pagedList = await regionService.GetAllAsync(cancellationToken);
             return Ok(pagedList);
         }
 

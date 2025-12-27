@@ -19,6 +19,7 @@ namespace Clothy.OrderService.SeedData.Seeders
             List<string> statuses = new List<string>
             {
                 "Pending",
+                "Awaiting payment",
                 "Processing",
                 "Shipped",
                 "Delivered",

@@ -33,33 +33,12 @@ namespace Clothy.OrderService.BLL.Services
             this.cacheInvalidationService = cacheInvalidationService;
         }
 
-        public async Task<PagedList<RegionReadDTO>> GetPagedAsync(RegionFilterDTO filter, CancellationToken cancellationToken = default)
+        public async Task<List<RegionReadDTO>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            bool usePageCache = filter.PageNumber <= MAX_CACHED_PAGES;
-            string cacheKey = $"regions:page:{filter.PageNumber}:size:{filter.PageSize}";
+            IEnumerable<Region> regions = await unitOfWork.Region.GetAllAsync(cancelletionToken: cancellationToken);
+            List<RegionReadDTO> regionReadDTOs = mapper.Map<List<RegionReadDTO>>(regions);
 
-            if (usePageCache)
-            {
-                PagedList<RegionReadDTO>? cached = await cacheService.GetOrSetAsync(
-                    cacheKey,
-                    async () =>
-                    {
-                        var (regions, totalCount) = await unitOfWork.Region.GetPagedAsync(filter, cancellationToken);
-                        List<RegionReadDTO> dtos = mapper.Map<List<RegionReadDTO>>(regions);
-                        return new PagedList<RegionReadDTO>(dtos, totalCount, filter.PageNumber, filter.PageSize);
-                    },
-                    memoryExpiration: MEMORY_TTL,
-                    redisExpiration: REDIS_TTL
-                );
-
-                return cached;
-            }
-            else
-            {
-                var (regions, totalCount) = await unitOfWork.Region.GetPagedAsync(filter, cancellationToken);
-                List<RegionReadDTO> dtos = mapper.Map<List<RegionReadDTO>>(regions);
-                return new PagedList<RegionReadDTO>(dtos, totalCount, filter.PageNumber, filter.PageSize);
-            }
+            return regionReadDTOs;
         }
 
         public async Task<RegionReadDTO> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
@@ -83,11 +62,8 @@ namespace Clothy.OrderService.BLL.Services
 
         public async Task<RegionReadDTO> CreateAsync(RegionCreateDTO regionCreateDTO, CancellationToken cancellationToken = default)
         {
-            bool exists = await unitOfWork.Region.ExistByNameAndCityIdAsync(regionCreateDTO.Name, regionCreateDTO.CityId, cancellationToken: cancellationToken);
+            bool exists = await unitOfWork.Region.ExistByNameAndCityIdAsync(regionCreateDTO.Name, cancellationToken: cancellationToken);
             if (exists) throw new AlreadyExistsException($"Region with name '{regionCreateDTO.Name}' already exists.");
-
-            City? city = await unitOfWork.Cities.GetByIdAsync(regionCreateDTO.CityId, cancellationToken);
-            if (city == null) throw new NotFoundException($"City not found with ID: {regionCreateDTO.CityId}");
 
             Region region = mapper.Map<Region>(regionCreateDTO);
             region.Id = await unitOfWork.Region.AddAsync(region);
@@ -103,10 +79,7 @@ namespace Clothy.OrderService.BLL.Services
             Region? region = await unitOfWork.Region.GetByIdAsync(id, cancellationToken);
             if (region == null) throw new NotFoundException($"Region not found with ID: {id}");
 
-            City? city = await unitOfWork.Cities.GetByIdAsync(regionUpdateDTO.CityId, cancellationToken);
-            if (city == null) throw new NotFoundException($"City not found with ID: {regionUpdateDTO.CityId}");
-
-            bool exists = await unitOfWork.Region.ExistByNameAndCityIdAsync(regionUpdateDTO.Name, regionUpdateDTO.CityId, id, cancellationToken);
+            bool exists = await unitOfWork.Region.ExistByNameAndCityIdAsync(regionUpdateDTO.Name, id, cancellationToken);
             if (exists) throw new AlreadyExistsException($"Region with name '{regionUpdateDTO.Name}' already exists.");
 
             mapper.Map(regionUpdateDTO, region);

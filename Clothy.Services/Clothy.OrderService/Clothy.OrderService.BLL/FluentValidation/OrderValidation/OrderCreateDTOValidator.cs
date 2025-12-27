@@ -35,6 +35,11 @@ namespace Clothy.OrderService.BLL.FluentValidation.OrderValidation
 
             RuleFor(x => x.PickupPointId)
                 .NotEmpty().WithMessage("PickupPointId is required");
+
+            RuleFor(x => x.Comment)
+                .MaximumLength(80)
+                .When(x => !string.IsNullOrWhiteSpace(x.Comment))
+                .WithMessage("Comment cannout exceed 80 characters");
         }
     }
 }

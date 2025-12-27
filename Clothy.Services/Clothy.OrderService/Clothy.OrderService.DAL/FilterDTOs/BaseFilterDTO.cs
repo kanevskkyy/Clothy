@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Clothy.OrderService.DAL.FilterDTOs
 {
-    public class BaseFilterDTO
+    public abstract class BaseFilterDTO
     {
         private const int MAX_PAGE_SIZE = 50;
         private int PAGE_SIZE = 10;
@@ -21,5 +21,14 @@ namespace Clothy.OrderService.DAL.FilterDTOs
 
         public string? SortBy { get; set; }
         public bool SortDescending { get; set; } = false;
+
+        protected string GetBaseCacheKeyPart()
+        {
+            return $"sort:{SortBy ?? "name"}:{(SortDescending ? "desc" : "asc")}:" +
+                   $"page:{PageNumber}:" +
+                   $"size:{PageSize}";
+        }
+
+        public abstract string ToCacheKey();
     }
 }

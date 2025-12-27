@@ -17,7 +17,6 @@ var keycloakAdminPassword = builder.AddParameter("keycloak-admin-password", secr
 
 var postgres = builder.AddPostgres("clothy-postgres", password: postgresPassword)
     .WithImage("postgres:16")
-    .WithPgAdmin()
     .WithDataVolume("pgdata")
     .WithBindMount("./Scripts", "/docker-entrypoint-initdb.d");
 

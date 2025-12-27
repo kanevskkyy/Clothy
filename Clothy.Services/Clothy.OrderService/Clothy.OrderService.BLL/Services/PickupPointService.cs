@@ -73,33 +73,29 @@ namespace Clothy.OrderService.BLL.Services
             return cached;
         }
 
-        public async Task<PagedList<PickupPointReadDTO>> GetPagedAsync(PickupPointFilterDTO filter, CancellationToken cancellationToken = default)
+        public async Task<PagedList<PickupPointReadDTO>?> GetPagedAsync(PickupPointFilterDTO filter, CancellationToken cancellationToken = default)
         {
             bool usePageCache = filter.PageNumber <= MAX_CACHED_PAGES;
-            string cacheKey = $"pickup-points:page:{filter.PageNumber}:size:{filter.PageSize}";
 
             if (usePageCache)
             {
-                PagedList<PickupPointReadDTO>? cached = await cacheService.GetOrSetAsync(
-                    cacheKey,
-                    async () =>
-                    {
-                        var (items, totalCount) = await unitOfWork.PickupPoint.GetPagedAsync(filter, cancellationToken);
-                        List<PickupPointReadDTO> dtos = mapper.Map<List<PickupPointReadDTO>>(items);
-                        return new PagedList<PickupPointReadDTO>(dtos, totalCount, filter.PageNumber, filter.PageSize);
-                    },
+                return await cacheService.GetOrSetAsync(
+                    filter.ToCacheKey(),
+                    async () => await FetchPickupPointsAsync(filter, cancellationToken),
                     memoryExpiration: MEMORY_TTL,
                     redisExpiration: REDIS_TTL
                 );
+            }
 
-                return cached;
-            }
-            else
-            {
-                var (items, totalCount) = await unitOfWork.PickupPoint.GetPagedAsync(filter, cancellationToken);
-                List<PickupPointReadDTO> dtos = mapper.Map<List<PickupPointReadDTO>>(items);
-                return new PagedList<PickupPointReadDTO>(dtos, totalCount, filter.PageNumber, filter.PageSize);
-            }
+            return await FetchPickupPointsAsync(filter, cancellationToken);
+        }
+
+        private async Task<PagedList<PickupPointReadDTO>> FetchPickupPointsAsync(PickupPointFilterDTO filter, CancellationToken cancellationToken)
+        {
+            var (items, totalCount) = await unitOfWork.PickupPoint.GetPagedAsync(filter, cancellationToken);
+            List<PickupPointReadDTO> dtos = mapper.Map<List<PickupPointReadDTO>>(items);
+            
+            return new PagedList<PickupPointReadDTO>(dtos, totalCount, filter.PageNumber, filter.PageSize);
         }
 
         public async Task<PickupPointReadDTO> UpdateAsync(Guid id, PickupPointUpdateDTO dto, CancellationToken cancellationToken = default)

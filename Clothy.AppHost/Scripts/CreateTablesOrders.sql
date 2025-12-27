@@ -22,19 +22,13 @@ CREATE TABLE delivery_provider (
     updatedat TIMESTAMP WITHOUT TIME ZONE
 );
 
-CREATE TABLE city (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name VARCHAR(100) NOT NULL UNIQUE,
-    createdat TIMESTAMP WITHOUT TIME ZONE DEFAULT (NOW() AT TIME ZONE 'utc'),
-    updatedat TIMESTAMP WITHOUT TIME ZONE
-);
-
 CREATE TABLE orders (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     statusid UUID NOT NULL,
     userid UUID NOT NULL,
     userfirstname VARCHAR(100) NOT NULL,
     userlastname VARCHAR(100) NOT NULL,
+    comment VARCHAR(80),
     useremail VARCHAR(100) NOT NULL CHECK (useremail LIKE '%@%'),
     createdat TIMESTAMP WITHOUT TIME ZONE DEFAULT (NOW() AT TIME ZONE 'utc'),
     updatedat TIMESTAMP WITHOUT TIME ZONE,
@@ -69,19 +63,18 @@ CREATE TABLE order_item (
 CREATE TABLE regions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(100) NOT NULL,
-    cityid UUID NOT NULL,
+    ref VARCHAR(100) NOT NULL,
     createdat TIMESTAMP WITHOUT TIME ZONE DEFAULT (NOW() AT TIME ZONE 'utc'),
     updatedat TIMESTAMP WITHOUT TIME ZONE,
-    FOREIGN KEY (cityid) REFERENCES city(id)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
-    UNIQUE (name, cityid)
+    UNIQUE (name)
 );
 
 CREATE TABLE settlements (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(100) NOT NULL,
+    type SMALLINT NOT NULL,
     regionid UUID NOT NULL,
+    ref VARCHAR(100) NOT NULL,
     createdat TIMESTAMP WITHOUT TIME ZONE DEFAULT (NOW() AT TIME ZONE 'utc'),
     updatedat TIMESTAMP WITHOUT TIME ZONE,
     FOREIGN KEY (regionid) REFERENCES regions(id)
@@ -93,10 +86,12 @@ CREATE TABLE settlements (
 CREATE TABLE pickup_points (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     address VARCHAR(100) NOT NULL,
+    ref VARCHAR(100) NOT NULL,
     deliveryproviderid UUID NOT NULL,
     settlementid UUID NOT NULL,
     createdat TIMESTAMP WITHOUT TIME ZONE DEFAULT (NOW() AT TIME ZONE 'utc'),
     updatedat TIMESTAMP WITHOUT TIME ZONE,
+    isactive bool DEFAULT TRUE,
     FOREIGN KEY (deliveryproviderid) REFERENCES delivery_provider(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
@@ -149,9 +144,11 @@ CREATE TABLE orders_reservations(
 );
 
 CREATE INDEX idx_order_statusid ON orders(statusid);
+CREATE INDEX idx_regions_ref ON regions(ref);
+CREATE INDEX idx_settlements_ref ON settlements(ref);
+CREATE INDEX idx_pickup_points_ref ON pickup_points(ref);
 CREATE INDEX idx_order_userid ON orders(userid);
 CREATE INDEX idx_orderitem_orderid ON order_item(orderid);
-CREATE INDEX idx_regions_cityid ON regions(cityid);
 CREATE INDEX idx_settlements_regionid ON settlements(regionid);
 CREATE INDEX idx_pickup_points_providerid ON pickup_points(deliveryproviderid);
 CREATE INDEX idx_deliverydetail_orderid ON delivery_detail(orderid);

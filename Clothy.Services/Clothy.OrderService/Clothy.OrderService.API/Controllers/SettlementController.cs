@@ -30,6 +30,8 @@ namespace Clothy.OrderService.API.Controllers
         [HttpGet]
         public async Task<ActionResult<PagedList<SettlementReadDTO>>> GetPagedAsync([FromQuery] SettlementFilterDTO settlementFilterDTO, CancellationToken cancellationToken)
         {
+            Console.Write("REGION ID: " + settlementFilterDTO.RegionId);
+
             logger.LogInformation("Fetching paged settlements. Page: {PageNumber}, PageSize: {PageSize}", settlementFilterDTO.PageNumber, settlementFilterDTO.PageSize);
 
             PagedList<SettlementReadDTO> pagedList = await settlementService.GetPagedAsync(settlementFilterDTO, cancellationToken);

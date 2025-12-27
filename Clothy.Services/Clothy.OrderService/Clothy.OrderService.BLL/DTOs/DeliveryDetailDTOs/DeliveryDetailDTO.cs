@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Clothy.OrderService.BLL.DTOs.CityDTOs;
 using Clothy.OrderService.BLL.DTOs.DeliveryProviderDTOs;
 using Clothy.OrderService.BLL.DTOs.PickupPointsDTOs;
 using Clothy.OrderService.BLL.DTOs.RegionDTOs;
@@ -25,6 +24,5 @@ namespace Clothy.OrderService.BLL.DTOs.DeliveryDetailDTOs
         public DeliveryProviderReadDTO? DeliveryProvider { get; set; }
         public SettlementReadDTO? Settlement { get; set; }
         public RegionReadDTO? Region { get; set; }
-        public CityReadDTO? City { get; set; }
     }
 }

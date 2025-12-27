@@ -51,14 +51,20 @@ namespace Clothy.OrderService.DAL.Repositories
             StringBuilder countSql = new StringBuilder("SELECT COUNT(*) FROM settlements WHERE 1=1 ");
             DynamicParameters parameters = new DynamicParameters();
 
-            if (settlementFilterDTO.RegionId.HasValue)
+            if (settlementFilterDTO.RegionId.HasValue && settlementFilterDTO.RegionId != Guid.Empty)
             {
                 sql.Append(" AND regionid = @RegionId");
                 countSql.Append(" AND regionid = @RegionId");
-                parameters.Add("RegionId", settlementFilterDTO.RegionId.Value);
+                parameters.Add("RegionId", settlementFilterDTO.RegionId);
             }
 
-            string sortBy = settlementFilterDTO.SortBy?.ToLower() ?? "name";
+            string sortBy = settlementFilterDTO.SortBy?.ToLower() switch
+            {
+                "name" => "name",
+                "createdat" => "createdat",
+                "type" => "type",
+                _ => "name"
+            };
             string direction = settlementFilterDTO.SortDescending ? "DESC" : "ASC";
             sql.Append($" ORDER BY {sortBy} {direction} ");
 

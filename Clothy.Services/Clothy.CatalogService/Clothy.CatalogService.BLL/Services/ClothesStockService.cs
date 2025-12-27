@@ -44,33 +44,29 @@ namespace Clothy.CatalogService.BLL.Services
                 "Number of stock changes (add/update)");
         }
 
-        public async Task<PagedList<ClothesStockReadDTO>> GetPagedClothesStockAsync(ClothesStockSpecificationParameters parameters, CancellationToken cancellationToken = default)
+        public async Task<PagedList<ClothesStockReadDTO>?> GetPagedClothesStockAsync(ClothesStockSpecificationParameters parameters, CancellationToken cancellationToken = default)
         {
             bool shouldCache = parameters.PageNumber <= 3;
-            string cacheKey = $"clothesstock:page:{parameters.PageNumber}:size:{parameters.PageSize}";
 
             if (shouldCache)
             {
-                PagedList<ClothesStockReadDTO>? cached = await cacheService.GetOrSetAsync(
-                    cacheKey,
-                    async () =>
-                    {
-                        PagedList<ClothesStock> paged = await unitOfWork.ClothesStocks.GetPagedClothesStockAsync(parameters, cancellationToken);
-                        List<ClothesStockReadDTO> mapped = mapper.Map<List<ClothesStockReadDTO>>(paged.Items);
-                        return new PagedList<ClothesStockReadDTO>(mapped, paged.TotalCount, paged.CurrentPage, paged.PageSize);
-                    },
+                return await cacheService.GetOrSetAsync(
+                    parameters.ToCacheKey(),
+                    async () => await FetchClothesStockAsync(parameters, cancellationToken),
                     memoryExpiration: MEMORY_TTL_PAGE,
                     redisExpiration: REDIS_TTL_PAGE
                 );
+            }
 
-                return cached!;
-            }
-            else
-            {
-                PagedList<ClothesStock> paged = await unitOfWork.ClothesStocks.GetPagedClothesStockAsync(parameters, cancellationToken);
-                List<ClothesStockReadDTO> mapped = mapper.Map<List<ClothesStockReadDTO>>(paged.Items);
-                return new PagedList<ClothesStockReadDTO>(mapped, paged.TotalCount, paged.CurrentPage, paged.PageSize);
-            }
+            return await FetchClothesStockAsync(parameters, cancellationToken);
+        }
+
+        private async Task<PagedList<ClothesStockReadDTO>> FetchClothesStockAsync(ClothesStockSpecificationParameters parameters, CancellationToken cancellationToken)
+        {
+            PagedList<ClothesStock> paged = await unitOfWork.ClothesStocks.GetPagedClothesStockAsync(parameters, cancellationToken);
+            List<ClothesStockReadDTO> mapped = mapper.Map<List<ClothesStockReadDTO>>(paged.Items);
+            
+            return new PagedList<ClothesStockReadDTO>(mapped, paged.TotalCount, paged.CurrentPage, paged.PageSize);
         }
 
         public async Task<ClothesStockReadDTO> GetByIdWithDetailsAsync(Guid id, CancellationToken cancellationToken = default)
