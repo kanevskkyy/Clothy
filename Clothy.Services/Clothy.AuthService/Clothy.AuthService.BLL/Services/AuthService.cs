@@ -17,18 +17,18 @@ using Clothy.Shared.Cache.Interfaces;
 
 namespace Clothy.AuthService.BLL.Services
 {
-    public class KeycloakAuthService : IKeycloakAuthService
+    public class AuthService : IKeycloakAuthService
     {
         private HttpClient httpClient;
-        private ILogger<KeycloakAuthService> logger;
+        private ILogger<AuthService> logger;
         private IUserClaimsExtractor userClaimsExtractor;
         private KeycloakSettings keycloakSettings;
         
         private const string DEFAULT_PHOTO_URL = "https://res.cloudinary.com/dkdljnfja/image/upload/v1763818143/Profile_Avatar_cfazhc.png";
 
-        public KeycloakAuthService(
+        public AuthService(
             HttpClient httpClient,
-            ILogger<KeycloakAuthService> logger,
+            ILogger<AuthService> logger,
             IOptions<KeycloakSettings> keycloakOptions,
             IUserClaimsExtractor userClaimsExtractor)
         {
@@ -42,12 +42,12 @@ namespace Clothy.AuthService.BLL.Services
         {
             logger.LogInformation("Starting user registration for email: {Email}", registerDTO.Email);
 
-            var adminToken = await GetAdminTokenAsync(cancellationToken);
+            string adminToken = await GetAdminTokenAsync(cancellationToken);
             string url = $"{keycloakSettings.Url}/admin/realms/{keycloakSettings.Realm}/users";
 
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
 
-            var newUser = new
+            object newUser = new
             {
                 username = registerDTO.Email,
                 email = registerDTO.Email,
@@ -78,8 +78,9 @@ namespace Clothy.AuthService.BLL.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                var error = await response.Content.ReadAsStringAsync(cancellationToken);
+                string error = await response.Content.ReadAsStringAsync(cancellationToken);
                 logger.LogError("Registration failed: {Error}", error);
+                
                 throw new Exception($"Registration failed: {error}");
             }
 
@@ -99,7 +100,9 @@ namespace Clothy.AuthService.BLL.Services
                 PhoneNumber = registerDTO.PhoneNumber,
                 PhotoUrl = DEFAULT_PHOTO_URL,
                 EmailVerified = false,
-                Roles = new List<string> { "User" }
+                Roles = new List<string> { 
+                    "User" 
+                }
             };
         }
 
@@ -126,6 +129,7 @@ namespace Clothy.AuthService.BLL.Services
             {
                 string error = await response.Content.ReadAsStringAsync(cancellationToken);
                 logger.LogWarning("Login failed for email: {Email}. Error: {Error}", loginDTO.Email, error);
+                
                 throw new UnauthorizedAccessException("Invalid email or password");
             }
 
@@ -158,6 +162,7 @@ namespace Clothy.AuthService.BLL.Services
             {
                 string error = await response.Content.ReadAsStringAsync(cancellationToken);
                 logger.LogWarning("Token refresh failed. Error: {Error}", error);
+                
                 throw new UnauthorizedAccessException("Invalid refresh token");
             }
 
@@ -245,7 +250,7 @@ namespace Clothy.AuthService.BLL.Services
 
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
 
-            var passwordData = new
+            object passwordData = new
             {
                 type = "password",
                 value = resetPasswordDTO.NewPassword,
@@ -261,6 +266,7 @@ namespace Clothy.AuthService.BLL.Services
             {
                 string error = await response.Content.ReadAsStringAsync(cancellationToken);
                 logger.LogError("Failed to reset password: {Error}", error);
+                
                 throw new Exception($"Failed to reset password: {error}");
             }
 
@@ -341,7 +347,8 @@ namespace Clothy.AuthService.BLL.Services
 
             string assignUrl = $"{keycloakSettings.Url}/admin/realms/{keycloakSettings.Realm}/users/{userId}/role-mappings/realm";
 
-            var roles = new[] { new { id = role.GetProperty("id").GetString(), name = roleName } };
+            object[] roles = new[] { new { id = role.GetProperty("id").GetString(), name = roleName } };
+            
             string json = JsonSerializer.Serialize(roles);
             StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
 

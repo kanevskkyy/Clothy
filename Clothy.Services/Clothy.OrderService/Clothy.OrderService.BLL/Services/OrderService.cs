@@ -41,6 +41,8 @@ namespace Clothy.OrderService.BLL.Services
         private static TimeSpan MEMORY_TTL_PAGED_ORDERS = TimeSpan.FromMinutes(10);
         private static TimeSpan REDIS_TTL_PAGED_ORDERS = TimeSpan.FromHours(1);
 
+        private const int TIME_FOR_PAY = 10;
+
         private Counter<long> ordersCreated;
         private Histogram<double> operationLatency;
 
@@ -76,194 +78,195 @@ namespace Clothy.OrderService.BLL.Services
                 "Duration of created orders");
         }
 
-            public async Task<OrderDetailDTO> CreateAsync(OrderCreateDTO dto, ClaimsPrincipal claimsPrincipal, CancellationToken cancellationToken = default)
+        public async Task<OrderDetailDTO> CreateAsync(OrderCreateDTO dto, ClaimsPrincipal claimsPrincipal, CancellationToken cancellationToken = default)
+        {
+            Stopwatch stopwatch = new Stopwatch();
+            string statusType = "Success";
+            string failureReason = string.Empty;
+            stopwatch.Start();
+
+            try
             {
-                Stopwatch stopwatch = new Stopwatch();
-                string statusType = "Success";
-                string failureReason = string.Empty;
-                stopwatch.Start();
+                Guid userId = userClaimsExtractor.GetUserId(claimsPrincipal);
 
-                try
+                logger.LogInformation("Starting order creation for user: {UserId}", userId);
+
+                GetUserBasketResponse basketResponse = await basketGrpcClient.GetUserBasketAsync(userId);
+
+                if (basketResponse.Items == null || basketResponse.Items.Count == 0)
                 {
-                    Guid userId = userClaimsExtractor.GetUserId(claimsPrincipal);
+                    logger.LogWarning("Basket is empty for user: {UserId}", userId);
+                    throw new ValidationFailedException("Basket is empty. Cannot create order without items.");
+                }
 
-                    logger.LogInformation("Starting order creation for user: {UserId}", userId);
+                logger.LogInformation("Retrieved basket for user: {UserId} with {ItemCount} items", userId, basketResponse.Items.Count);
 
-                    GetUserBasketResponse basketResponse = await basketGrpcClient.GetUserBasketAsync(userId);
+                List<OrderItemToValidate> targetValidateRequest = new List<OrderItemToValidate>();
 
-                    if (basketResponse.Items == null || basketResponse.Items.Count == 0)
+                foreach (BasketItemMessage item in basketResponse.Items)
+                {
+                    int reservedQuantity = await unitOfWork.OrderReservation.GetReservedQuantityAsync(
+                        Guid.Parse(item.ClotheId),
+                        Guid.Parse(item.SizeId),
+                        Guid.Parse(item.ColorId),
+                        cancellationToken);
+
+                    targetValidateRequest.Add(new OrderItemToValidate()
                     {
-                        logger.LogWarning("Basket is empty for user: {UserId}", userId);
-                        throw new ValidationFailedException("Basket is empty. Cannot create order without items.");
+                        ClotheId = item.ClotheId,
+                        SizeId = item.SizeId,
+                        ColorId = item.ColorId,
+                        Quantity = item.Quantity + reservedQuantity
+                    });
+                }
+
+                logger.LogInformation("Validating {ItemCount} items before order creation", targetValidateRequest.Count);
+
+                ValidateOrderItemsResponse validationResponse = await validatorGrpcClient.ValidateOrderItemsAsync(targetValidateRequest);
+
+                for (int i = 0; i < validationResponse.Results.Count; i++)
+                {
+                    ValidateOrderItemResponse validationResult = validationResponse.Results[i];
+                    if (!validationResult.IsValid)
+                    {
+                        logger.LogWarning("Order item validation failed: {ErrorMessage}", validationResult.ErrorMessage);
+                        throw new ValidationFailedException($"Order item validation failed: {validationResult.ErrorMessage}");
                     }
+                }
 
-                    logger.LogInformation("Retrieved basket for user: {UserId} with {ItemCount} items", userId, basketResponse.Items.Count);
+                logger.LogInformation("All items validated successfully");
 
-                    List<OrderItemToValidate> targetValidateRequest = new List<OrderItemToValidate>();
+                OrderStatus? awaitingPaymentStatus = await unitOfWork.OrderStatuses.GetByNameAsync("Awaiting payment", cancellationToken);
+                if (awaitingPaymentStatus == null) throw new NotFoundException("Awaiting payment status not found");
 
-                    foreach(BasketItemMessage item in basketResponse.Items)
+                bool hasOrdered = await unitOfWork.Orders.HasUserAlreadyOrderedAsync(userId, cancellationToken);
+                decimal finalDiscount = hasOrdered ? 1.0m : 0.9m;
+                if (!hasOrdered) logger.LogInformation("Applied 10% discount for first order of user {UserId}", userId);
+
+                Order order = new Order
+                {
+                    UserId = userId,
+                    UserFirstName = userClaimsExtractor.GetFirstName(claimsPrincipal),
+                    UserLastName = userClaimsExtractor.GetLastName(claimsPrincipal),
+                    UserEmail = userClaimsExtractor.GetEmail(claimsPrincipal),
+                    CreatedAt = DateTime.UtcNow.ToUniversalTime(),
+                    StatusId = awaitingPaymentStatus.Id
+                };
+
+                await unitOfWork.Orders.AddAsync(order, cancellationToken);
+
+                DateTime now = DateTime.UtcNow.ToUniversalTime();
+                DateTime expiredAt = now.AddMinutes(TIME_FOR_PAY);
+
+                for (int i = 0; i < validationResponse.Results.Count; i++)
+                {
+                    ValidateOrderItemResponse validationResult = validationResponse.Results[i];
+                    BasketItemMessage basketItem = basketResponse.Items[i];
+
+                    OrderItem orderItem = new OrderItem
                     {
-                        int reservedQuantity = await unitOfWork.OrderReservation.GetReservedQuantityAsync(
-                            Guid.Parse(item.ClotheId),
-                            Guid.Parse(item.SizeId),
-                            Guid.Parse(item.ColorId),
-                            cancellationToken);
-
-                        targetValidateRequest.Add(new OrderItemToValidate()
-                        {
-                            ClotheId = item.ClotheId,
-                            SizeId = item.SizeId,
-                            ColorId = item.ColorId,
-                            Quantity = item.Quantity + reservedQuantity
-                        });
-                    }
-
-                    logger.LogInformation("Validating {ItemCount} items before order creation", targetValidateRequest.Count);
-
-                    ValidateOrderItemsResponse validationResponse = await validatorGrpcClient.ValidateOrderItemsAsync(targetValidateRequest);
-
-                    for (int i = 0; i < validationResponse.Results.Count; i++)
-                    {
-                        ValidateOrderItemResponse validationResult = validationResponse.Results[i];
-                        if (!validationResult.IsValid)
-                        {
-                            logger.LogWarning("Order item validation failed: {ErrorMessage}", validationResult.ErrorMessage);
-                            throw new ValidationFailedException($"Order item validation failed: {validationResult.ErrorMessage}");
-                        }
-                    }
-
-                    logger.LogInformation("All items validated successfully");
-
-                    OrderStatus? awaitingPaymentStatus = await unitOfWork.OrderStatuses.GetByNameAsync("Awaiting payment", cancellationToken);
-                    if (awaitingPaymentStatus == null) throw new NotFoundException("Awaiting payment status not found");
-
-                    Order order = new Order
-                    {
-                        UserId = userId,
-                        UserFirstName = userClaimsExtractor.GetFirstName(claimsPrincipal),
-                        UserLastName = userClaimsExtractor.GetLastName(claimsPrincipal),
-                        UserEmail = userClaimsExtractor.GetEmail(claimsPrincipal),
+                        ClotheId = Guid.Parse(basketItem.ClotheId),
+                        SizeId = Guid.Parse(basketItem.SizeId),
+                        ColorId = Guid.Parse(basketItem.ColorId),
+                        ClotheName = validationResult.ClotheName,
+                        Price = decimal.Parse(validationResult.Price) * finalDiscount,
+                        MainPhoto = validationResult.MainPhotoUrl,
+                        SizeName = validationResult.SizeName,
+                        HexCode = validationResult.ColorHexCode,
+                        Quantity = basketItem.Quantity,
                         CreatedAt = DateTime.UtcNow.ToUniversalTime(),
-                        StatusId = awaitingPaymentStatus.Id
+                        OrderId = order.Id
                     };
+                    await unitOfWork.OrderItems.AddAsync(orderItem, cancellationToken);
 
-                    await unitOfWork.Orders.AddAsync(order, cancellationToken);
-
-                    DateTime now = DateTime.UtcNow.ToUniversalTime();
-                    DateTime expiredAt = now.AddMinutes(10);
-
-                    for (int i = 0; i < validationResponse.Results.Count; i++)
+                    OrderReservation orderReservation = new OrderReservation
                     {
-                        ValidateOrderItemResponse validationResult = validationResponse.Results[i];
-                        BasketItemMessage basketItem = basketResponse.Items[i];
-
-                        OrderItem orderItem = new OrderItem
-                        {
-                            ClotheId = Guid.Parse(basketItem.ClotheId),
-                            SizeId = Guid.Parse(basketItem.SizeId),
-                            ColorId = Guid.Parse(basketItem.ColorId),
-                            ClotheName = validationResult.ClotheName,
-                            Price = decimal.Parse(validationResult.Price),
-                            MainPhoto = validationResult.MainPhotoUrl,
-                            SizeName = validationResult.SizeName,
-                            HexCode = validationResult.ColorHexCode,
-                            Quantity = basketItem.Quantity,
-                            CreatedAt = DateTime.UtcNow.ToUniversalTime(),
-                            OrderId = order.Id
-                        };
-                        await unitOfWork.OrderItems.AddAsync(orderItem, cancellationToken);
-
-                        OrderReservation orderReservation = new OrderReservation
-                        {
-                            OrderId = order.Id,
-                            ClotheId = Guid.Parse(basketItem.ClotheId),
-                            SizeId = Guid.Parse(basketItem.SizeId),
-                            ColorId = Guid.Parse(basketItem.ColorId),
-                            Quantity = basketItem.Quantity,
-                            ReservedAt = now,
-                            ExpiresAt = expiredAt,
-                            IsActive = true
-                        };
-                        await unitOfWork.OrderReservation.AddAsync(orderReservation, cancellationToken);
-                    }
-
-                    PickupPoints? pickupPoints = await unitOfWork.PickupPoint.GetByIdAsync(dto.PickupPointId, cancellationToken);
-                    if (pickupPoints == null)
-                    {
-                        throw new NotFoundException($"PickupPoint not found with ID: {dto.PickupPointId}");
-                    }
-
-                    DeliveryDetail delivery = mapper.Map<DeliveryDetail>(dto);
-                    delivery.CreatedAt = DateTime.UtcNow.ToUniversalTime();
-                    delivery.OrderId = order.Id;
-                    await unitOfWork.DeliveryDetails.AddAsync(delivery, cancellationToken);
-
-                    await unitOfWork.CommitAsync();
-
-                    logger.LogInformation("Order created successfully: {OrderId}", order.Id);
-
-                    ordersCreated.Add(1,
-                        new KeyValuePair<string, object?>("status", "Pending"),
-                        new KeyValuePair<string, object?>("pickupPointAddress", pickupPoints.Address));
-
-                    await cacheInvalidationService.InvalidateAllAsync();
-
-                    operationLatency.Record(
-                        stopwatch.ElapsedMilliseconds,
-                        new KeyValuePair<string, object?>("operation", "order_create"),
-                        new KeyValuePair<string, object?>("status", statusType),
-                        new KeyValuePair<string, object?>("failureReason", failureReason),
-                        new KeyValuePair<string, object?>("itemsCount", basketResponse.Items.Count)
-                    );
-
-                    OrderDetailDTO? createdOrder = await GetByIdAsync(order.Id, cancellationToken: cancellationToken);
-                    return createdOrder;
+                        OrderId = order.Id,
+                        ClotheId = Guid.Parse(basketItem.ClotheId),
+                        SizeId = Guid.Parse(basketItem.SizeId),
+                        ColorId = Guid.Parse(basketItem.ColorId),
+                        Quantity = basketItem.Quantity,
+                        ReservedAt = now,
+                        ExpiresAt = expiredAt,
+                        IsActive = true
+                    };
+                    await unitOfWork.OrderReservation.AddAsync(orderReservation, cancellationToken);
                 }
-                catch (RpcException rpcEx)
-                {
-                    failureReason = "gRPC_Error";
-                    statusType = "Failed";
-                    logger.LogError(rpcEx, "gRPC error during order creation");
 
-                    operationLatency.Record(
-                        stopwatch.ElapsedMilliseconds,
-                        new KeyValuePair<string, object?>("operation", "order_create"),
-                        new KeyValuePair<string, object?>("status", "failed"),
-                        new KeyValuePair<string, object?>("failureReason", failureReason),
-                        new KeyValuePair<string, object?>("itemsCount", 0)
-                    );
+                PickupPoints? pickupPoints = await unitOfWork.PickupPoint.GetByIdAsync(dto.PickupPointId, cancellationToken);
+                if (pickupPoints == null) throw new NotFoundException($"PickupPoint not found with ID: {dto.PickupPointId}");
 
-                    throw new ValidationFailedException($"Failed to communicate with services: {rpcEx.Status.Detail}");
-                }
-                catch (ValidationFailedException)
-                {
-                    throw;
-                }
-                catch (NotFoundException)
-                {
-                    throw;
-                }
-                catch (Exception ex)
-                {
-                    failureReason = ex.GetType().Name;
-                    statusType = "Failed";
-                    logger.LogError(ex, "Unexpected error during order creation");
+                DeliveryDetail delivery = mapper.Map<DeliveryDetail>(dto);
+                delivery.CreatedAt = DateTime.UtcNow.ToUniversalTime();
+                delivery.OrderId = order.Id;
+                await unitOfWork.DeliveryDetails.AddAsync(delivery, cancellationToken);
 
-                    operationLatency.Record(
-                        stopwatch.ElapsedMilliseconds,
-                        new KeyValuePair<string, object?>("operation", "order_create"),
-                        new KeyValuePair<string, object?>("status", "failed"),
-                        new KeyValuePair<string, object?>("failureReason", failureReason),
-                        new KeyValuePair<string, object?>("itemsCount", 0)
-                    );
+                await unitOfWork.CommitAsync();
 
-                    throw;
-                }
-                finally
-                {
-                    stopwatch.Stop();
-                }
+                logger.LogInformation("Order created successfully: {OrderId}", order.Id);
+
+                ordersCreated.Add(1,
+                    new KeyValuePair<string, object?>("status", "Pending"),
+                    new KeyValuePair<string, object?>("pickupPointAddress", pickupPoints.Address));
+
+                await cacheInvalidationService.InvalidateAllAsync();
+
+                operationLatency.Record(
+                    stopwatch.ElapsedMilliseconds,
+                    new KeyValuePair<string, object?>("operation", "order_create"),
+                    new KeyValuePair<string, object?>("status", statusType),
+                    new KeyValuePair<string, object?>("failureReason", failureReason),
+                    new KeyValuePair<string, object?>("itemsCount", basketResponse.Items.Count)
+                );
+
+                OrderDetailDTO? createdOrder = await GetByIdAsync(order.Id, cancellationToken: cancellationToken);
+                return createdOrder;
             }
+            catch (RpcException rpcEx)
+            {
+                failureReason = "gRPC_Error";
+                statusType = "Failed";
+                logger.LogError(rpcEx, "gRPC error during order creation");
+
+                operationLatency.Record(
+                    stopwatch.ElapsedMilliseconds,
+                    new KeyValuePair<string, object?>("operation", "order_create"),
+                    new KeyValuePair<string, object?>("status", "failed"),
+                    new KeyValuePair<string, object?>("failureReason", failureReason),
+                    new KeyValuePair<string, object?>("itemsCount", 0)
+                );
+
+                throw new ValidationFailedException($"Failed to communicate with services: {rpcEx.Status.Detail}");
+            }
+            catch (ValidationFailedException)
+            {
+                throw;
+            }
+            catch (NotFoundException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                failureReason = ex.GetType().Name;
+                statusType = "Failed";
+                logger.LogError(ex, "Unexpected error during order creation");
+
+                operationLatency.Record(
+                    stopwatch.ElapsedMilliseconds,
+                    new KeyValuePair<string, object?>("operation", "order_create"),
+                    new KeyValuePair<string, object?>("status", "failed"),
+                    new KeyValuePair<string, object?>("failureReason", failureReason),
+                    new KeyValuePair<string, object?>("itemsCount", 0)
+                );
+
+                throw;
+            }
+            finally
+            {
+                stopwatch.Stop();
+            }
+        }
 
         public async Task HandleOrderPaidEventAsync(OrderPaidEvent orderPaidEvent, CancellationToken cancellationToken = default)
         {
@@ -309,7 +312,7 @@ namespace Clothy.OrderService.BLL.Services
             await publishEndpoint.Publish(orderCreatedEmailEvent, cancellationToken);
 
             List<OrderReservation> orderReservations = await unitOfWork.OrderReservation.GetByOrderIdAsync(orderCreatedEvent.OrderId, cancellationToken);
-            foreach(OrderReservation reservation in orderReservations)
+            foreach (OrderReservation reservation in orderReservations)
             {
                 reservation.IsActive = false;
                 await unitOfWork.OrderReservation.UpdateAsync(reservation, cancellationToken);

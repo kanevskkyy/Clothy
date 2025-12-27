@@ -40,7 +40,6 @@ namespace Clothy.NotificationService.BLL.Services
             message.AddTo(emailMessageDTO.To);
             message.SetClickTracking(false, false);
 
-
             await sendGridClient.SendEmailAsync(message, cancellationToken);
         }
     }

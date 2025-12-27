@@ -6,11 +6,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Clothy.OrderService.DAL.ConnectionFactory;
-using Clothy.OrderService.DAL.Interfaces;
 using Clothy.OrderService.Domain.Entities.AdditionalEntities;
 using Clothy.OrderService.Domain.Entities;
 using Dapper;
 using Clothy.OrderService.DAL.FilterDTOs;
+using Clothy.OrderService.DAL.Interfaces;
 
 namespace Clothy.OrderService.DAL.Repositories
 {
@@ -23,7 +23,7 @@ namespace Clothy.OrderService.DAL.Repositories
 
         public async Task<(IEnumerable<OrderSummaryData> Items, int TotalCount)> GetPagedAsync(OrderFilterDTO filter, CancellationToken cancellationToken = default)
         {
-            IDbConnection connection = await GetOpenConnectionAsync();
+            using IDbConnection connection = await GetOpenConnectionAsync();
 
             StringBuilder sql = new StringBuilder(@"
                 SELECT o.id, o.userid, o.userfirstname, o.userlastname, o.useremail, o.createdat, o.updatedat,
@@ -107,7 +107,7 @@ namespace Clothy.OrderService.DAL.Repositories
 
         public async Task<OrderWithDetailsData?> GetByIdWithDetailsAsync(Guid id, CancellationToken ct = default)
         {
-            IDbConnection connection = await GetOpenConnectionAsync();
+            using IDbConnection connection = await GetOpenConnectionAsync();
 
             string orderSql = @"
                 SELECT 
@@ -232,6 +232,26 @@ namespace Clothy.OrderService.DAL.Repositories
             }
 
             return order;
+        }
+
+        public async Task<bool> HasUserAlreadyOrderedAsync(Guid userId, CancellationToken cancellationToken = default)
+        {
+            using IDbConnection connection = await GetOpenConnectionAsync();
+
+            string sql = @"
+                SELECT COUNT(*)
+                FROM orders
+                WHERE userid = @UserId;
+                ";
+
+            int count = await connection.ExecuteScalarAsync<int>(
+                new CommandDefinition(sql, new
+                {
+                    UserId = userId
+                }, 
+                cancellationToken: cancellationToken
+            ));
+            return count > 0;
         }
     }
 }

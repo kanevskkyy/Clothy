@@ -16,7 +16,7 @@ namespace Clothy.Aggregator.Aggregate.Clients
     {
         private ClotheFilterServiceGrpcClient client;
         private ILogger<FilterGrpcClient> logger;
-        private readonly IEntityCacheService cacheService;
+        private IEntityCacheService cacheService;
         private static TimeSpan MEMORY_TTL_CACHE = TimeSpan.FromMinutes(5);
         private static TimeSpan REDIS_TTL_CACHE = TimeSpan.FromMinutes(30);
         private static string FILTER_CACHE_KEY = "filters:all";

@@ -21,7 +21,7 @@ namespace Clothy.OrderService.DAL.Repositories
 
         public async Task<(IEnumerable<City> Items, int TotalCount)> GetPagedAsync(CityFilterDTO filter, CancellationToken cancellationToken = default)
         {
-            IDbConnection connection = await GetOpenConnectionAsync();
+            using IDbConnection connection = await GetOpenConnectionAsync();
             StringBuilder sql = new StringBuilder("SELECT * FROM city WHERE 1=1 ");
             StringBuilder countSql = new StringBuilder("SELECT COUNT(*) FROM city WHERE 1=1 ");
             DynamicParameters parameters = new DynamicParameters();

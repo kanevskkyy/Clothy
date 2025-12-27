@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Clothy.Shared\Clothy.Shared.csproj" />
+    <ProjectReference Include="..\Clothy.CatalogService.BLL\Clothy.CatalogService.BLL.csproj" />
     <ProjectReference Include="..\Clothy.CatalogService.DAL\Clothy.CatalogService.DAL.csproj" />
   </ItemGroup>
 

@@ -32,6 +32,8 @@ namespace Clothy.PaymentService.BLL.Services
         private IUserClaimsExtractor userClaimsExtractor;
         private IPublishEndpoint publishEndpoint;
 
+        private const string PAY_CURRENCY = "usd";
+
         public StripeService(PaymentDbContext dbContext, 
             IGetOrderInfoClient orderInfoClient, 
             ILogger<StripeService> logger,
@@ -80,7 +82,7 @@ namespace Clothy.PaymentService.BLL.Services
                         Quantity = 1,
                         PriceData = new SessionLineItemPriceDataOptions
                         {
-                            Currency = "usd",
+                            Currency = PAY_CURRENCY,
                             UnitAmount = (long)(paymentRecord.Price * 100),
                             ProductData = new SessionLineItemPriceDataProductDataOptions
                             {

@@ -7,9 +7,9 @@ using Clothy.OrderService.DAL.UOW;
 using Clothy.OrderService.SeedData;
 using Clothy.OrderService.SeedData.Seeders;
 using Clothy.OrderService.DAL.Repositories;
-using Clothy.OrderService.DAL.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Dapper;
+using Clothy.OrderService.DAL.Interfaces;
 
 class Program
 {

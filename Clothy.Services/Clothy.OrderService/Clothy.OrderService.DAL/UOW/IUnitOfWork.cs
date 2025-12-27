@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Clothy.OrderService.DAL.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Clothy.OrderService.DAL.Interfaces;
 
 namespace Clothy.OrderService.DAL.UOW
 {

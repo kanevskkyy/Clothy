@@ -39,6 +39,7 @@ namespace Clothy.PaymentService.BLL.Services
         private const string BASE_URL = "https://api.nowpayments.io/v1/invoice/";
         private const string PRICE_CURRENCY = "usd";
         private const string PAY_CURRENCY = "usdc";
+        private const string API_KEY_HEADER = "x-api-key";
 
         public NowPaymentsService(
             PaymentDbContext dbContext,
@@ -57,7 +58,7 @@ namespace Clothy.PaymentService.BLL.Services
             this.userClaimsExtractor = userClaimsExtractor;
             httpClient = httpClientFactory.CreateClient("NowPayments");
 
-            httpClient.DefaultRequestHeaders.Add("x-api-key", this.nowPaymentsSettings.ApiKey);
+            httpClient.DefaultRequestHeaders.Add(API_KEY_HEADER, this.nowPaymentsSettings.ApiKey);
         }
 
 
@@ -82,7 +83,7 @@ namespace Clothy.PaymentService.BLL.Services
                 PaymentMethod = PaymentMethod.Crypto
             };
 
-            var paymentRequest = new
+            object paymentRequest = new
             {
                 price_amount = paymentRecord.Price,
                 price_currency = PRICE_CURRENCY,
@@ -140,8 +141,8 @@ namespace Clothy.PaymentService.BLL.Services
             using JsonDocument doc = JsonDocument.Parse(payload);
             JsonElement root = doc.RootElement;
 
-            string? paymentStatus = root.TryGetProperty("payment_status", out var statusElement) ? statusElement.GetString() : null;
-            string? orderId = root.TryGetProperty("order_id", out var orderElement) ? orderElement.GetString() : null;
+            string? paymentStatus = root.TryGetProperty("payment_status", out JsonElement statusElement) ? statusElement.GetString() : null;
+            string? orderId = root.TryGetProperty("order_id", out JsonElement orderElement) ? orderElement.GetString() : null;
 
             logger.LogInformation("Webhook payload: OrderId={OrderId}, Status={Status}", orderId, paymentStatus);
 

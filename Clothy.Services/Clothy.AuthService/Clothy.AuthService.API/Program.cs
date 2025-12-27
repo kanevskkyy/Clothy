@@ -24,7 +24,7 @@ builder.Services.Configure<KeycloakSettings>(options =>
 
 builder.Services.AddControllers();
 
-builder.Services.AddScoped<IKeycloakAuthService, KeycloakAuthService>();
+builder.Services.AddScoped<IKeycloakAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
 // FLUENT VALIDATION

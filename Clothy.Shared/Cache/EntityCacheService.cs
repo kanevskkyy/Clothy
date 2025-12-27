@@ -15,6 +15,7 @@ namespace Clothy.Shared.Cache
         private IDatabase redisDb;
         private ISubscriber subscriber;
         private ILogger<EntityCacheService> logger;
+        private HashSet<string> memoryKeys = new();
 
         private const string INVALIDATION_CHANNEL = "entity-cache-invalidation";
         private const string CLEAR_ALL_MESSAGES = "__CLEAR_ALL__";
@@ -26,8 +27,6 @@ namespace Clothy.Shared.Cache
             WriteIndented = false,
             PropertyNameCaseInsensitive = true 
         };
-
-        private readonly HashSet<string> _memoryKeys = new();
 
         public EntityCacheService(IMemoryCache memoryCache, IConnectionMultiplexer redisMultiplexer, ILogger<EntityCacheService> logger)
         {
@@ -46,30 +45,30 @@ namespace Clothy.Shared.Cache
 
         private void TrackMemoryKey(string key)
         {
-            lock (_memoryKeys)
+            lock (memoryKeys)
             {
-                _memoryKeys.Add(key);
+                memoryKeys.Add(key);
             }
         }
 
         private void RemoveFromMemory(string key)
         {
             memoryCache.Remove(key);
-            lock (_memoryKeys)
+            lock (memoryKeys)
             {
-                _memoryKeys.Remove(key);
+                memoryKeys.Remove(key);
             }
         }
 
         private void ClearAllMemoryCache()
         {
-            lock (_memoryKeys)
+            lock (memoryKeys)
             {
-                foreach (var key in _memoryKeys)
+                foreach (var key in memoryKeys)
                 {
                     memoryCache.Remove(key);
                 }
-                _memoryKeys.Clear();
+                memoryKeys.Clear();
             }
             logger.LogInformation("Memory cache cleared completely.");
         }
@@ -87,8 +86,8 @@ namespace Clothy.Shared.Cache
                 var redisValue = await redisDb.StringGetAsync(key);
                 if (redisValue.HasValue)
                 {
-                    var redisData = JsonSerializer.Deserialize<T>(redisValue, JsonOptions)!;
-                    var memoryOptions = new MemoryCacheEntryOptions
+                    T redisData = JsonSerializer.Deserialize<T>(redisValue, JsonOptions)!;
+                    MemoryCacheEntryOptions memoryOptions = new MemoryCacheEntryOptions
                     {
                         AbsoluteExpirationRelativeToNow = memoryExpiration ?? TimeSpan.FromMinutes(1),
                         Size = 1
