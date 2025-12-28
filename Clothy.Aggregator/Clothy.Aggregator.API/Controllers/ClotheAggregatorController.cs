@@ -21,6 +21,8 @@ namespace Clothy.Aggregator.API.Controllers
         [HttpGet("{clotheId}")]
         public async Task<ActionResult<ClotheDetailFullDTO>> GetClotheFullDetail(Guid clotheId, CancellationToken ct)
         {
+            logger.LogInformation("Starting getting detailed aggregated information on clothing with ID: {Id}", clotheId);
+
             ClotheDetailFullDTO? result = await aggregatorService.GetFullClotheDetailAsync(clotheId, ct);
             return Ok(result);
         }

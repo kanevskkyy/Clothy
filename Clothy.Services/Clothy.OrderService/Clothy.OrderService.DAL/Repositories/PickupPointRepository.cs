@@ -19,30 +19,6 @@ namespace Clothy.OrderService.DAL.Repositories
 
         }
 
-        public async Task<bool> ExistsByAddressAndProviderIdAsync(string address, Guid deliveryProviderId, Guid? excludeId = null, CancellationToken cancellationToken = default)
-        {
-            using IDbConnection connection = await GetOpenConnectionAsync();
-            string sql = @"
-                SELECT COUNT(1)
-                FROM pickup_points
-                WHERE LOWER(address) = LOWER(@Address)
-                AND deliveryproviderid = @DeliveryProviderId
-                AND (@ExcludeId IS NULL OR id <> @ExcludeId);
-            ";
-
-            int count = await connection.ExecuteScalarAsync<int>(
-                new CommandDefinition(sql, new
-                {
-                    Address = address,
-                    DeliveryProviderId = deliveryProviderId,
-                    ExcludeId = excludeId
-                },
-                cancellationToken: cancellationToken)
-            );
-
-            return count > 0;
-        }
-
         public async Task<(IEnumerable<PickupPoints>, int totalCount)> GetPagedAsync(PickupPointFilterDTO filterDTO, CancellationToken cancellationToken = default)
         {
             using IDbConnection dbConnection = await GetOpenConnectionAsync();

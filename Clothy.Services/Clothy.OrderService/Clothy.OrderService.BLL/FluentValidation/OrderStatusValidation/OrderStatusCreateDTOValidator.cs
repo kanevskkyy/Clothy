@@ -11,7 +11,7 @@ namespace Clothy.OrderService.BLL.FluentValidation.OrderStatusValidation
 {
     public class OrderStatusCreateDTOValidator : AbstractValidator<OrderStatusCreateDTO>
     {
-        private readonly string[] permittedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".svg" };
+        private string[] permittedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".svg" };
 
         public OrderStatusCreateDTOValidator()
         {

@@ -1,20 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Clothy.OrderService.BLL.Config;
+using Clothy.OrderService.BLL.Interfaces;
+using Clothy.OrderService.BLL.Services;
 using Clothy.OrderService.DAL.ConnectionFactory;
-using Clothy.OrderService.DAL.UOW;
-using Clothy.OrderService.SeedData;
-using Clothy.OrderService.SeedData.Seeders;
-using Clothy.OrderService.DAL.Repositories;
-using Microsoft.Extensions.Configuration;
-using Dapper;
 using Clothy.OrderService.DAL.Interfaces;
+using Clothy.OrderService.DAL.Repositories;
+using Clothy.OrderService.DAL.UOW;
+using Clothy.OrderService.SeedData.Seeders;
+using DotNetEnv;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 class Program
 {
     public static async Task Main()
     {
+        Env.Load();
+
         Console.WriteLine("Starting seed...");
 
         var builder = new ConfigurationBuilder()
@@ -26,7 +27,6 @@ class Program
 
         ServiceCollection services = new ServiceCollection();
         services.AddSingleton<IConnectionFactory>(provider => new ConnectionFactory(connectionString!));
-
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IOrderStatusRepository, OrderStatusRepository>();
@@ -38,12 +38,22 @@ class Program
         services.AddScoped<IDeliveryDetailRepository, DeliveryDetailRepository>();
         services.AddScoped<IOrderReservationRepository, OrderReservationRepository>();
 
+        services.AddHttpClient("NovaPoshtaAPI", client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(30);
+        })
+        .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+        {
+            MaxConnectionsPerServer = 20 
+        });
+
+        services.AddScoped<IDeliveryAPIClient, NovaPoshtaAPIClient>();
+
         services.AddScoped<ISeeder, OrderStatusSeeder>();
         services.AddScoped<ISeeder, DeliveryProviderSeeder>();
         services.AddScoped<ISeeder, OrderSeeder>();
         services.AddScoped<ISeeder, OrderItemSeeder>();
-        services.AddScoped<ISeeder, RegionSeeder>();
-        services.AddScoped<ISeeder, SettlementSeeder>();
+        services.AddScoped<ISeeder>(sp => new NovaPoshtaSeeder(sp.GetRequiredService<IDeliveryAPIClient>(), sp ));
         services.AddScoped<ISeeder, PickupPointSeeder>();
         services.AddScoped<ISeeder, DeliveryDetailSeeder>();
 
@@ -56,11 +66,11 @@ class Program
 
             foreach (ISeeder seeder in seeders)
             {
-                Console.WriteLine($"Seeding {seeder.GetType().Name}...");
+                Console.WriteLine($"\nSeeding {seeder.GetType().Name}");
                 await seeder.SeedAsync(uow);
             }
 
-            Console.WriteLine("Seeding completed!");
+            Console.WriteLine("All seeding completed!");
         }
     }
 }

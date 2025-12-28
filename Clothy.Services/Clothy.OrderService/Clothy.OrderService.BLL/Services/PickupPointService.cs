@@ -36,9 +36,6 @@ namespace Clothy.OrderService.BLL.Services
 
         public async Task<PickupPointReadDTO> CreateAsync(PickupPointCreateDTO dto, CancellationToken cancellationToken = default)
         {
-            bool exists = await unitOfWork.PickupPoint.ExistsByAddressAndProviderIdAsync(dto.Address, dto.DeliveryProviderId, cancellationToken: cancellationToken);
-            if (exists) throw new AlreadyExistsException($"Pickup point with address {dto.Address} for this provider already exists");
-
             Settlement? settlement = await unitOfWork.Settlement.GetByIdAsync(dto.SettlementId, cancellationToken);
             if(settlement == null) throw new NotFoundException($"Settlement with ID: {dto.SettlementId}");
 
@@ -102,9 +99,6 @@ namespace Clothy.OrderService.BLL.Services
         {
             PickupPoints? entity = await unitOfWork.PickupPoint.GetByIdAsync(id, cancellationToken);
             if (entity == null) throw new NotFoundException($"PickupPoint not found with ID: {id}");
-
-            bool exists = await unitOfWork.PickupPoint.ExistsByAddressAndProviderIdAsync(dto.Address, dto.DeliveryProviderId, id, cancellationToken);
-            if (exists) throw new AlreadyExistsException($"Pickup point with address: {dto.Address} for this provider already exists");
 
             Settlement? settlement = await unitOfWork.Settlement.GetByIdAsync(dto.SettlementId, cancellationToken);
             if (settlement == null) throw new NotFoundException($"Settlement with ID: {dto.SettlementId}");

@@ -11,7 +11,7 @@ namespace Clothy.OrderService.BLL.FluentValidation.DeliveryProviderValidation
 {
     public class DeliveryProviderCreateDTOValidator : AbstractValidator<DeliveryProviderCreateDTO>
     {
-        private readonly string[] permittedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".svg" };
+        private string[] permittedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".svg" };
 
         public DeliveryProviderCreateDTOValidator()
         {

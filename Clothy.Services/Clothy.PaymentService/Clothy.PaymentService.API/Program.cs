@@ -40,13 +40,17 @@ builder.Services.Configure<CardSettings>(options =>
     options.WebhookSecret = Environment.GetEnvironmentVariable("STRIPE__WEBHOOK_SECRET");
 });
 
-builder.Services.Configure<CryptoSettings>(options =>
+builder.Services.Configure<CryptoSettings>(
+    builder.Configuration.GetSection("CryptoPayment")
+);
+
+builder.Services.PostConfigure<CryptoSettings>(options =>
 {
-    options.ApiKey = Environment.GetEnvironmentVariable("NOWPAYMENTS__API_KEY");
-    options.WebhookSecret = Environment.GetEnvironmentVariable("NOWPAYMENTS__WEBHOOK_SECRET");
-    options.CallbackURL = Environment.GetEnvironmentVariable("NOWPAYMENTS__CALLBACK_URL");
-    options.SuccessURL = Environment.GetEnvironmentVariable("SUCCESS__URL");
-    options.CancelURL = Environment.GetEnvironmentVariable("CANCEL__URL");
+    options.ApiKey = Environment.GetEnvironmentVariable("NOWPAYMENTS__API_KEY") ?? options.ApiKey;
+    options.WebhookSecret = Environment.GetEnvironmentVariable("NOWPAYMENTS__WEBHOOK_SECRET") ?? options.WebhookSecret;
+    options.CallbackURL = Environment.GetEnvironmentVariable("NOWPAYMENTS__CALLBACK_URL") ?? options.CallbackURL;
+    options.SuccessURL = Environment.GetEnvironmentVariable("SUCCESS__URL") ?? options.SuccessURL;
+    options.CancelURL = Environment.GetEnvironmentVariable("CANCEL__URL") ?? options.CancelURL;
 });
 
 builder.Services.AddHttpClient("NowPayments");

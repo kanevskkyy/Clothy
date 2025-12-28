@@ -97,8 +97,7 @@ CREATE TABLE pickup_points (
         ON DELETE CASCADE,
     FOREIGN KEY (settlementid) REFERENCES settlements(id)
         ON UPDATE CASCADE
-        ON DELETE CASCADE,
-    UNIQUE (address, deliveryproviderid)
+        ON DELETE CASCADE
 );
 
 CREATE TABLE processed_events(

@@ -18,7 +18,6 @@ namespace Clothy.OrderService.SeedData.Seeders
 
             List<string> providers = new List<string>
             {
-                "Nova Poshta",
                 "Ukrposhta",
                 "Meest Express",
                 "Delivery Service X",

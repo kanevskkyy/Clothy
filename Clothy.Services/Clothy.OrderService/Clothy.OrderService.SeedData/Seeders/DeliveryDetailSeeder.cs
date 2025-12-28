@@ -15,10 +15,7 @@ namespace Clothy.OrderService.SeedData.Seeders
         public async Task SeedAsync(IUnitOfWork uow)
         {
             IEnumerable<DeliveryDetail> existingDeliveryDetails = await uow.DeliveryDetails.GetAllAsync();
-            if (existingDeliveryDetails.Any())
-            {
-                return;
-            }
+            if (existingDeliveryDetails.Any()) return;
 
             IEnumerable<Order> orders = await uow.Orders.GetAllAsync();
             IEnumerable<DeliveryProvider> providers = await uow.DeliveryProviders.GetAllAsync();
