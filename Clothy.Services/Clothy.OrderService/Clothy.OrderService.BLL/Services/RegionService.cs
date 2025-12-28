@@ -62,7 +62,7 @@ namespace Clothy.OrderService.BLL.Services
 
         public async Task<RegionReadDTO> CreateAsync(RegionCreateDTO regionCreateDTO, CancellationToken cancellationToken = default)
         {
-            bool exists = await unitOfWork.Region.ExistByNameAndCityIdAsync(regionCreateDTO.Name, cancellationToken: cancellationToken);
+            bool exists = await unitOfWork.Region.ExistByNameAsync(regionCreateDTO.Name, cancellationToken: cancellationToken);
             if (exists) throw new AlreadyExistsException($"Region with name '{regionCreateDTO.Name}' already exists.");
 
             Region region = mapper.Map<Region>(regionCreateDTO);
@@ -79,7 +79,7 @@ namespace Clothy.OrderService.BLL.Services
             Region? region = await unitOfWork.Region.GetByIdAsync(id, cancellationToken);
             if (region == null) throw new NotFoundException($"Region not found with ID: {id}");
 
-            bool exists = await unitOfWork.Region.ExistByNameAndCityIdAsync(regionUpdateDTO.Name, id, cancellationToken);
+            bool exists = await unitOfWork.Region.ExistByNameAsync(regionUpdateDTO.Name, id, cancellationToken);
             if (exists) throw new AlreadyExistsException($"Region with name '{regionUpdateDTO.Name}' already exists.");
 
             mapper.Map(regionUpdateDTO, region);

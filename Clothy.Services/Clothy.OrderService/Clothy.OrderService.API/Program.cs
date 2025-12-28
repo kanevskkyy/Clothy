@@ -102,6 +102,7 @@ builder.Services.AddHttpClient("NovaPoshtaAPI", client =>
 
 //BACKGROUND SERVICE
 builder.Services.AddHostedService<ExpiredOrdersCleanupService>();
+builder.Services.AddHostedService<PickupPointSyncBackgroundService>();
 //
 
 // REGISTER UNIT OF WORK

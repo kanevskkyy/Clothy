@@ -11,6 +11,7 @@ namespace Clothy.OrderService.DAL.Interfaces
 {
     public interface ISettlementRepository : IGenericRepository<Settlement>
     {
+        Task<Settlement?> GetByRefAsync(string refValue, CancellationToken cancellationToken = default);
         Task<(IEnumerable<Settlement>, int totalCount)> GetPagedAsync(SettlementFilterDTO settlementFilterDTO, CancellationToken cancellationToken = default);
         Task<bool> ExistsByNameAndRegionIdAsync(string name, Guid regionId, Guid? excludeId = null, CancellationToken cancellationToken = default);
     }

@@ -10,6 +10,7 @@ namespace Clothy.OrderService.DAL.Interfaces
 {
     public interface IRegionRepository : IGenericRepository<Region>
     {
-        Task<bool> ExistByNameAndCityIdAsync(string name, Guid? excludeId = null, CancellationToken cancellationToken = default);
+        Task<Region?> GetByRefAsync(string refValue, CancellationToken cancellationToken = default);
+        Task<bool> ExistByNameAsync(string name, Guid? excludeId = null, CancellationToken cancellationToken = default);
     }
 }

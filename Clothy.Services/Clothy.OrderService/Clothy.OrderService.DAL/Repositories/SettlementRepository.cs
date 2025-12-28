@@ -19,6 +19,32 @@ namespace Clothy.OrderService.DAL.Repositories
 
         }
 
+        public async Task<Settlement?> GetByRefAsync(string refValue, CancellationToken cancellationToken = default)
+        {
+            using IDbConnection connection = await GetOpenConnectionAsync();
+
+            string sql = @"
+                SELECT id AS Id, 
+                       name AS Name, 
+                       type AS Type, 
+                       regionid AS RegionId, 
+                       ref AS Ref, 
+                       createdat AS CreatedAt, 
+                       updatedat AS UpdatedAt
+                FROM settlements
+                WHERE ref = @Ref
+                LIMIT 1;
+            ";
+
+            return await connection.QueryFirstOrDefaultAsync<Settlement>(
+                new CommandDefinition(
+                    sql,
+                    new { Ref = refValue },
+                    cancellationToken: cancellationToken
+                )
+            );
+        }
+
         public async Task<bool> ExistsByNameAndRegionIdAsync(string name, Guid regionId, Guid? excludeId = null, CancellationToken cancellationToken = default)
         {
             using IDbConnection connection = await GetOpenConnectionAsync();
@@ -56,6 +82,13 @@ namespace Clothy.OrderService.DAL.Repositories
                 sql.Append(" AND regionid = @RegionId");
                 countSql.Append(" AND regionid = @RegionId");
                 parameters.Add("RegionId", settlementFilterDTO.RegionId);
+            }
+
+            if (!string.IsNullOrWhiteSpace(settlementFilterDTO.Name))
+            {
+                sql.Append(" AND name ILIKE @Name");
+                countSql.Append(" AND name ILIKE @Name");
+                parameters.Add("Name", $"%{settlementFilterDTO.Name}%");
             }
 
             string sortBy = settlementFilterDTO.SortBy?.ToLower() switch

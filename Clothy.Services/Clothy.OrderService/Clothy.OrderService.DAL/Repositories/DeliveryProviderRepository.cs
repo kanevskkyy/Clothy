@@ -50,5 +50,24 @@ namespace Clothy.OrderService.DAL.Repositories
             int count = Convert.ToInt32(result);
             return count > 0;
         }
+
+        public async Task<DeliveryProvider> GetByNameAsync(string name, CancellationToken cancellationToken = default)
+        {
+            using IDbConnection connection = await GetOpenConnectionAsync();
+
+            string sql = @"
+                SELECT *
+                FROM delivery_provider
+                WHERE LOWER(name) = LOWER(@Name);
+            ";
+            DeliveryProvider? deliveryProvider = await connection.QueryFirstOrDefaultAsync<DeliveryProvider>(
+                new CommandDefinition (
+                    sql, 
+                    new {Name = name},
+                    cancellationToken: cancellationToken
+                ));
+
+            return deliveryProvider!;
+        }
     }
 }

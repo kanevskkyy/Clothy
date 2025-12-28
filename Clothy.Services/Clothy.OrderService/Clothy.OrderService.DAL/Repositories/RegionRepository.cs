@@ -19,7 +19,31 @@ namespace Clothy.OrderService.DAL.Repositories
 
         }
 
-        public async Task<bool> ExistByNameAndCityIdAsync(string name, Guid? excludeId = null, CancellationToken cancellationToken = default)
+        public async Task<Region?> GetByRefAsync(string refValue, CancellationToken cancellationToken = default)
+        {
+            using IDbConnection connection = await GetOpenConnectionAsync();
+
+            string sql = @"
+                SELECT id AS Id, 
+                       name AS Name, 
+                       ref AS Ref, 
+                       createdat AS CreatedAt, 
+                       updatedat AS UpdatedAt
+                FROM regions
+                WHERE ref = @Ref
+                LIMIT 1;
+            ";
+
+            return await connection.QueryFirstOrDefaultAsync<Region>(
+                new CommandDefinition(
+                    sql,
+                    new { Ref = refValue },
+                    cancellationToken: cancellationToken
+                )
+            );
+        }
+
+        public async Task<bool> ExistByNameAsync(string name, Guid? excludeId = null, CancellationToken cancellationToken = default)
         {
             using IDbConnection connection = await GetOpenConnectionAsync();
             string sql = @"

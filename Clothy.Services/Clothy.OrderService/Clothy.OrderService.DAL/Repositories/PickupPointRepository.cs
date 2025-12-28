@@ -19,6 +19,34 @@ namespace Clothy.OrderService.DAL.Repositories
 
         }
 
+        public async Task<List<PickupPoints>> GetBySettlementIdAsync(Guid settlementId, CancellationToken cancellationToken = default)
+        {
+            using IDbConnection connection = await GetOpenConnectionAsync();
+
+            string sql = @"
+                SELECT id AS Id, 
+                       address AS Address, 
+                       ref AS Ref, 
+                       deliveryproviderid AS DeliveryProviderId, 
+                       settlementid AS SettlementId, 
+                       createdat AS CreatedAt, 
+                       updatedat AS UpdatedAt,
+                       isactive AS IsActive
+                FROM pickup_points
+                WHERE settlementid = @SettlementId;
+            ";
+
+            IEnumerable<PickupPoints> result = await connection.QueryAsync<PickupPoints>(
+                new CommandDefinition(
+                    sql,
+                    new { SettlementId = settlementId },
+                    cancellationToken: cancellationToken
+                )
+            );
+
+            return result.ToList();
+        }
+
         public async Task<(IEnumerable<PickupPoints>, int totalCount)> GetPagedAsync(PickupPointFilterDTO filterDTO, CancellationToken cancellationToken = default)
         {
             using IDbConnection dbConnection = await GetOpenConnectionAsync();
@@ -42,6 +70,13 @@ namespace Clothy.OrderService.DAL.Repositories
                 sql.Append(" AND settlementid = @SettlementId");
                 countSql.Append(" AND settlementid = @SettlementId");
                 parameters.Add("SettlementId", filterDTO.SettlementId.Value);
+            }
+
+            if (!string.IsNullOrWhiteSpace(filterDTO.Address))
+            {
+                sql.Append(" AND address ILIKE @Address");
+                countSql.Append(" AND address ILIKE @Address");
+                parameters.Add("Address", $"%{filterDTO.Address}%");
             }
 
             string sortBy = filterDTO.SortBy?.ToLower() switch
