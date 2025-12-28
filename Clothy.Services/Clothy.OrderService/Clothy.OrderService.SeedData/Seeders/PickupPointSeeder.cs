@@ -27,6 +27,8 @@ namespace Clothy.OrderService.SeedData.Seeders
             Faker<PickupPoints> pickupPointFaker = new Faker<PickupPoints>()
                 .RuleFor(p => p.Address, f => f.Address.StreetAddress())
                 .RuleFor(p => p.DeliveryProviderId, f => f.PickRandom(providers).Id)
+                .RuleFor(p => p.Ref, f => Guid.NewGuid().ToString())
+                .RuleFor(p => p.IsActive, f => f.Random.Bool())
                 .RuleFor(p => p.SettlementId, f => f.PickRandom(settlements).Id)
                 .RuleFor(p => p.CreatedAt, f => f.Date.Past(2).ToUniversalTime())
                 .RuleFor(p => p.UpdatedAt, f => f.Date.Recent(10).ToUniversalTime());

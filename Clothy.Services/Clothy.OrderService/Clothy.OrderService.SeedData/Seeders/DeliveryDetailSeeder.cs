@@ -15,19 +15,14 @@ namespace Clothy.OrderService.SeedData.Seeders
         public async Task SeedAsync(IUnitOfWork uow)
         {
             IEnumerable<DeliveryDetail> existingDeliveryDetails = await uow.DeliveryDetails.GetAllAsync();
-            if (existingDeliveryDetails.Any())
-            {
-                return;
-            }
+            if (existingDeliveryDetails.Any()) return;
 
             IEnumerable<Order> orders = await uow.Orders.GetAllAsync();
             IEnumerable<DeliveryProvider> providers = await uow.DeliveryProviders.GetAllAsync();
-            IEnumerable<City> cities = await uow.Cities.GetAllAsync();
             IEnumerable<PickupPoints> pickupPoints = await uow.PickupPoint.GetAllAsync();
 
             if (!orders.Any()) throw new SeederDependencyException("Orders table must be seeded before seeding DeliveryDetails.");
             if (!providers.Any()) throw new SeederDependencyException("DeliveryProvider table must be seeded before seeding DeliveryDetails.");
-            if (!cities.Any()) throw new SeederDependencyException("City table must be seeded before seeding DeliveryDetails.");
             if (!pickupPoints.Any()) throw new SeederDependencyException("PickupPoint table must be seeded before seeding DeliveryDetails.");
 
             Faker faker = new Faker();

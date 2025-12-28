@@ -71,7 +71,7 @@ namespace Clothy.OrderService.BLL.Services
 
         public async Task<PagedList<SettlementReadDTO>> GetPagedAsync(SettlementFilterDTO filter, CancellationToken cancellationToken = default)
         {
-            string cacheKey = $"settlements:page:{filter.PageNumber}:size:{filter.PageSize}";
+            string cacheKey = filter.ToCacheKey();
 
             PagedList<SettlementReadDTO>? cached = await cacheService.GetOrSetAsync(
                 cacheKey,

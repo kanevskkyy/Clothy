@@ -9,6 +9,6 @@ namespace Clothy.OrderService.BLL.DTOs.RegionDTOs
     public class RegionCreateDTO
     {
         public string? Name { get; set; }
-        public Guid CityId { get; set; }
+        public string? Ref { get; set; }
     }
 }

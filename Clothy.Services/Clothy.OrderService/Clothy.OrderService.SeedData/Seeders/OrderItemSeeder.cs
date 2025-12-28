@@ -21,6 +21,14 @@ namespace Clothy.OrderService.SeedData.Seeders
             if (!orders.Any()) throw new SeederDependencyException("Orders table must be seeded before seeding OrderItems.");
             
             Faker faker = new Faker();
+            string[] sizes = new[] { 
+                "XS", 
+                "S", 
+                "M", 
+                "L", 
+                "XL", 
+                "XXL" 
+            };
 
             foreach (Order order in orders)
             {
@@ -38,7 +46,7 @@ namespace Clothy.OrderService.SeedData.Seeders
                         ColorId = Guid.NewGuid(),
                         HexCode = $"#{faker.Random.Hexadecimal(6).Substring(2).ToUpper()}",
                         SizeId = Guid.NewGuid(),
-                        SizeName = faker.Random.Word(),
+                        SizeName = faker.PickRandom(sizes),
                         CreatedAt = faker.Date.Past(2).ToUniversalTime(),
                         UpdatedAt = faker.Date.Recent(30).ToUniversalTime()
                     };

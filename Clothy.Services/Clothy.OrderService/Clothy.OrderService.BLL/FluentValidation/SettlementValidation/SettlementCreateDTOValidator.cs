@@ -18,6 +18,13 @@ namespace Clothy.OrderService.BLL.FluentValidation.SettlementValidation
 
             RuleFor(x => x.RegionId)
                 .NotEmpty().WithMessage("RegionId is required.");
+
+            RuleFor(x => x.Type)
+                .IsInEnum().WithMessage("Type must be one of the defined settlement types.");
+
+            RuleFor(x => x.Ref)
+                .NotEmpty().WithMessage("Ref is required.")
+                .MaximumLength(100).WithMessage("Ref must not exceed 100 characters.");
         }
     }
 }

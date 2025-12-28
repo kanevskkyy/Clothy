@@ -84,7 +84,7 @@ namespace Clothy.OrderService.DAL.Repositories
             int totalCount = await connection.ExecuteScalarAsync<int>(countSql.ToString(), parameters);
             var rows = await connection.QueryAsync(sql.ToString(), parameters);
 
-            var items = rows.Select(r => new OrderSummaryData
+            IEnumerable<OrderSummaryData> items = rows.Select(r => new OrderSummaryData
             {
                 Id = r.id,
                 UserId = r.userid,
@@ -116,6 +116,7 @@ namespace Clothy.OrderService.DAL.Repositories
                     o.userfirstname, 
                     o.userlastname, 
                     o.useremail,
+                    o.comment,
                     o.createdat, 
                     o.updatedat,
                     s.id,       
@@ -126,7 +127,7 @@ namespace Clothy.OrderService.DAL.Repositories
                 WHERE o.id = @Id;
             ";
 
-            var orderResult = await connection.QueryAsync<OrderWithDetailsData, OrderStatus, OrderWithDetailsData>(
+            IEnumerable<OrderWithDetailsData> orderResult = await connection.QueryAsync<OrderWithDetailsData, OrderStatus, OrderWithDetailsData>(
                 orderSql,
                 (tempOrder, status) => {
                     tempOrder.Status = status;
@@ -160,23 +161,23 @@ namespace Clothy.OrderService.DAL.Repositories
                     pp.address, 
                     pp.deliveryproviderid,
                     pp.settlementid,
+                    pp.ref AS pickupref,
+                    pp.isactive AS isActive,
                     dp.id AS DeliveryProviderId, 
                     dp.name AS DeliveryProviderName, 
                     dp.iconurl AS DeliveryProviderIconUrl,
                     s.id AS SettlementId, 
                     s.name AS SettlementName, 
                     s.regionid,
+                    s.ref AS SettlementRef,
                     r.id AS RegionId, 
-                    r.name AS RegionName, 
-                    r.cityid,
-                    c.id AS CityId, 
-                    c.name AS CityName
+                    r.name AS RegionName,
+                    r.ref AS RegionRef
                 FROM delivery_detail dd
                 JOIN pickup_points pp ON dd.pickuppointid = pp.id
                 JOIN delivery_provider dp ON pp.deliveryproviderid = dp.id
                 JOIN settlements s ON pp.settlementid = s.id
                 JOIN regions r ON s.regionid = r.id
-                JOIN city c ON r.cityid = c.id
                 WHERE dd.orderid = @Id
                 ORDER BY dd.createdat DESC
                 LIMIT 1;
@@ -186,7 +187,6 @@ namespace Clothy.OrderService.DAL.Repositories
 
             if (delivery != null)
             {
-
                 order.DeliveryDetail = new DeliveryDetailData
                 {
                     Id = (Guid)delivery.deliverydetailid,
@@ -195,14 +195,16 @@ namespace Clothy.OrderService.DAL.Repositories
                     LastName = delivery.lastname,
                     MiddleName = delivery.middlename,
                     Email = delivery.email,
-                    CreatedAt = delivery.deliverycreatedat != null ? (DateTime)delivery.deliverycreatedat : DateTime.UtcNow, 
-                    UpdatedAt = delivery.deliveryupdatedat != null ? (DateTime?)delivery.deliveryupdatedat : null,
+                    CreatedAt = delivery.deliverycreatedat ?? DateTime.UtcNow,
+                    UpdatedAt = delivery.deliveryupdatedat,
 
                     PickupPoint = new PickupPoints
                     {
                         Id = (Guid)delivery.pickuppointid,
                         Address = delivery.address,
-                        DeliveryProviderId = delivery.deliveryproviderid,
+                        Ref = delivery.pickupref,
+                        IsActive = delivery.isactive,
+                        DeliveryProviderId = (Guid)delivery.deliveryproviderid,
                         SettlementId = (Guid)delivery.settlementid
                     },
                     DeliveryProvider = new DeliveryProvider
@@ -215,18 +217,14 @@ namespace Clothy.OrderService.DAL.Repositories
                     {
                         Id = (Guid)delivery.settlementid,
                         Name = delivery.settlementname,
-                        RegionId = delivery.regionid
+                        RegionId = (Guid)delivery.regionid,
+                        Ref = delivery.settlementref,
                     },
                     Region = new Region
                     {
                         Id = (Guid)delivery.regionid,
                         Name = delivery.regionname,
-                        CityId = delivery.cityid
-                    },
-                    City = new City
-                    {
-                        Id = (Guid)delivery.cityid,
-                        Name = delivery.cityname
+                        Ref = delivery.regionref
                     }
                 };
             }

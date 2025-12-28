@@ -17,7 +17,6 @@ namespace Clothy.OrderService.DAL.UOW
 
         public IOrderStatusRepository OrderStatuses { get; }
         public IDeliveryProviderRepository DeliveryProviders { get; }
-        public ICityRepository Cities { get; }
         public IOrderRepository Orders { get; }
         public IOrderItemRepository OrderItems { get; }
         public IDeliveryDetailRepository DeliveryDetails { get; }
@@ -34,7 +33,6 @@ namespace Clothy.OrderService.DAL.UOW
             IConnectionFactory connectionFactory,
             IOrderStatusRepository orderStatuses,
             IDeliveryProviderRepository deliveryProviders,
-            ICityRepository cities,
             IOrderRepository orders,
             IOrderItemRepository orderItems,
             IDeliveryDetailRepository deliveryDetails,
@@ -46,7 +44,6 @@ namespace Clothy.OrderService.DAL.UOW
             this.connectionFactory = connectionFactory;
             OrderStatuses = orderStatuses;
             DeliveryProviders = deliveryProviders;
-            Cities = cities;
             Orders = orders;
             OrderItems = orderItems;
             DeliveryDetails = deliveryDetails;

@@ -19,6 +19,32 @@ namespace Clothy.OrderService.DAL.Repositories
 
         }
 
+        public async Task<Settlement?> GetByRefAsync(string refValue, CancellationToken cancellationToken = default)
+        {
+            using IDbConnection connection = await GetOpenConnectionAsync();
+
+            string sql = @"
+                SELECT id AS Id, 
+                       name AS Name, 
+                       type AS Type, 
+                       regionid AS RegionId, 
+                       ref AS Ref, 
+                       createdat AS CreatedAt, 
+                       updatedat AS UpdatedAt
+                FROM settlements
+                WHERE ref = @Ref
+                LIMIT 1;
+            ";
+
+            return await connection.QueryFirstOrDefaultAsync<Settlement>(
+                new CommandDefinition(
+                    sql,
+                    new { Ref = refValue },
+                    cancellationToken: cancellationToken
+                )
+            );
+        }
+
         public async Task<bool> ExistsByNameAndRegionIdAsync(string name, Guid regionId, Guid? excludeId = null, CancellationToken cancellationToken = default)
         {
             using IDbConnection connection = await GetOpenConnectionAsync();
@@ -51,14 +77,27 @@ namespace Clothy.OrderService.DAL.Repositories
             StringBuilder countSql = new StringBuilder("SELECT COUNT(*) FROM settlements WHERE 1=1 ");
             DynamicParameters parameters = new DynamicParameters();
 
-            if (settlementFilterDTO.RegionId.HasValue)
+            if (settlementFilterDTO.RegionId.HasValue && settlementFilterDTO.RegionId != Guid.Empty)
             {
                 sql.Append(" AND regionid = @RegionId");
                 countSql.Append(" AND regionid = @RegionId");
-                parameters.Add("RegionId", settlementFilterDTO.RegionId.Value);
+                parameters.Add("RegionId", settlementFilterDTO.RegionId);
             }
 
-            string sortBy = settlementFilterDTO.SortBy?.ToLower() ?? "name";
+            if (!string.IsNullOrWhiteSpace(settlementFilterDTO.Name))
+            {
+                sql.Append(" AND name ILIKE @Name");
+                countSql.Append(" AND name ILIKE @Name");
+                parameters.Add("Name", $"%{settlementFilterDTO.Name}%");
+            }
+
+            string sortBy = settlementFilterDTO.SortBy?.ToLower() switch
+            {
+                "name" => "name",
+                "createdat" => "createdat",
+                "type" => "type",
+                _ => "name"
+            };
             string direction = settlementFilterDTO.SortDescending ? "DESC" : "ASC";
             sql.Append($" ORDER BY {sortBy} {direction} ");
 

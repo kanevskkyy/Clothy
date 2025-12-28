@@ -9,6 +9,7 @@ namespace Clothy.OrderService.BLL.DTOs.PickupPointsDTOs
     public class PickupPointCreateDTO
     {
         public string? Address { get; set; }
+        public string? Ref { get; set; }
         public Guid DeliveryProviderId { get; set; }
         public Guid SettlementId { get; set; }
     }

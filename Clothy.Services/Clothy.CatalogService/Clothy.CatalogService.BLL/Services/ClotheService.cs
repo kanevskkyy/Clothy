@@ -61,36 +61,29 @@ namespace Clothy.CatalogService.BLL.Services
             this.publishEndpoint = publishEndpoint;
         }
 
-        public async Task<PagedList<ClotheSummaryDTO>> GetPagedClotheItemsAsync(ClotheItemSpecificationParameters parameters, CancellationToken cancellationToken = default)
+        public async Task<PagedList<ClotheSummaryDTO>?> GetPagedClotheItemsAsync(ClotheItemSpecificationParameters parameters, CancellationToken cancellationToken = default)
         {
             bool usePageCache = parameters.PageNumber <= MAX_CASHED_PAGES;
-            string cacheKey;
 
             if (usePageCache)
             {
-                if (parameters.MinPrice.HasValue && parameters.MaxPrice.HasValue) cacheKey = $"clothes:price:{parameters.MinPrice}-{parameters.MaxPrice}:page:{parameters.PageNumber}:size:{parameters.PageSize}";
-                else cacheKey = $"clothes:page:{parameters.PageNumber}:size:{parameters.PageSize}";
-            }
-            else
-            {
-                PagedList<ClotheItem> paged = await unitOfWork.ClotheItems.GetPagedClotheItemsAsync(parameters, cancellationToken);
-                List<ClotheSummaryDTO> mapped = mapper.Map<List<ClotheSummaryDTO>>(paged.Items);
-                return new PagedList<ClotheSummaryDTO>(mapped, paged.TotalCount, paged.CurrentPage, paged.PageSize);
+                return await cacheService.GetOrSetAsync(
+                    parameters.ToCacheKey(),
+                    async () => await FetchClotheItemsAsync(parameters, cancellationToken),
+                    MEMORY_TTL_CLOTHE_PAGE,
+                    REDIS_TTL_CLOTHE_PAGE
+                );
             }
 
-            PagedList<ClotheSummaryDTO>? cached = await cacheService.GetOrSetAsync(
-                cacheKey,
-                async () =>
-                {
-                    PagedList<ClotheItem> paged = await unitOfWork.ClotheItems.GetPagedClotheItemsAsync(parameters, cancellationToken);
-                    List<ClotheSummaryDTO> mapped = mapper.Map<List<ClotheSummaryDTO>>(paged.Items);
-                    return new PagedList<ClotheSummaryDTO>(mapped, paged.TotalCount, paged.CurrentPage, paged.PageSize);
-                },
-                MEMORY_TTL_CLOTHE_PAGE,
-                REDIS_TTL_CLOTHE_PAGE
-            );
+            return await FetchClotheItemsAsync(parameters, cancellationToken);
+        }
 
-            return cached!;
+        private async Task<PagedList<ClotheSummaryDTO>> FetchClotheItemsAsync(ClotheItemSpecificationParameters parameters, CancellationToken cancellationToken)
+        {
+            PagedList<ClotheItem> paged = await unitOfWork.ClotheItems.GetPagedClotheItemsAsync(parameters, cancellationToken);
+            List<ClotheSummaryDTO> mapped = mapper.Map<List<ClotheSummaryDTO>>(paged.Items);
+            
+            return new PagedList<ClotheSummaryDTO>(mapped, paged.TotalCount, paged.CurrentPage, paged.PageSize);
         }
 
         public async Task<ClotheDetailDTO> GetDetailByIdAsync(Guid id, CancellationToken cancellationToken = default)

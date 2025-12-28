@@ -10,7 +10,7 @@ namespace Clothy.OrderService.DAL.Interfaces
 {
     public interface IPickupPointRepository : IGenericRepository<PickupPoints>
     {
+        Task<List<PickupPoints>> GetBySettlementIdAsync(Guid settlementId, CancellationToken cancellationToken = default);
         Task<(IEnumerable<PickupPoints>, int totalCount)> GetPagedAsync(PickupPointFilterDTO filterDTO, CancellationToken cancellationToken = default);
-        Task<bool> ExistsByAddressAndProviderIdAsync(string address, Guid deliveryProviderId, Guid? excludeId = null, CancellationToken cancellationToken = default);
     }
 }

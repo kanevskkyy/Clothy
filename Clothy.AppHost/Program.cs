@@ -17,7 +17,6 @@ var keycloakAdminPassword = builder.AddParameter("keycloak-admin-password", secr
 
 var postgres = builder.AddPostgres("clothy-postgres", password: postgresPassword)
     .WithImage("postgres:16")
-    .WithPgAdmin()
     .WithDataVolume("pgdata")
     .WithBindMount("./Scripts", "/docker-entrypoint-initdb.d");
 
@@ -105,6 +104,7 @@ var ordersService = builder.AddProject<Clothy_OrderService_API>("orders")
     .WithEnvironment("CLOUDINARYSETTINGS__CLOUDNAME", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__CLOUDNAME"))
     .WithEnvironment("CLOUDINARYSETTINGS__APIKEY", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APIKEY"))
     .WithEnvironment("CLOUDINARYSETTINGS__APISECRET", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APISECRET"))
+    .WithEnvironment("NOVAPOSHTA__API_KEY", Environment.GetEnvironmentVariable("NOVAPOSHTA__API_KEY"))
     .WaitFor(redis)
     .WaitFor(basketService)
     .WaitFor(rabbitmq)
@@ -164,6 +164,7 @@ var seedCatalog = builder.AddProject<Clothy_CatalogService_SeedData>("catalog-se
 
 var seedOrders = builder.AddProject<Clothy_OrderService_SeedData>("order-seed")
     .WithReference(postgresOrdersDB)
+    .WithEnvironment("NOVAPOSHTA__API_KEY", Environment.GetEnvironmentVariable("NOVAPOSHTA__API_KEY"))
     .WaitFor(ordersService);
 
 var aggregator = builder.AddProject<Clothy_Aggregator_API>("aggregator")

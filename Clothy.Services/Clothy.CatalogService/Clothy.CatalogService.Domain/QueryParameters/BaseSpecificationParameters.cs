@@ -21,5 +21,12 @@ namespace Clothy.CatalogService.Domain.QueryParameters
 
         public string? SortBy { get; set; }
         public bool SortDescending { get; set; } = false;
+
+        protected string GetBaseCacheKeyPart()
+        {
+            return $"sort:{SortBy ?? "default"}:{(SortDescending ? "desc" : "asc")}:" +
+                   $"page:{PageNumber}:" +
+                   $"size:{PageSize}";
+        }
     }
 }

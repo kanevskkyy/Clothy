@@ -10,5 +10,13 @@ namespace Clothy.OrderService.DAL.FilterDTOs
     {
         public Guid? StatusId { get; set; }
         public Guid? UserId { get; set; }
+
+        public override string ToCacheKey()
+        {
+            return $"orders:" +
+                   $"status:{StatusId?.ToString() ?? "all"}:" +
+                   $"user:{UserId?.ToString() ?? "all"}:" +
+                   GetBaseCacheKeyPart();
+        }
     }
 }

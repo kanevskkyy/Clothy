@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Clothy.OrderService.BLL.DTOs.RegionDTOs
+namespace Clothy.OrderService.BLL.DTOs.APIClientDTOs
 {
-    public class RegionUpdateDTO
+    public class PickupPointDTO
     {
-        public string? Name { get; set; }
+        public string? Description { get; set; }
         public string? Ref { get; set; }
     }
 }

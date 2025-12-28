@@ -14,6 +14,7 @@ namespace Clothy.OrderService.Domain.Entities.AdditionalEntities
         public string? UserFirstName { get; set; }
         public string? UserLastName { get; set; }
         public string? UserEmail { get; set; }
+        public string? Comment { get; set; }
         public decimal TotalAmount { get; set; }
         public List<OrderItemData> Items { get; set; } = new List<OrderItemData>();
         public DeliveryDetailData? DeliveryDetail { get; set; }

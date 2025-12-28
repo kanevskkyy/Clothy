@@ -36,9 +36,6 @@ namespace Clothy.OrderService.BLL.Services
 
         public async Task<PickupPointReadDTO> CreateAsync(PickupPointCreateDTO dto, CancellationToken cancellationToken = default)
         {
-            bool exists = await unitOfWork.PickupPoint.ExistsByAddressAndProviderIdAsync(dto.Address, dto.DeliveryProviderId, cancellationToken: cancellationToken);
-            if (exists) throw new AlreadyExistsException($"Pickup point with address {dto.Address} for this provider already exists");
-
             Settlement? settlement = await unitOfWork.Settlement.GetByIdAsync(dto.SettlementId, cancellationToken);
             if(settlement == null) throw new NotFoundException($"Settlement with ID: {dto.SettlementId}");
 
@@ -73,42 +70,35 @@ namespace Clothy.OrderService.BLL.Services
             return cached;
         }
 
-        public async Task<PagedList<PickupPointReadDTO>> GetPagedAsync(PickupPointFilterDTO filter, CancellationToken cancellationToken = default)
+        public async Task<PagedList<PickupPointReadDTO>?> GetPagedAsync(PickupPointFilterDTO filter, CancellationToken cancellationToken = default)
         {
             bool usePageCache = filter.PageNumber <= MAX_CACHED_PAGES;
-            string cacheKey = $"pickup-points:page:{filter.PageNumber}:size:{filter.PageSize}";
 
             if (usePageCache)
             {
-                PagedList<PickupPointReadDTO>? cached = await cacheService.GetOrSetAsync(
-                    cacheKey,
-                    async () =>
-                    {
-                        var (items, totalCount) = await unitOfWork.PickupPoint.GetPagedAsync(filter, cancellationToken);
-                        List<PickupPointReadDTO> dtos = mapper.Map<List<PickupPointReadDTO>>(items);
-                        return new PagedList<PickupPointReadDTO>(dtos, totalCount, filter.PageNumber, filter.PageSize);
-                    },
+                return await cacheService.GetOrSetAsync(
+                    filter.ToCacheKey(),
+                    async () => await FetchPickupPointsAsync(filter, cancellationToken),
                     memoryExpiration: MEMORY_TTL,
                     redisExpiration: REDIS_TTL
                 );
+            }
 
-                return cached;
-            }
-            else
-            {
-                var (items, totalCount) = await unitOfWork.PickupPoint.GetPagedAsync(filter, cancellationToken);
-                List<PickupPointReadDTO> dtos = mapper.Map<List<PickupPointReadDTO>>(items);
-                return new PagedList<PickupPointReadDTO>(dtos, totalCount, filter.PageNumber, filter.PageSize);
-            }
+            return await FetchPickupPointsAsync(filter, cancellationToken);
+        }
+
+        private async Task<PagedList<PickupPointReadDTO>> FetchPickupPointsAsync(PickupPointFilterDTO filter, CancellationToken cancellationToken)
+        {
+            var (items, totalCount) = await unitOfWork.PickupPoint.GetPagedAsync(filter, cancellationToken);
+            List<PickupPointReadDTO> dtos = mapper.Map<List<PickupPointReadDTO>>(items);
+            
+            return new PagedList<PickupPointReadDTO>(dtos, totalCount, filter.PageNumber, filter.PageSize);
         }
 
         public async Task<PickupPointReadDTO> UpdateAsync(Guid id, PickupPointUpdateDTO dto, CancellationToken cancellationToken = default)
         {
             PickupPoints? entity = await unitOfWork.PickupPoint.GetByIdAsync(id, cancellationToken);
             if (entity == null) throw new NotFoundException($"PickupPoint not found with ID: {id}");
-
-            bool exists = await unitOfWork.PickupPoint.ExistsByAddressAndProviderIdAsync(dto.Address, dto.DeliveryProviderId, id, cancellationToken);
-            if (exists) throw new AlreadyExistsException($"Pickup point with address: {dto.Address} for this provider already exists");
 
             Settlement? settlement = await unitOfWork.Settlement.GetByIdAsync(dto.SettlementId, cancellationToken);
             if (settlement == null) throw new NotFoundException($"Settlement with ID: {dto.SettlementId}");

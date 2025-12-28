@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Clothy.OrderService.DAL.FilterDTOs
+namespace Clothy.OrderService.BLL.Config
 {
-    public class CityFilterDTO : BaseFilterDTO
+    public class NovaPoshtaConfig
     {
-        public string? Name { get; set; }
+        public string? APIKey { get; set; } 
     }
 }

@@ -16,8 +16,9 @@ namespace Clothy.OrderService.BLL.FluentValidation.RegionValidation
                 .NotEmpty().WithMessage("Region name is required.")
                 .MaximumLength(100).WithMessage("Region name must not exceed 100 characters.");
 
-            RuleFor(x => x.CityId)
-                .NotEmpty().WithMessage("CityId is required.");
+            RuleFor(x => x.Ref)
+                .NotEmpty().WithMessage("Ref is required.")
+                .MaximumLength(100).WithMessage("Ref must not exceed 100 characters.");
         }
     }
 }

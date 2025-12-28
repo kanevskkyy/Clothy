@@ -31,6 +31,7 @@ namespace Clothy.OrderService.SeedData.Seeders
                     UserFirstName = faker.Name.FirstName(),
                     UserLastName = faker.Name.LastName(),
                     UserEmail = faker.Internet.Email(),
+                    Comment = "Here will be a cool comment on the order",
                     CreatedAt = faker.Date.Past(2).ToUniversalTime(),
                     UpdatedAt = faker.Date.Recent(30).ToUniversalTime()
                 };

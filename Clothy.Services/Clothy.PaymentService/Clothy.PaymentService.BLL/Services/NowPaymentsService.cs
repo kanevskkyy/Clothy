@@ -36,11 +36,6 @@ namespace Clothy.PaymentService.BLL.Services
         private IUserClaimsExtractor userClaimsExtractor;
         private HttpClient httpClient;
 
-        private const string BASE_URL = "https://api.nowpayments.io/v1/invoice/";
-        private const string PRICE_CURRENCY = "usd";
-        private const string PAY_CURRENCY = "usdc";
-        private const string API_KEY_HEADER = "x-api-key";
-
         public NowPaymentsService(
             PaymentDbContext dbContext,
             IGetOrderInfoClient orderInfoClient,
@@ -58,7 +53,7 @@ namespace Clothy.PaymentService.BLL.Services
             this.userClaimsExtractor = userClaimsExtractor;
             httpClient = httpClientFactory.CreateClient("NowPayments");
 
-            httpClient.DefaultRequestHeaders.Add(API_KEY_HEADER, this.nowPaymentsSettings.ApiKey);
+            httpClient.DefaultRequestHeaders.Add(this.nowPaymentsSettings.ApiKeyHeader, this.nowPaymentsSettings.ApiKey);
         }
 
 
@@ -86,8 +81,8 @@ namespace Clothy.PaymentService.BLL.Services
             object paymentRequest = new
             {
                 price_amount = paymentRecord.Price,
-                price_currency = PRICE_CURRENCY,
-                pay_currency = PAY_CURRENCY,
+                price_currency = nowPaymentsSettings.PriceCurrency,
+                pay_currency = nowPaymentsSettings.PayCurrency,
                 ipn_callback_url = nowPaymentsSettings.CallbackURL,
                 order_id = paymentRecord.Id.ToString(),
                 order_description = $"Payment for order {paymentRecord.OrderId}",
@@ -98,7 +93,7 @@ namespace Clothy.PaymentService.BLL.Services
             string jsonContent = JsonSerializer.Serialize(paymentRequest);
             StringContent content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
-            HttpResponseMessage httpResponseMessage = await httpClient.PostAsync(BASE_URL, content, cancellationToken);
+            HttpResponseMessage httpResponseMessage = await httpClient.PostAsync(nowPaymentsSettings.BaseURL, content, cancellationToken);
             
             if (!httpResponseMessage.IsSuccessStatusCode)
             {

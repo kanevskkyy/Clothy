@@ -194,7 +194,7 @@ namespace Clothy.OrderService.BLL.Services
                 }
 
                 PickupPoints? pickupPoints = await unitOfWork.PickupPoint.GetByIdAsync(dto.PickupPointId, cancellationToken);
-                if (pickupPoints == null) throw new NotFoundException($"PickupPoint not found with ID: {dto.PickupPointId}");
+                if (pickupPoints == null || !pickupPoints.IsActive) throw new NotFoundException($"PickupPoint not found with ID: {dto.PickupPointId}");
 
                 DeliveryDetail delivery = mapper.Map<DeliveryDetail>(dto);
                 delivery.CreatedAt = DateTime.UtcNow.ToUniversalTime();
@@ -350,37 +350,34 @@ namespace Clothy.OrderService.BLL.Services
             return cached!;
         }
 
-        public async Task<PagedList<OrderReadDTO>> GetPagedAsync(OrderFilterDTO filter, ClaimsPrincipal? user, CancellationToken cancellationToken = default)
+        public async Task<PagedList<OrderReadDTO>?> GetPagedAsync(OrderFilterDTO filter, ClaimsPrincipal? user, CancellationToken cancellationToken = default)
         {
-            if (user != null && !user.IsInRole("Admin") && !user.IsInRole("Manager")) filter.UserId = userClaimsExtractor.GetUserId(user);
+            if (user != null && !user.IsInRole("Admin") && !user.IsInRole("Manager"))
+                filter.UserId = userClaimsExtractor.GetUserId(user);
 
             bool usePageCache = filter.StatusId.HasValue && filter.PageNumber <= MAX_CASHED_PAGES;
 
             if (usePageCache)
             {
-                string cacheKey = $"orders:status:{filter.StatusId}:page:{filter.PageNumber}:size:{filter.PageSize}";
-
-                PagedList<OrderReadDTO>? cached = await cacheService.GetOrSetAsync(
-                    cacheKey,
-                    async () =>
-                    {
-                        var (orders, totalCount) = await unitOfWork.Orders.GetPagedAsync(filter, cancellationToken);
-                        List<OrderReadDTO> ordersDTO = mapper.Map<List<OrderReadDTO>>(orders);
-                        return new PagedList<OrderReadDTO>(ordersDTO, totalCount, filter.PageNumber, filter.PageSize);
-                    },
+                return await cacheService.GetOrSetAsync(
+                    filter.ToCacheKey(),
+                    async () => await FetchOrdersAsync(filter, cancellationToken),
                     MEMORY_TTL_PAGED_ORDERS,
                     REDIS_TTL_PAGED_ORDERS
                 );
+            }
 
-                return cached!;
-            }
-            else
-            {
-                var (orders, totalCount) = await unitOfWork.Orders.GetPagedAsync(filter, cancellationToken);
-                List<OrderReadDTO> ordersDTO = mapper.Map<List<OrderReadDTO>>(orders);
-                return new PagedList<OrderReadDTO>(ordersDTO, totalCount, filter.PageNumber, filter.PageSize);
-            }
+            return await FetchOrdersAsync(filter, cancellationToken);
         }
+
+        private async Task<PagedList<OrderReadDTO>> FetchOrdersAsync(OrderFilterDTO filter, CancellationToken cancellationToken)
+        {
+            var (orders, totalCount) = await unitOfWork.Orders.GetPagedAsync(filter, cancellationToken);
+            
+            List<OrderReadDTO> ordersDTO = mapper.Map<List<OrderReadDTO>>(orders);
+            return new PagedList<OrderReadDTO>(ordersDTO, totalCount, filter.PageNumber, filter.PageSize);
+        }
+
 
         public async Task<OrderDetailDTO> UpdateStatusAsync(Guid id, OrderUpdateStatusDTO dto, CancellationToken cancellationToken = default)
         {

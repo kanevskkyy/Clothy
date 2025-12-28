@@ -12,7 +12,6 @@ namespace Clothy.OrderService.DAL.UOW
     {
         IOrderStatusRepository OrderStatuses { get; }
         IDeliveryProviderRepository DeliveryProviders { get; }
-        ICityRepository Cities { get; }
         IOrderRepository Orders { get; }
         IOrderItemRepository OrderItems { get; }
         IDeliveryDetailRepository DeliveryDetails { get; }

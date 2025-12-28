@@ -19,28 +19,32 @@ namespace Clothy.OrderService.DAL.Repositories
 
         }
 
-        public async Task<bool> ExistsByAddressAndProviderIdAsync(string address, Guid deliveryProviderId, Guid? excludeId = null, CancellationToken cancellationToken = default)
+        public async Task<List<PickupPoints>> GetBySettlementIdAsync(Guid settlementId, CancellationToken cancellationToken = default)
         {
             using IDbConnection connection = await GetOpenConnectionAsync();
+
             string sql = @"
-                SELECT COUNT(1)
+                SELECT id AS Id, 
+                       address AS Address, 
+                       ref AS Ref, 
+                       deliveryproviderid AS DeliveryProviderId, 
+                       settlementid AS SettlementId, 
+                       createdat AS CreatedAt, 
+                       updatedat AS UpdatedAt,
+                       isactive AS IsActive
                 FROM pickup_points
-                WHERE LOWER(address) = LOWER(@Address)
-                AND deliveryproviderid = @DeliveryProviderId
-                AND (@ExcludeId IS NULL OR id <> @ExcludeId);
+                WHERE settlementid = @SettlementId;
             ";
 
-            int count = await connection.ExecuteScalarAsync<int>(
-                new CommandDefinition(sql, new
-                {
-                    Address = address,
-                    DeliveryProviderId = deliveryProviderId,
-                    ExcludeId = excludeId
-                },
-                cancellationToken: cancellationToken)
+            IEnumerable<PickupPoints> result = await connection.QueryAsync<PickupPoints>(
+                new CommandDefinition(
+                    sql,
+                    new { SettlementId = settlementId },
+                    cancellationToken: cancellationToken
+                )
             );
 
-            return count > 0;
+            return result.ToList();
         }
 
         public async Task<(IEnumerable<PickupPoints>, int totalCount)> GetPagedAsync(PickupPointFilterDTO filterDTO, CancellationToken cancellationToken = default)
@@ -50,6 +54,9 @@ namespace Clothy.OrderService.DAL.Repositories
             StringBuilder sql = new StringBuilder("SELECT * FROM pickup_points WHERE 1=1 ");
             StringBuilder countSql = new StringBuilder("SELECT COUNT(*) FROM pickup_points WHERE 1=1 ");
             DynamicParameters parameters = new DynamicParameters();
+
+            sql.Append(" AND isactive=True");
+            countSql.Append(" AND isactive = true ");
 
             if (filterDTO.DeliveryProviderId.HasValue)
             {
@@ -65,7 +72,20 @@ namespace Clothy.OrderService.DAL.Repositories
                 parameters.Add("SettlementId", filterDTO.SettlementId.Value);
             }
 
-            string sortBy = filterDTO.SortBy?.ToLower() ?? "address";
+            if (!string.IsNullOrWhiteSpace(filterDTO.Address))
+            {
+                sql.Append(" AND address ILIKE @Address");
+                countSql.Append(" AND address ILIKE @Address");
+                parameters.Add("Address", $"%{filterDTO.Address}%");
+            }
+
+            string sortBy = filterDTO.SortBy?.ToLower() switch
+            {
+                "address" => "address",
+                "createdat" => "createdat",
+                "updatedat" => "updatedat",
+                _ => "address"
+            };
             string direction = filterDTO.SortDescending ? "DESC" : "ASC";
             sql.Append($" ORDER BY {sortBy} {direction} ");
 
