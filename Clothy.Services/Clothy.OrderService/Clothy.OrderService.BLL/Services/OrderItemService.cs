@@ -48,7 +48,6 @@ namespace Clothy.OrderService.BLL.Services
             {
                 item.ClotheName = clotheItemUpdatedEvent.ClotheName;
                 item.Price = clotheItemUpdatedEvent.Price;
-                item.MainPhoto = clotheItemUpdatedEvent.MainPhoto;
                 item.IsClotheUpdated = true;
 
                 await unitOfWork.OrderItems.UpdateAsync(item, cancellationToken);

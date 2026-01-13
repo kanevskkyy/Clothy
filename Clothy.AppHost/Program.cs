@@ -162,10 +162,10 @@ var seedCatalog = builder.AddProject<Clothy_CatalogService_SeedData>("catalog-se
     .WithReference(postgresCatalogDB)
     .WaitFor(catalogService);
 
-//var seedOrders = builder.AddProject<Clothy_OrderService_SeedData>("order-seed")
-//    .WithReference(postgresOrdersDB)
-//    .WithEnvironment("NOVAPOSHTA__API_KEY", Environment.GetEnvironmentVariable("NOVAPOSHTA__API_KEY"))
-//    .WaitFor(ordersService);
+var seedOrders = builder.AddProject<Clothy_OrderService_SeedData>("order-seed")
+    .WithReference(postgresOrdersDB)
+    .WithEnvironment("NOVAPOSHTA__API_KEY", Environment.GetEnvironmentVariable("NOVAPOSHTA__API_KEY"))
+    .WaitFor(ordersService);
 
 var aggregator = builder.AddProject<Clothy_Aggregator_API>("aggregator")
     .WithReference(catalogService)

@@ -37,7 +37,7 @@ namespace Clothy.CatalogService.DAL.Repositories
 
         public async Task<ClotheItem?> GetByIdWithDetailsAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            ClotheItem? clotheItem = await dbSet
+            return await dbSet
                 .Include(property => property.Collection)
                 .Include(property => property.Brand)
                 .Include(property => property.ClothyType)
@@ -51,15 +51,6 @@ namespace Clothy.CatalogService.DAL.Repositories
                 .Include(property => property.ClotheMaterials)
                     .ThenInclude(property => property.Material)
                 .FirstOrDefaultAsync(property => property.Id == id, cancellationToken);
-
-            if (clotheItem != null)
-            {
-                clotheItem.Stocks = clotheItem.Stocks
-                    .Where(stock => stock.Quantity > 0)
-                    .ToList();
-            }
-
-            return clotheItem;
         }
 
         public async Task<PagedList<ClotheItem>> GetPagedClotheItemsAsync(ClotheItemSpecificationParameters parameters, CancellationToken cancellationToken = default)

@@ -11,8 +11,6 @@ namespace Clothy.CatalogService.BLL.FluentValidation.ClotheValidation
 {
     public class ClotheCreateDTOValidator : AbstractValidator<ClotheCreateDTO>
     {
-        private string[] permittedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".svg" };
-
         public ClotheCreateDTOValidator()
         {
             RuleFor(x => x.Name)
@@ -34,11 +32,6 @@ namespace Clothy.CatalogService.BLL.FluentValidation.ClotheValidation
             RuleFor(x => x.ClothingTypeId).NotEmpty().WithMessage("ClothingTypeId is required.");
             RuleFor(x => x.CollectionId).NotEmpty().WithMessage("CollectionId is required.");
 
-            RuleFor(x => x.MainPhoto)
-                .NotNull().WithMessage("Main photo is required.")
-                .Must(HavePermittedExtension).WithMessage($"Main photo must be one of: {string.Join(", ", permittedExtensions)}")
-                .Must(HaveValidSize).WithMessage("Main photo must be smaller than 5 MB");
-
             RuleFor(x => x.AdditionalPhotos)
                 .NotEmpty().WithMessage("At least one additional photo is required.");
 
@@ -50,19 +43,6 @@ namespace Clothy.CatalogService.BLL.FluentValidation.ClotheValidation
                 .NotEmpty().WithMessage("At least one tag must be selected.");
 
             RuleForEach(x => x.Materials).SetValidator(new ClotheMaterialCreateDTOValidator());
-        }
-
-        private bool HavePermittedExtension(IFormFile file)
-        {
-            if (file == null) return true;
-            string? extension = Path.GetExtension(file.FileName)?.ToLowerInvariant();
-            return extension != null && permittedExtensions.Contains(extension);
-        }
-
-        private bool HaveValidSize(IFormFile file)
-        {
-            if (file == null) return true;
-            return file.Length > 0 && file.Length <= 5 * 1024 * 1024;
         }
     }
 }

@@ -132,7 +132,6 @@ namespace Clothy.CatalogService.BLL.Services
             if (collection == null) throw new NotFoundException($"Collection with ID: {dto.CollectionId} not found");
 
             ClotheItem clothe = mapper.Map<ClotheItem>(dto);
-            clothe.MainPhotoURL = await imageService.UploadAsync(dto.MainPhoto, "clothes");
 
             bool isDuplicated = dto.AdditionalPhotos
                 .Where(p => p.IsMain)
@@ -155,11 +154,29 @@ namespace Clothy.CatalogService.BLL.Services
                 if (mainCount > 1) throw new ValidationFailedException($"Color with ID {group.Key} cannot have more than one main photo.");
             }
 
+            IReadOnlyList<Size> sizes = await unitOfWork.Sizes.GetAllAsync(cancellationToken);
+            List<Guid> distinctColorIds = new List<Guid>();
+
             foreach (ClothePhotoCreateDTO clothePhotoCreateDTO in dto.AdditionalPhotos)
             {
                 string url = await imageService.UploadAsync(clothePhotoCreateDTO.Photo, "clothes");
                 Color? color = await unitOfWork.Colors.GetByIdAsync(clothePhotoCreateDTO.ColorId, cancellationToken);
                 if (color == null) throw new NotFoundException($"Color not found with ID: {clothePhotoCreateDTO.ColorId}");
+
+                if(!distinctColorIds.Contains(color.Id))
+                {
+                    distinctColorIds.Add(color.Id);
+
+                    foreach(Size size in sizes)
+                    {
+                        clothe.Stocks.Add(new ClothesStock
+                        {
+                            SizeId = size.Id,
+                            ColorId = color.Id,
+                            Quantity = 0
+                        });
+                    }
+                }
 
                 clothe.Photos.Add(new PhotoClothes
                 {
@@ -219,12 +236,6 @@ namespace Clothy.CatalogService.BLL.Services
 
             mapper.Map(dto, clotheItem);
 
-            if (dto.MainPhoto != null)
-            {
-                if (!string.IsNullOrEmpty(clotheItem.MainPhotoURL)) await imageService.DeleteImageAsync(clotheItem.MainPhotoURL);
-                clotheItem.MainPhotoURL = await imageService.UploadAsync(dto.MainPhoto, "clothes");
-            }
-
             unitOfWork.ClotheItems.Update(clotheItem);
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
@@ -236,7 +247,6 @@ namespace Clothy.CatalogService.BLL.Services
                 ClotheId = clotheItem.Id,
                 ClotheName = clotheItem.Name,
                 Price = clotheItem.Price,
-                MainPhoto = clotheItem.MainPhotoURL
             };
             await publishEndpoint.Publish(clotheItemUpdatedEvent, cancellationToken);
             await cacheInvalidatonClotheStock.InvalidateAllAsync();
@@ -259,8 +269,6 @@ namespace Clothy.CatalogService.BLL.Services
         {
             ClotheItem? clothe = await unitOfWork.ClotheItems.GetByIdWithDetailsAsync(id, cancellationToken);
             if (clothe == null) throw new NotFoundException($"Clothe item not found with ID: {id}");
-
-            if (!string.IsNullOrEmpty(clothe.MainPhotoURL)) await imageService.DeleteImageAsync(clothe.MainPhotoURL);
 
             foreach (PhotoClothes photo in clothe.Photos)
             {

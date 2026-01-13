@@ -21,7 +21,6 @@ namespace Clothy.CatalogService.BLL.DTOs.ClotheDTOs
         public string? Name { get; set; } 
         public string? Slug { get; set; } 
         public string? Description { get; set; }
-        public string? MainPhotoURL { get; set; }
         public decimal Price { get; set; }
 
         public BrandReadDTO? Brand { get; set; }

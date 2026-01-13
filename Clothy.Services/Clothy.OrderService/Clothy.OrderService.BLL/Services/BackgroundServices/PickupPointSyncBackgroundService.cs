@@ -120,6 +120,7 @@ namespace Clothy.OrderService.BLL.Services.BackgroundServices
                 using IServiceScope serviceScope = serviceProvider.CreateScope();
                 IUnitOfWork unitOfWork = serviceScope.ServiceProvider.GetRequiredService<IUnitOfWork>();
                 IDeliveryAPIClient deliveryAPIClient = serviceScope.ServiceProvider.GetRequiredService<IDeliveryAPIClient>();
+                IEntityCacheInvalidationService<PickupPoints> entityCacheInvalidationService = serviceScope.ServiceProvider.GetRequiredService<IEntityCacheInvalidationService<PickupPoints>>();
 
                 Region? region = await unitOfWork.Region.GetByRefAsync(regionDTO.Ref!, cancellationToken);
 
@@ -139,6 +140,7 @@ namespace Clothy.OrderService.BLL.Services.BackgroundServices
                         deliveryProviderId,
                         unitOfWork,
                         deliveryAPIClient,
+                        entityCacheInvalidationService,
                         cancellationToken
                     );
 
@@ -158,7 +160,7 @@ namespace Clothy.OrderService.BLL.Services.BackgroundServices
             return (addedCount, deactivatedCount);
         }
 
-        private async Task<(int added, int deactivated)> ProcessSettlementAsync(SettlementDTO settlementDTO, Guid regionId, Guid deliveryProviderId, IUnitOfWork unitOfWork, IDeliveryAPIClient deliveryAPIClient, CancellationToken cancellationToken = default)
+        private async Task<(int added, int deactivated)> ProcessSettlementAsync(SettlementDTO settlementDTO, Guid regionId, Guid deliveryProviderId, IUnitOfWork unitOfWork, IDeliveryAPIClient deliveryAPIClient, IEntityCacheInvalidationService<PickupPoints> entityCacheInvalidationService, CancellationToken cancellationToken = default)
         {
             int addedCount = 0;
             int deactivatedCount = 0;
@@ -202,6 +204,8 @@ namespace Clothy.OrderService.BLL.Services.BackgroundServices
                         pickupPoint.IsActive = true;
                         pickupPoint.Address = pickupPointDTO.Description;
                         await unitOfWork.PickupPoint.UpdateAsync(pickupPoint);
+                        await entityCacheInvalidationService.InvalidateAllAsync();
+                        await entityCacheInvalidationService.InvalidateByIdAsync(pickupPoint.Id);
                         addedCount++;
 
                         logger.LogDebug("Reactivated pickup point: {Address}", pickupPointDTO.Description);
@@ -215,6 +219,8 @@ namespace Clothy.OrderService.BLL.Services.BackgroundServices
                         tempPickupPoint.IsActive = false;
                         await unitOfWork.PickupPoint.UpdateAsync(tempPickupPoint);
                         deactivatedCount++;
+                        await entityCacheInvalidationService.InvalidateAllAsync();
+                        await entityCacheInvalidationService.InvalidateByIdAsync(tempPickupPoint.Id);
 
                         logger.LogDebug("Deactivated pickup point: {Address}", tempPickupPoint.Address);
                     }

@@ -29,6 +29,12 @@ namespace Clothy.CatalogService.BLL.Mapper
 
             CreateMap<ClothesStockCreateDTO, ClothesStock>();
 
+            CreateMap<ClothesStock, ClotheStockDTO>()
+                .ForMember(dest => dest.StockId, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Size, opt => opt.MapFrom(src => src.Size))
+                .ForMember(dest => dest.Color, opt => opt.MapFrom(src => src.Color))
+                .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.Quantity));
+
             CreateMap<ClothesStockUpdateDTO, ClothesStock>()
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow.ToUniversalTime()));
 

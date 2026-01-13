@@ -32,10 +32,6 @@ namespace Clothy.CatalogService.DAL.EntityConfigurations
                 .IsRequired()
                 .HasMaxLength(1000);
 
-            builder.Property(property => property.MainPhotoURL)
-                .IsRequired()
-                .HasMaxLength(1000);
-
             builder.Property(property => property.Price)
                 .IsRequired()
                 .HasColumnType("decimal(10,2)");

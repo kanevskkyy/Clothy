@@ -67,13 +67,12 @@ message ClotheDetailGrpcResponse {
 	string name = 2;
 	string slug = 3;
 	string description = 4;
-	string mainPhotoUrl = 5;
-	string price = 6; 
-	BrandDetailGrpcResponse brand = 7;
-	ClothingTypeGrpcResponse clothingType = 8;
-	CollectionGrpcResponse collection = 9;
-	repeated AdditionalPhotoGrpcResponse additionalPhotos = 10;
-	repeated TagGrpcResponse tags = 11;
-	repeated MaterialWithPercentageGrpcResponse materials = 12;
-	repeated ClotheStockGrpcResponse stocks = 13;
+	string price = 5; 
+	BrandDetailGrpcResponse brand = 6;
+	ClothingTypeGrpcResponse clothingType = 7;
+	CollectionGrpcResponse collection = 8;
+	repeated AdditionalPhotoGrpcResponse additionalPhotos = 9;
+	repeated TagGrpcResponse tags = 10;
+	repeated MaterialWithPercentageGrpcResponse materials = 11;
+	repeated ClotheStockGrpcResponse stocks = 12;
 }

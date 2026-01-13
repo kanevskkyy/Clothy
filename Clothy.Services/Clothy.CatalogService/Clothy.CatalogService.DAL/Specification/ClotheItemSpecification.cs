@@ -18,7 +18,8 @@ namespace Clothy.CatalogService.DAL.Specification
             Query.Include(property => property.ClothyType);
             Query.Include(property => property.Collection);
             Query.Include(property => property.Brand);
-            Query.Include(property => property.Photos);
+            Query.Include(property => property.Photos)
+                .ThenInclude(property => property.Color);
 
             if (!string.IsNullOrEmpty(parameters.Name))
             {

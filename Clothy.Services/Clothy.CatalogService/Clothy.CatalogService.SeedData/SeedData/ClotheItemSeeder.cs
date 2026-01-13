@@ -26,7 +26,6 @@ namespace Clothy.CatalogService.SeedData.SeedData
                 .RuleFor(p => p.Name, fakeData => fakeData.Commerce.ProductName())
                 .RuleFor(p => p.Slug, fakeData => fakeData.Lorem.Slug())
                 .RuleFor(p => p.Description, fakeData => fakeData.Lorem.Paragraph())
-                .RuleFor(p => p.MainPhotoURL, fakeData => fakeData.Image.PicsumUrl())
                 .RuleFor(p => p.Price, fakeData => Math.Round(fakeData.Random.Decimal(10, 500), 2))
                 .RuleFor(p => p.BrandId, fakeData => fakeData.PickRandom(brands).Id)
                 .RuleFor(p => p.CollectionId, fakeData => fakeData.PickRandom(collections).Id)

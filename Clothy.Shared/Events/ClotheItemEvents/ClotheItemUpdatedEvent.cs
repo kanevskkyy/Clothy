@@ -12,6 +12,5 @@ namespace Clothy.Shared.Events.ClotheItemEvents
         public Guid ClotheId { get; init; }
         public string? ClotheName { get; init; }
         public decimal Price { get; init; }
-        public string? MainPhoto { get; init; }
     }
 }
