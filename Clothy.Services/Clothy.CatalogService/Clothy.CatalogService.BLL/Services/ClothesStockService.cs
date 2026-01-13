@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Metrics;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
+using Clothy.Aggregator.Aggregate.RedisCache;
 using Clothy.CatalogService.BLL.DTOs.ClotheDTOs;
 using Clothy.CatalogService.BLL.DTOs.ClotheStocksDTOs;
 using Clothy.CatalogService.BLL.Exceptions;
@@ -15,6 +10,12 @@ using Clothy.CatalogService.Domain.QueryParameters;
 using Clothy.Shared.Cache.Interfaces;
 using Clothy.Shared.Helpers;
 using Clothy.Shared.Helpers.Exceptions;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.Metrics;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Clothy.CatalogService.BLL.Services
 {
@@ -24,6 +25,9 @@ namespace Clothy.CatalogService.BLL.Services
         private IMapper mapper;
         private IEntityCacheService cacheService;
         private IEntityCacheInvalidationService<ClothesStock> cacheInvalidationService;
+        private IFilterCacheInvalidationService filterCacheInvalidationService;
+        private IStockNotificationService stockNotificationService;
+
         private static TimeSpan MEMORY_TTL_PAGE = TimeSpan.FromMinutes(1);
         private static TimeSpan REDIS_TTL_PAGE = TimeSpan.FromMinutes(10);
 
@@ -32,7 +36,13 @@ namespace Clothy.CatalogService.BLL.Services
 
         private Counter<long> stockUpdatedCounter;
 
-        public ClothesStockService(IUnitOfWork unitOfWork, IMapper mapper, IEntityCacheService cacheService, IEntityCacheInvalidationService<ClothesStock> cacheInvalidationService, Meter meter)
+        public ClothesStockService(IUnitOfWork unitOfWork, 
+            IMapper mapper, 
+            IEntityCacheService cacheService, 
+            IEntityCacheInvalidationService<ClothesStock> cacheInvalidationService, 
+            Meter meter,
+            IFilterCacheInvalidationService filterCacheInvalidationService,
+            IStockNotificationService stockNotificationService)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
@@ -42,6 +52,8 @@ namespace Clothy.CatalogService.BLL.Services
                 "clothy.catalog.clotheStock.updated",
                 "items",
                 "Number of stock changes (add/update)");
+            this.filterCacheInvalidationService = filterCacheInvalidationService;
+            this.stockNotificationService = stockNotificationService;
         }
 
         public async Task<PagedList<ClothesStockReadDTO>?> GetPagedClothesStockAsync(ClothesStockSpecificationParameters parameters, CancellationToken cancellationToken = default)
@@ -110,6 +122,7 @@ namespace Clothy.CatalogService.BLL.Services
             
             await cacheService.RemoveAsync($"clothe:{stock.ClotheId}");
             await cacheInvalidationService.InvalidateAllAsync();
+            await filterCacheInvalidationService.InvalidateAsync();
 
             return await GetByIdWithDetailsAsync(stock.Id, cancellationToken);
         }
@@ -119,14 +132,24 @@ namespace Clothy.CatalogService.BLL.Services
             ClothesStock? stock = await unitOfWork.ClothesStocks.GetByIdWithDetailsAsync(id, cancellationToken);
             if (stock == null) throw new NotFoundException($"Clothes stock not found with ID: {id}");
 
+            int startQuantity = stock.Quantity;
+
             mapper.Map(dto, stock);
             unitOfWork.ClothesStocks.Update(stock);
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
+            if(startQuantity == 0 && stock.Quantity > 0)
+            {
+                await stockNotificationService.NotifySubscribersAsync(id, cancellationToken);
+            }
+
             stockUpdatedCounter.Add(1, new KeyValuePair<string, object?>("operation", "update"));
 
+            await cacheInvalidationService.InvalidateAllAsync();
             await cacheInvalidationService.InvalidateByIdAsync(id);
+            
             await cacheService.RemoveAsync($"clothe:{stock.ClotheId}");
+            await filterCacheInvalidationService.InvalidateAsync();
 
             return await GetByIdWithDetailsAsync(stock.Id, cancellationToken);
         }
@@ -141,6 +164,9 @@ namespace Clothy.CatalogService.BLL.Services
             await cacheService.RemoveAsync($"clothe:{stock.ClotheId}");
 
             await cacheInvalidationService.InvalidateByIdAsync(id);
+            await cacheInvalidationService.InvalidateAllAsync();
+
+            await filterCacheInvalidationService.InvalidateAsync();
         }
 
         public async Task UpdateStockAsync(Guid clotheId, Guid colorId, Guid sizeId, int orderedQuantity, CancellationToken cancellationToken = default)
@@ -154,6 +180,9 @@ namespace Clothy.CatalogService.BLL.Services
                 await cacheService.RemoveAsync($"clothe:{clotheId}");
             }
             await cacheInvalidationService.InvalidateAllAsync();
+            await cacheInvalidationService.InvalidateByIdAsync(clotheStock.Id);
+            
+            await filterCacheInvalidationService.InvalidateAsync();
         }
     }
 }

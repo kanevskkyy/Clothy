@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Clothy.CatalogService.BLL.DTOs.BrandDTOs;
+using Clothy.CatalogService.BLL.DTOs.ClotheStocksDTOs;
 using Clothy.CatalogService.BLL.DTOs.ClothingTypeDTOs;
 using Clothy.CatalogService.BLL.DTOs.CollectionDTOs;
 using Clothy.CatalogService.BLL.DTOs.ColorDTOs;
+using Clothy.CatalogService.BLL.DTOs.MaterialDTOs;
+using Clothy.CatalogService.BLL.DTOs.PhotoDTOs;
 using Clothy.CatalogService.BLL.DTOs.SizeDTOs;
 using Clothy.CatalogService.BLL.DTOs.TagDTOs;
 

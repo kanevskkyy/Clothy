@@ -16,6 +16,9 @@ using MassTransit;
 using Clothy.Shared.Events.ClotheItemEvents;
 using Clothy.CatalogService.BLL.DTOs.TagDTOs;
 using Clothy.Shared.Helpers.CloudinaryConfig.ImageService;
+using Clothy.Aggregator.Aggregate.RedisCache;
+using Clothy.CatalogService.BLL.DTOs.PhotoDTOs;
+using Clothy.CatalogService.BLL.DTOs.MaterialDTOs;
 
 namespace Clothy.CatalogService.BLL.Services
 {
@@ -29,6 +32,7 @@ namespace Clothy.CatalogService.BLL.Services
         private IPublishEndpoint publishEndpoint;
         private ILogger<ClotheService> logger;
         private IEntityCacheInvalidationService<ClothesStock> cacheInvalidatonClotheStock;
+        private IFilterCacheInvalidationService filterCacheInvalidationService;
 
         private const int MAX_CASHED_PAGES = 10;
         private static TimeSpan MEMORY_TTL_CLOTHE_PAGE = TimeSpan.FromMinutes(30);
@@ -45,7 +49,8 @@ namespace Clothy.CatalogService.BLL.Services
             IEntityCacheInvalidationService<ClotheItem> cacheInvalidationService, 
             Meter meter, ILogger<ClotheService> logger, 
             IEntityCacheInvalidationService<ClothesStock> cacheInvalidatonClotheStock, 
-            IPublishEndpoint publishEndpoint)
+            IPublishEndpoint publishEndpoint,
+            IFilterCacheInvalidationService filterCacheInvalidationService)
         {
             this.logger = logger;
             this.unitOfWork = unitOfWork;
@@ -59,6 +64,7 @@ namespace Clothy.CatalogService.BLL.Services
                 "Total numbers of clothes created");
             this.cacheInvalidatonClotheStock = cacheInvalidatonClotheStock;
             this.publishEndpoint = publishEndpoint;
+            this.filterCacheInvalidationService = filterCacheInvalidationService;
         }
 
         public async Task<PagedList<ClotheSummaryDTO>?> GetPagedClotheItemsAsync(ClotheItemSpecificationParameters parameters, CancellationToken cancellationToken = default)
@@ -128,13 +134,38 @@ namespace Clothy.CatalogService.BLL.Services
             ClotheItem clothe = mapper.Map<ClotheItem>(dto);
             clothe.MainPhotoURL = await imageService.UploadAsync(dto.MainPhoto, "clothes");
 
+            bool isDuplicated = dto.AdditionalPhotos
+                .Where(p => p.IsMain)
+                .GroupBy(p => p.ColorId)
+                .Any(g => g.Count() > 1);
+
+            if (isDuplicated) throw new ValidationFailedException("Only one main photo per color is allowed.");
+
             clothe.Photos = new List<PhotoClothes>();
-            foreach (var photo in dto.AdditionalPhotos)
+            
+            var colorGroups = dto.AdditionalPhotos
+                .Where(p => p.ColorId != null)
+                .GroupBy(p => p.ColorId);
+            
+            foreach (var group in colorGroups)
             {
-                string url = await imageService.UploadAsync(photo, "clothes");
-                clothe.Photos.Add(new PhotoClothes 
-                { 
-                    PhotoURL = url 
+                int mainCount = group.Count(p => p.IsMain);
+
+                if (mainCount == 0) throw new ValidationFailedException($"Color with ID {group.Key} must have at least one main photo.");
+                if (mainCount > 1) throw new ValidationFailedException($"Color with ID {group.Key} cannot have more than one main photo.");
+            }
+
+            foreach (ClothePhotoCreateDTO clothePhotoCreateDTO in dto.AdditionalPhotos)
+            {
+                string url = await imageService.UploadAsync(clothePhotoCreateDTO.Photo, "clothes");
+                Color? color = await unitOfWork.Colors.GetByIdAsync(clothePhotoCreateDTO.ColorId, cancellationToken);
+                if (color == null) throw new NotFoundException($"Color not found with ID: {clothePhotoCreateDTO.ColorId}");
+
+                clothe.Photos.Add(new PhotoClothes
+                {
+                    PhotoURL = url,
+                    ColorId = clothePhotoCreateDTO.ColorId,
+                    IsMain = clothePhotoCreateDTO.IsMain
                 });
             }
 
@@ -165,6 +196,7 @@ namespace Clothy.CatalogService.BLL.Services
 
             await cacheInvalidationService.InvalidateAllAsync();
             await cacheInvalidatonClotheStock.InvalidateAllAsync();
+            await filterCacheInvalidationService.InvalidateAsync();
 
             return await GetDetailByIdAsync(clothe.Id, cancellationToken);
         }
@@ -196,6 +228,7 @@ namespace Clothy.CatalogService.BLL.Services
             unitOfWork.ClotheItems.Update(clotheItem);
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
+            await cacheInvalidationService.InvalidateAllAsync();
             await cacheInvalidationService.InvalidateByIdAsync(id);
 
             ClotheItemUpdatedEvent clotheItemUpdatedEvent = new ClotheItemUpdatedEvent
@@ -207,6 +240,7 @@ namespace Clothy.CatalogService.BLL.Services
             };
             await publishEndpoint.Publish(clotheItemUpdatedEvent, cancellationToken);
             await cacheInvalidatonClotheStock.InvalidateAllAsync();
+            await filterCacheInvalidationService.InvalidateAsync();
 
             return await GetDetailByIdAsync(clotheItem.Id, cancellationToken);
         }
@@ -235,8 +269,12 @@ namespace Clothy.CatalogService.BLL.Services
 
             unitOfWork.ClotheItems.Delete(clothe);
             await unitOfWork.SaveChangesAsync(cancellationToken);
+
             await cacheInvalidationService.InvalidateByIdAsync(id);
+            await cacheInvalidationService.InvalidateAllAsync();
+
             await cacheInvalidatonClotheStock.InvalidateAllAsync();
+            await filterCacheInvalidationService.InvalidateAsync();
 
             ClotheItemDeletedEvent clotheItemDeletedEvent = new ClotheItemDeletedEvent
             {

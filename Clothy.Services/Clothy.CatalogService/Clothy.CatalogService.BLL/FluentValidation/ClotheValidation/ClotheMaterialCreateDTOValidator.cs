@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Clothy.CatalogService.BLL.DTOs.ClotheDTOs;
+using Clothy.CatalogService.BLL.DTOs.MaterialDTOs;
 using FluentValidation;
 
 namespace Clothy.CatalogService.BLL.FluentValidation.ClotheValidation

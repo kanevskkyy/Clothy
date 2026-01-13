@@ -19,6 +19,7 @@ namespace Clothy.CatalogService.DAL.UOW
         ISizeRepository Sizes { get; }
         ITagRepository Tags { get; }
         IClothingTypeRepository ClothingTypes { get; }
+        IStockNotificationRepository StockNotification { get; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }

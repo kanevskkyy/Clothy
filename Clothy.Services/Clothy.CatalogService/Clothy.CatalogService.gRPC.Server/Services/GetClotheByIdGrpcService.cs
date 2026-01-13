@@ -85,6 +85,8 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                 {
                     Id = photo.Id.ToString(),
                     PhotoUrl = photo.PhotoURL,
+                    ColorId = photo.ColorId?.ToString(),
+                    IsMain = photo.IsMain
                 }));
                 clotheDetailGrpcResponse.Tags.AddRange(clotheItem?.Tags.Select(tag => new TagGrpcResponse
                 {

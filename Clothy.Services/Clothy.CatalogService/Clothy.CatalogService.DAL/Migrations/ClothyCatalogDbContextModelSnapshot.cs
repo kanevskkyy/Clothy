@@ -337,8 +337,17 @@ namespace Clothy.CatalogService.DAL.Migrations
                     b.Property<Guid>("ClotheId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("ColorId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsMain")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsMain");
 
                     b.Property<string>("PhotoURL")
                         .IsRequired()
@@ -351,6 +360,12 @@ namespace Clothy.CatalogService.DAL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ClotheId");
+
+                    b.HasIndex("ColorId");
+
+                    b.HasIndex("ClotheId", "ColorId")
+                        .IsUnique()
+                        .HasFilter("\"IsMain\" = true");
 
                     b.ToTable("photo_clothes", (string)null);
                 });
@@ -380,6 +395,51 @@ namespace Clothy.CatalogService.DAL.Migrations
                         .IsUnique();
 
                     b.ToTable("sizes", (string)null);
+                });
+
+            modelBuilder.Entity("Clothy.CatalogService.Domain.Entities.StockNotification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<bool>("IsNotified")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<Guid>("StockId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserEmail")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("UserFirstName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("StockId", "UserEmail")
+                        .IsUnique();
+
+                    b.ToTable("stock_notifications", (string)null);
                 });
 
             modelBuilder.Entity("Clothy.CatalogService.Domain.Entities.Tag", b =>
@@ -520,7 +580,25 @@ namespace Clothy.CatalogService.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Clothy.CatalogService.Domain.Entities.Color", "Color")
+                        .WithMany("PhotoClothes")
+                        .HasForeignKey("ColorId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.Navigation("Clothe");
+
+                    b.Navigation("Color");
+                });
+
+            modelBuilder.Entity("Clothy.CatalogService.Domain.Entities.StockNotification", b =>
+                {
+                    b.HasOne("Clothy.CatalogService.Domain.Entities.ClothesStock", "Stock")
+                        .WithMany("StockNotifications")
+                        .HasForeignKey("StockId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Stock");
                 });
 
             modelBuilder.Entity("Clothy.CatalogService.Domain.Entities.Brand", b =>
@@ -539,6 +617,11 @@ namespace Clothy.CatalogService.DAL.Migrations
                     b.Navigation("Stocks");
                 });
 
+            modelBuilder.Entity("Clothy.CatalogService.Domain.Entities.ClothesStock", b =>
+                {
+                    b.Navigation("StockNotifications");
+                });
+
             modelBuilder.Entity("Clothy.CatalogService.Domain.Entities.ClothingType", b =>
                 {
                     b.Navigation("Items");
@@ -552,6 +635,8 @@ namespace Clothy.CatalogService.DAL.Migrations
             modelBuilder.Entity("Clothy.CatalogService.Domain.Entities.Color", b =>
                 {
                     b.Navigation("ClothesStocks");
+
+                    b.Navigation("PhotoClothes");
                 });
 
             modelBuilder.Entity("Clothy.CatalogService.Domain.Entities.Material", b =>

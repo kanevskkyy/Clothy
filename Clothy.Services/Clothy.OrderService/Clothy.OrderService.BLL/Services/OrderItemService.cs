@@ -32,6 +32,7 @@ namespace Clothy.OrderService.BLL.Services
             {
                 item.IsClotheDeleted = true;
                 await unitOfWork.OrderItems.UpdateAsync(item, cancellationToken);
+                await cacheInvalidationService.InvalidateByIdAsync(item.OrderId);
             }
             await unitOfWork.CommitAsync();
             await cacheInvalidationService.InvalidateAllAsync();
@@ -51,6 +52,7 @@ namespace Clothy.OrderService.BLL.Services
                 item.IsClotheUpdated = true;
 
                 await unitOfWork.OrderItems.UpdateAsync(item, cancellationToken);
+                await cacheInvalidationService.InvalidateByIdAsync(item.OrderId);
             }
             await unitOfWork.CommitAsync();
             await cacheInvalidationService.InvalidateAllAsync();

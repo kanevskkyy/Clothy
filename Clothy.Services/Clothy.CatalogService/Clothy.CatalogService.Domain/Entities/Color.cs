@@ -9,6 +9,8 @@ namespace Clothy.CatalogService.Domain.Entities
     public class Color : BaseEntity
     {
         public string? HexCode { get; set; }
+     
         public ICollection<ClothesStock> ClothesStocks { get; set; } = new List<ClothesStock>();
+        public ICollection<PhotoClothes> PhotoClothes { get; set; } = new List<PhotoClothes>(); 
     }
 }

@@ -87,6 +87,9 @@ namespace Clothy.OrderService.BLL.Services
 
             try
             {
+                bool emailConfirmed = userClaimsExtractor.EmailConfirmed(claimsPrincipal);
+                if (!emailConfirmed) throw new ValidationFailedException("You need to confirm your email before placing an order!");
+
                 Guid userId = userClaimsExtractor.GetUserId(claimsPrincipal);
 
                 logger.LogInformation("Starting order creation for user: {UserId}", userId);
@@ -319,6 +322,7 @@ namespace Clothy.OrderService.BLL.Services
             }
             await unitOfWork.CommitAsync();
             await cacheInvalidationService.InvalidateAllAsync();
+            await cacheInvalidationService.InvalidateByIdAsync(orderPaidEvent.OrderId);
         }
 
         public async Task<OrderDetailDTO> GetByIdAsync(Guid id, ClaimsPrincipal? claimsPrincipal = null, CancellationToken cancellationToken = default)
@@ -392,6 +396,7 @@ namespace Clothy.OrderService.BLL.Services
             Order? updatedOrder = await unitOfWork.Orders.UpdateAsync(order, cancellationToken);
             await unitOfWork.CommitAsync();
 
+            await cacheInvalidationService.InvalidateAllAsync();
             await cacheInvalidationService.InvalidateByIdAsync(updatedOrder.Id);
 
             OrderDetailDTO orderDetailDTO = await GetByIdAsync(updatedOrder.Id, cancellationToken: cancellationToken);
@@ -418,6 +423,7 @@ namespace Clothy.OrderService.BLL.Services
             await unitOfWork.CommitAsync();
 
             await cacheInvalidationService.InvalidateByIdAsync(id);
+            await cacheInvalidationService.InvalidateAllAsync();
         }
     }
 }

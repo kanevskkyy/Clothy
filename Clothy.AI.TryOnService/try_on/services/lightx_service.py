@@ -3,9 +3,9 @@ import logging
 
 import httpx
 
-from ai.core.cloudinary_helper import process_clothe_cloudinary
-from ai.exceptions import LightXAPIException
-from ai.schemas import TryOnRequest, TryOnResponse
+from try_on.core.cloudinary_helper import process_clothe_cloudinary
+from try_on.exceptions import LightXAPIException
+from try_on.schemas import TryOnRequest, TryOnResponse
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +16,7 @@ class LightXService:
         self.base_url = 'https://api.lightxeditor.com/external/api/v2'
 
     async def create_try_on(self, req: TryOnRequest) -> TryOnResponse:
-        image_base64 = await process_clothe_cloudinary(req.person_image_url)
+        image_base64 = await process_clothe_cloudinary(req.person_image)
         clothe_base64 = await process_clothe_cloudinary(req.clothe_image_url)
 
         body_request = {

@@ -36,6 +36,11 @@ namespace Clothy.CatalogService.DAL.EntityConfigurations
             builder.HasIndex(property => property.HexCode)
                 .IsUnique();
 
+            builder.HasMany(property => property.PhotoClothes) 
+                .WithOne(photo => photo.Color)
+                .HasForeignKey(photo => photo.ColorId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             builder.HasCheckConstraint("CK_Color_HexCode", "\"hexcode\" ~ '^#[0-9A-Fa-f]{6}$'");
         }
     }

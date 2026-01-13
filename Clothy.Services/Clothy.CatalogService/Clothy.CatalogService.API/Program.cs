@@ -27,6 +27,7 @@ using Clothy.Shared.Events;
 using Clothy.CatalogService.DAL.EventLog;
 using Clothy.ServiceDefaults.Middleware.OpenTelemetry;
 using Clothy.Shared.Helpers.CloudinaryConfig;
+using Clothy.Shared.Events.EmailEvents.ClotheStockUpdated;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,6 +57,7 @@ builder.Services.AddScoped<ISizeRepository, SizeRepository>();
 builder.Services.AddScoped<ITagRepository, TagRepository>();
 builder.Services.AddScoped<ICollectionRepository, CollectionRepository>();
 builder.Services.AddScoped<IClothingTypeRepository, ClothingTypeRepository>();
+builder.Services.AddScoped<IStockNotificationRepository, StockNotificationRepository>();
 
 // REGISTER UNIT OF WORK
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -76,6 +78,7 @@ builder.Services.AddScoped<ICollectionService, CollectionService>();
 builder.Services.AddScoped<IBrandService, BrandService>();
 builder.Services.AddScoped<IClotheService, ClotheService>();
 builder.Services.AddScoped<IClothesStockService, ClothesStockService>();
+builder.Services.AddScoped<IStockNotificationService, StockNotificationService>();
 
 // REDIS
 builder.Services.AddTransient<IEntityCacheInvalidationService<ClotheItem>, ClotheItemCacheInvalidationService>();
@@ -122,6 +125,7 @@ builder.Services.AddMassTransit(x =>
 
         cfg.Message<ClotheItemUpdatedEvent>(e => e.SetEntityName("clothe-item-updated"));
         cfg.Message<ClotheItemDeletedEvent>(e => e.SetEntityName("clothe-item-deleted"));
+        cfg.Message<ClotheStockUpdatedEvent>(e => e.SetEntityName("clothe-stock-available"));
 
         cfg.ReceiveEndpoint("catalog-service-order-created-queue", e =>
         {

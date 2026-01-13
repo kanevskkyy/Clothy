@@ -54,5 +54,13 @@ namespace Clothy.Shared.Helpers.JWT
                 ?? claimsPrincipal.FindFirst(ClaimTypes.Email)?.Value
                 ?? throw new UnauthorizedAccessException("Email not found in token");
         }
+
+        public bool EmailConfirmed(ClaimsPrincipal claimsPrincipal)
+        {
+            Claim? claim = claimsPrincipal.FindFirst("email_verified");
+            if (claim == null) return false;
+
+            return bool.TryParse(claim.Value, out bool result) && result;
+        }
     }
 }

@@ -18,5 +18,7 @@ namespace Clothy.CatalogService.Domain.Entities
         public Color? Color { get; set; }
 
         public int Quantity { get; set; } = 0;
+
+        public ICollection<StockNotification> StockNotifications { get; set; } = new List<StockNotification>();
     }
 }

@@ -27,14 +27,14 @@ namespace Clothy.CatalogService.gRPC.Server.Services
 
             try
             {
-                var brands = await unitOfWork.Brands.GetAllAsync(context.CancellationToken);
-                var clothingTypes = await unitOfWork.ClothingTypes.GetAllAsync(context.CancellationToken);
-                var collections = await unitOfWork.Collections.GetCollectionsCountWithStockAsync(context.CancellationToken);
-                var colors = await unitOfWork.Colors.GetColorsCountWithStockAsync(context.CancellationToken);
-                var materials = await unitOfWork.Materials.GetMaterialsWithStockAsync(context.CancellationToken);
-                var sizes = await unitOfWork.Sizes.GetAllAsync(context.CancellationToken);
-                var tags = await unitOfWork.Tags.GetTagsWithStockCountAsync(context.CancellationToken);
-                var priceRange = await unitOfWork.ClotheItems.GetMinAndMaxPriceAsync(context.CancellationToken);
+                IReadOnlyList<Brand> brands = await unitOfWork.Brands.GetAllAsync(context.CancellationToken);
+                IReadOnlyList<ClothingType> clothingTypes = await unitOfWork.ClothingTypes.GetAllAsync(context.CancellationToken);
+                Dictionary<Collection, int> collections = await unitOfWork.Collections.GetCollectionsCountWithStockAsync(context.CancellationToken);
+                Dictionary<Color, int> colors = await unitOfWork.Colors.GetColorsCountWithStockAsync(context.CancellationToken);
+                Dictionary<Material, int> materials = await unitOfWork.Materials.GetMaterialsWithStockAsync(context.CancellationToken);
+                IReadOnlyList<Size> sizes = await unitOfWork.Sizes.GetAllAsync(context.CancellationToken);
+                Dictionary<Tag, int> tags = await unitOfWork.Tags.GetTagsWithStockCountAsync(context.CancellationToken);
+                (decimal minPrice, decimal maxPrice) priceRange = await unitOfWork.ClotheItems.GetMinAndMaxPriceAsync(context.CancellationToken);
 
                 logger.LogInformation("Succesfully collected all filters!");
 

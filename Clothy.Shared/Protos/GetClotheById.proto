@@ -30,6 +30,8 @@ message CollectionGrpcResponse {
 message AdditionalPhotoGrpcResponse {
 	string id = 1;
 	string photoUrl = 2;
+	string colorId = 3; 
+    bool isMain = 4;
 }
 
 message TagGrpcResponse {

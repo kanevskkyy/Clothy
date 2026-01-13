@@ -23,7 +23,7 @@ namespace Clothy.CatalogService.BLL.Helpers.ModelBinder
 
             bindingContext.ModelState.SetModelValue(bindingContext.ModelName, valueProviderResult);
 
-            var value = valueProviderResult.FirstValue;
+            string? value = valueProviderResult.FirstValue;
             if (string.IsNullOrEmpty(value))
             {
                 bindingContext.Result = ModelBindingResult.Success(default(T));

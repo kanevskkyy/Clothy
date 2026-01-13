@@ -15,5 +15,6 @@ namespace Clothy.Shared.Helpers.JWT
         string GetPhotoUrl(ClaimsPrincipal claimsPrincipal);
         string GetEmail(ClaimsPrincipal claimsPrincipal);
         bool IsInRole(ClaimsPrincipal claimsPrincipal, string role);
+        bool EmailConfirmed(ClaimsPrincipal claimsPrincipal);
     }
 }

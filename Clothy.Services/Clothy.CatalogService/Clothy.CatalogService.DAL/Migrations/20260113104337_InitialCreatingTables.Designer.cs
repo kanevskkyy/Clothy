@@ -12,15 +12,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Clothy.CatalogService.DAL.Migrations
 {
     [DbContext(typeof(ClothyCatalogDbContext))]
-    [Migration("20251014143224_ChangeTypeInPercentage")]
-    partial class ChangeTypeInPercentage
+    [Migration("20260113104337_InitialCreatingTables")]
+    partial class InitialCreatingTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "8.0.20")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -46,12 +46,20 @@ namespace Clothy.CatalogService.DAL.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.HasIndex("Slug")
                         .IsUnique();
 
                     b.ToTable("brands", (string)null);
@@ -332,8 +340,17 @@ namespace Clothy.CatalogService.DAL.Migrations
                     b.Property<Guid>("ClotheId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("ColorId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsMain")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsMain");
 
                     b.Property<string>("PhotoURL")
                         .IsRequired()
@@ -346,6 +363,12 @@ namespace Clothy.CatalogService.DAL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ClotheId");
+
+                    b.HasIndex("ColorId");
+
+                    b.HasIndex("ClotheId", "ColorId")
+                        .IsUnique()
+                        .HasFilter("\"IsMain\" = true");
 
                     b.ToTable("photo_clothes", (string)null);
                 });
@@ -377,6 +400,51 @@ namespace Clothy.CatalogService.DAL.Migrations
                     b.ToTable("sizes", (string)null);
                 });
 
+            modelBuilder.Entity("Clothy.CatalogService.Domain.Entities.StockNotification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<bool>("IsNotified")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<Guid>("StockId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserEmail")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("UserFirstName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("StockId", "UserEmail")
+                        .IsUnique();
+
+                    b.ToTable("stock_notifications", (string)null);
+                });
+
             modelBuilder.Entity("Clothy.CatalogService.Domain.Entities.Tag", b =>
                 {
                     b.Property<Guid>("Id")
@@ -402,6 +470,20 @@ namespace Clothy.CatalogService.DAL.Migrations
                         .IsUnique();
 
                     b.ToTable("tag", (string)null);
+                });
+
+            modelBuilder.Entity("Clothy.Shared.Events.ProcessedEvent", b =>
+                {
+                    b.Property<Guid>("EventId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("ProcessedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("EventId");
+
+                    b.ToTable("processed_events", (string)null);
                 });
 
             modelBuilder.Entity("Clothy.CatalogService.Domain.Entities.ClotheItem", b =>
@@ -501,7 +583,25 @@ namespace Clothy.CatalogService.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Clothy.CatalogService.Domain.Entities.Color", "Color")
+                        .WithMany("PhotoClothes")
+                        .HasForeignKey("ColorId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.Navigation("Clothe");
+
+                    b.Navigation("Color");
+                });
+
+            modelBuilder.Entity("Clothy.CatalogService.Domain.Entities.StockNotification", b =>
+                {
+                    b.HasOne("Clothy.CatalogService.Domain.Entities.ClothesStock", "Stock")
+                        .WithMany("StockNotifications")
+                        .HasForeignKey("StockId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Stock");
                 });
 
             modelBuilder.Entity("Clothy.CatalogService.Domain.Entities.Brand", b =>
@@ -520,6 +620,11 @@ namespace Clothy.CatalogService.DAL.Migrations
                     b.Navigation("Stocks");
                 });
 
+            modelBuilder.Entity("Clothy.CatalogService.Domain.Entities.ClothesStock", b =>
+                {
+                    b.Navigation("StockNotifications");
+                });
+
             modelBuilder.Entity("Clothy.CatalogService.Domain.Entities.ClothingType", b =>
                 {
                     b.Navigation("Items");
@@ -533,6 +638,8 @@ namespace Clothy.CatalogService.DAL.Migrations
             modelBuilder.Entity("Clothy.CatalogService.Domain.Entities.Color", b =>
                 {
                     b.Navigation("ClothesStocks");
+
+                    b.Navigation("PhotoClothes");
                 });
 
             modelBuilder.Entity("Clothy.CatalogService.Domain.Entities.Material", b =>

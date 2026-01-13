@@ -66,7 +66,7 @@ class Program
 
             foreach (ISeeder seeder in seeders)
             {
-                Console.WriteLine($"\nSeeding {seeder.GetType().Name}");
+                Console.WriteLine($"Seeding {seeder.GetType().Name}");
                 await seeder.SeedAsync(uow);
             }
 

@@ -32,6 +32,7 @@ builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<OrderCreatedEmailConsumer>();
     x.AddConsumer<OrderDeliveredEmailConsumer>();
+    x.AddConsumer<ClotheStockUpdatedConsumer>();
 
     x.UsingRabbitMq((context, cfg) =>
     {
@@ -42,6 +43,12 @@ builder.Services.AddMassTransit(x =>
         {
             e.ConfigureConsumer<OrderCreatedEmailConsumer>(context);
             e.Bind("send-notification-order-created");
+        });
+
+        cfg.ReceiveEndpoint("notification-clothe-stock-avaliable-queue", e =>
+        {
+            e.ConfigureConsumer<ClotheStockUpdatedConsumer>(context);
+            e.Bind("clothe-stock-available");
         });
 
         cfg.ReceiveEndpoint("notification-order-delivered-queue", e =>

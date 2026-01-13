@@ -30,6 +30,7 @@ namespace Clothy.CatalogService.DAL.DB
         public DbSet<Tag> Tags { get; set; }
         public DbSet<ClothingType> ClothingTypes { get; set; }
         public DbSet<ProcessedEvent> ProcessedEvents { get; set; }
+        public DbSet<StockNotification> StockNotifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -45,6 +46,7 @@ namespace Clothy.CatalogService.DAL.DB
             modelBuilder.ApplyConfiguration(new SizeConfiguration());
             modelBuilder.ApplyConfiguration(new TagConfiguration());
             modelBuilder.ApplyConfiguration(new ProcessedEventConfiguration());
+            modelBuilder.ApplyConfiguration(new StockNotificationConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }

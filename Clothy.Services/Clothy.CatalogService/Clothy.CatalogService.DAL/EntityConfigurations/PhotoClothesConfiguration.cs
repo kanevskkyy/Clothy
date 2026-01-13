@@ -21,12 +21,26 @@ namespace Clothy.CatalogService.DAL.EntityConfigurations
                 .IsRequired()
                 .HasMaxLength(500);
 
+            builder.Property(property => property.IsMain)
+                .HasColumnName("IsMain")
+                .HasDefaultValue(false);
+
             builder.HasOne(property => property.Clothe)
                 .WithMany(property => property.Photos)
                 .HasForeignKey(property => property.ClotheId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            builder.HasOne(property => property.Color)
+                .WithMany(color => color.PhotoClothes)
+                .HasForeignKey(property => property.ColorId)
+                .OnDelete(DeleteBehavior.Cascade); 
+
             builder.HasIndex(property => property.ClotheId);
+            builder.HasIndex(property => property.ColorId);
+
+            builder.HasIndex(p => new { p.ClotheId, p.ColorId })
+                .IsUnique()
+                .HasFilter("\"IsMain\" = true");
         }
     }
 }

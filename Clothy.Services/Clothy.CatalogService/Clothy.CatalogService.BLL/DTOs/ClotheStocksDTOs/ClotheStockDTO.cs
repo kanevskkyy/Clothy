@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Clothy.CatalogService.BLL.DTOs.ColorDTOs;
 using Clothy.CatalogService.BLL.DTOs.SizeDTOs;
 
-namespace Clothy.CatalogService.BLL.DTOs.ClotheDTOs
+namespace Clothy.CatalogService.BLL.DTOs.ClotheStocksDTOs
 {
     public class ClotheStockDTO
     {

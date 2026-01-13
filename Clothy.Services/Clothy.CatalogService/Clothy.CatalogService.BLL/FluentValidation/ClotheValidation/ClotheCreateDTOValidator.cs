@@ -11,7 +11,7 @@ namespace Clothy.CatalogService.BLL.FluentValidation.ClotheValidation
 {
     public class ClotheCreateDTOValidator : AbstractValidator<ClotheCreateDTO>
     {
-        private readonly string[] permittedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".svg" };
+        private string[] permittedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".svg" };
 
         public ClotheCreateDTOValidator()
         {
@@ -39,9 +39,11 @@ namespace Clothy.CatalogService.BLL.FluentValidation.ClotheValidation
                 .Must(HavePermittedExtension).WithMessage($"Main photo must be one of: {string.Join(", ", permittedExtensions)}")
                 .Must(HaveValidSize).WithMessage("Main photo must be smaller than 5 MB");
 
+            RuleFor(x => x.AdditionalPhotos)
+                .NotEmpty().WithMessage("At least one additional photo is required.");
+
             RuleForEach(x => x.AdditionalPhotos)
-                .Must(HavePermittedExtension).WithMessage($"Additional photo must be one of: {string.Join(", ", permittedExtensions)}")
-                .Must(HaveValidSize).WithMessage("Additional photo must be smaller than 5 MB")
+                .SetValidator(new ClothePhotoCreateDTOValidator())
                 .When(x => x.AdditionalPhotos != null && x.AdditionalPhotos.Any());
 
             RuleFor(x => x.TagIds)

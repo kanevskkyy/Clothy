@@ -4,8 +4,8 @@ import cloudinary
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from ai.core import Config
-from ai.routes.try_on_route import router
+from try_on.core import Config
+from try_on.routes.try_on_route import router
 
 
 class AppFactory:

@@ -30,19 +30,14 @@ namespace Clothy.CatalogService.DAL.Repositories
 
         public async Task<bool> IsSlugAlreadyExistsAsync(string slug, Guid? id = null, CancellationToken cancellationToken = default)
         {
-            if (id == null)
-            {
-                return await dbSet.AnyAsync(property => property.Slug.ToLower() == slug.ToLower(), cancellationToken);
-            }
-            else
-            {
-                return await dbSet.AnyAsync(property => property.Slug.ToLower() == slug.ToLower() && property.Id != id, cancellationToken);
-            }
+            if (id == null) return await dbSet.AnyAsync(property => property.Slug.ToLower() == slug.ToLower(), cancellationToken);
+            
+            return await dbSet.AnyAsync(property => property.Slug.ToLower() == slug.ToLower() && property.Id != id, cancellationToken);
         }
 
         public async Task<ClotheItem?> GetByIdWithDetailsAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var clotheItem = await dbSet
+            ClotheItem? clotheItem = await dbSet
                 .Include(property => property.Collection)
                 .Include(property => property.Brand)
                 .Include(property => property.ClothyType)

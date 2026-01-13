@@ -41,7 +41,7 @@ namespace Clothy.CatalogService.gRPC.Server.Services
 
             try
             {
-                foreach (var item in request.Items)
+                foreach (OrderItemToValidate orderItemToValidate in request.Items)
                 {
                     context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -49,36 +49,36 @@ namespace Clothy.CatalogService.gRPC.Server.Services
 
                     try
                     {
-                        if (!Guid.TryParse(item.ClotheId, out var clotheId))
+                        if (!Guid.TryParse(orderItemToValidate.ClotheId, out Guid clotheId))
                         {
                             response.IsValid = false;
-                            response.ErrorMessage = $"Invalid ClotheId format: {item.ClotheId}";
+                            response.ErrorMessage = $"Invalid ClotheId format: {orderItemToValidate.ClotheId}";
                             results.Add(response);
                             continue;
                         }
 
-                        if (!Guid.TryParse(item.ColorId, out var colorId))
+                        if (!Guid.TryParse(orderItemToValidate.ColorId, out Guid colorId))
                         {
                             response.IsValid = false;
-                            response.ErrorMessage = $"Invalid ColorId format: {item.ColorId}";
+                            response.ErrorMessage = $"Invalid ColorId format: {orderItemToValidate.ColorId}";
                             results.Add(response);
                             continue;
                         }
 
-                        if (!Guid.TryParse(item.SizeId, out var sizeId))
+                        if (!Guid.TryParse(orderItemToValidate.SizeId, out Guid sizeId))
                         {
                             response.IsValid = false;
-                            response.ErrorMessage = $"Invalid SizeId format: {item.SizeId}";
+                            response.ErrorMessage = $"Invalid SizeId format: {orderItemToValidate.SizeId}";
                             results.Add(response);
                             continue;
                         }
 
-                        ClotheItem? clotheItem = await unitOfWork.ClotheItems.GetByIdAsync(clotheId, context.CancellationToken);
+                        ClotheItem? clotheItem = await unitOfWork.ClotheItems.GetByIdWithDetailsAsync(clotheId, context.CancellationToken);
                         if (clotheItem == null)
                         {
                             response.IsValid = false;
-                            response.ErrorMessage = $"Clothe with Id {item.ClotheId} not found";
-                            logger.LogWarning("Clothe item not found: {ClotheId}", item.ClotheId);
+                            response.ErrorMessage = $"Clothe with Id {orderItemToValidate.ClotheId} not found";
+                            logger.LogWarning("Clothe item not found: {ClotheId}", orderItemToValidate.ClotheId);
                             results.Add(response);
                             continue;
                         }
@@ -87,8 +87,8 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                         if (color == null)
                         {
                             response.IsValid = false;
-                            response.ErrorMessage = $"Color with Id {item.ColorId} not found";
-                            logger.LogWarning("Color not found: {ColorId}", item.ColorId);
+                            response.ErrorMessage = $"Color with Id {orderItemToValidate.ColorId} not found";
+                            logger.LogWarning("Color not found: {ColorId}", orderItemToValidate.ColorId);
                             results.Add(response);
                             continue;
                         }
@@ -97,8 +97,8 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                         if (size == null)
                         {
                             response.IsValid = false;
-                            response.ErrorMessage = $"Size with Id {item.SizeId} not found";
-                            logger.LogWarning("Size not found: {SizeId}", item.SizeId);
+                            response.ErrorMessage = $"Size with Id {orderItemToValidate.SizeId} not found";
+                            logger.LogWarning("Size not found: {SizeId}", orderItemToValidate.SizeId);
                             results.Add(response);
                             continue;
                         }
@@ -108,17 +108,17 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                         if (stock == null)
                         {
                             response.IsValid = false;
-                            response.ErrorMessage = $"Combination of ClotheId: {item.ClotheId}, ColorId: {item.ColorId}, SizeId: {item.SizeId} does not exist in stock";
+                            response.ErrorMessage = $"Combination of ClotheId: {orderItemToValidate.ClotheId}, ColorId: {orderItemToValidate.ColorId}, SizeId: {orderItemToValidate.SizeId} does not exist in stock";
                             logger.LogWarning("Stock combo not found: ClotheId={ClotheId}, ColorId={ColorId}, SizeId={SizeId}", clotheId, colorId, sizeId);
                             results.Add(response);
                             continue;
                         }
 
-                        if (stock.Quantity < item.Quantity)
+                        if (stock.Quantity < orderItemToValidate.Quantity)
                         {
                             response.IsValid = false;
-                            response.ErrorMessage = $"Insufficient stock. Available: {stock.Quantity}, Requested: {item.Quantity}";
-                            logger.LogWarning("Insufficient stock for ClotheId={ClotheId}, ColorId={ColorId}, SizeId={SizeId}. Available: {Available}, Requested: {Requested}", clotheId, colorId, sizeId, stock.Quantity, item.Quantity);
+                            response.ErrorMessage = $"Insufficient stock. Available: {stock.Quantity}, Requested: {orderItemToValidate.Quantity}";
+                            logger.LogWarning("Insufficient stock for ClotheId={ClotheId}, ColorId={ColorId}, SizeId={SizeId}. Available: {Available}, Requested: {Requested}", clotheId, colorId, sizeId, stock.Quantity, orderItemToValidate.Quantity);
                             results.Add(response);
                             continue;
                         }
@@ -127,7 +127,10 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                         response.ErrorMessage = string.Empty;
                         response.ClotheName = clotheItem.Name;
                         response.Price = clotheItem.Price.ToString();
-                        response.MainPhotoUrl = clotheItem.MainPhotoURL;
+                        
+                        PhotoClothes? mainPhotoForColor = clotheItem.Photos.FirstOrDefault(p => p.ColorId == colorId && p.IsMain);
+                        response.MainPhotoUrl = mainPhotoForColor?.PhotoURL ?? clotheItem.MainPhotoURL;
+
                         response.ColorHexCode = color.HexCode;
                         response.SizeName = size.Name;
 
@@ -135,7 +138,7 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                     }
                     catch (Exception ex)
                     {
-                        logger.LogError(ex, "Database error while validating item. ClotheId: {ClotheId}, ColorId: {ColorId}, SizeId: {SizeId}", item.ClotheId, item.ColorId, item.SizeId);
+                        logger.LogError(ex, "Database error while validating item. ClotheId: {ClotheId}, ColorId: {ColorId}, SizeId: {SizeId}", orderItemToValidate.ClotheId, orderItemToValidate.ColorId, orderItemToValidate.SizeId);
                         throw new RpcException(new Status(StatusCode.Internal, "Database error occurred during validation"));
                     }
 

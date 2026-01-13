@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Clothy.CatalogService.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialDbCreating : Migration
+    public partial class InitialCreatingTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,13 +17,29 @@ namespace Clothy.CatalogService.DAL.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Slug = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     PhotoURL = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_brands", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ClothingTypes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Slug = table.Column<string>(type: "text", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClothingTypes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -34,7 +50,7 @@ namespace Clothy.CatalogService.DAL.Migrations
                     Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Slug = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -48,7 +64,7 @@ namespace Clothy.CatalogService.DAL.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     hexcode = table.Column<string>(type: "character varying(7)", maxLength: 7, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -64,11 +80,23 @@ namespace Clothy.CatalogService.DAL.Migrations
                     Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Slug = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_materials", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "processed_events",
+                columns: table => new
+                {
+                    EventId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProcessedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_processed_events", x => x.EventId);
                 });
 
             migrationBuilder.CreateTable(
@@ -78,7 +106,7 @@ namespace Clothy.CatalogService.DAL.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -92,7 +120,7 @@ namespace Clothy.CatalogService.DAL.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -110,13 +138,20 @@ namespace Clothy.CatalogService.DAL.Migrations
                     MainPhotoURL = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
                     Price = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
                     BrandId = table.Column<Guid>(type: "uuid", nullable: true),
+                    ClothingTypeId = table.Column<Guid>(type: "uuid", nullable: true),
                     CollectionId = table.Column<Guid>(type: "uuid", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_clothe_items", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_clothe_items_ClothingTypes_ClothingTypeId",
+                        column: x => x.ClothingTypeId,
+                        principalTable: "ClothingTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_clothe_items_brands_BrandId",
                         column: x => x.BrandId,
@@ -137,7 +172,7 @@ namespace Clothy.CatalogService.DAL.Migrations
                 {
                     ClotheId = table.Column<Guid>(type: "uuid", nullable: false),
                     MaterialId = table.Column<Guid>(type: "uuid", nullable: false),
-                    percentage = table.Column<decimal>(type: "numeric(5,2)", nullable: false)
+                    percentage = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -191,7 +226,7 @@ namespace Clothy.CatalogService.DAL.Migrations
                     ColorId = table.Column<Guid>(type: "uuid", nullable: false),
                     quantity = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -223,7 +258,9 @@ namespace Clothy.CatalogService.DAL.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ClotheId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ColorId = table.Column<Guid>(type: "uuid", nullable: true),
                     PhotoURL = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    IsMain = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
@@ -236,6 +273,36 @@ namespace Clothy.CatalogService.DAL.Migrations
                         principalTable: "clothe_items",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_photo_clothes_colors_ColorId",
+                        column: x => x.ColorId,
+                        principalTable: "colors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "stock_notifications",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    StockId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserEmail = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    UserFirstName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    IsNotified = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_stock_notifications", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_stock_notifications_clothes_stock_StockId",
+                        column: x => x.StockId,
+                        principalTable: "clothes_stock",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -245,24 +312,25 @@ namespace Clothy.CatalogService.DAL.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_brands_Slug",
+                table: "brands",
+                column: "Slug",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_clothe_items_BrandId",
                 table: "clothe_items",
                 column: "BrandId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_clothe_items_ClothingTypeId",
+                table: "clothe_items",
+                column: "ClothingTypeId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_clothe_items_CollectionId",
                 table: "clothe_items",
                 column: "CollectionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_clothe_items_Name",
-                table: "clothe_items",
-                column: "Name");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_clothe_items_Price",
-                table: "clothe_items",
-                column: "Price");
 
             migrationBuilder.CreateIndex(
                 name: "IX_clothe_items_Slug",
@@ -286,9 +354,10 @@ namespace Clothy.CatalogService.DAL.Migrations
                 column: "TagId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_clothes_stock_ClotheId",
+                name: "IX_clothes_stock_ClotheId_SizeId_ColorId",
                 table: "clothes_stock",
-                column: "ClotheId");
+                columns: new[] { "ClotheId", "SizeId", "ColorId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_clothes_stock_ColorId",
@@ -336,10 +405,33 @@ namespace Clothy.CatalogService.DAL.Migrations
                 column: "ClotheId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_photo_clothes_ClotheId_ColorId",
+                table: "photo_clothes",
+                columns: new[] { "ClotheId", "ColorId" },
+                unique: true,
+                filter: "\"IsMain\" = true");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_photo_clothes_ColorId",
+                table: "photo_clothes",
+                column: "ColorId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_sizes_Name",
                 table: "sizes",
                 column: "Name",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_stock_notifications_StockId_UserEmail",
+                table: "stock_notifications",
+                columns: new[] { "StockId", "UserEmail" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_stock_notifications_UserId",
+                table: "stock_notifications",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tag_Name",
@@ -358,10 +450,13 @@ namespace Clothy.CatalogService.DAL.Migrations
                 name: "clothe_tags");
 
             migrationBuilder.DropTable(
-                name: "clothes_stock");
+                name: "photo_clothes");
 
             migrationBuilder.DropTable(
-                name: "photo_clothes");
+                name: "processed_events");
+
+            migrationBuilder.DropTable(
+                name: "stock_notifications");
 
             migrationBuilder.DropTable(
                 name: "materials");
@@ -370,13 +465,19 @@ namespace Clothy.CatalogService.DAL.Migrations
                 name: "tag");
 
             migrationBuilder.DropTable(
+                name: "clothes_stock");
+
+            migrationBuilder.DropTable(
+                name: "clothe_items");
+
+            migrationBuilder.DropTable(
                 name: "colors");
 
             migrationBuilder.DropTable(
                 name: "sizes");
 
             migrationBuilder.DropTable(
-                name: "clothe_items");
+                name: "ClothingTypes");
 
             migrationBuilder.DropTable(
                 name: "brands");
