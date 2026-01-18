@@ -17,10 +17,15 @@ namespace Clothy.Aggregator.API.Controllers
             this.logger = logger;
         }
 
+        /// <summary>
+        /// Get all clothing filters.
+        /// </summary>
+        /// <param name="cancelletionToken">Cancellation token.</param>
+        /// <returns>Clothing filters DTO.</returns>
         [HttpGet]
-        public async Task<ActionResult<ClotheFiltersDTO>> GetAllFilters(CancellationToken ct)
+        public async Task<ActionResult<ClotheFiltersDTO>> GetAllFilters(CancellationToken cancelletionToken)
         {
-            ClotheFiltersDTO? filters = await filterClient.GetAllFiltersAsync(ct);
+            ClotheFiltersDTO? filters = await filterClient.GetAllFiltersAsync(cancelletionToken);
             if (filters == null)
             {
                 logger.LogWarning("Failed to get filters");

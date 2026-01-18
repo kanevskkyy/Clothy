@@ -16,7 +16,8 @@ namespace Clothy.OrderService.BLL.Mapper
             CreateMap<PickupPoints, PickupPointReadDTO>();
 
             CreateMap<PickupPointCreateDTO, PickupPoints>()
-                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(time => DateTime.UtcNow.ToUniversalTime()));
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow.ToUniversalTime()))
+                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(_ => true));
 
             CreateMap<PickupPointUpdateDTO, PickupPoints>()
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(time => DateTime.UtcNow.ToUniversalTime()));

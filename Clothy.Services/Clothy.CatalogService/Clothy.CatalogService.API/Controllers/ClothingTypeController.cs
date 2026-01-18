@@ -21,13 +21,13 @@ namespace Clothy.CatalogService.API.Controllers
         /// <summary>
         /// Get all clothing types.
         /// </summary>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>List of all clothing types.</returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ClothingTypeReadDTO>>> GetAll(CancellationToken ct)
+        public async Task<ActionResult<IEnumerable<ClothingTypeReadDTO>>> GetAll(CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching all clothing types.");
-            List<ClothingTypeReadDTO> clothingTypes = await clothingTypeService.GetAllAsync(ct);
+            List<ClothingTypeReadDTO> clothingTypes = await clothingTypeService.GetAllAsync(cancellationToken);
 
             return Ok(clothingTypes);
         }
@@ -36,13 +36,13 @@ namespace Clothy.CatalogService.API.Controllers
         /// Get a specific clothing type by ID.
         /// </summary>
         /// <param name="id">ClothingType ID (GUID).</param>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Clothing type details.</returns>
         [HttpGet("{id:guid}")]
-        public async Task<ActionResult<ClothingTypeReadDTO>> GetById(Guid id, CancellationToken ct)
+        public async Task<ActionResult<ClothingTypeReadDTO>> GetById(Guid id, CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching clothing type with ID: {Id}", id);
-            ClothingTypeReadDTO clothingType = await clothingTypeService.GetByIdAsync(id, ct);
+            ClothingTypeReadDTO clothingType = await clothingTypeService.GetByIdAsync(id, cancellationToken);
 
             return Ok(clothingType);
         }
@@ -50,15 +50,15 @@ namespace Clothy.CatalogService.API.Controllers
         /// <summary>
         /// Create a new clothing type.
         /// </summary>
-        /// <param name="dto">ClothingType creation data.</param>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="clothingTypeCreateDTO">ClothingType creation data.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Created clothing type.</returns>
         [HttpPost]
         [Authorize(Policy = "ManagerOrAdmin")]
-        public async Task<ActionResult<ClothingTypeReadDTO>> Create([FromBody] ClothingTypeCreateDTO dto, CancellationToken ct)
+        public async Task<ActionResult<ClothingTypeReadDTO>> Create([FromBody] ClothingTypeCreateDTO clothingTypeCreateDTO, CancellationToken cancellationToken)
         {
-            logger.LogInformation("Creating clothing type with name: {Name}", dto.Name);
-            ClothingTypeReadDTO created = await clothingTypeService.CreateAsync(dto, ct);
+            logger.LogInformation("Creating clothing type with name: {Name}", clothingTypeCreateDTO.Name);
+            ClothingTypeReadDTO created = await clothingTypeService.CreateAsync(clothingTypeCreateDTO, cancellationToken);
 
             logger.LogInformation("Clothing type created with ID: {Id}", created.Id);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
@@ -68,15 +68,15 @@ namespace Clothy.CatalogService.API.Controllers
         /// Update an existing clothing type by ID.
         /// </summary>
         /// <param name="id">ClothingType ID (GUID).</param>
-        /// <param name="dto">ClothingType update data.</param>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="clothingTypeUpdateDTO">ClothingType update data.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Updated clothing type.</returns>
         [HttpPut("{id:guid}")]
         [Authorize(Policy = "ManagerOrAdmin")]
-        public async Task<ActionResult<ClothingTypeReadDTO>> Update(Guid id, [FromBody] ClothingTypeUpdateDTO dto, CancellationToken ct)
+        public async Task<ActionResult<ClothingTypeReadDTO>> Update(Guid id, [FromBody] ClothingTypeUpdateDTO clothingTypeUpdateDTO, CancellationToken cancellationToken)
         {
             logger.LogInformation("Updating clothing type with ID: {Id}", id);
-            ClothingTypeReadDTO updated = await clothingTypeService.UpdateAsync(id, dto, ct);
+            ClothingTypeReadDTO updated = await clothingTypeService.UpdateAsync(id, clothingTypeUpdateDTO, cancellationToken);
 
             logger.LogInformation("Clothing type with ID {Id} updated.", id);
             return Ok(updated);
@@ -86,14 +86,14 @@ namespace Clothy.CatalogService.API.Controllers
         /// Delete a clothing type by ID.
         /// </summary>
         /// <param name="id">ClothingType ID (GUID).</param>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>No content.</returns>
         [HttpDelete("{id:guid}")]
         [Authorize(Policy = "AdminOnly")]
-        public async Task<ActionResult> Delete(Guid id, CancellationToken ct)
+        public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
             logger.LogInformation("Deleting clothing type with ID: {Id}", id);
-            await clothingTypeService.DeleteAsync(id, ct);
+            await clothingTypeService.DeleteAsync(id, cancellationToken);
 
             logger.LogInformation("Clothing type with ID {Id} deleted.", id);
             return NoContent();

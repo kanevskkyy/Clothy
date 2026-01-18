@@ -1,4 +1,4 @@
-﻿using Clothy.CatalogService.Domain.Entities;
+﻿using Clothy.CatalogService.Domain.Entities.Stock;
 using System;
 using System.Collections.Generic;
 using System.Linq;

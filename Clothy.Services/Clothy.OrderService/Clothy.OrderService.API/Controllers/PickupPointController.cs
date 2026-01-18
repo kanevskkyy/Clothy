@@ -23,6 +23,9 @@ namespace Clothy.OrderService.API.Controllers
         /// <summary>
         /// Get paginated list of pickup points with optional filtering and sorting.
         /// </summary>
+        /// <param name="pickupPointFilterDTO">Filtering and paging parameters.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Paged list of pickup points.</returns>
         [HttpGet]
         public async Task<ActionResult<PagedList<PickupPointReadDTO>>> GetPagedAsync([FromQuery] PickupPointFilterDTO pickupPointFilterDTO, CancellationToken cancellationToken)
         {
@@ -35,18 +38,24 @@ namespace Clothy.OrderService.API.Controllers
         /// <summary>
         /// Get a specific pickup point by its ID.
         /// </summary>
+        /// <param name="id">ID of the pickup point.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Pickup point details.</returns>
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<PickupPointReadDTO>> GetById(Guid id, CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching pickup point with ID: {Id}", id);
             PickupPointReadDTO pickupPoint = await pickupPointService.GetByIdAsync(id, cancellationToken);
-            
+
             return Ok(pickupPoint);
         }
 
         /// <summary>
         /// Create a new pickup point.
         /// </summary>
+        /// <param name="pickupPointCreateDTO">Data for the new pickup point.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Created pickup point details.</returns>
         [HttpPost]
         [Authorize(Policy = "ManagerOrAdmin")]
         public async Task<ActionResult<PickupPointReadDTO>> Create([FromBody] PickupPointCreateDTO pickupPointCreateDTO, CancellationToken cancellationToken)
@@ -61,6 +70,10 @@ namespace Clothy.OrderService.API.Controllers
         /// <summary>
         /// Update an existing pickup point by its ID.
         /// </summary>
+        /// <param name="id">ID of the pickup point to update.</param>
+        /// <param name="pickupPointUpdateDTO">Updated pickup point data.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Updated pickup point details.</returns>
         [HttpPut("{id:guid}")]
         [Authorize(Policy = "ManagerOrAdmin")]
         public async Task<ActionResult<PickupPointReadDTO>> Update(Guid id, [FromBody] PickupPointUpdateDTO pickupPointUpdateDTO, CancellationToken cancellationToken)
@@ -75,6 +88,9 @@ namespace Clothy.OrderService.API.Controllers
         /// <summary>
         /// Delete a pickup point by its ID.
         /// </summary>
+        /// <param name="id">ID of the pickup point to delete.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>No content.</returns>
         [HttpDelete("{id:guid}")]
         [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)

@@ -53,6 +53,7 @@ message SizeGrpc {
 message ColorGrpc {
 	string id = 1;
 	string hexCode = 2;
+	string name = 3; 
 }
 
 message ClotheStockGrpcResponse {
@@ -68,11 +69,13 @@ message ClotheDetailGrpcResponse {
 	string slug = 3;
 	string description = 4;
 	string price = 5; 
-	BrandDetailGrpcResponse brand = 6;
-	ClothingTypeGrpcResponse clothingType = 7;
-	CollectionGrpcResponse collection = 8;
-	repeated AdditionalPhotoGrpcResponse additionalPhotos = 9;
-	repeated TagGrpcResponse tags = 10;
-	repeated MaterialWithPercentageGrpcResponse materials = 11;
-	repeated ClotheStockGrpcResponse stocks = 12;
+	optional string oldPrice = 6;
+	optional int32 discountPercentage = 7;
+	BrandDetailGrpcResponse brand = 8;
+	ClothingTypeGrpcResponse clothingType = 9;
+	CollectionGrpcResponse collection = 10;
+	repeated AdditionalPhotoGrpcResponse additionalPhotos = 11;
+	repeated TagGrpcResponse tags = 12;
+	repeated MaterialWithPercentageGrpcResponse materials = 13;
+	repeated ClotheStockGrpcResponse stocks = 14;
 }

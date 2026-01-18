@@ -21,26 +21,26 @@ namespace Clothy.CatalogService.API.Controllers
         /// <summary>
         /// Get all tags.
         /// </summary>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>List of all tags.</returns>
         [HttpGet]
-        public async Task<IActionResult> GetAll(CancellationToken ct)
+        public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching all tags.");
-            List<TagReadDTO> tags = await tagService.GetAllAsync(ct);
+            List<TagReadDTO> tags = await tagService.GetAllAsync(cancellationToken);
             return Ok(tags);
         }
 
         /// <summary>
         /// Get all tags with clothe item count.
         /// </summary>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>List of tags with item count.</returns>
         [HttpGet("with-item-count")]
-        public async Task<IActionResult> GetAllWithItemCount(CancellationToken ct)
+        public async Task<IActionResult> GetAllWithItemCount(CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching all tags with clothe count.");
-            List<TagWithCountDTO> tags = await tagService.GetAllWithCountAsync(ct);
+            List<TagWithCountDTO> tags = await tagService.GetAllWithCountAsync(cancellationToken);
             return Ok(tags);
         }
 
@@ -48,13 +48,13 @@ namespace Clothy.CatalogService.API.Controllers
         /// Get a tag by its ID.
         /// </summary>
         /// <param name="id">Tag ID (GUID).</param>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Tag details.</returns>
         [HttpGet("{id:guid}")]
-        public async Task<IActionResult> GetById(Guid id, CancellationToken ct)
+        public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching tag with ID: {Id}", id);
-            TagReadDTO tag = await tagService.GetByIdAsync(id, ct);
+            TagReadDTO tag = await tagService.GetByIdAsync(id, cancellationToken);
             
             return Ok(tag);
         }
@@ -62,15 +62,15 @@ namespace Clothy.CatalogService.API.Controllers
         /// <summary>
         /// Create a new tag.
         /// </summary>
-        /// <param name="dto">Tag creation data.</param>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="tagCreateDTO">Tag creation data.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Created tag.</returns>
         [HttpPost]
         [Authorize(Policy = "ManagerOrAdmin")]
-        public async Task<IActionResult> Create(TagCreateDTO dto, CancellationToken ct)
+        public async Task<IActionResult> Create(TagCreateDTO tagCreateDTO, CancellationToken cancellationToken)
         {
-            logger.LogInformation("Creating tag with name: {Name}", dto.Name);
-            TagReadDTO created = await tagService.CreateAsync(dto, ct);
+            logger.LogInformation("Creating tag with name: {Name}", tagCreateDTO.Name);
+            TagReadDTO created = await tagService.CreateAsync(tagCreateDTO, cancellationToken);
             
             logger.LogInformation("Tag created with ID: {Id}", created.Id);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
@@ -80,15 +80,15 @@ namespace Clothy.CatalogService.API.Controllers
         /// Update an existing tag by its ID.
         /// </summary>
         /// <param name="id">Tag ID (GUID).</param>
-        /// <param name="dto">Tag update data.</param>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="tagUpdateDTO">Tag update data.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Updated tag.</returns>
         [HttpPut("{id:guid}")]
         [Authorize(Policy = "ManagerOrAdmin")]
-        public async Task<IActionResult> Update(Guid id, TagUpdateDTO dto, CancellationToken ct)
+        public async Task<IActionResult> Update(Guid id, TagUpdateDTO tagUpdateDTO, CancellationToken cancellationToken)
         {
             logger.LogInformation("Updating tag with ID: {Id}", id);
-            TagReadDTO updated = await tagService.UpdateAsync(id, dto, ct);
+            TagReadDTO updated = await tagService.UpdateAsync(id, tagUpdateDTO, cancellationToken);
             
             logger.LogInformation("Tag with ID {Id} updated.", id);
             return Ok(updated);
@@ -98,14 +98,14 @@ namespace Clothy.CatalogService.API.Controllers
         /// Delete a tag by its ID.
         /// </summary>
         /// <param name="id">Tag ID (GUID).</param>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>No content.</returns>
         [HttpDelete("{id:guid}")]
         [Authorize(Policy = "AdminOnly")]
-        public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
+        public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
             logger.LogInformation("Deleting tag with ID: {Id}", id);
-            await tagService.DeleteAsync(id, ct);
+            await tagService.DeleteAsync(id, cancellationToken);
             
             logger.LogInformation("Tag with ID {Id} deleted.", id);
             return NoContent();

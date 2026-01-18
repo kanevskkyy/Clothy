@@ -102,6 +102,7 @@ namespace Clothy.BasketService.BLL.Services
 
                 if (validation != null && validation.IsValid)
                 {
+                    basketItemDto.ColorName = validation.ColorName;
                     basketItemDto.ClotheName = validation.ClotheName;
                     basketItemDto.Price = decimal.Parse(validation.Price);
                     basketItemDto.MainPhoto = validation.MainPhotoUrl;

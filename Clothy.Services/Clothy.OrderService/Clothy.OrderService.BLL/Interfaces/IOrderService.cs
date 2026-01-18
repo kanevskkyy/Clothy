@@ -17,8 +17,8 @@ namespace Clothy.OrderService.BLL.Interfaces
         Task HandleOrderPaidEventAsync(OrderPaidEvent orderPaidEvent, CancellationToken cancellationToken = default);
         Task<PagedList<OrderReadDTO>> GetPagedAsync(OrderFilterDTO filter, ClaimsPrincipal? user = null, CancellationToken cancellationToken = default);
         Task<OrderDetailDTO?> GetByIdAsync(Guid id, ClaimsPrincipal? claimsPrincipal = null, CancellationToken cancellationToken = default);
-        Task<OrderDetailDTO> CreateAsync(OrderCreateDTO dto, ClaimsPrincipal claimsPrincipal = null, CancellationToken cancellationToken = default);
-        Task<OrderDetailDTO?> UpdateStatusAsync(Guid id, OrderUpdateStatusDTO dto, CancellationToken cancellationToken = default);
+        Task<OrderDetailDTO> CreateAsync(OrderCreateDTO orderCreateDTO, ClaimsPrincipal claimsPrincipal = null, CancellationToken cancellationToken = default);
+        Task<OrderDetailDTO?> UpdateStatusAsync(Guid id, OrderUpdateStatusDTO orderUpdateStatusDTO, CancellationToken cancellationToken = default);
         Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
     }
 }

@@ -78,8 +78,12 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                         Id = clotheItem?.Collection?.Id.ToString(),
                         Name = clotheItem?.Collection?.Name,
                         Slug = clotheItem?.Collection?.Slug,
-                    }
+                    },
                 };
+
+                if (clotheItem.OldPrice.HasValue) clotheDetailGrpcResponse.OldPrice = clotheItem.OldPrice.Value.ToString();
+                if (clotheItem.DiscountPercent.HasValue) clotheDetailGrpcResponse.DiscountPercentage = clotheItem.DiscountPercent.Value;
+
                 clotheDetailGrpcResponse.AdditionalPhotos.AddRange(clotheItem?.AdditionalPhotos.Select(photo => new AdditionalPhotoGrpcResponse
                 {
                     Id = photo.Id.ToString(),
@@ -110,7 +114,8 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                     Color = new ColorGrpc
                     {
                         Id = s?.Color?.Id.ToString(),
-                        HexCode = s?.Color?.HexCode
+                        HexCode = s?.Color?.HexCode,
+                        Name = s?.Color?.Name
                     }
                 }));
                 logger.LogInformation("Successfully fetched Clothe details for Id: {ClotheId}", clotheItemId);

@@ -55,7 +55,7 @@ namespace Clothy.OrderService.API.Controllers
         /// <returns>Created order status.</returns>
         [HttpPost]
         [Authorize(Policy = "ManagerOrAdmin")]
-        public async Task<ActionResult<OrderStatusReadDTO>> Create([FromForm] OrderStatusCreateDTO dto, CancellationToken cancelletionToken)
+        public async Task<ActionResult<OrderStatusReadDTO>> Create([FromBody] OrderStatusCreateDTO dto, CancellationToken cancelletionToken)
         {
             logger.LogInformation("Creating order status with name: {Name}", dto.Name);
             OrderStatusReadDTO created = await orderStatusService.CreateAsync(dto, cancelletionToken);

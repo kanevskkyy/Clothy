@@ -7,7 +7,7 @@ using AutoMapper;
 using Clothy.CatalogService.BLL.DTOs.ClotheStocksDTOs;
 using Clothy.CatalogService.BLL.DTOs.ColorDTOs;
 using Clothy.CatalogService.BLL.DTOs.SizeDTOs;
-using Clothy.CatalogService.Domain.Entities;
+using Clothy.CatalogService.Domain.Entities.Stock;
 
 namespace Clothy.CatalogService.BLL.Mapper
 {

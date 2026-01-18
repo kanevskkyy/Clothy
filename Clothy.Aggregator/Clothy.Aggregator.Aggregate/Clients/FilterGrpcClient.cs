@@ -66,6 +66,7 @@ namespace Clothy.Aggregator.Aggregate.Clients
                         Colors = gRPCresponse.Colors.Select(color => new ColorsGrpcResponse
                         {
                             Id = color.Id,
+                            Name = color.Name,
                             HexCode = color.HexCode,
                             ClotheItemCount = color.ClotheItemCount
                         }).ToList(),

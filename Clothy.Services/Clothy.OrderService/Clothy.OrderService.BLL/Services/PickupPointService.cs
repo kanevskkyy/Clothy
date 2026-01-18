@@ -26,7 +26,10 @@ namespace Clothy.OrderService.BLL.Services
         private static TimeSpan REDIS_TTL = TimeSpan.FromDays(1);
         private const int MAX_CACHED_PAGES = 3;
 
-        public PickupPointService(IUnitOfWork unitOfWork, IMapper mapper, IEntityCacheService cacheService, IEntityCacheInvalidationService<PickupPoints> cacheInvalidationService)
+        public PickupPointService(IUnitOfWork unitOfWork,
+            IMapper mapper, 
+            IEntityCacheService cacheService, 
+            IEntityCacheInvalidationService<PickupPoints> cacheInvalidationService)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
@@ -34,15 +37,15 @@ namespace Clothy.OrderService.BLL.Services
             this.cacheInvalidationService = cacheInvalidationService;
         }
 
-        public async Task<PickupPointReadDTO> CreateAsync(PickupPointCreateDTO dto, CancellationToken cancellationToken = default)
+        public async Task<PickupPointReadDTO> CreateAsync(PickupPointCreateDTO pickupPointCreateDTO, CancellationToken cancellationToken = default)
         {
-            Settlement? settlement = await unitOfWork.Settlement.GetByIdAsync(dto.SettlementId, cancellationToken);
-            if(settlement == null) throw new NotFoundException($"Settlement with ID: {dto.SettlementId}");
+            Settlement? settlement = await unitOfWork.Settlement.GetByIdAsync(pickupPointCreateDTO.SettlementId, cancellationToken);
+            if(settlement == null) throw new NotFoundException($"Settlement with ID: {pickupPointCreateDTO.SettlementId}");
 
-            DeliveryProvider? deliveryProvider = await unitOfWork.DeliveryProviders.GetByIdAsync(dto.DeliveryProviderId, cancellationToken);
-            if (deliveryProvider == null) throw new NotFoundException($"DeliveryProvider with ID: {dto.DeliveryProviderId}");
+            DeliveryProvider? deliveryProvider = await unitOfWork.DeliveryProviders.GetByIdAsync(pickupPointCreateDTO.DeliveryProviderId, cancellationToken);
+            if (deliveryProvider == null) throw new NotFoundException($"DeliveryProvider with ID: {pickupPointCreateDTO.DeliveryProviderId}");
 
-            PickupPoints entity = mapper.Map<PickupPoints>(dto);
+            PickupPoints entity = mapper.Map<PickupPoints>(pickupPointCreateDTO);
             entity.Id = await unitOfWork.PickupPoint.AddAsync(entity, cancellationToken);
             await unitOfWork.CommitAsync();
 
@@ -95,18 +98,18 @@ namespace Clothy.OrderService.BLL.Services
             return new PagedList<PickupPointReadDTO>(dtos, totalCount, filter.PageNumber, filter.PageSize);
         }
 
-        public async Task<PickupPointReadDTO> UpdateAsync(Guid id, PickupPointUpdateDTO dto, CancellationToken cancellationToken = default)
+        public async Task<PickupPointReadDTO> UpdateAsync(Guid id, PickupPointUpdateDTO pickupPointUpdateDTO, CancellationToken cancellationToken = default)
         {
             PickupPoints? entity = await unitOfWork.PickupPoint.GetByIdAsync(id, cancellationToken);
             if (entity == null) throw new NotFoundException($"PickupPoint not found with ID: {id}");
 
-            Settlement? settlement = await unitOfWork.Settlement.GetByIdAsync(dto.SettlementId, cancellationToken);
-            if (settlement == null) throw new NotFoundException($"Settlement with ID: {dto.SettlementId}");
+            Settlement? settlement = await unitOfWork.Settlement.GetByIdAsync(pickupPointUpdateDTO.SettlementId, cancellationToken);
+            if (settlement == null) throw new NotFoundException($"Settlement with ID: {pickupPointUpdateDTO.SettlementId}");
 
-            DeliveryProvider? provider = await unitOfWork.DeliveryProviders.GetByIdAsync(dto.DeliveryProviderId, cancellationToken);
-            if (provider == null) throw new NotFoundException($"DeliveryProvider not found with ID: {dto.DeliveryProviderId}");
+            DeliveryProvider? provider = await unitOfWork.DeliveryProviders.GetByIdAsync(pickupPointUpdateDTO.DeliveryProviderId, cancellationToken);
+            if (provider == null) throw new NotFoundException($"DeliveryProvider not found with ID: {pickupPointUpdateDTO.DeliveryProviderId}");
 
-            mapper.Map(dto, entity);
+            mapper.Map(pickupPointUpdateDTO, entity);
             await unitOfWork.PickupPoint.UpdateAsync(entity);
             await unitOfWork.CommitAsync();
 

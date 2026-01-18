@@ -11,8 +11,8 @@ namespace Clothy.OrderService.BLL.Interfaces
     {
         Task<List<DeliveryProviderReadDTO>> GetAllAsync(CancellationToken cancellationToken = default);
         Task<DeliveryProviderReadDTO> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
-        Task<DeliveryProviderReadDTO> CreateAsync(DeliveryProviderCreateDTO dto, CancellationToken cancellationToken = default);
-        Task<DeliveryProviderReadDTO> UpdateAsync(Guid id, DeliveryProviderUpdateDTO dto, CancellationToken cancellationToken = default);
+        Task<DeliveryProviderReadDTO> CreateAsync(DeliveryProviderCreateDTO deliveryProviderCreateDTO, CancellationToken cancellationToken = default);
+        Task<DeliveryProviderReadDTO> UpdateAsync(Guid id, DeliveryProviderUpdateDTO deliveryProviderUpdateDTO, CancellationToken cancellationToken = default);
         Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
     }
 }

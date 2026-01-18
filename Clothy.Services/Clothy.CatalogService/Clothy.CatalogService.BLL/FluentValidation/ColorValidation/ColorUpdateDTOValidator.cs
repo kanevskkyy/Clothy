@@ -12,6 +12,10 @@ namespace Clothy.CatalogService.BLL.FluentValidation.ColorValidation
     {
         public ColorUpdateDTOValidator()
         {
+            RuleFor(x => x.Name)
+                .NotEmpty().WithMessage("Color name is required.")
+                .MaximumLength(20).WithMessage("Color name must be at most 20 characters.");
+
             RuleFor(x => x.HexCode)
                 .NotEmpty().WithMessage("Hex code is required.")
                 .MaximumLength(7).WithMessage("Hex code must be at most 7 characters.")

@@ -58,14 +58,14 @@ namespace Clothy.CatalogService.SeedData
 
         private static async Task WaitForDatabaseAsync(ClothyCatalogDbContext context)
         {
-            const int maxRetries = 30;
+            const int MAX_RETRIES = 30;
             int delayMs = 1000;
 
-            for (int i = 1; i <= maxRetries; i++)
+            for (int i = 1; i <= MAX_RETRIES; i++)
             {
                 try
                 {
-                    Console.WriteLine($"[{i}/{maxRetries}] Checking database readiness...");
+                    Console.WriteLine($"[{i}/{MAX_RETRIES}] Checking database readiness...");
                     
                     var canConnect = await context.Database.CanConnectAsync();
                     if (!canConnect)
@@ -86,14 +86,14 @@ namespace Clothy.CatalogService.SeedData
                     Console.WriteLine($"Database not ready: {ex.Message} (retry in {delayMs}ms)");
                 }
 
-                if (i < maxRetries)
+                if (i < MAX_RETRIES)
                 {
                     await Task.Delay(delayMs);
                     delayMs = Math.Min(delayMs * 2, 10000);
                 }
             }
 
-            throw new TimeoutException($"Database was not ready after {maxRetries} attempts (waited ~{maxRetries * 2}s)");
+            throw new TimeoutException($"Database was not ready after {MAX_RETRIES} attempts (waited ~{MAX_RETRIES * 2}s)");
         }
     }
 }

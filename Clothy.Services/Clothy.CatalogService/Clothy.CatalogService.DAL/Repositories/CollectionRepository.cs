@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Clothy.CatalogService.DAL.DB;
 using Clothy.CatalogService.DAL.Interfaces;
-using Clothy.CatalogService.Domain.Entities;
+using Clothy.CatalogService.Domain.Entities.Catalog;
 using Microsoft.EntityFrameworkCore;
 
 namespace Clothy.CatalogService.DAL.Repositories

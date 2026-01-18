@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Clothy.CatalogService.BLL.DTOs.ColorDTOs;
-using Clothy.CatalogService.Domain.Entities;
+using Clothy.CatalogService.Domain.Entities.Catalog;
 
 namespace Clothy.CatalogService.BLL.Mapper
 {
@@ -22,6 +22,7 @@ namespace Clothy.CatalogService.BLL.Mapper
 
             CreateMap<KeyValuePair<Color, int>, ColorWithCountDTO>()
                 .ForMember(dto => dto.Id, map => map.MapFrom(pair => pair.Key.Id))
+                .ForMember(dto => dto.Name, map => map.MapFrom(pair => pair.Key.Name))
                 .ForMember(dto => dto.HexCode, map => map.MapFrom(pair => pair.Key.HexCode))
                 .ForMember(dto => dto.ClotheItemCount, map => map.MapFrom(pair => pair.Value));
         }

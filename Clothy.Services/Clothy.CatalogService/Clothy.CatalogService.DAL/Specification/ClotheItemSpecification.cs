@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Ardalis.Specification;
-using Clothy.CatalogService.Domain.Entities;
+using Clothy.CatalogService.Domain.Entities.Clothe;
 using Clothy.CatalogService.Domain.QueryParameters;
 
 namespace Clothy.CatalogService.DAL.Specification
@@ -28,6 +28,11 @@ namespace Clothy.CatalogService.DAL.Specification
                 Query.Where(property => property.Name.ToLower().Contains(filterName) 
                 || property.Brand.Name.Contains(filterName) 
                 || property.ClothyType.Name.Contains(filterName));
+            }
+
+            if (parameters.ShowOnlyWithDiscounts)
+            {
+                Query.Where(property => property.OldPrice.HasValue);
             }
 
             if (parameters.MinPrice.HasValue)

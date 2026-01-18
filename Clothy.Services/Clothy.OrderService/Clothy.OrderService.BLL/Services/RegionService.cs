@@ -25,7 +25,11 @@ namespace Clothy.OrderService.BLL.Services
         private static TimeSpan REDIS_TTL = TimeSpan.FromHours(1);
         private const int MAX_CACHED_PAGES = 3;
 
-        public RegionService(IUnitOfWork unitOfWork, IMapper mapper, IEntityCacheService cacheService, IEntityCacheInvalidationService<Region> cacheInvalidationService)
+        public RegionService(
+            IUnitOfWork unitOfWork, 
+            IMapper mapper, 
+            IEntityCacheService cacheService, 
+            IEntityCacheInvalidationService<Region> cacheInvalidationService)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;

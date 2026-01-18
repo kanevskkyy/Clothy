@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Ardalis.Specification;
-using Clothy.CatalogService.Domain.Entities;
+using Clothy.CatalogService.Domain.Entities.Stock;
 using Clothy.CatalogService.Domain.QueryParameters;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 

@@ -25,13 +25,13 @@ namespace Clothy.CatalogService.API.Controllers
         /// Get paged clothes stock.
         /// </summary>
         /// <param name="parameters">Query parameters for pagination, filtering, sorting.</param>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Paged list of clothes stock.</returns>
         [HttpGet]
-        public async Task<ActionResult<PagedList<ClothesStockReadDTO>>> GetPaged([FromQuery] ClothesStockSpecificationParameters parameters, CancellationToken ct)
+        public async Task<ActionResult<PagedList<ClothesStockReadDTO>>> GetPaged([FromQuery] ClothesStockSpecificationParameters parameters, CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching paged clothes stock.");
-            PagedList<ClothesStockReadDTO> pagedStock = await clothesStockService.GetPagedClothesStockAsync(parameters, ct);
+            PagedList<ClothesStockReadDTO> pagedStock = await clothesStockService.GetPagedClothesStockAsync(parameters, cancellationToken);
 
             return Ok(pagedStock);
         }
@@ -40,13 +40,13 @@ namespace Clothy.CatalogService.API.Controllers
         /// Get a single clothes stock item by ID with details.
         /// </summary>
         /// <param name="id">Clothes stock ID (GUID).</param>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Clothes stock details.</returns>
         [HttpGet("{id:guid}")]
-        public async Task<ActionResult<ClothesStockReadDTO>> GetById(Guid id, CancellationToken ct)
+        public async Task<ActionResult<ClothesStockReadDTO>> GetById(Guid id, CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching clothes stock with ID: {Id}", id);
-            ClothesStockReadDTO stock = await clothesStockService.GetByIdWithDetailsAsync(id, ct);
+            ClothesStockReadDTO stock = await clothesStockService.GetByIdWithDetailsAsync(id, cancellationToken);
 
             return Ok(stock);
         }
@@ -54,14 +54,14 @@ namespace Clothy.CatalogService.API.Controllers
         /// <summary>
         /// Create a new clothes stock item.
         /// </summary>
-        /// <param name="dto">Clothes stock creation data.</param>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="clothesStockCreateDTO">Clothes stock creation data.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Created clothes stock item.</returns>
         [HttpPost]
-        public async Task<ActionResult<ClothesStockReadDTO>> Create([FromBody] ClothesStockCreateDTO dto, CancellationToken ct)
+        public async Task<ActionResult<ClothesStockReadDTO>> Create([FromBody] ClothesStockCreateDTO clothesStockCreateDTO, CancellationToken cancellationToken)
         {
-            logger.LogInformation("Creating clothes stock for ClotheId: {ClotheId}", dto.ClotheId);
-            ClothesStockReadDTO created = await clothesStockService.CreateAsync(dto, ct);
+            logger.LogInformation("Creating clothes stock for ClotheId: {ClotheId}", clothesStockCreateDTO.ClotheId);
+            ClothesStockReadDTO created = await clothesStockService.CreateAsync(clothesStockCreateDTO, cancellationToken);
 
             logger.LogInformation("Clothes stock created with ID: {Id}", created.Id);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
@@ -71,14 +71,14 @@ namespace Clothy.CatalogService.API.Controllers
         /// Update an existing clothes stock item by ID.
         /// </summary>
         /// <param name="id">Clothes stock ID (GUID).</param>
-        /// <param name="dto">Update data for the clothes stock.</param>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="clothesStockUpdateDTO">Update data for the clothes stock.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Updated clothes stock item.</returns>
         [HttpPut("{id:guid}")]
-        public async Task<ActionResult<ClothesStockReadDTO>> Update(Guid id, [FromBody] ClothesStockUpdateDTO dto, CancellationToken ct)
+        public async Task<ActionResult<ClothesStockReadDTO>> Update(Guid id, [FromBody] ClothesStockUpdateDTO clothesStockUpdateDTO, CancellationToken cancellationToken)
         {
             logger.LogInformation("Updating clothes stock with ID: {Id}", id);
-            ClothesStockReadDTO updated = await clothesStockService.UpdateAsync(id, dto, ct);
+            ClothesStockReadDTO updated = await clothesStockService.UpdateAsync(id, clothesStockUpdateDTO, cancellationToken);
 
             logger.LogInformation("Clothes stock with ID {Id} updated.", id);
             return Ok(updated);
@@ -88,13 +88,13 @@ namespace Clothy.CatalogService.API.Controllers
         /// Delete a clothes stock item by ID.
         /// </summary>
         /// <param name="id">Clothes stock ID (GUID).</param>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>No content.</returns>
         [HttpDelete("{id:guid}")]
-        public async Task<ActionResult> Delete(Guid id, CancellationToken ct)
+        public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
             logger.LogInformation("Deleting clothes stock with ID: {Id}", id);
-            await clothesStockService.DeleteAsync(id, ct);
+            await clothesStockService.DeleteAsync(id, cancellationToken);
 
             logger.LogInformation("Clothes stock with ID {Id} deleted.", id);
             return NoContent();

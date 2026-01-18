@@ -22,7 +22,7 @@ namespace Clothy.OrderService.DAL.Repositories
         {
             using IDbConnection connection = await GetOpenConnectionAsync();
             string sql = @"
-                SELECT id, name, iconurl, createdat, updatedat
+                SELECT id, name, createdat, updatedat
                 FROM order_status
                 WHERE LOWER(name) = LOWER(@Name);
             ";

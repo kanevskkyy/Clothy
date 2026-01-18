@@ -218,10 +218,10 @@ return await Deployment.RunAsync(() =>
         UseRefreshTokens = true,
         UseRefreshTokensClientCredentials = true,
 
-        ClientSessionIdleTimeout = "1800",
-        ClientSessionMaxLifespan = "36000",
-        ClientOfflineSessionIdleTimeout = "2592000",
-        ClientOfflineSessionMaxLifespan = "5184000",
+        ClientSessionIdleTimeout = "2592000", 
+        ClientSessionMaxLifespan = "2592000", 
+        ClientOfflineSessionIdleTimeout = "2592000", 
+        ClientOfflineSessionMaxLifespan = "5184000", 
     });
 
     var audienceMapper = new AudienceProtocolMapper("audience-mapper", new AudienceProtocolMapperArgs

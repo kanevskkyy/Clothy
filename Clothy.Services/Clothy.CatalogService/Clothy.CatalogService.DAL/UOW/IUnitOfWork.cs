@@ -20,6 +20,7 @@ namespace Clothy.CatalogService.DAL.UOW
         ITagRepository Tags { get; }
         IClothingTypeRepository ClothingTypes { get; }
         IStockNotificationRepository StockNotification { get; }
+        IClothePopularityRepository ClothePopularity { get; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }

@@ -11,7 +11,6 @@ using Clothy.CatalogService.BLL.FluentValidation.BrandValidation;
 using Clothy.CatalogService.API.Middleware;
 using Clothy.CatalogService.BLL.RedisCache.Clothe;
 using Clothy.CatalogService.BLL.RedisCache.StockCache;
-using Clothy.CatalogService.Domain.Entities;
 using Clothy.Shared.Cache.Interfaces;
 using Clothy.CatalogService.gRPC.Server.Services;
 using Clothy.Aggregator.Aggregate.RedisCache;
@@ -28,6 +27,8 @@ using Clothy.CatalogService.DAL.EventLog;
 using Clothy.ServiceDefaults.Middleware.OpenTelemetry;
 using Clothy.Shared.Helpers.CloudinaryConfig;
 using Clothy.Shared.Events.EmailEvents.ClotheStockUpdated;
+using Clothy.CatalogService.Domain.Entities.Clothe;
+using Clothy.CatalogService.Domain.Entities.Stock;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,6 +59,7 @@ builder.Services.AddScoped<ITagRepository, TagRepository>();
 builder.Services.AddScoped<ICollectionRepository, CollectionRepository>();
 builder.Services.AddScoped<IClothingTypeRepository, ClothingTypeRepository>();
 builder.Services.AddScoped<IStockNotificationRepository, StockNotificationRepository>();
+builder.Services.AddScoped<IClothePopularityRepository, ClothePopularityRepository>();
 
 // REGISTER UNIT OF WORK
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

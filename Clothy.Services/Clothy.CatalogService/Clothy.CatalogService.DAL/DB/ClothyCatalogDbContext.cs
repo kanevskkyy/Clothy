@@ -4,7 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Clothy.CatalogService.DAL.EntityConfigurations;
-using Clothy.CatalogService.Domain.Entities;
+using Clothy.CatalogService.DAL.EntityConfigurations.CatalogEFConfiguration;
+using Clothy.CatalogService.DAL.EntityConfigurations.ClotheEFConfiguration;
+using Clothy.CatalogService.DAL.EntityConfigurations.ProcessedEventEFConfiguration;
+using Clothy.CatalogService.DAL.EntityConfigurations.StockEFConfigiration;
+using Clothy.CatalogService.Domain.Entities.Catalog;
+using Clothy.CatalogService.Domain.Entities.Clothe;
+using Clothy.CatalogService.Domain.Entities.Stock;
 using Clothy.Shared.Events;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,6 +37,7 @@ namespace Clothy.CatalogService.DAL.DB
         public DbSet<ClothingType> ClothingTypes { get; set; }
         public DbSet<ProcessedEvent> ProcessedEvents { get; set; }
         public DbSet<StockNotification> StockNotifications { get; set; }
+        public DbSet<ClothePopularity> ClothePopularities { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -47,6 +54,7 @@ namespace Clothy.CatalogService.DAL.DB
             modelBuilder.ApplyConfiguration(new TagConfiguration());
             modelBuilder.ApplyConfiguration(new ProcessedEventConfiguration());
             modelBuilder.ApplyConfiguration(new StockNotificationConfiguration());
+            modelBuilder.ApplyConfiguration(new ClothePopularityConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }

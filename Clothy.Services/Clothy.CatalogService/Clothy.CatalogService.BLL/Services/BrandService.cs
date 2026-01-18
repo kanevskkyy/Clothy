@@ -11,7 +11,7 @@ using Clothy.CatalogService.BLL.Exceptions;
 using Clothy.CatalogService.BLL.Helpers;
 using Clothy.CatalogService.BLL.Interfaces;
 using Clothy.CatalogService.DAL.UOW;
-using Clothy.CatalogService.Domain.Entities;
+using Clothy.CatalogService.Domain.Entities.Catalog;
 using Clothy.Shared.Helpers.CloudinaryConfig.ImageService;
 using Clothy.Shared.Helpers.Exceptions;
 
@@ -25,7 +25,11 @@ namespace Clothy.CatalogService.BLL.Services
         private IFilterCacheInvalidationService filterCacheInvalidationService;
         private Counter<long> brandsCreatedCounter;
 
-        public BrandService(IUnitOfWork unitOfWork, IMapper mapper, IImageService imageService, IFilterCacheInvalidationService filterCacheInvalidationService, Meter meter)
+        public BrandService(IUnitOfWork unitOfWork, 
+            IMapper mapper, 
+            IImageService imageService, 
+            IFilterCacheInvalidationService filterCacheInvalidationService, 
+            Meter meter)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
@@ -51,17 +55,17 @@ namespace Clothy.CatalogService.BLL.Services
             return mapper.Map<BrandReadDTO>(brand);
         }
 
-        public async Task<BrandReadDTO> CreateAsync(BrandCreateDTO dto, CancellationToken cancellationToken = default)
+        public async Task<BrandReadDTO> CreateAsync(BrandCreateDTO brandCreateDTO, CancellationToken cancellationToken = default)
         {
-            bool exists = await unitOfWork.Brands.IsNameAlreadyExistsAsync(dto.Name, null, cancellationToken);
+            bool exists = await unitOfWork.Brands.IsNameAlreadyExistsAsync(brandCreateDTO.Name, null, cancellationToken);
             if (exists) throw new AlreadyExistsException("Brand with this name already exists");
 
-            exists = await unitOfWork.Brands.IsSlugAlreadyExistsAsync(dto.Slug, null, cancellationToken);
+            exists = await unitOfWork.Brands.IsSlugAlreadyExistsAsync(brandCreateDTO.Slug, null, cancellationToken);
             if (exists) throw new AlreadyExistsException("Brand with this slug already exists");
 
-            string photoUrl = await imageService.UploadAsync(dto.Photo, "brands");
+            string photoUrl = await imageService.UploadAsync(brandCreateDTO.Photo, "brands");
 
-            Brand brand = mapper.Map<Brand>(dto);
+            Brand brand = mapper.Map<Brand>(brandCreateDTO);
             brand.PhotoURL = photoUrl;
 
             await unitOfWork.Brands.AddAsync(brand, cancellationToken);
@@ -73,24 +77,24 @@ namespace Clothy.CatalogService.BLL.Services
             return mapper.Map<BrandReadDTO>(brand);
         }
 
-        public async Task<BrandReadDTO> UpdateAsync(Guid id, BrandUpdateDTO dto, CancellationToken cancellationToken = default)
+        public async Task<BrandReadDTO> UpdateAsync(Guid id, BrandUpdateDTO brandUpdateDTO, CancellationToken cancellationToken = default)
         {
             Brand? brand = await unitOfWork.Brands.GetByIdAsync(id, cancellationToken);
             if (brand == null) throw new NotFoundException($"Brand not found with ID: {id}");
 
-            bool exists = await unitOfWork.Brands.IsNameAlreadyExistsAsync(dto.Name, id, cancellationToken);
+            bool exists = await unitOfWork.Brands.IsNameAlreadyExistsAsync(brandUpdateDTO.Name, id, cancellationToken);
             if (exists) throw new AlreadyExistsException("Brand with this name already exists");
 
-            exists = await unitOfWork.Brands.IsSlugAlreadyExistsAsync(dto.Slug, id, cancellationToken);
+            exists = await unitOfWork.Brands.IsSlugAlreadyExistsAsync(brandUpdateDTO.Slug, id, cancellationToken);
             if (exists) throw new AlreadyExistsException("Brand with this slug already exists");
 
-            if (dto.Photo != null)
+            if (brandUpdateDTO.Photo != null)
             {
                 if (!string.IsNullOrEmpty(brand.PhotoURL)) await imageService.DeleteImageAsync(brand.PhotoURL);
-                brand.PhotoURL = await imageService.UploadAsync(dto.Photo, "brands");
+                brand.PhotoURL = await imageService.UploadAsync(brandUpdateDTO.Photo, "brands");
             }
 
-            mapper.Map(dto, brand);
+            mapper.Map(brandUpdateDTO, brand);
             unitOfWork.Brands.Update(brand);
             await unitOfWork.SaveChangesAsync(cancellationToken);
 

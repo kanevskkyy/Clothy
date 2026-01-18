@@ -16,6 +16,7 @@ namespace Clothy.BasketService.BLL.DTOs
         public string? MainPhoto { get; set; }
         public string? SizeName { get; set; }
         public string? HexCode { get; set; }
+        public string? ColorName { get; set; }
         public int Quantity { get; set; }
     }
 }

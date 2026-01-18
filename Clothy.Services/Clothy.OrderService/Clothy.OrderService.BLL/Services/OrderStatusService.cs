@@ -18,7 +18,6 @@ namespace Clothy.OrderService.BLL.Services
     {
         private IUnitOfWork unitOfWork;
         private IMapper mapper;
-        private IImageService imageService;
         private IEntityCacheService cacheService;
         private IEntityCacheInvalidationService<OrderStatus> cacheInvalidationService;
         private const string ALL_STATUSES_KEY = "order-status:all";
@@ -28,13 +27,11 @@ namespace Clothy.OrderService.BLL.Services
         public OrderStatusService(
             IUnitOfWork unitOfWork, 
             IMapper mapper, 
-            IImageService imageService, 
             IEntityCacheService cacheService, 
             IEntityCacheInvalidationService<OrderStatus> cacheInvalidationService)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
-            this.imageService = imageService;
             this.cacheService = cacheService;
             this.cacheInvalidationService = cacheInvalidationService;
         }
@@ -74,13 +71,12 @@ namespace Clothy.OrderService.BLL.Services
             return cached!;
         }
 
-        public async Task<OrderStatusReadDTO> CreateAsync(OrderStatusCreateDTO dto, CancellationToken cancellationToken = default)
+        public async Task<OrderStatusReadDTO> CreateAsync(OrderStatusCreateDTO orderStatusCreateDTO, CancellationToken cancellationToken = default)
         {
-            bool exists = await unitOfWork.OrderStatuses.ExistsByNameAsync(dto.Name, null, cancellationToken);
-            if (exists) throw new AlreadyExistsException($"OrderStatus with name '{dto.Name}' already exists.");
+            bool exists = await unitOfWork.OrderStatuses.ExistsByNameAsync(orderStatusCreateDTO.Name, null, cancellationToken);
+            if (exists) throw new AlreadyExistsException($"OrderStatus with name '{orderStatusCreateDTO.Name}' already exists.");
 
-            OrderStatus status = mapper.Map<OrderStatus>(dto);
-            status.IconUrl = await imageService.UploadAsync(dto.Icon, "order-statuses");
+            OrderStatus status = mapper.Map<OrderStatus>(orderStatusCreateDTO);
             status.Id = await unitOfWork.OrderStatuses.AddAsync(status, cancellationToken);
             await unitOfWork.CommitAsync();
 
@@ -89,21 +85,15 @@ namespace Clothy.OrderService.BLL.Services
             return mapper.Map<OrderStatusReadDTO>(status);
         }
 
-        public async Task<OrderStatusReadDTO> UpdateAsync(Guid id, OrderStatusUpdateDTO dto, CancellationToken cancellationToken = default)
+        public async Task<OrderStatusReadDTO> UpdateAsync(Guid id, OrderStatusUpdateDTO orderStatusUpdateDTO, CancellationToken cancellationToken = default)
         {
             OrderStatus? status = await unitOfWork.OrderStatuses.GetByIdAsync(id, cancellationToken);
             if (status == null) throw new NotFoundException($"OrderStatus not found with ID: {id}");
 
-            bool exists = await unitOfWork.OrderStatuses.ExistsByNameAsync(dto.Name, id, cancellationToken);
-            if (exists) throw new AlreadyExistsException($"OrderStatus with name '{dto.Name}' already exists.");
+            bool exists = await unitOfWork.OrderStatuses.ExistsByNameAsync(orderStatusUpdateDTO.Name, id, cancellationToken);
+            if (exists) throw new AlreadyExistsException($"OrderStatus with name '{orderStatusUpdateDTO.Name}' already exists.");
 
-            if (dto.Icon != null)
-            {
-                if (!string.IsNullOrEmpty(status.IconUrl)) await imageService.DeleteImageAsync(status.IconUrl);
-                status.IconUrl = await imageService.UploadAsync(dto.Icon, "order-statuses");
-            }
-
-            mapper.Map(dto, status);
+            mapper.Map(orderStatusUpdateDTO, status);
             await unitOfWork.OrderStatuses.UpdateAsync(status, cancellationToken);
             await unitOfWork.CommitAsync();
 
@@ -117,8 +107,6 @@ namespace Clothy.OrderService.BLL.Services
         {
             OrderStatus? status = await unitOfWork.OrderStatuses.GetByIdAsync(id, cancellationToken);
             if (status == null) throw new NotFoundException($"OrderStatus not found with ID: {id}");
-
-            if (!string.IsNullOrEmpty(status.IconUrl)) await imageService.DeleteImageAsync(status.IconUrl);
 
             await unitOfWork.OrderStatuses.DeleteAsync(id, cancellationToken);
             await unitOfWork.CommitAsync();

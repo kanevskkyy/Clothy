@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Bogus;
 using Clothy.CatalogService.DAL.DB;
-using Clothy.CatalogService.Domain.Entities;
+using Clothy.CatalogService.Domain.Entities.Catalog;
 using Microsoft.EntityFrameworkCore;
 
 namespace Clothy.CatalogService.SeedData.SeedData

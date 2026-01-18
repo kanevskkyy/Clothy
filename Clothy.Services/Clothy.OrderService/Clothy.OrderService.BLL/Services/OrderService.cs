@@ -78,7 +78,7 @@ namespace Clothy.OrderService.BLL.Services
                 "Duration of created orders");
         }
 
-        public async Task<OrderDetailDTO> CreateAsync(OrderCreateDTO dto, ClaimsPrincipal claimsPrincipal, CancellationToken cancellationToken = default)
+        public async Task<OrderDetailDTO> CreateAsync(OrderCreateDTO orderCreateDTO, ClaimsPrincipal claimsPrincipal, CancellationToken cancellationToken = default)
         {
             Stopwatch stopwatch = new Stopwatch();
             string statusType = "Success";
@@ -196,10 +196,10 @@ namespace Clothy.OrderService.BLL.Services
                     await unitOfWork.OrderReservation.AddAsync(orderReservation, cancellationToken);
                 }
 
-                PickupPoints? pickupPoints = await unitOfWork.PickupPoint.GetByIdAsync(dto.PickupPointId, cancellationToken);
-                if (pickupPoints == null || !pickupPoints.IsActive) throw new NotFoundException($"PickupPoint not found with ID: {dto.PickupPointId}");
+                PickupPoints? pickupPoints = await unitOfWork.PickupPoint.GetByIdAsync(orderCreateDTO.PickupPointId, cancellationToken);
+                if (pickupPoints == null || !pickupPoints.IsActive) throw new NotFoundException($"PickupPoint not found with ID: {orderCreateDTO.PickupPointId}");
 
-                DeliveryDetail delivery = mapper.Map<DeliveryDetail>(dto);
+                DeliveryDetail delivery = mapper.Map<DeliveryDetail>(orderCreateDTO);
                 delivery.CreatedAt = DateTime.UtcNow.ToUniversalTime();
                 delivery.OrderId = order.Id;
                 await unitOfWork.DeliveryDetails.AddAsync(delivery, cancellationToken);
@@ -383,13 +383,13 @@ namespace Clothy.OrderService.BLL.Services
         }
 
 
-        public async Task<OrderDetailDTO> UpdateStatusAsync(Guid id, OrderUpdateStatusDTO dto, CancellationToken cancellationToken = default)
+        public async Task<OrderDetailDTO> UpdateStatusAsync(Guid id, OrderUpdateStatusDTO orderUpdateStatusDTO, CancellationToken cancellationToken = default)
         {
             Order? order = await unitOfWork.Orders.GetByIdAsync(id, cancellationToken);
             if (order == null) throw new NotFoundException($"Order not found with ID: {id}");
 
-            OrderStatus? status = await unitOfWork.OrderStatuses.GetByIdAsync(dto.StatusId, cancellationToken);
-            if (status == null) throw new NotFoundException($"Order status not found with ID: {dto.StatusId}");
+            OrderStatus? status = await unitOfWork.OrderStatuses.GetByIdAsync(orderUpdateStatusDTO.StatusId, cancellationToken);
+            if (status == null) throw new NotFoundException($"Order status not found with ID: {orderUpdateStatusDTO.StatusId}");
 
             order.StatusId = status.Id;
 

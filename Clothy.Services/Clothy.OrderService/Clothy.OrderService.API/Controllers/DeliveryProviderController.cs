@@ -21,54 +21,66 @@ namespace Clothy.OrderService.API.Controllers
         /// <summary>
         /// Get all delivery providers.
         /// </summary>
+        /// <param name="cancelletionToken">Cancellation token.</param>
+        /// <returns>List of delivery providers.</returns>
         [HttpGet]
         public async Task<ActionResult<List<DeliveryProviderReadDTO>>> GetAll(CancellationToken cancelletionToken)
         {
             logger.LogInformation("Fetching all delivery providers.");
             List<DeliveryProviderReadDTO> providers = await deliveryProviderService.GetAllAsync(cancelletionToken);
-            
+
             return Ok(providers);
         }
 
         /// <summary>
         /// Get delivery provider by ID.
         /// </summary>
+        /// <param name="id">ID of the delivery provider.</param>
+        /// <param name="cancelletionToken">Cancellation token.</param>
+        /// <returns>Delivery provider details.</returns>
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<DeliveryProviderReadDTO>> GetById(Guid id, CancellationToken cancelletionToken)
         {
             logger.LogInformation("Fetching delivery provider with ID: {Id}", id);
             DeliveryProviderReadDTO provider = await deliveryProviderService.GetByIdAsync(id, cancelletionToken);
-            
+
             return Ok(provider);
         }
 
         /// <summary>
         /// Create a new delivery provider.
         /// </summary>
+        /// <param name="dto">Delivery provider data to create.</param>
+        /// <param name="cancelletionToken">Cancellation token.</param>
+        /// <returns>Created delivery provider details.</returns>
         [HttpPost]
         [Authorize(Policy = "ManagerOrAdmin")]
         public async Task<ActionResult<DeliveryProviderReadDTO>> Create([FromForm] DeliveryProviderCreateDTO dto, CancellationToken cancelletionToken)
         {
             logger.LogInformation("Creating delivery provider with name: {Name}", dto.Name);
             DeliveryProviderReadDTO created = await deliveryProviderService.CreateAsync(dto, cancelletionToken);
-            
+
             logger.LogInformation("Delivery provider created with ID: {Id}", created.Id);
-            return CreatedAtAction(nameof(GetById), new 
-            { 
-                id = created.Id 
+            return CreatedAtAction(nameof(GetById), new
+            {
+                id = created.Id
             }, created);
         }
 
         /// <summary>
         /// Update an existing delivery provider.
         /// </summary>
+        /// <param name="id">ID of the delivery provider to update.</param>
+        /// <param name="dto">Updated delivery provider data.</param>
+        /// <param name="cancelletionToken">Cancellation token.</param>
+        /// <returns>Updated delivery provider details.</returns>
         [HttpPut("{id:guid}")]
         [Authorize(Policy = "ManagerOrAdmin")]
         public async Task<ActionResult<DeliveryProviderReadDTO>> Update(Guid id, [FromForm] DeliveryProviderUpdateDTO dto, CancellationToken cancelletionToken)
         {
             logger.LogInformation("Updating delivery provider with ID: {Id}", id);
             DeliveryProviderReadDTO updated = await deliveryProviderService.UpdateAsync(id, dto, cancelletionToken);
-            
+
             logger.LogInformation("Delivery provider with ID {Id} updated.", id);
             return Ok(updated);
         }
@@ -76,13 +88,16 @@ namespace Clothy.OrderService.API.Controllers
         /// <summary>
         /// Delete a delivery provider by ID.
         /// </summary>
+        /// <param name="id">ID of the delivery provider to delete.</param>
+        /// <param name="cancelletionToken">Cancellation token.</param>
+        /// <returns>No content.</returns>
         [HttpDelete("{id:guid}")]
         [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult> Delete(Guid id, CancellationToken cancelletionToken)
         {
             logger.LogInformation("Deleting delivery provider with ID: {Id}", id);
             await deliveryProviderService.DeleteAsync(id, cancelletionToken);
-            
+
             logger.LogInformation("Delivery provider with ID {Id} deleted.", id);
             return NoContent();
         }

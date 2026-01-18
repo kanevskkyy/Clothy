@@ -9,7 +9,6 @@ namespace Clothy.OrderService.BLL.DTOs.OrderStatusDTOs
 {
     public class OrderStatusUpdateDTO
     {
-        public string Name { get; set; } 
-        public IFormFile? Icon { get; set; }
+        public string? Name { get; set; } 
     }
 }

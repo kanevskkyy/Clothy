@@ -21,13 +21,13 @@ namespace Clothy.CatalogService.API.Controllers
         /// <summary>
         /// Get all brands.
         /// </summary>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>List of all brands.</returns>
         [HttpGet]
-        public async Task<ActionResult<List<BrandReadDTO>>> GetAll(CancellationToken ct)
+        public async Task<ActionResult<List<BrandReadDTO>>> GetAll(CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching all brands.");
-            List<BrandReadDTO> brands = await brandService.GetAllAsync(ct);
+            List<BrandReadDTO> brands = await brandService.GetAllAsync(cancellationToken);
             
             return Ok(brands);
         }
@@ -36,13 +36,13 @@ namespace Clothy.CatalogService.API.Controllers
         /// Get a brand by its ID.
         /// </summary>
         /// <param name="id">Brand ID (GUID).</param>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Brand details.</returns>
         [HttpGet("{id:guid}")]
-        public async Task<ActionResult<BrandReadDTO>> GetById(Guid id, CancellationToken ct)
+        public async Task<ActionResult<BrandReadDTO>> GetById(Guid id, CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching brand with ID: {Id}", id);
-            BrandReadDTO brand = await brandService.GetByIdAsync(id, ct);
+            BrandReadDTO brand = await brandService.GetByIdAsync(id, cancellationToken);
             
             return Ok(brand);
         }
@@ -50,15 +50,15 @@ namespace Clothy.CatalogService.API.Controllers
         /// <summary>
         /// Create a new brand.
         /// </summary>
-        /// <param name="dto">Brand creation data (supports image upload).</param>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="brandCreateDTO">Brand creation data (supports image upload).</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Created brand.</returns>
         [HttpPost]
         [Authorize(Policy = "ManagerOrAdmin")]
-        public async Task<ActionResult<BrandReadDTO>> Create([FromForm] BrandCreateDTO dto, CancellationToken ct)
+        public async Task<ActionResult<BrandReadDTO>> Create([FromForm] BrandCreateDTO brandCreateDTO, CancellationToken cancellationToken)
         {
-            logger.LogInformation("Creating brand with name: {Name}", dto.Name);
-            BrandReadDTO created = await brandService.CreateAsync(dto, ct);
+            logger.LogInformation("Creating brand with name: {Name}", brandCreateDTO.Name);
+            BrandReadDTO created = await brandService.CreateAsync(brandCreateDTO, cancellationToken);
 
             logger.LogInformation("Brand created with ID: {Id}", created.Id);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
@@ -68,15 +68,15 @@ namespace Clothy.CatalogService.API.Controllers
         /// Update an existing brand by ID.
         /// </summary>
         /// <param name="id">Brand ID (GUID).</param>
-        /// <param name="dto">Update data for the brand (supports image upload).</param>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="brandUpdateDTO">Update data for the brand (supports image upload).</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Updated brand.</returns>
         [HttpPut("{id:guid}")]
         [Authorize(Policy = "ManagerOrAdmin")]
-        public async Task<ActionResult<BrandReadDTO>> Update(Guid id, [FromForm] BrandUpdateDTO dto, CancellationToken ct)
+        public async Task<ActionResult<BrandReadDTO>> Update(Guid id, [FromForm] BrandUpdateDTO brandUpdateDTO, CancellationToken cancellationToken)
         {
             logger.LogInformation("Updating brand with ID: {Id}", id);
-            BrandReadDTO updated = await brandService.UpdateAsync(id, dto, ct);
+            BrandReadDTO updated = await brandService.UpdateAsync(id, brandUpdateDTO, cancellationToken);
 
             logger.LogInformation("Brand with ID {Id} updated.", id);
             return Ok(updated);
@@ -86,14 +86,14 @@ namespace Clothy.CatalogService.API.Controllers
         /// Delete a brand by its ID.
         /// </summary>
         /// <param name="id">Brand ID (GUID).</param>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>No content.</returns>
         [HttpDelete("{id:guid}")]
         [Authorize(Policy = "AdminOnly")]
-        public async Task<ActionResult> Delete(Guid id, CancellationToken ct)
+        public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
             logger.LogInformation("Deleting brand with ID: {Id}", id);
-            await brandService.DeleteAsync(id, ct);
+            await brandService.DeleteAsync(id, cancellationToken);
 
             logger.LogInformation("Brand with ID {Id} deleted.", id);
             return NoContent();

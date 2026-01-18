@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Clothy.CatalogService.DAL.UOW;
-using Clothy.CatalogService.Domain.Entities;
+using Clothy.CatalogService.Domain.Entities.Catalog;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 
@@ -94,6 +94,7 @@ namespace Clothy.CatalogService.gRPC.Server.Services
             return colors.Select(pair => new ColorsGrpcResponse
             {
                 Id = pair.Key.Id.ToString(),
+                Name = pair.Key.Name,
                 HexCode = pair.Key.HexCode,
                 ClotheItemCount = pair.Value
             }).ToList();

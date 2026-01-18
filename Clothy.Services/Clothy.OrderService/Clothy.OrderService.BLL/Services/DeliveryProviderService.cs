@@ -75,13 +75,13 @@ namespace Clothy.OrderService.BLL.Services
             return cached!;
         }
 
-        public async Task<DeliveryProviderReadDTO> CreateAsync(DeliveryProviderCreateDTO dto, CancellationToken cancellationToken = default)
+        public async Task<DeliveryProviderReadDTO> CreateAsync(DeliveryProviderCreateDTO deliveryProviderCreateDTO, CancellationToken cancellationToken = default)
         {
-            bool exists = await unitOfWork.DeliveryProviders.ExistsByNameAsync(dto.Name, null, cancellationToken);
-            if (exists) throw new AlreadyExistsException($"DeliveryProvider with name '{dto.Name}' already exists.");
+            bool exists = await unitOfWork.DeliveryProviders.ExistsByNameAsync(deliveryProviderCreateDTO.Name, null, cancellationToken);
+            if (exists) throw new AlreadyExistsException($"DeliveryProvider with name '{deliveryProviderCreateDTO.Name}' already exists.");
 
-            DeliveryProvider provider = mapper.Map<DeliveryProvider>(dto);
-            if (dto.Icon != null) provider.IconUrl = await imageService.UploadAsync(dto.Icon, "delivery-providers");
+            DeliveryProvider provider = mapper.Map<DeliveryProvider>(deliveryProviderCreateDTO);
+            if (deliveryProviderCreateDTO.Icon != null) provider.IconUrl = await imageService.UploadAsync(deliveryProviderCreateDTO.Icon, "delivery-providers");
 
             provider.Id = await unitOfWork.DeliveryProviders.AddAsync(provider, cancellationToken);
             await unitOfWork.CommitAsync();
@@ -91,21 +91,21 @@ namespace Clothy.OrderService.BLL.Services
             return mapper.Map<DeliveryProviderReadDTO>(provider);
         }
 
-        public async Task<DeliveryProviderReadDTO> UpdateAsync(Guid id, DeliveryProviderUpdateDTO dto, CancellationToken cancellationToken = default)
+        public async Task<DeliveryProviderReadDTO> UpdateAsync(Guid id, DeliveryProviderUpdateDTO deliveryProviderUpdateDTO, CancellationToken cancellationToken = default)
         {
             DeliveryProvider? provider = await unitOfWork.DeliveryProviders.GetByIdAsync(id, cancellationToken);
             if (provider == null) throw new NotFoundException($"DeliveryProvider not found with ID: {id}");
 
-            bool exists = await unitOfWork.DeliveryProviders.ExistsByNameAsync(dto.Name, id, cancellationToken);
-            if (exists) throw new AlreadyExistsException($"DeliveryProvider with name '{dto.Name}' already exists.");
+            bool exists = await unitOfWork.DeliveryProviders.ExistsByNameAsync(deliveryProviderUpdateDTO.Name, id, cancellationToken);
+            if (exists) throw new AlreadyExistsException($"DeliveryProvider with name '{deliveryProviderUpdateDTO.Name}' already exists.");
 
-            if (dto.Icon != null)
+            if (deliveryProviderUpdateDTO.Icon != null)
             {
                 if (!string.IsNullOrEmpty(provider.IconUrl)) await imageService.DeleteImageAsync(provider.IconUrl);
-                provider.IconUrl = await imageService.UploadAsync(dto.Icon, "delivery-providers");
+                provider.IconUrl = await imageService.UploadAsync(deliveryProviderUpdateDTO.Icon, "delivery-providers");
             }
 
-            mapper.Map(dto, provider);
+            mapper.Map(deliveryProviderUpdateDTO, provider);
             await unitOfWork.DeliveryProviders.UpdateAsync(provider, cancellationToken);
             await unitOfWork.CommitAsync();
 

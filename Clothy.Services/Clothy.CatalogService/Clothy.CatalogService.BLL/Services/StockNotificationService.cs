@@ -1,6 +1,6 @@
 ﻿using Clothy.CatalogService.BLL.Interfaces;
 using Clothy.CatalogService.DAL.UOW;
-using Clothy.CatalogService.Domain.Entities;
+using Clothy.CatalogService.Domain.Entities.Stock;
 using Clothy.Shared.Events.EmailEvents.ClotheStockUpdated;
 using Clothy.Shared.Helpers.Exceptions;
 using Clothy.Shared.Helpers.JWT;

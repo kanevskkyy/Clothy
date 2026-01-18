@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Clothy.CatalogService.DAL.DB;
 using Clothy.CatalogService.DAL.Interfaces;
-using Clothy.CatalogService.Domain.Entities;
+using Clothy.CatalogService.Domain.Entities.Catalog;
 using Microsoft.EntityFrameworkCore;
 
 namespace Clothy.CatalogService.DAL.Repositories
@@ -33,15 +33,27 @@ namespace Clothy.CatalogService.DAL.Repositories
             return result;
         }
 
+        public async Task<bool> IsHexAlreadyExistsAsync(string hex, Guid? id = null, CancellationToken cancellationToken = default)
+        {
+            if (id == null)
+            {
+                return await dbSet.AnyAsync(property => property.HexCode.ToLower() == hex.ToLower(), cancellationToken);
+            }
+            else
+            {
+                return await dbSet.AnyAsync(property => property.HexCode.ToLower() == hex.ToLower() && property.Id != id, cancellationToken);
+            }
+        }
+
         public async Task<bool> IsNameAlreadyExistsAsync(string name, Guid? id = null, CancellationToken cancellationToken = default)
         {
             if (id == null)
             {
-                return await dbSet.AnyAsync(property => property.HexCode.ToLower() == name.ToLower(), cancellationToken);
+                return await dbSet.AnyAsync(property => property.Name.ToLower() == name.ToLower(), cancellationToken);
             }
             else
             {
-                return await dbSet.AnyAsync(property => property.HexCode.ToLower() == name.ToLower() && property.Id != id, cancellationToken);
+                return await dbSet.AnyAsync(property => property.Name.ToLower() == name.ToLower() && property.Id != id, cancellationToken);
             }
         }
     }

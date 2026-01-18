@@ -7,7 +7,7 @@ using System.Xml.Linq;
 using Clothy.CatalogService.DAL.DB;
 using Clothy.CatalogService.DAL.Interfaces;
 using Clothy.CatalogService.DAL.Specification;
-using Clothy.CatalogService.Domain.Entities;
+using Clothy.CatalogService.Domain.Entities.Stock;
 using Clothy.CatalogService.Domain.QueryParameters;
 using Clothy.Shared.Helpers;
 using Microsoft.EntityFrameworkCore;

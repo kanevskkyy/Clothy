@@ -26,8 +26,9 @@ message CollectionsGrpcResponse {
 
 message ColorsGrpcResponse {
 	string id = 1;
-	string hexCode = 2;
-	int32 clotheItemCount = 3;
+	string name = 2;
+	string hexCode = 3;
+	int32 clotheItemCount = 4;
 }
 
 message MaterialsGrpcResponse {

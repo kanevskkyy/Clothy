@@ -8,6 +8,7 @@ namespace Clothy.CatalogService.BLL.DTOs.ColorDTOs
 {
     public class ColorUpdateDTO
     {
-        public string HexCode { get; set; }
+        public string? Name { get; set; }
+        public string? HexCode { get; set; }
     }
 }

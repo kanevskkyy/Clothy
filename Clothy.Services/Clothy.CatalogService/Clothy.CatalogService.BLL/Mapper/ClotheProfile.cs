@@ -11,7 +11,7 @@ using Clothy.CatalogService.BLL.DTOs.MaterialDTOs;
 using Clothy.CatalogService.BLL.DTOs.PhotoDTOs;
 using Clothy.CatalogService.BLL.DTOs.SizeDTOs;
 using Clothy.CatalogService.BLL.DTOs.TagDTOs;
-using Clothy.CatalogService.Domain.Entities;
+using Clothy.CatalogService.Domain.Entities.Clothe;
 
 namespace Clothy.CatalogService.BLL.Mapper
 {
@@ -27,6 +27,7 @@ namespace Clothy.CatalogService.BLL.Mapper
 
             CreateMap<ClotheItem, ClotheSummaryDTO>()
                 .ForMember(dto => dto.IsAvailable, map => map.MapFrom(c => c.Stocks.Any(s => s.Quantity > 0)))
+                .ForMember(dto => dto.OldPrice, map => map.MapFrom(p => p.OldPrice))
                 .ForMember(dto => dto.Brand, map => map.MapFrom(c => c.Brand))
                 .ForMember(dto => dto.Collection, map => map.MapFrom(c => c.Collection))
                 .ForMember(dto => dto.ClothyType, map => map.MapFrom(c => c.ClothyType))

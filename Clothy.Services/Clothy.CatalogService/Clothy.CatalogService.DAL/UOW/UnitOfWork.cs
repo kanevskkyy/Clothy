@@ -23,6 +23,7 @@ namespace Clothy.CatalogService.DAL.UOW
         public ITagRepository Tags { get; }
         public IClothingTypeRepository ClothingTypes { get; }
         public IStockNotificationRepository StockNotification { get; }
+        public IClothePopularityRepository ClothePopularity { get; }
 
         private ClothyCatalogDbContext context;
 
@@ -37,7 +38,8 @@ namespace Clothy.CatalogService.DAL.UOW
             ISizeRepository sizes,
             ITagRepository tags,
             IClothingTypeRepository clothingTypes,
-            IStockNotificationRepository stockNotification)
+            IStockNotificationRepository stockNotification,
+            IClothePopularityRepository clothePopularity)
         {
             this.context = context;
 
@@ -51,6 +53,7 @@ namespace Clothy.CatalogService.DAL.UOW
             Tags = tags;
             ClothingTypes = clothingTypes;
             StockNotification = stockNotification;
+            ClothePopularity = clothePopularity;
         }
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

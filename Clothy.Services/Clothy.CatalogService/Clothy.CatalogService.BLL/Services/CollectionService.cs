@@ -10,7 +10,7 @@ using Clothy.CatalogService.BLL.DTOs.CollectionDTOs;
 using Clothy.CatalogService.BLL.Exceptions;
 using Clothy.CatalogService.BLL.Interfaces;
 using Clothy.CatalogService.DAL.UOW;
-using Clothy.CatalogService.Domain.Entities;
+using Clothy.CatalogService.Domain.Entities.Catalog;
 using Clothy.Shared.Helpers.Exceptions;
 
 namespace Clothy.CatalogService.BLL.Services
@@ -49,15 +49,15 @@ namespace Clothy.CatalogService.BLL.Services
                 .ToList();
         }
 
-        public async Task<CollectionReadDTO> CreateAsync(CollectionCreateDTO dto, CancellationToken cancellationToken = default)
+        public async Task<CollectionReadDTO> CreateAsync(CollectionCreateDTO collectionCreateDTO, CancellationToken cancellationToken = default)
         {
-            bool exists = await unitOfWork.Collections.IsNameAlreadyExistsAsync(dto.Name, null, cancellationToken);
+            bool exists = await unitOfWork.Collections.IsNameAlreadyExistsAsync(collectionCreateDTO.Name, null, cancellationToken);
             if (exists) throw new AlreadyExistsException("Collection with this name already exists");
 
-            exists = await unitOfWork.Collections.IsSlugAlreadyExistsAsync(dto.Slug, null, cancellationToken);
+            exists = await unitOfWork.Collections.IsSlugAlreadyExistsAsync(collectionCreateDTO.Slug, null, cancellationToken);
             if (exists) throw new AlreadyExistsException("Collection with this slug already exists");
 
-            Collection collection = mapper.Map<Collection>(dto);
+            Collection collection = mapper.Map<Collection>(collectionCreateDTO);
             await unitOfWork.Collections.AddAsync(collection, cancellationToken);
             await unitOfWork.SaveChangesAsync(cancellationToken);
             await filterCacheInvalidationService.InvalidateAsync();
@@ -65,18 +65,18 @@ namespace Clothy.CatalogService.BLL.Services
             return mapper.Map<CollectionReadDTO>(collection);
         }
 
-        public async Task<CollectionReadDTO> UpdateAsync(Guid id, CollectionUpdateDTO dto, CancellationToken cancellationToken = default)
+        public async Task<CollectionReadDTO> UpdateAsync(Guid id, CollectionUpdateDTO collectionUpdateDTO, CancellationToken cancellationToken = default)
         {
             Collection? collection = await unitOfWork.Collections.GetByIdAsync(id, cancellationToken);
             if (collection == null) throw new NotFoundException($"Collection not found with ID: {id}");
 
-            bool exists = await unitOfWork.Collections.IsNameAlreadyExistsAsync(dto.Name, id, cancellationToken);
+            bool exists = await unitOfWork.Collections.IsNameAlreadyExistsAsync(collectionUpdateDTO.Name, id, cancellationToken);
             if (exists) throw new AlreadyExistsException("Collection with this name already exists");
 
-            exists = await unitOfWork.Collections.IsSlugAlreadyExistsAsync(dto.Slug, id, cancellationToken);
+            exists = await unitOfWork.Collections.IsSlugAlreadyExistsAsync(collectionUpdateDTO.Slug, id, cancellationToken);
             if (exists) throw new AlreadyExistsException("Collection with this slug already exists");
 
-            mapper.Map(dto, collection);
+            mapper.Map(collectionUpdateDTO, collection);
 
             unitOfWork.Collections.Update(collection);
             await unitOfWork.SaveChangesAsync(cancellationToken);

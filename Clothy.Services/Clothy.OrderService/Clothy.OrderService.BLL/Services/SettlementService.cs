@@ -33,15 +33,15 @@ namespace Clothy.OrderService.BLL.Services
             this.cacheInvalidationService = cacheInvalidationService;
         }
 
-        public async Task<SettlementReadDTO> CreateAsync(SettlementCreateDTO dto, CancellationToken cancellationToken = default)
+        public async Task<SettlementReadDTO> CreateAsync(SettlementCreateDTO settlementCreateDTO, CancellationToken cancellationToken = default)
         {
-            bool nameAlreadyExists = await unitOfWork.Settlement.ExistsByNameAndRegionIdAsync(dto.Name, dto.RegionId, cancellationToken: cancellationToken);
-            if (nameAlreadyExists) throw new AlreadyExistsException($"Settlement with name: {dto.Name} with this RegionId already exists");
+            bool nameAlreadyExists = await unitOfWork.Settlement.ExistsByNameAndRegionIdAsync(settlementCreateDTO.Name, settlementCreateDTO.RegionId, cancellationToken: cancellationToken);
+            if (nameAlreadyExists) throw new AlreadyExistsException($"Settlement with name: {settlementCreateDTO.Name} with this RegionId already exists");
 
-            Region? region = await unitOfWork.Region.GetByIdAsync(dto.RegionId, cancellationToken);
-            if (region == null) throw new NotFoundException($"Region with ID: {dto.RegionId}");
+            Region? region = await unitOfWork.Region.GetByIdAsync(settlementCreateDTO.RegionId, cancellationToken);
+            if (region == null) throw new NotFoundException($"Region with ID: {settlementCreateDTO.RegionId}");
 
-            Settlement settlement = mapper.Map<Settlement>(dto);
+            Settlement settlement = mapper.Map<Settlement>(settlementCreateDTO);
             settlement.Id = await unitOfWork.Settlement.AddAsync(settlement, cancellationToken);
             await unitOfWork.CommitAsync();
 
@@ -88,18 +88,18 @@ namespace Clothy.OrderService.BLL.Services
             return cached!;
         }
 
-        public async Task<SettlementReadDTO> UpdateAsync(Guid id, SettlementUpdateDTO dto, CancellationToken cancellationToken = default)
+        public async Task<SettlementReadDTO> UpdateAsync(Guid id, SettlementUpdateDTO settlementUpdateDTO, CancellationToken cancellationToken = default)
         {
             Settlement? settlement = await unitOfWork.Settlement.GetByIdAsync(id, cancellationToken);
             if (settlement == null) throw new NotFoundException($"Settlement not found with ID: {id}");
 
-            bool nameAlreadyExists = await unitOfWork.Settlement.ExistsByNameAndRegionIdAsync(dto.Name, dto.RegionId, id, cancellationToken: cancellationToken);
-            if (nameAlreadyExists) throw new AlreadyExistsException($"Settlement with name: {dto.Name} with this RegionId already exists");
+            bool nameAlreadyExists = await unitOfWork.Settlement.ExistsByNameAndRegionIdAsync(settlementUpdateDTO.Name, settlementUpdateDTO.RegionId, id, cancellationToken: cancellationToken);
+            if (nameAlreadyExists) throw new AlreadyExistsException($"Settlement with name: {settlementUpdateDTO.Name} with this RegionId already exists");
 
-            Region? region = await unitOfWork.Region.GetByIdAsync(dto.RegionId, cancellationToken);
-            if (region == null) throw new NotFoundException($"Region not found with ID: {dto.RegionId}");
+            Region? region = await unitOfWork.Region.GetByIdAsync(settlementUpdateDTO.RegionId, cancellationToken);
+            if (region == null) throw new NotFoundException($"Region not found with ID: {settlementUpdateDTO.RegionId}");
 
-            mapper.Map(dto, settlement);
+            mapper.Map(settlementUpdateDTO, settlement);
             await unitOfWork.Settlement.UpdateAsync(settlement);
             await unitOfWork.CommitAsync();
 

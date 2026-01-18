@@ -27,7 +27,7 @@ namespace Clothy.OrderService.DAL.Repositories
 
             StringBuilder sql = new StringBuilder(@"
                 SELECT o.id, o.userid, o.userfirstname, o.userlastname, o.useremail, o.createdat, o.updatedat,
-                       s.id AS StatusId, s.name AS StatusName, s.iconurl AS StatusIconUrl,
+                       s.id AS StatusId, s.name AS StatusName,
                        COALESCE(SUM(oi.price * oi.quantity), 0) AS TotalAmount
                 FROM orders o
                 JOIN order_status s ON o.statusid = s.id
@@ -63,7 +63,7 @@ namespace Clothy.OrderService.DAL.Repositories
                 countSql.Append(where);
             }
 
-            sql.Append(@" GROUP BY o.id, s.id, s.name, s.iconurl, o.userfirstname, o.userlastname, o.createdat, o.updatedat");
+            sql.Append(@" GROUP BY o.id, s.id, s.name, o.userfirstname, o.userlastname, o.createdat, o.updatedat");
 
             string sortBy = filter.SortBy?.ToLower() ?? "createdat";
             string sortColumn = sortBy switch
@@ -98,7 +98,6 @@ namespace Clothy.OrderService.DAL.Repositories
                 {
                     Id = r.statusid,
                     Name = r.statusname,
-                    IconUrl = r.statusiconurl
                 }
             });
 
@@ -120,8 +119,7 @@ namespace Clothy.OrderService.DAL.Repositories
                     o.createdat, 
                     o.updatedat,
                     s.id,       
-                    s.name, 
-                    s.iconurl
+                    s.name
                 FROM orders o
                 LEFT JOIN order_status s ON o.statusid = s.id
                 WHERE o.id = @Id;

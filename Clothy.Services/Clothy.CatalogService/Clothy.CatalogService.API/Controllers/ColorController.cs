@@ -21,13 +21,13 @@ namespace Clothy.CatalogService.API.Controllers
         /// <summary>
         /// Get all colors.
         /// </summary>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>List of all colors.</returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ColorReadDTO>>> GetAll(CancellationToken ct)
+        public async Task<ActionResult<IEnumerable<ColorReadDTO>>> GetAll(CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching all colors.");
-            List<ColorReadDTO> colors = await colorService.GetAllAsync(ct);
+            List<ColorReadDTO> colors = await colorService.GetAllAsync(cancellationToken);
             
             return Ok(colors);
         }
@@ -35,13 +35,13 @@ namespace Clothy.CatalogService.API.Controllers
         /// <summary>
         /// Get all colors with stock information.
         /// </summary>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>List of colors including stock info.</returns>
         [HttpGet("with-stock")]
-        public async Task<ActionResult<IEnumerable<ColorWithCountDTO>>> GetAllWithStock(CancellationToken ct)
+        public async Task<ActionResult<IEnumerable<ColorWithCountDTO>>> GetAllWithStock(CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching all colors with stock info.");
-            List<ColorWithCountDTO> colors = await colorService.GetAllWithCountAsync(ct);
+            List<ColorWithCountDTO> colors = await colorService.GetAllWithCountAsync(cancellationToken);
             
             return Ok(colors);
         }
@@ -50,13 +50,13 @@ namespace Clothy.CatalogService.API.Controllers
         /// Get a specific color by its ID.
         /// </summary>
         /// <param name="id">Color ID (GUID).</param>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Color details.</returns>
         [HttpGet("{id:guid}")]
-        public async Task<ActionResult<ColorReadDTO>> GetById(Guid id, CancellationToken ct)
+        public async Task<ActionResult<ColorReadDTO>> GetById(Guid id, CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching color with ID: {Id}", id);
-            ColorReadDTO color = await colorService.GetByIdAsync(id, ct);
+            ColorReadDTO color = await colorService.GetByIdAsync(id, cancellationToken);
             
             return Ok(color);
         }
@@ -64,15 +64,15 @@ namespace Clothy.CatalogService.API.Controllers
         /// <summary>
         /// Create a new color.
         /// </summary>
-        /// <param name="dto">Color creation data.</param>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="colorCreateDTO">Color creation data.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Created color.</returns>
         [HttpPost]
         [Authorize(Policy = "ManagerOrAdmin")]
-        public async Task<ActionResult<ColorReadDTO>> Create([FromBody] ColorCreateDTO dto, CancellationToken ct)
+        public async Task<ActionResult<ColorReadDTO>> Create([FromBody] ColorCreateDTO colorCreateDTO, CancellationToken cancellationToken)
         {
-            logger.LogInformation("Creating color with hex code: {HexCode}", dto.HexCode);
-            ColorReadDTO created = await colorService.CreateAsync(dto, ct);
+            logger.LogInformation("Creating color with hex code: {HexCode}", colorCreateDTO.HexCode);
+            ColorReadDTO created = await colorService.CreateAsync(colorCreateDTO, cancellationToken);
             
             logger.LogInformation("Color created with ID: {Id}", created.Id);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
@@ -82,15 +82,15 @@ namespace Clothy.CatalogService.API.Controllers
         /// Update an existing color by its ID.
         /// </summary>
         /// <param name="id">Color ID (GUID).</param>
-        /// <param name="dto">Color update data.</param>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="colorUpdateDTO">Color update data.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Updated color.</returns>
         [HttpPut("{id:guid}")]
         [Authorize(Policy = "ManagerOrAdmin")]
-        public async Task<ActionResult<ColorReadDTO>> Update(Guid id, [FromBody] ColorUpdateDTO dto, CancellationToken ct)
+        public async Task<ActionResult<ColorReadDTO>> Update(Guid id, [FromBody] ColorUpdateDTO colorUpdateDTO, CancellationToken cancellationToken)
         {
             logger.LogInformation("Updating color with ID: {Id}", id);
-            ColorReadDTO updated = await colorService.UpdateAsync(id, dto, ct);
+            ColorReadDTO updated = await colorService.UpdateAsync(id, colorUpdateDTO, cancellationToken);
             
             logger.LogInformation("Color with ID {Id} updated.", id);
             return Ok(updated);
@@ -100,14 +100,14 @@ namespace Clothy.CatalogService.API.Controllers
         /// Delete a color by its ID.
         /// </summary>
         /// <param name="id">Color ID (GUID).</param>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>No content.</returns>
         [HttpDelete("{id:guid}")]
         [Authorize(Policy = "AdminOnly")]
-        public async Task<ActionResult> Delete(Guid id, CancellationToken ct)
+        public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
             logger.LogInformation("Deleting color with ID: {Id}", id);
-            await colorService.DeleteAsync(id, ct);
+            await colorService.DeleteAsync(id, cancellationToken);
             
             logger.LogInformation("Color with ID {Id} deleted.", id);
             return NoContent();

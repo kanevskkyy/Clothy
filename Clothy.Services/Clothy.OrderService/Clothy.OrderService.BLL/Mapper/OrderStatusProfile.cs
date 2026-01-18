@@ -16,7 +16,6 @@ namespace Clothy.OrderService.BLL.Mapper
             CreateMap<OrderStatus, OrderStatusReadDTO>();
 
             CreateMap<OrderStatusCreateDTO, OrderStatus>()
-                .ForMember(dest => dest.IconUrl, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(dto => DateTime.UtcNow.ToUniversalTime()));
 
             CreateMap<OrderStatusUpdateDTO, OrderStatus>()

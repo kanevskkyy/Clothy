@@ -19,6 +19,7 @@ namespace Clothy.OrderService.BLL.DTOs.OrderDTOs
         public string? UserLastName { get; set; }
         public string? UserEmail { get; set; }
         public string? Comment { get; set; }
+        public bool IsFreeDelivery => TotalPrice >= 1500;
         public decimal TotalPrice { get; set; }
         public List<OrderItemDTO> Items { get; set; } = new();
         public DeliveryDetailDTO? DeliveryDetail { get; set; }

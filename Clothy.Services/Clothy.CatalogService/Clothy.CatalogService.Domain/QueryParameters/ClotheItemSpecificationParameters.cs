@@ -16,6 +16,7 @@ namespace Clothy.CatalogService.Domain.QueryParameters
         public List<Guid>? SizeIds { get; set; } = new List<Guid>();
         public List<Guid>? TagIds { get; set; } = new List<Guid>();
         public List<Guid>? ClothingTypeIds { get; set; } = new List<Guid>();
+        public bool ShowOnlyWithDiscounts { get; set; } = false;
 
         public string ToCacheKey()
         {
@@ -29,6 +30,7 @@ namespace Clothy.CatalogService.Domain.QueryParameters
             if (SizeIds?.Any() == true) stringBuilder.Append($"sizes:{string.Join(",", SizeIds.OrderBy(x => x))}:");
             if (TagIds?.Any() == true) stringBuilder.Append($"tags:{string.Join(",", TagIds.OrderBy(x => x))}:");
             if (ClothingTypeIds?.Any() == true) stringBuilder.Append($"types:{string.Join(",", ClothingTypeIds.OrderBy(x => x))}:");
+            stringBuilder.Append($"showOnlyWithDiscounts:{ShowOnlyWithDiscounts}");
 
             stringBuilder.Append(GetBaseCacheKeyPart());
             return stringBuilder.ToString();

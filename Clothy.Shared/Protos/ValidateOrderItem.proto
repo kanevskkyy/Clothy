@@ -19,6 +19,7 @@ message ValidateOrderItemResponse {
     string mainPhotoUrl = 5;
     string colorHexCode = 6;
     string sizeName = 7;
+    string colorName = 8;
 }
 
 message ValidateOrderItemsResponse {

@@ -21,13 +21,13 @@ namespace Clothy.CatalogService.API.Controllers
         /// <summary>
         /// Get all materials.
         /// </summary>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>List of all materials.</returns>
         [HttpGet]
-        public async Task<IActionResult> GetAll(CancellationToken ct)
+        public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching all materials.");
-            List<MaterialReadDTO> materials = await materialService.GetAllAsync(ct);
+            List<MaterialReadDTO> materials = await materialService.GetAllAsync(cancellationToken);
             
             return Ok(materials);
         }
@@ -35,13 +35,13 @@ namespace Clothy.CatalogService.API.Controllers
         /// <summary>
         /// Get all materials with clothe count.
         /// </summary>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>List of materials including the number of clothes using each material.</returns>
         [HttpGet("with-clothe-count")]
-        public async Task<IActionResult> GetAllWithClotheCount(CancellationToken ct)
+        public async Task<IActionResult> GetAllWithClotheCount(CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching all materials with clothe count.");
-            List<MaterialWithCountDTO> materials = await materialService.GetAllWithCountAsync(ct);
+            List<MaterialWithCountDTO> materials = await materialService.GetAllWithCountAsync(cancellationToken);
             
             return Ok(materials);
         }
@@ -50,13 +50,13 @@ namespace Clothy.CatalogService.API.Controllers
         /// Get a material by its ID.
         /// </summary>
         /// <param name="id">Material ID (GUID).</param>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Material details.</returns>
         [HttpGet("{id:guid}")]
-        public async Task<IActionResult> GetById(Guid id, CancellationToken ct)
+        public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching material with ID: {Id}", id);
-            MaterialReadDTO material = await materialService.GetByIdAsync(id, ct);
+            MaterialReadDTO material = await materialService.GetByIdAsync(id, cancellationToken);
             
             return Ok(material);
         }
@@ -64,15 +64,15 @@ namespace Clothy.CatalogService.API.Controllers
         /// <summary>
         /// Create a new material.
         /// </summary>
-        /// <param name="dto">Material creation data.</param>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="materialCreateDTO">Material creation data.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Created material.</returns>
         [HttpPost]
         [Authorize(Policy = "ManagerOrAdmin")]
-        public async Task<IActionResult> Create([FromBody] MaterialCreateDTO dto, CancellationToken ct)
+        public async Task<IActionResult> Create([FromBody] MaterialCreateDTO materialCreateDTO, CancellationToken cancellationToken)
         {
-            logger.LogInformation("Creating material with name: {Name}", dto.Name);
-            MaterialReadDTO material = await materialService.CreateAsync(dto, ct);
+            logger.LogInformation("Creating material with name: {Name}", materialCreateDTO.Name);
+            MaterialReadDTO material = await materialService.CreateAsync(materialCreateDTO, cancellationToken);
 
             logger.LogInformation("Material created with ID: {Id}", material.Id);
             return CreatedAtAction(nameof(GetById), new { id = material.Id }, material);
@@ -82,15 +82,15 @@ namespace Clothy.CatalogService.API.Controllers
         /// Update an existing material by its ID.
         /// </summary>
         /// <param name="id">Material ID (GUID).</param>
-        /// <param name="dto">Material update data.</param>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="materialUpdateDTO">Material update data.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Updated material.</returns>
         [HttpPut("{id:guid}")]
         [Authorize(Policy = "ManagerOrAdmin")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] MaterialUpdateDTO dto, CancellationToken ct)
+        public async Task<IActionResult> Update(Guid id, [FromBody] MaterialUpdateDTO materialUpdateDTO, CancellationToken cancellationToken)
         {
             logger.LogInformation("Updating material with ID: {Id}", id);
-            MaterialReadDTO material = await materialService.UpdateAsync(id, dto, ct);
+            MaterialReadDTO material = await materialService.UpdateAsync(id, materialUpdateDTO, cancellationToken);
             
             logger.LogInformation("Material with ID {Id} updated.", id);
             return Ok(material);
@@ -100,15 +100,15 @@ namespace Clothy.CatalogService.API.Controllers
         /// Delete a material by its ID.
         /// </summary>
         /// <param name="id">Material ID (GUID).</param>
-        /// <param name="ct">Cancellation token.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>No content.</returns>
         [HttpDelete("{id:guid}")]
         [Authorize(Policy = "AdminOnly")]
 
-        public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
+        public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
             logger.LogInformation("Deleting material with ID: {Id}", id);
-            await materialService.DeleteAsync(id, ct);
+            await materialService.DeleteAsync(id, cancellationToken);
             
             logger.LogInformation("Material with ID {Id} deleted.", id);
             return NoContent();

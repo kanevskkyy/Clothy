@@ -14,8 +14,8 @@ namespace Clothy.CatalogService.BLL.Interfaces
         Task UpdateStockAsync(Guid clotheId, Guid colorId, Guid sizeId, int orderedQuantity, CancellationToken cancellationToken = default);
         Task<PagedList<ClothesStockReadDTO>> GetPagedClothesStockAsync(ClothesStockSpecificationParameters parameters, CancellationToken cancellationToken = default);
         Task<ClothesStockReadDTO> GetByIdWithDetailsAsync(Guid id,CancellationToken cancellationToken = default);
-        Task<ClothesStockReadDTO> CreateAsync(ClothesStockCreateDTO dto, CancellationToken cancellationToken = default);
-        Task<ClothesStockReadDTO> UpdateAsync(Guid id, ClothesStockUpdateDTO dto, CancellationToken cancellationToken = default);
+        Task<ClothesStockReadDTO> CreateAsync(ClothesStockCreateDTO clothesStockCreateDTO, CancellationToken cancellationToken = default);
+        Task<ClothesStockReadDTO> UpdateAsync(Guid id, ClothesStockUpdateDTO clothesStockUpdateDTO, CancellationToken cancellationToken = default);
         Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
     }
 }

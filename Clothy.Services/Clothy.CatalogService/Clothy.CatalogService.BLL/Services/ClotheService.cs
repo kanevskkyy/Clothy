@@ -4,7 +4,6 @@ using Clothy.CatalogService.BLL.Exceptions;
 using Clothy.CatalogService.BLL.Helpers;
 using Clothy.CatalogService.BLL.Interfaces;
 using Clothy.CatalogService.DAL.UOW;
-using Clothy.CatalogService.Domain.Entities;
 using Clothy.CatalogService.Domain.QueryParameters;
 using Clothy.Shared.Helpers;
 using Clothy.Shared.Cache.Interfaces;
@@ -19,6 +18,9 @@ using Clothy.Shared.Helpers.CloudinaryConfig.ImageService;
 using Clothy.Aggregator.Aggregate.RedisCache;
 using Clothy.CatalogService.BLL.DTOs.PhotoDTOs;
 using Clothy.CatalogService.BLL.DTOs.MaterialDTOs;
+using Clothy.CatalogService.Domain.Entities.Catalog;
+using Clothy.CatalogService.Domain.Entities.Clothe;
+using Clothy.CatalogService.Domain.Entities.Stock;
 
 namespace Clothy.CatalogService.BLL.Services
 {
@@ -37,6 +39,7 @@ namespace Clothy.CatalogService.BLL.Services
         private const int MAX_CASHED_PAGES = 10;
         private static TimeSpan MEMORY_TTL_CLOTHE_PAGE = TimeSpan.FromMinutes(30);
         private static TimeSpan REDIS_TTL_CLOTHE_PAGE = TimeSpan.FromHours(1);
+        
         private static TimeSpan MEMORY_TTL_CLOTHE_DETAIL = TimeSpan.FromMinutes(15);
         private static TimeSpan REDIS_TTL_CLOTHE_DETAIL = TimeSpan.FromMinutes(30);
         
@@ -110,11 +113,11 @@ namespace Clothy.CatalogService.BLL.Services
             return cached!;
         }
 
-        public async Task<ClotheDetailDTO> CreateAsync(ClotheCreateDTO dto, CancellationToken cancellationToken = default)
+        public async Task<ClotheDetailDTO> CreateAsync(ClotheCreateDTO clotheCreateDTO, CancellationToken cancellationToken = default)
         {
-            if (await unitOfWork.ClotheItems.IsSlugAlreadyExistsAsync(dto.Slug, null, cancellationToken)) throw new AlreadyExistsException("Clothe with this slug already exists");
+            if (await unitOfWork.ClotheItems.IsSlugAlreadyExistsAsync(clotheCreateDTO.Slug, null, cancellationToken)) throw new AlreadyExistsException("Clothe with this slug already exists");
 
-            List<ClotheMaterialCreateDTO> distinctMaterials = dto.Materials
+            List<ClotheMaterialCreateDTO> distinctMaterials = clotheCreateDTO.Materials
                 .GroupBy(m => m.MaterialId)
                 .Select(g => g.First())
                 .ToList();
@@ -122,18 +125,18 @@ namespace Clothy.CatalogService.BLL.Services
             int totalPercentage = distinctMaterials.Sum(p => p.Percentage);
             if (totalPercentage != 100) throw new InvalidMaterialPercentageException("Total material percentage must be exactly 100.");
 
-            Brand? brand = await unitOfWork.Brands.GetByIdAsync(dto.BrandId, cancellationToken);
-            if (brand == null) throw new NotFoundException($"Brand with ID: {dto.BrandId} not found");
+            Brand? brand = await unitOfWork.Brands.GetByIdAsync(clotheCreateDTO.BrandId, cancellationToken);
+            if (brand == null) throw new NotFoundException($"Brand with ID: {clotheCreateDTO.BrandId} not found");
 
-            ClothingType? clothingType = await unitOfWork.ClothingTypes.GetByIdAsync(dto.ClothingTypeId, cancellationToken);
-            if (clothingType == null) throw new NotFoundException($"Clothing type with ID: {dto.ClothingTypeId} not found");
+            ClothingType? clothingType = await unitOfWork.ClothingTypes.GetByIdAsync(clotheCreateDTO.ClothingTypeId, cancellationToken);
+            if (clothingType == null) throw new NotFoundException($"Clothing type with ID: {clotheCreateDTO.ClothingTypeId} not found");
 
-            Collection? collection = await unitOfWork.Collections.GetByIdAsync(dto.CollectionId, cancellationToken);
-            if (collection == null) throw new NotFoundException($"Collection with ID: {dto.CollectionId} not found");
+            Collection? collection = await unitOfWork.Collections.GetByIdAsync(clotheCreateDTO.CollectionId, cancellationToken);
+            if (collection == null) throw new NotFoundException($"Collection with ID: {clotheCreateDTO.CollectionId} not found");
 
-            ClotheItem clothe = mapper.Map<ClotheItem>(dto);
+            ClotheItem clothe = mapper.Map<ClotheItem>(clotheCreateDTO);
 
-            bool isDuplicated = dto.AdditionalPhotos
+            bool isDuplicated = clotheCreateDTO.AdditionalPhotos
                 .Where(p => p.IsMain)
                 .GroupBy(p => p.ColorId)
                 .Any(g => g.Count() > 1);
@@ -142,7 +145,7 @@ namespace Clothy.CatalogService.BLL.Services
 
             clothe.Photos = new List<PhotoClothes>();
             
-            var colorGroups = dto.AdditionalPhotos
+            var colorGroups = clotheCreateDTO.AdditionalPhotos
                 .Where(p => p.ColorId != null)
                 .GroupBy(p => p.ColorId);
             
@@ -157,7 +160,7 @@ namespace Clothy.CatalogService.BLL.Services
             IReadOnlyList<Size> sizes = await unitOfWork.Sizes.GetAllAsync(cancellationToken);
             List<Guid> distinctColorIds = new List<Guid>();
 
-            foreach (ClothePhotoCreateDTO clothePhotoCreateDTO in dto.AdditionalPhotos)
+            foreach (ClothePhotoCreateDTO clothePhotoCreateDTO in clotheCreateDTO.AdditionalPhotos)
             {
                 string url = await imageService.UploadAsync(clothePhotoCreateDTO.Photo, "clothes");
                 Color? color = await unitOfWork.Colors.GetByIdAsync(clothePhotoCreateDTO.ColorId, cancellationToken);
@@ -187,9 +190,9 @@ namespace Clothy.CatalogService.BLL.Services
             }
 
             if (!await unitOfWork.Materials.AreAllExistAsync(distinctMaterials.Select(material => material.MaterialId), cancellationToken)) throw new NotFoundException("One or more materials do not exist.");
-            if (!await unitOfWork.Tags.AreAllExistAsync(dto.TagIds, cancellationToken)) throw new NotFoundException("One or more tags do not exist.");
+            if (!await unitOfWork.Tags.AreAllExistAsync(clotheCreateDTO.TagIds, cancellationToken)) throw new NotFoundException("One or more tags do not exist.");
 
-            List<Guid> distinctTags = dto.TagIds.Distinct().ToList();
+            List<Guid> distinctTags = clotheCreateDTO.TagIds.Distinct().ToList();
 
             clothe.ClotheMaterials = distinctMaterials
                 .Select(clotheMaterial => new ClotheMaterial 
@@ -214,27 +217,40 @@ namespace Clothy.CatalogService.BLL.Services
             await cacheInvalidationService.InvalidateAllAsync();
             await cacheInvalidatonClotheStock.InvalidateAllAsync();
             await filterCacheInvalidationService.InvalidateAsync();
+            await cacheService.RemoveAsync("clothe:top8_most_popular");
 
             return await GetDetailByIdAsync(clothe.Id, cancellationToken);
         }
 
-        public async Task<ClotheDetailDTO> UpdateAsync(Guid id, ClotheUpdateDTO dto, CancellationToken cancellationToken = default)
+        public async Task<ClotheDetailDTO> UpdateAsync(Guid id, ClotheUpdateDTO clotheUpdateDTO, CancellationToken cancellationToken = default)
         {
             ClotheItem? clotheItem = await unitOfWork.ClotheItems.GetByIdAsync(id, cancellationToken);
             if (clotheItem == null) throw new NotFoundException($"Clothe item not found with ID: {id}");
 
-            if (await unitOfWork.ClotheItems.IsSlugAlreadyExistsAsync(dto.Slug, id, cancellationToken)) throw new AlreadyExistsException("Clothe with this slug already exists");
+            if (await unitOfWork.ClotheItems.IsSlugAlreadyExistsAsync(clotheUpdateDTO.Slug, id, cancellationToken)) throw new AlreadyExistsException("Clothe with this slug already exists");
 
-            Brand? brand = await unitOfWork.Brands.GetByIdAsync(dto.BrandId, cancellationToken);
-            if (brand == null) throw new NotFoundException($"Brand with ID: {dto.BrandId} not found");
+            Brand? brand = await unitOfWork.Brands.GetByIdAsync(clotheUpdateDTO.BrandId, cancellationToken);
+            if (brand == null) throw new NotFoundException($"Brand with ID: {clotheUpdateDTO.BrandId} not found");
 
-            ClothingType? clothingType = await unitOfWork.ClothingTypes.GetByIdAsync(dto.ClothingTypeId, cancellationToken);
-            if (clothingType == null) throw new NotFoundException($"Clothing type with ID: {dto.ClothingTypeId} not found");
+            ClothingType? clothingType = await unitOfWork.ClothingTypes.GetByIdAsync(clotheUpdateDTO.ClothingTypeId, cancellationToken);
+            if (clothingType == null) throw new NotFoundException($"Clothing type with ID: {clotheUpdateDTO.ClothingTypeId} not found");
 
-            Collection? collection = await unitOfWork.Collections.GetByIdAsync(dto.CollectionId, cancellationToken);
-            if (collection == null) throw new NotFoundException($"Collection with ID: {dto.CollectionId} not found");
+            Collection? collection = await unitOfWork.Collections.GetByIdAsync(clotheUpdateDTO.CollectionId, cancellationToken);
+            if (collection == null) throw new NotFoundException($"Collection with ID: {clotheUpdateDTO.CollectionId} not found");
 
-            mapper.Map(dto, clotheItem);
+            decimal currentPrice = clotheItem.Price;
+            decimal? currentOldPrice = clotheItem.OldPrice;
+
+            mapper.Map(clotheUpdateDTO, clotheItem);
+
+            if (clotheItem.Price < currentPrice)
+            {
+                if (!currentOldPrice.HasValue) clotheItem.OldPrice = currentPrice;
+            }
+            else if (clotheItem.Price >= currentOldPrice)
+            {
+                clotheItem.OldPrice = null;
+            }
 
             unitOfWork.ClotheItems.Update(clotheItem);
             await unitOfWork.SaveChangesAsync(cancellationToken);
@@ -251,6 +267,7 @@ namespace Clothy.CatalogService.BLL.Services
             await publishEndpoint.Publish(clotheItemUpdatedEvent, cancellationToken);
             await cacheInvalidatonClotheStock.InvalidateAllAsync();
             await filterCacheInvalidationService.InvalidateAsync();
+            await cacheService.RemoveAsync("clothe:top8_most_popular");
 
             return await GetDetailByIdAsync(clotheItem.Id, cancellationToken);
         }
@@ -283,12 +300,29 @@ namespace Clothy.CatalogService.BLL.Services
 
             await cacheInvalidatonClotheStock.InvalidateAllAsync();
             await filterCacheInvalidationService.InvalidateAsync();
+            await cacheService.RemoveAsync("clothe:top8_most_popular");
 
             ClotheItemDeletedEvent clotheItemDeletedEvent = new ClotheItemDeletedEvent
             {
                 ClotheId = id,
             };
             await publishEndpoint.Publish(clotheItemDeletedEvent, cancellationToken);
+        }
+
+        public async Task<List<ClotheSummaryDTO>?> GetTop8MostPopularAsync(CancellationToken cancellationToken = default)
+        {
+            string cacheKey = "clothe:top8_most_popular";
+
+            return await cacheService.GetOrSetAsync(
+                cacheKey,
+                async () =>
+                {
+                    List<ClotheItem> clotheItems = await unitOfWork.ClothePopularity.GetTop8MostPopularAsync(cancellationToken);
+                    return mapper.Map<List<ClotheSummaryDTO>>(clotheItems);
+                },
+                MEMORY_TTL_CLOTHE_PAGE,
+                REDIS_TTL_CLOTHE_PAGE
+            );
         }
     }
 }

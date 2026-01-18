@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Clothy.CatalogService.DAL.UOW;
-using Clothy.CatalogService.Domain.Entities;
+using Clothy.CatalogService.Domain.Entities.Catalog;
+using Clothy.CatalogService.Domain.Entities.Clothe;
+using Clothy.CatalogService.Domain.Entities.Stock;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 
@@ -133,6 +135,7 @@ namespace Clothy.CatalogService.gRPC.Server.Services
 
                         response.ColorHexCode = color.HexCode;
                         response.SizeName = size.Name;
+                        response.ColorName = color.Name;
 
                         logger.LogInformation("Successfully validated item: ClotheId={ClotheId}, ColorId={ColorId}, SizeId={SizeId}", clotheId, colorId, sizeId);
                     }

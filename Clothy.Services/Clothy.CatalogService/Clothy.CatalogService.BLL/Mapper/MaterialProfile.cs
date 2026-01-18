@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Clothy.CatalogService.BLL.DTOs.MaterialDTOs;
-using Clothy.CatalogService.Domain.Entities;
+using Clothy.CatalogService.Domain.Entities.Catalog;
 
 namespace Clothy.CatalogService.BLL.Mapper
 {

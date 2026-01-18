@@ -33,7 +33,6 @@ namespace Clothy.OrderService.SeedData.Seeders
                 OrderStatus status = new OrderStatus
                 {
                     Name = statusName,
-                    IconUrl = faker.Image.PicsumUrl(),
                     CreatedAt = faker.Date.Past(5).ToUniversalTime(),
                     UpdatedAt = faker.Date.Recent(30).ToUniversalTime()
                 };

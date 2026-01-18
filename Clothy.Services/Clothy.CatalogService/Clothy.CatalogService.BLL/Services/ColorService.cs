@@ -9,7 +9,7 @@ using Clothy.CatalogService.BLL.DTOs.ColorDTOs;
 using Clothy.CatalogService.BLL.Exceptions;
 using Clothy.CatalogService.BLL.Interfaces;
 using Clothy.CatalogService.DAL.UOW;
-using Clothy.CatalogService.Domain.Entities;
+using Clothy.CatalogService.Domain.Entities.Catalog;
 using Clothy.Shared.Helpers.Exceptions;
 
 namespace Clothy.CatalogService.BLL.Services
@@ -49,8 +49,11 @@ namespace Clothy.CatalogService.BLL.Services
 
         public async Task<ColorReadDTO> CreateAsync(ColorCreateDTO colorCreateDTO, CancellationToken cancellationToken = default)
         {
-            bool exists = await unitOfWork.Colors.IsNameAlreadyExistsAsync(colorCreateDTO.HexCode, null, cancellationToken);
+            bool exists = await unitOfWork.Colors.IsHexAlreadyExistsAsync(colorCreateDTO.HexCode, null, cancellationToken);
             if (exists) throw new AlreadyExistsException($"Color with hex code {colorCreateDTO.HexCode} already exists");
+
+            exists = await unitOfWork.Colors.IsNameAlreadyExistsAsync(colorCreateDTO.Name, null, cancellationToken);
+            if (exists) throw new AlreadyExistsException($"Color with name {colorCreateDTO.Name} already exists");
 
             Color color = mapper.Map<Color>(colorCreateDTO);
             await unitOfWork.Colors.AddAsync(color, cancellationToken);
@@ -65,8 +68,11 @@ namespace Clothy.CatalogService.BLL.Services
             Color? color = await unitOfWork.Colors.GetByIdAsync(id, cancellationToken);
             if (color == null) throw new NotFoundException($"Color not found with ID: {id}");
 
-            bool exists = await unitOfWork.Colors.IsNameAlreadyExistsAsync(colorUpdateDTO.HexCode, id, cancellationToken);
+            bool exists = await unitOfWork.Colors.IsHexAlreadyExistsAsync(colorUpdateDTO.HexCode, id, cancellationToken);
             if (exists) throw new AlreadyExistsException($"Color with hex code {colorUpdateDTO.HexCode} already exists");
+
+            exists = await unitOfWork.Colors.IsNameAlreadyExistsAsync(colorUpdateDTO.Name, id, cancellationToken);
+            if (exists) throw new AlreadyExistsException($"Color with name {colorUpdateDTO.Name} already exists");
 
             mapper.Map(colorUpdateDTO, color);
 

@@ -18,12 +18,18 @@ namespace Clothy.Aggregator.API.Controllers
             this.logger = logger;
         }
 
+        /// <summary>
+        /// Get detailed aggregated information about a specific clothing item.
+        /// </summary>
+        /// <param name="clotheId">ID of the clothing item.</param>
+        /// <param name="cancelletionToken">Cancellation token.</param>
+        /// <returns>Full details of the clothing item.</returns>
         [HttpGet("{clotheId}")]
-        public async Task<ActionResult<ClotheDetailFullDTO>> GetClotheFullDetail(Guid clotheId, CancellationToken ct)
+        public async Task<ActionResult<ClotheDetailFullDTO>> GetClotheFullDetail(Guid clotheId, CancellationToken cancelletionToken)
         {
             logger.LogInformation("Starting getting detailed aggregated information on clothing with ID: {Id}", clotheId);
 
-            ClotheDetailFullDTO? result = await aggregatorService.GetFullClotheDetailAsync(clotheId, ct);
+            ClotheDetailFullDTO? result = await aggregatorService.GetFullClotheDetailAsync(clotheId, cancelletionToken);
             return Ok(result);
         }
     }
