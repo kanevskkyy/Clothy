@@ -96,6 +96,7 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                 Id = pair.Key.Id.ToString(),
                 Name = pair.Key.Name,
                 HexCode = pair.Key.HexCode,
+                Slug = pair.Key.Slug,
                 ClotheItemCount = pair.Value
             }).ToList();
         }
@@ -106,7 +107,8 @@ namespace Clothy.CatalogService.gRPC.Server.Services
             {
                 Id = pair.Key.Id.ToString(),
                 Name = pair.Key.Name,
-                ClotheItemCount = pair.Value
+                ClotheItemCount = pair.Value,
+                Slug = pair.Key.Slug
             }).ToList();
         }
 
@@ -115,7 +117,8 @@ namespace Clothy.CatalogService.gRPC.Server.Services
             return sizes.Select(size => new SizesGrpcResponse
             {
                 Id = size.Id.ToString(),
-                Name = size.Name
+                Name = size.Name,
+                Slug = size.Slug
             }).ToList();
         }   
 
@@ -125,7 +128,8 @@ namespace Clothy.CatalogService.gRPC.Server.Services
             {
                 Id = pair.Key.Id.ToString(),
                 Name = pair.Key.Name,
-                ClotheItemCount = pair.Value
+                ClotheItemCount = pair.Value,
+                Slug = pair.Key.Slug
             }).ToList();
         }
 

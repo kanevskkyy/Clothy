@@ -11,6 +11,7 @@ namespace Clothy.CatalogService.BLL.DTOs.ColorDTOs
         public Guid Id { get; set; }
         public string? Name { get; set; }
         public string? HexCode { get; set; }
+        public string? Slug { get; set; }
         public int ClotheItemCount { get; set; }
     }
 }

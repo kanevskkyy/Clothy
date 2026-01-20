@@ -18,7 +18,14 @@ namespace Clothy.CatalogService.BLL.FluentValidation.ClothingTypeValidation
 
             RuleFor(x => x.Slug)
                 .NotEmpty().WithMessage("Slug is required.")
-                .MaximumLength(100).WithMessage("Slug must be at most 100 characters.");
+                .MaximumLength(100).WithMessage("Slug must be at most 100 characters.")
+                .Must(IsLowercase).WithMessage("Slug must be lowercase.")
+                .Matches(@"^[a-z0-9]+(-[a-z0-9]+)*$").WithMessage("Slug can contain only letters, numbers, and single dashes, cannot start or end with a dash, or contain consecutive dashes.");
+        }
+
+        private bool IsLowercase(string slug)
+        {
+            return slug == slug.ToLowerInvariant();
         }
     }
 }

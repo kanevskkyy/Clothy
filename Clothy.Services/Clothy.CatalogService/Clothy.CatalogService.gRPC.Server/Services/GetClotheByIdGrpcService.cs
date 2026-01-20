@@ -47,7 +47,7 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                     logger.LogWarning("Clothe item ID invalid GUID format: {ClotheId}", clotheItemId);
                     throw new RpcException(new Status(StatusCode.Internal, $"Clothe item ID invalid GUID format: {clotheItemId}"));
                 }
-                ClotheDetailDTO? clotheItem = await clotheService.GetDetailByIdAsync(clotheItemId, context.CancellationToken); 
+                ClotheDetailDTO? clotheItem = await clotheService.GetDetailByIdAsync(clotheItemId, context.CancellationToken);
                 if (clotheItem == null)
                 {
                     logger.LogWarning("Clothe with Id {ClotheId} not found", clotheItemId);
@@ -109,23 +109,25 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                     Size = new SizeGrpc
                     {
                         Id = s?.Size?.Id.ToString(),
-                        Name = s?.Size?.Name
+                        Name = s?.Size?.Name,
+                        Slug = s?.Size?.Slug
                     },
                     Color = new ColorGrpc
                     {
                         Id = s?.Color?.Id.ToString(),
                         HexCode = s?.Color?.HexCode,
-                        Name = s?.Color?.Name
+                        Name = s?.Color?.Name,
+                        Slug = s?.Color?.Slug
                     }
                 }));
-                logger.LogInformation("Successfully fetched Clothe details for Id: {ClotheId}", clotheItemId);
+                logger.LogInformation("Successfully fetched Clothe details with ID: {ID}", request.Id);
 
                 return clotheDetailGrpcResponse;
 
             }
             catch (RpcException)
             {
-                throw; 
+                throw;
             }
             catch (OperationCanceledException)
             {

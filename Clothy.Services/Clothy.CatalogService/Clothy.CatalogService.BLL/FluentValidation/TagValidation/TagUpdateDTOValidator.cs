@@ -15,6 +15,17 @@ namespace Clothy.CatalogService.BLL.FluentValidation.TagValidation
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Tag name is required.")
                 .MaximumLength(50).WithMessage("Tag name must be at most 50 characters.");
+
+            RuleFor(x => x.Slug)
+                .NotEmpty().WithMessage("Tag slug is required.")
+                .MaximumLength(100).WithMessage("Tag slug must be at most 100 characters.")
+                .Must(IsLowercase).WithMessage("Tag slug must be lowercase.")
+                .Matches(@"^[a-z0-9]+(-[a-z0-9]+)*$").WithMessage("Tag slug can contain only letters, numbers, and single dashes, cannot start or end with a dash, or contain consecutive dashes.");
+        }
+
+        private bool IsLowercase(string slug)
+        {
+            return slug == slug.ToLowerInvariant();
         }
     }
 }

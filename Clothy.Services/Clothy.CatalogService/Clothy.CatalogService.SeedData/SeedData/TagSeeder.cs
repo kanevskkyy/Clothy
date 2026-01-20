@@ -43,7 +43,8 @@ namespace Clothy.CatalogService.SeedData.SeedData
                 {
                     Id = Guid.NewGuid(),
                     CreatedAt = faker.Date.Past(2).ToUniversalTime(),
-                    Name = tagName
+                    Name = tagName,
+                    Slug = tagName.ToLower()
                 };
 
                 tags.Add(tag);

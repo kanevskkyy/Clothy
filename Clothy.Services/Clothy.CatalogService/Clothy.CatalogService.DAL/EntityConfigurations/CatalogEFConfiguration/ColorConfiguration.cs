@@ -21,6 +21,10 @@ namespace Clothy.CatalogService.DAL.EntityConfigurations.CatalogEFConfiguration
                 .IsRequired()
                 .HasMaxLength(20);
 
+            builder.Property(property => property.Slug)
+                .IsRequired()
+                .HasMaxLength(40);
+
             builder.Property(property => property.HexCode)
                 .IsRequired()
                 .HasColumnName("hexcode")
@@ -41,6 +45,9 @@ namespace Clothy.CatalogService.DAL.EntityConfigurations.CatalogEFConfiguration
                 .IsUnique();
 
             builder.HasIndex(property => property.Name)
+                .IsUnique();
+
+            builder.HasIndex(property => property.Slug)
                 .IsUnique();
 
             builder.HasMany(property => property.PhotoClothes) 

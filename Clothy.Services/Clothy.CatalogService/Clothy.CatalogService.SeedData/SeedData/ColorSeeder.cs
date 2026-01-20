@@ -16,31 +16,32 @@ namespace Clothy.CatalogService.SeedData.SeedData
         {
             if (await context.Colors.AnyAsync()) return;
 
-            List<(string Name, string Hex)> colorsData = new List<(string Name, string Hex)>
+            List<(string Name, string slug, string Hex)> colorsData = new List<(string Name, string slug, string Hex)>
             {
-                ("Red", "#FF5733"),
-                ("Green", "#33FF57"),
-                ("Blue", "#3357FF"),
-                ("Yellow", "#F1C40F"),
-                ("Purple", "#9B59B6"),
-                ("Turquoise", "#1ABC9C"),
-                ("Orange", "#E67E22"),
-                ("Silver", "#BDC3C7"),
-                ("Dark Blue", "#2C3E50"),
-                ("White", "#ECF0F1")
+                ("Red", "red", "#FF5733"),
+                ("Green", "green", "#33FF57"),
+                ("Blue", "blue", "#3357FF"),
+                ("Yellow", "yellow", "#F1C40F"),
+                ("Purple", "purple", "#9B59B6"),
+                ("Turquoise", "turquoise", "#1ABC9C"),
+                ("Orange", "orange", "#E67E22"),
+                ("Silver", "silver", "#BDC3C7"),
+                ("Dark Blue", "dark-blue", "#2C3E50"),
+                ("White", "white", "#ECF0F1")
             };
 
             Faker faker = new Faker();
             List<Color> colors = new();
 
-            foreach ((string name, string hex) in colorsData)
+            foreach ((string name, string slug, string hex) in colorsData)
             {
                 colors.Add(new Color
                 {
                     Id = Guid.NewGuid(),
                     CreatedAt = faker.Date.Past(2).ToUniversalTime(),
                     Name = name,
-                    HexCode = hex
+                    HexCode = hex,
+                    Slug = slug
                 });
             }
 

@@ -51,7 +51,7 @@ namespace Clothy.CatalogService.BLL.Services
                         ClotheId = stockNotification.Stock!.ClotheId,
                         ClotheName = stockNotification.Stock!.Clothe!.Name,
                         Size = stockNotification.Stock!.Size!.Name,
-                        Color = stockNotification.Stock!.Color!.HexCode,
+                        Color = stockNotification.Stock!.Color!.Name,
                     };
                     await publishEndpoint.Publish(clotheStockUpdatedEvent, cancellationToken);
 

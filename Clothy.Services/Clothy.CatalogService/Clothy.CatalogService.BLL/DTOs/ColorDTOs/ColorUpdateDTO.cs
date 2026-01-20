@@ -10,5 +10,6 @@ namespace Clothy.CatalogService.BLL.DTOs.ColorDTOs
     {
         public string? Name { get; set; }
         public string? HexCode { get; set; }
+        public string? Slug { get; set; }
     }
 }

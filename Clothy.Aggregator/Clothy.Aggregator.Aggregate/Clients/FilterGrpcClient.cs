@@ -68,6 +68,7 @@ namespace Clothy.Aggregator.Aggregate.Clients
                             Id = color.Id,
                             Name = color.Name,
                             HexCode = color.HexCode,
+                            Slug = color.Slug,
                             ClotheItemCount = color.ClotheItemCount
                         }).ToList(),
 
@@ -75,19 +76,22 @@ namespace Clothy.Aggregator.Aggregate.Clients
                         {
                             Id = material.Id,
                             Name = material.Name,
-                            ClotheItemCount = material.ClotheItemCount
+                            ClotheItemCount = material.ClotheItemCount,
+                            Slug = material.Slug
                         }).ToList(),
 
                         Sizes = gRPCresponse.Sizes.Select(size => new SizesGrpcResponse
                         {
                             Id = size.Id,
-                            Name = size.Name
+                            Name = size.Name,
+                            Slug = size.Slug
                         }).ToList(),
 
                         Tags = gRPCresponse.Tags.Select(tag => new TagsGrpcResponse
                         {
                             Id = tag.Id,
                             Name = tag.Name,
+                            Slug = tag.Slug,
                             ClotheItemCount = tag.ClotheItemCount
                         }).ToList(),
 

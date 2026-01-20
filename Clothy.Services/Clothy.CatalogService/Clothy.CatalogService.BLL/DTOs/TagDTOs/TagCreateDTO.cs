@@ -8,6 +8,7 @@ namespace Clothy.CatalogService.BLL.DTOs.TagDTOs
 {
     public class TagCreateDTO
     {
-        public string Name { get; set; }
+        public string? Name { get; set; }
+        public string? Slug { get; set; }
     }
 }

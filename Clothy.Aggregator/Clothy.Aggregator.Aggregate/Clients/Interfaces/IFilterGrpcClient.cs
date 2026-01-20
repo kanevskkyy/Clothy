@@ -9,6 +9,6 @@ namespace Clothy.Aggregator.Aggregate.Clients.Interfaces
 {
     public interface IFilterGrpcClient
     {
-        Task<ClotheFiltersDTO?> GetAllFiltersAsync(CancellationToken ct);
+        Task<ClotheFiltersDTO?> GetAllFiltersAsync(CancellationToken cancelletionToken = default);
     }
 }

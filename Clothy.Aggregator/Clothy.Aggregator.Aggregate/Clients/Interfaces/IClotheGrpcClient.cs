@@ -8,6 +8,6 @@ namespace Clothy.Aggregator.Aggregate.Clients.Interfaces
 {
     public interface IClotheGrpcClient
     {
-        Task<ClotheDetailGrpcResponse> GetClotheByIdAsync(string id);
+        Task<ClotheDetailGrpcResponse> GetClotheByIdAsync(string id, CancellationToken cancellationToken = default);
     }
 }

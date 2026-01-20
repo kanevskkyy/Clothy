@@ -53,6 +53,18 @@ public static class Extensions
             .WriteTo.Console()
         );
 
+        builder.Services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(policy =>
+            {
+                policy
+                    .WithOrigins(Environment.GetEnvironmentVariable("FRONTEND_URL") ?? "http://localhost:3000")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
+        });
+
+
         // REDIS CONFIGURATION
         builder.Services.AddMemoryCache();
         builder.Services.AddCaching();
@@ -105,6 +117,7 @@ public static class Extensions
 
     public static WebApplication UseServiceDefaults(this WebApplication app)
     {
+        app.UseCors();
         app.UseCorrelationId();
         app.UseServiceLogging();
         app.MapDefaultEndpoints();

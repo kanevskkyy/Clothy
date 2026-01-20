@@ -12,6 +12,14 @@ namespace Clothy.CatalogService.BLL.FluentValidation.FilterValidation
     {
         public ClotheItemSpecificationParametersValidator()
         {
+            RuleFor(x => x.PageNumber)
+                .GreaterThanOrEqualTo(1)
+                .WithMessage("Page number cannot be negative!");
+
+            RuleFor(x => x.PageSize)
+                .GreaterThanOrEqualTo(1)
+                .WithMessage("Page size cannot be less than 1!");
+
             RuleFor(x => x.MinPrice)
                 .GreaterThanOrEqualTo(0)
                 .When(x => x.MinPrice.HasValue)

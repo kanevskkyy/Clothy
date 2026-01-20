@@ -9,6 +9,6 @@ namespace Clothy.Aggregator.Aggregate.Services.Interfaces
 {
     public interface IClotheAggregateService
     {
-        Task<ClotheDetailFullDTO> GetFullClotheDetailAsync(Guid clotheId, CancellationToken cancellationToken = default);
+        Task<ClotheDetailFullDTO> GetFullClotheDetailAsync(Guid id, CancellationToken cancellationToken = default);
     }
 }

@@ -16,10 +16,21 @@ namespace Clothy.CatalogService.BLL.FluentValidation.ColorValidation
                 .NotEmpty().WithMessage("Color name is required.")
                 .MaximumLength(20).WithMessage("Color name must be at most 20 characters.");
 
+            RuleFor(x => x.Slug)
+                .NotEmpty().WithMessage("Slug is required.")
+                .MaximumLength(40).WithMessage("Slug cannot exceed 40 characters.")
+                .Must(IsLowercase).WithMessage("Slug must be lowercase.")
+                .Matches(@"^[a-z0-9]+(-[a-z0-9]+)*$").WithMessage("Slug can contain only letters, numbers, and single dashes, cannot start or end with a dash, or contain consecutive dashes.");
+
             RuleFor(x => x.HexCode)
                 .NotEmpty().WithMessage("Hex code is required.")
                 .MaximumLength(7).WithMessage("Hex code must be at most 7 characters.")
                 .Matches("^#[0-9A-Fa-f]{6}$").WithMessage("Hex code must be a valid color code (e.g. #A1B2C3).");
+        }
+
+        private bool IsLowercase(string slug)
+        {
+            return slug == slug.ToLowerInvariant();
         }
     }
 }

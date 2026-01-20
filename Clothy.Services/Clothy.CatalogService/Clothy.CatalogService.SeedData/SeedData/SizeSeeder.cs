@@ -35,7 +35,8 @@ namespace Clothy.CatalogService.SeedData.SeedData
                 {
                     Id = Guid.NewGuid(),
                     CreatedAt = faker.Date.Past(2).ToUniversalTime(),
-                    Name = sizeName
+                    Name = sizeName,
+                    Slug = sizeName.ToLower()
                 };
 
                 sizes.Add(size);

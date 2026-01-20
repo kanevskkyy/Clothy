@@ -13,13 +13,26 @@ namespace Clothy.CatalogService.DAL.Specification
     {
         public ClotheItemSpecification(ClotheItemSpecificationParameters parameters)
         {
-            Query.Include(property => property.Stocks);
-            Query.Include(property => property.ClotheTags);
+            Query.Include(property => property.Stocks)
+                .ThenInclude(property => property.Size);
+
+            Query.Include(property => property.Stocks)
+                .ThenInclude(property => property.Color);
+
+            Query.Include(property => property.ClotheTags)
+                .ThenInclude(property => property.Tag);
+            
             Query.Include(property => property.ClothyType);
+            
             Query.Include(property => property.Collection);
+            
             Query.Include(property => property.Brand);
+            
             Query.Include(property => property.Photos)
                 .ThenInclude(property => property.Color);
+
+            Query.Include(property => property.ClotheMaterials)
+                .ThenInclude(property => property.Material);
 
             if (!string.IsNullOrEmpty(parameters.Name))
             {
@@ -45,29 +58,39 @@ namespace Clothy.CatalogService.DAL.Specification
                 Query.Where(property => property.Price <= parameters.MaxPrice.Value);
             }
 
-            if (parameters.BrandIds != null && parameters.BrandIds.Any())
+            if (parameters.Brands != null && parameters.Brands.Any())
             {
-                Query.Where(property => parameters.BrandIds.Contains(property.BrandId.Value));
+                Query.Where(property => parameters.Brands.Contains(property.Brand.Slug));
             }
 
-            if (parameters.CollectionIds != null && parameters.CollectionIds.Any())
+            if (parameters.Collections != null && parameters.Collections.Any())
             {
-                Query.Where(property => parameters.CollectionIds.Contains(property.CollectionId.Value));
+                Query.Where(property => parameters.Collections.Contains(property.Collection.Slug));
             }
 
-            if (parameters.ClothingTypeIds != null && parameters.ClothingTypeIds.Any())
+            if (parameters.ClothingTypes != null && parameters.ClothingTypes.Any())
             {
-                Query.Where(property => parameters.ClothingTypeIds.Contains(property.ClothingTypeId.Value));
+                Query.Where(property => parameters.ClothingTypes.Contains(property.ClothyType.Slug));
             }
 
-            if (parameters.SizeIds != null && parameters.SizeIds.Any())
+            if (parameters.Sizes != null && parameters.Sizes.Any())
             {
-                Query.Where(property => property.Stocks.Any(s => parameters.SizeIds.Contains(s.SizeId)));
+                Query.Where(property => property.Stocks.Any(size => parameters.Sizes.Contains(size.Size.Slug)));
             }
 
-            if (parameters.TagIds != null && parameters.TagIds.Any())
+            if (parameters.Colors != null && parameters.Colors.Any())
             {
-                Query.Where(property => property.ClotheTags.Any(ct => parameters.TagIds.Contains(ct.TagId)));
+                Query.Where(property => property.Stocks.Any(color => parameters.Colors.Contains(color.Color.Slug)));
+            }
+
+            if (parameters.Tags != null && parameters.Tags.Any())
+            {
+                Query.Where(property => property.ClotheTags.Any(clotheTags => parameters.Tags.Contains(clotheTags.Tag.Slug)));
+            }
+
+            if (parameters.Materials != null && parameters.Materials.Any())
+            {
+                Query.Where(property => property.ClotheMaterials.Any(clotheMaterials => parameters.Materials.Contains(clotheMaterials.Material.Slug)));
             }
 
             if (!string.IsNullOrEmpty(parameters.SortBy))

@@ -47,6 +47,9 @@ namespace Clothy.CatalogService.BLL.Services
             bool exists = await unitOfWork.Sizes.IsNameAlreadyExistsAsync(sizeCreateDTO.Name, null, cancellationToken);
             if (exists) throw new AlreadyExistsException("Size with this name already exists");
 
+            exists = await unitOfWork.Sizes.IsSlugAlreadyExistsAsync(sizeCreateDTO.Slug, null, cancellationToken);
+            if (exists) throw new AlreadyExistsException("Size with this slug already exists");
+
             Size size = mapper.Map<Size>(sizeCreateDTO);
             await unitOfWork.Sizes.AddAsync(size, cancellationToken);
             await unitOfWork.SaveChangesAsync(cancellationToken);
@@ -62,6 +65,9 @@ namespace Clothy.CatalogService.BLL.Services
 
             bool exists = await unitOfWork.Sizes.IsNameAlreadyExistsAsync(sizeUpdateDTO.Name, id, cancellationToken);
             if (exists) throw new AlreadyExistsException("Size with this name already exists");
+
+            exists = await unitOfWork.Sizes.IsSlugAlreadyExistsAsync(sizeUpdateDTO.Slug, id, cancellationToken);
+            if (exists) throw new AlreadyExistsException("Size with this slug already exists");
 
             mapper.Map(sizeUpdateDTO, size);
 

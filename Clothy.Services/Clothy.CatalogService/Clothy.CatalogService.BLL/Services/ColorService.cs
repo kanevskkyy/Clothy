@@ -55,6 +55,9 @@ namespace Clothy.CatalogService.BLL.Services
             exists = await unitOfWork.Colors.IsNameAlreadyExistsAsync(colorCreateDTO.Name, null, cancellationToken);
             if (exists) throw new AlreadyExistsException($"Color with name {colorCreateDTO.Name} already exists");
 
+            exists = await unitOfWork.Colors.IsSlugAlreadyExistsAsync(colorCreateDTO.Slug, null, cancellationToken);
+            if (exists) throw new AlreadyExistsException($"Color with slug {colorCreateDTO.Slug} already exists");
+
             Color color = mapper.Map<Color>(colorCreateDTO);
             await unitOfWork.Colors.AddAsync(color, cancellationToken);
             await unitOfWork.SaveChangesAsync(cancellationToken);
@@ -73,6 +76,9 @@ namespace Clothy.CatalogService.BLL.Services
 
             exists = await unitOfWork.Colors.IsNameAlreadyExistsAsync(colorUpdateDTO.Name, id, cancellationToken);
             if (exists) throw new AlreadyExistsException($"Color with name {colorUpdateDTO.Name} already exists");
+
+            exists = await unitOfWork.Colors.IsSlugAlreadyExistsAsync(colorUpdateDTO.Slug, id, cancellationToken);
+            if (exists) throw new AlreadyExistsException($"Color with slug {colorUpdateDTO.Slug} already exists");
 
             mapper.Map(colorUpdateDTO, color);
 

@@ -20,7 +20,9 @@ namespace Clothy.CatalogService.BLL.Services
         private IMapper mapper;
         private IFilterCacheInvalidationService filterCacheInvalidationService;
 
-        public TagService(IUnitOfWork unitOfWork, IMapper mapper, IFilterCacheInvalidationService filterCacheInvalidationService)
+        public TagService(IUnitOfWork unitOfWork, 
+            IMapper mapper, 
+            IFilterCacheInvalidationService filterCacheInvalidationService)
         {
             this.filterCacheInvalidationService = filterCacheInvalidationService;
             this.unitOfWork = unitOfWork;
@@ -54,8 +56,10 @@ namespace Clothy.CatalogService.BLL.Services
         public async Task<TagReadDTO> CreateAsync(TagCreateDTO tagCreateDTO, CancellationToken cancellationToken = default)
         {
             bool exists = await unitOfWork.Tags.IsNameAlreadyExistsAsync(tagCreateDTO.Name, null, cancellationToken);
-
             if (exists) throw new AlreadyExistsException("Tag with this name already exists");
+
+            exists = await unitOfWork.Tags.IsSlugAlreadyExistsAsync(tagCreateDTO.Slug, null, cancellationToken);
+            if (exists) throw new AlreadyExistsException("Tag with slug already exists");
 
             Tag tag = mapper.Map<Tag>(tagCreateDTO);
             await unitOfWork.Tags.AddAsync(tag, cancellationToken);
@@ -72,7 +76,10 @@ namespace Clothy.CatalogService.BLL.Services
 
             bool exists = await unitOfWork.Tags.IsNameAlreadyExistsAsync(tagUpdateDTO.Name, id, cancellationToken);
             if (exists) throw new AlreadyExistsException("Tag with this name already exists");
-            
+
+            exists = await unitOfWork.Tags.IsSlugAlreadyExistsAsync(tagUpdateDTO.Slug, id, cancellationToken);
+            if (exists) throw new AlreadyExistsException("Tag with slug already exists");
+
             mapper.Map(tagUpdateDTO, tag);
 
             unitOfWork.Tags.Update(tag);
