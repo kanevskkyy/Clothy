@@ -1,0 +1,37 @@
+.carouselContainer {
+    padding: 2rem 0;
+    overflow: hidden;
+    background: #FAFAFA;
+    border-bottom: 2px solid #E8E6E3;
+    width: 100%;
+}
+
+.swiper {
+    width: 100%;
+}
+
+.slide {
+    width: auto !important;
+}
+
+.brandItem {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+}
+
+.brandItem span {
+    font-size: 22px;
+    font-weight: 600;
+    color: #161616;
+    text-transform: capitalize;
+    white-space: nowrap;
+    letter-spacing: -0.5px;
+}
+
+@media (max-width: 768px) {
+    .brandItem span {
+        font-size: 18px;
+    }
+}

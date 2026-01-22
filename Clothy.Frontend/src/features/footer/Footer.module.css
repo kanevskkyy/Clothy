@@ -1,0 +1,134 @@
+.footer {
+    background-color: #0C0C0C;
+    color: #ffffff;
+    margin-top: 80px;
+    border-top: 2px solid #2a2a2a;
+}
+
+.container {
+    max-width: 1740px;
+    margin: 0 auto;
+    padding: 64px 30px 32px;
+}
+
+.grid {
+    display: flex;
+    justify-content: center;
+    gap: 80px;
+    margin-bottom: 48px;
+}
+
+@media (max-width: 768px) {
+    .grid {
+        flex-direction: column;
+        gap: 40px;
+        margin-bottom: 40px;
+    }
+
+    .container {
+        padding: 48px 16px 24px;
+    }
+}
+
+.brandSection {
+    flex: 2;
+    max-width: 400px;
+}
+
+.brandTitle {
+    font-size: 22px;
+    font-weight: 600;
+    color: #fff;
+    text-decoration: none;
+    letter-spacing: -0.3px;
+    margin-bottom: 16px;
+    display: inline-block;
+    transition: color 0.2s;
+}
+
+.brandTitle:hover {
+    color: #faf0f0;
+}
+
+.brandDescription {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 15px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+    font-weight: 400;
+}
+
+.socialLinks {
+    display: flex;
+    gap: 8px;
+}
+
+.socialLink {
+    background: none;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: background 0.2s, color 0.2s;
+    color: #fff;
+    text-decoration: none;
+}
+
+.socialLink:hover {
+    background: #2a2a2a;
+    color: #faf0f0;
+}
+
+.section {
+    flex: 1;
+}
+
+.sectionTitle {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: #fff;
+}
+
+.list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.listItem {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 15px;
+    margin-bottom: 10px;
+    font-weight: 400;
+}
+
+.link {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: color 0.2s;
+    font-weight: 400;
+}
+
+.link:hover {
+    color: #ffffff;
+}
+
+@media (max-width: 380px) {
+    .container {
+        padding: 40px 12px 20px;
+    }
+
+    .brandTitle {
+        font-size: 20px;
+    }
+
+    .brandDescription,
+    .listItem,
+    .link {
+        font-size: 14px;
+    }
+}

@@ -1,0 +1,92 @@
+.section {
+    padding: 10px 0;
+}
+
+.banner {
+    position: relative;
+    overflow: hidden;
+    border-radius: 24px;
+    background: linear-gradient(90deg,rgba(26, 15, 15, 1) 13%, rgba(24, 33, 24, 1) 52%, rgba(28, 25, 20, 1) 88%);
+    color: #ffffff;
+    padding: 40px;
+}
+
+@media(max-width: 1024px) {
+    .banner {
+        margin: 0 10px;
+    }
+}
+
+@media (min-width: 768px) {
+    .banner {
+        padding: 64px;
+    }
+}
+
+.content {
+    position: relative;
+    z-index: 2;
+    max-width: 520px;
+}
+.badge {
+    display: inline-block;
+    background: #ffffff;
+    color: #111827;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 6px 16px;
+    border-radius: 9999px;
+    margin-bottom: 24px;
+}
+
+.title {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+@media (min-width: 768px) {
+    .title {
+        font-size: 48px;
+    }
+}
+
+.description {
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 32px;
+    line-height: 1.6;
+}
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #ffffff;
+    color: #111827;
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.button:hover {
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateY(-1px);
+}
+
+.icon {
+    width: 20px;
+    height: 20px;
+}
+
+.gradientOverlay {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    opacity: 0.1;
+    background: linear-gradient(to right, #111827, transparent);
+}

@@ -22,8 +22,6 @@ namespace Clothy.CatalogService.BLL.DTOs.ClotheDTOs
             : null;
 
         public BrandReadDTO? Brand { get; set; }
-        public ClothingTypeReadDTO? ClothyType { get; set; }
-        public CollectionReadDTO? Collection { get; set; }
         public List<ClotheColorSummaryDTO> Colors { get; set; } = new();
 
         public bool IsAvailable { get; set; }
