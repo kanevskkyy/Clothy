@@ -33,20 +33,6 @@ namespace Clothy.CatalogService.API.Controllers
         }
 
         /// <summary>
-        /// Get all colors with stock information.
-        /// </summary>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>List of colors including stock info.</returns>
-        [HttpGet("with-stock")]
-        public async Task<ActionResult<IEnumerable<ColorWithCountDTO>>> GetAllWithStock(CancellationToken cancellationToken)
-        {
-            logger.LogInformation("Fetching all colors with stock info.");
-            List<ColorWithCountDTO> colors = await colorService.GetAllWithCountAsync(cancellationToken);
-            
-            return Ok(colors);
-        }
-
-        /// <summary>
         /// Get a specific color by its ID.
         /// </summary>
         /// <param name="id">Color ID (GUID).</param>

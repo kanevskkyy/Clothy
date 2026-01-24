@@ -19,13 +19,6 @@ namespace Clothy.CatalogService.BLL.Mapper
 
             CreateMap<ColorUpdateDTO, Color>()
                 .ForMember(entity => entity.UpdatedAt, map => map.MapFrom(dto => DateTime.UtcNow.ToUniversalTime()));
-
-            CreateMap<KeyValuePair<Color, int>, ColorWithCountDTO>()
-                .ForMember(dto => dto.Id, map => map.MapFrom(pair => pair.Key.Id))
-                .ForMember(dto => dto.Name, map => map.MapFrom(pair => pair.Key.Name))
-                .ForMember(dto => dto.HexCode, map => map.MapFrom(pair => pair.Key.HexCode))
-                .ForMember(dto => dto.Slug, map => map.MapFrom(pair => pair.Key.Slug))
-                .ForMember(dto => dto.ClotheItemCount, map => map.MapFrom(pair => pair.Value));
         }
     }
 }

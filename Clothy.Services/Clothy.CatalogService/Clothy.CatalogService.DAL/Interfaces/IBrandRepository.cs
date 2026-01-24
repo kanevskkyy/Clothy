@@ -9,6 +9,7 @@ namespace Clothy.CatalogService.DAL.Interfaces
 {
     public interface IBrandRepository : IGenericRepository<Brand>
     {
+        Task<Dictionary<Brand, int>> GetBrandsWithStockCountAsync(CancellationToken cancellationToken = default);
         Task<bool> IsNameAlreadyExistsAsync(string name, Guid? id = null, CancellationToken cancellationToken = default);
         Task<bool> IsSlugAlreadyExistsAsync(string slug, Guid? id = null, CancellationToken cancellationToken = default);
     }

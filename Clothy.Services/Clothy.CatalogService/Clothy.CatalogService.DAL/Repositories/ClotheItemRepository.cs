@@ -66,5 +66,32 @@ namespace Clothy.CatalogService.DAL.Repositories
 
             return new PagedList<ClotheItem>(clotheItems, count, parameters.PageNumber, parameters.PageSize);
         }
+
+        public async Task<(int maleCount, int femaleCount, int unisexCount)> GetClotheItemCountByGenderAsync(CancellationToken cancellationToken = default)
+        {
+            int maleCount = await dbSet.Where(property => property.Gender == Gender.Male).CountAsync(cancellationToken);
+            int femaleCount = await dbSet.Where(property => property.Gender == Gender.Female).CountAsync(cancellationToken);
+            int unisexCount = await dbSet.Where(property => property.Gender == Gender.Unisex).CountAsync(cancellationToken);
+
+            return (maleCount, femaleCount, unisexCount);
+        }
+
+        public async Task<ClotheItem?> GetBySlugWithDetailsAsync(string slug, CancellationToken cancellationToken = default)
+        {
+            return await dbSet
+                .Include(property => property.Collection)
+                .Include(property => property.Brand)
+                .Include(property => property.ClothyType)
+                .Include(property => property.Photos)
+                .Include(property => property.Stocks)
+                    .ThenInclude(stock => stock.Color)
+                .Include(property => property.Stocks)
+                    .ThenInclude(stock => stock.Size)
+                .Include(property => property.ClotheTags)
+                    .ThenInclude(property => property.Tag)
+                .Include(property => property.ClotheMaterials)
+                    .ThenInclude(property => property.Material)
+                .FirstOrDefaultAsync(property => property.Slug!.ToLower() == slug.ToLower(), cancellationToken);
+        }
     }
 }

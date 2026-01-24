@@ -31,27 +31,23 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                 throw new RpcException(new Status(StatusCode.InvalidArgument, "Request cannot be null"));
             }
 
-            if (string.IsNullOrWhiteSpace(request.Id))
+            if (string.IsNullOrWhiteSpace(request.Slug))
             {
-                logger.LogWarning("Received null or empty ClotheItemId");
-                throw new RpcException(new Status(StatusCode.InvalidArgument, "ClotheItemId cannot be empty"));
+                logger.LogWarning("Received null or empty Slug");
+                throw new RpcException(new Status(StatusCode.InvalidArgument, "Slug cannot be empty"));
             }
 
-            logger.LogInformation("Starting finding ClotheItemId {ClotheItemId}", request.Id);
+            logger.LogInformation("Starting finding clothe with Slug: {Slug}", request.Slug);
 
             try
             {
                 context.CancellationToken.ThrowIfCancellationRequested();
-                if (!Guid.TryParse(request.Id, out Guid clotheItemId))
-                {
-                    logger.LogWarning("Clothe item ID invalid GUID format: {ClotheId}", clotheItemId);
-                    throw new RpcException(new Status(StatusCode.Internal, $"Clothe item ID invalid GUID format: {clotheItemId}"));
-                }
-                ClotheDetailDTO? clotheItem = await clotheService.GetDetailByIdAsync(clotheItemId, context.CancellationToken);
+
+                ClotheDetailDTO? clotheItem = await clotheService.GetDetailBySlugAsync(request.Slug, context.CancellationToken);
                 if (clotheItem == null)
                 {
-                    logger.LogWarning("Clothe with Id {ClotheId} not found", clotheItemId);
-                    throw new RpcException(new Status(StatusCode.NotFound, $"Clothe with Id {clotheItemId} not found"));
+                    logger.LogWarning("Clothe with slug {Slug} not found", request.Slug);
+                    throw new RpcException(new Status(StatusCode.NotFound, $"Clothe with Slug {request.Slug} not found"));
                 }
                 ClotheDetailGrpcResponse clotheDetailGrpcResponse = new ClotheDetailGrpcResponse
                 {
@@ -60,6 +56,7 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                     Slug = clotheItem.Slug,
                     Description = clotheItem.Description,
                     Price = clotheItem.Price.ToString(),
+                    Gender = clotheItem.Gender.ToString(),
                     Brand = new BrandDetailGrpcResponse
                     {
                         Id = clotheItem?.Brand?.Id.ToString(),
@@ -120,7 +117,7 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                         Slug = s?.Color?.Slug
                     }
                 }));
-                logger.LogInformation("Successfully fetched Clothe details with ID: {ID}", request.Id);
+                logger.LogInformation("Starting finding clothe with Slug: {Slug}", request.Slug);
 
                 return clotheDetailGrpcResponse;
 
@@ -136,7 +133,7 @@ namespace Clothy.CatalogService.gRPC.Server.Services
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Unexpected error while fetching Clothe details for Id {ClotheId}", request.Id);
+                logger.LogError(ex, "Unexpected error while fetching Clothe details for slug {Slug}", request.Slug);
                 throw new RpcException(new Status(StatusCode.Internal, "Internal server error"));
             }
         }

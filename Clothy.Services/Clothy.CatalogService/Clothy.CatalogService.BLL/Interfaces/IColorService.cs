@@ -11,7 +11,6 @@ namespace Clothy.CatalogService.BLL.Interfaces
     {
         Task<ColorReadDTO> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
         Task<List<ColorReadDTO>> GetAllAsync(CancellationToken cancellationToken = default);
-        Task<List<ColorWithCountDTO>> GetAllWithCountAsync(CancellationToken cancellationToken = default);
         Task<ColorReadDTO> CreateAsync(ColorCreateDTO colorCreateDTO, CancellationToken cancellationToken = default);
         Task<ColorReadDTO> UpdateAsync(Guid id, ColorUpdateDTO colorUpdateDTO, CancellationToken cancellationToken = default);
         Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);

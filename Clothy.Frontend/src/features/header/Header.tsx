@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, User, ShoppingBag, Menu, X } from 'lucide-react';
+import { User, ShoppingBag, Menu, X } from 'lucide-react';
 import styles from './Header.module.css';
 
 const Header = () => {
@@ -18,9 +18,8 @@ const Header = () => {
                 </nav>
 
                 <div className={styles.right}>
-                    <Link to="/search" className={styles.iconButton}><Search size={20} /></Link>
-                    <Link to="/account" className={styles.iconButton}><User size={20} /></Link>
                     <Link to="/cart" className={styles.iconButton}><ShoppingBag size={20} /></Link>
+                    <Link to="/account" className={styles.iconButton}><User size={20} /></Link>
 
                     <button className={styles.menuButton} onClick={() => setMenuOpen(!menuOpen)}>
                         {menuOpen ? <X size={24} /> : <Menu size={24} />}

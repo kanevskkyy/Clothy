@@ -5,7 +5,7 @@ service ClotheServiceGrpc {
 }
 
 message ClotheIdGrpcRequest {
-	string id = 1;
+	string slug = 1;
 }
 
 message BrandDetailGrpcResponse {
@@ -71,13 +71,14 @@ message ClotheDetailGrpcResponse {
 	string slug = 3;
 	string description = 4;
 	string price = 5; 
-	optional string oldPrice = 6;
-	optional int32 discountPercentage = 7;
-	BrandDetailGrpcResponse brand = 8;
-	ClothingTypeGrpcResponse clothingType = 9;
-	CollectionGrpcResponse collection = 10;
-	repeated AdditionalPhotoGrpcResponse additionalPhotos = 11;
-	repeated TagGrpcResponse tags = 12;
-	repeated MaterialWithPercentageGrpcResponse materials = 13;
-	repeated ClotheStockGrpcResponse stocks = 14;
+	string gender = 6;
+	optional string oldPrice = 7;
+	optional int32 discountPercentage = 8;
+	BrandDetailGrpcResponse brand = 9;
+	ClothingTypeGrpcResponse clothingType = 10;
+	CollectionGrpcResponse collection = 11;
+	repeated AdditionalPhotoGrpcResponse additionalPhotos = 12;
+	repeated TagGrpcResponse tags = 13;
+	repeated MaterialWithPercentageGrpcResponse materials = 14;
+	repeated ClotheStockGrpcResponse stocks = 15;
 }

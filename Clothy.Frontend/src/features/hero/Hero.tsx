@@ -1,6 +1,6 @@
 import styles from './Hero.module.css';
 import { ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import Button from '../../shared/Button/Button';
 
 const Hero = () => {
     return (
@@ -25,10 +25,12 @@ const Hero = () => {
                         Відкрийте для себе найкращі бренди та актуальні колекції. Ваш ідеальний образ починається тут.
                     </p>
                     <div className={styles.buttons}>
-                        <Link to="/catalog" className={styles.primaryButton}>
+                        <Button
+                            to="/catalog"
+                            icon={<ArrowRight size={20} />}
+                        >
                             Перейти до каталогу
-                            <ArrowRight size={20} />
-                        </Link>
+                        </Button>
                     </div>
                 </div>
             </div>

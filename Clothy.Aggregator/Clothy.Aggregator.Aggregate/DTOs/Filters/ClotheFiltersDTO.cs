@@ -16,5 +16,6 @@ namespace Clothy.Aggregator.Aggregate.DTOs.Filters
         public List<SizesGrpcResponse> Sizes { get; set; } = new();
         public List<TagsGrpcResponse> Tags { get; set; } = new();
         public PriceGrpcResponse PriceRange { get; set; } = new();
+        public GenderGrpcResponse Gender {  get; set; } = new();
     }
 }

@@ -19,12 +19,6 @@ namespace Clothy.CatalogService.BLL.Mapper
 
             CreateMap<TagUpdateDTO, Tag>()
                 .ForMember(entity => entity.UpdatedAt, map => map.MapFrom(dto => DateTime.UtcNow.ToUniversalTime()));
-
-            CreateMap<KeyValuePair<Tag, int>, TagWithCountDTO>()
-                .ForMember(tagWithCount => tagWithCount.Id, map => map.MapFrom(pair => pair.Key.Id))
-                .ForMember(tagWithCount => tagWithCount.Name, map => map.MapFrom(pair => pair.Key.Name))
-                .ForMember(tagWithCount => tagWithCount.Slug, map => map.MapFrom(pair => pair.Key.Slug))
-                .ForMember(tagWithCount => tagWithCount.ClotheItemCount, map => map.MapFrom(pair => pair.Value));
         }
     }
 }

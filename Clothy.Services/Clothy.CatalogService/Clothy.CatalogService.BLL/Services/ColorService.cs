@@ -40,13 +40,6 @@ namespace Clothy.CatalogService.BLL.Services
             return mapper.Map<List<ColorReadDTO>>(await unitOfWork.Colors.GetAllAsync(cancellationToken));
         }
 
-        public async Task<List<ColorWithCountDTO>> GetAllWithCountAsync(CancellationToken cancellationToken = default)
-        {
-            return (await unitOfWork.Colors.GetColorsCountWithStockAsync(cancellationToken))
-                .Select(pair => mapper.Map<ColorWithCountDTO>(pair))
-                .ToList();
-        }
-
         public async Task<ColorReadDTO> CreateAsync(ColorCreateDTO colorCreateDTO, CancellationToken cancellationToken = default)
         {
             bool exists = await unitOfWork.Colors.IsHexAlreadyExistsAsync(colorCreateDTO.HexCode, null, cancellationToken);

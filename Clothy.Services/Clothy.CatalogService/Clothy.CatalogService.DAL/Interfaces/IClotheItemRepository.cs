@@ -15,5 +15,7 @@ namespace Clothy.CatalogService.DAL.Interfaces
         Task<bool> IsSlugAlreadyExistsAsync(string slug, Guid? id = null, CancellationToken cancellationToken = default);
         Task<PagedList<ClotheItem>> GetPagedClotheItemsAsync(ClotheItemSpecificationParameters parameters, CancellationToken cancellationToken = default);
         Task<ClotheItem?> GetByIdWithDetailsAsync(Guid id, CancellationToken cancellationToken = default);
+        Task<ClotheItem?> GetBySlugWithDetailsAsync(string slug, CancellationToken cancellationToken = default);
+        Task<(int maleCount, int femaleCount, int unisexCount)> GetClotheItemCountByGenderAsync(CancellationToken cancellationToken = default);
     }
 }

@@ -23,39 +23,39 @@ namespace Clothy.Aggregator.Aggregate.Services
             this.logger = logger;
         }
 
-        public async Task<ClotheDetailFullDTO> GetFullClotheDetailAsync(Guid clotheId, CancellationToken cancellationToken = default)
+        public async Task<ClotheDetailFullDTO> GetFullClotheDetailAsync(string slug, CancellationToken cancellationToken = default)
         {
-            logger.LogInformation("Starting aggregation for ClotheId: {ClotheId}", clotheId);
+            logger.LogInformation("Starting aggregation for slug: {Slug}", slug);
 
             try
             {
-                var clotheTask = clotheGrpcClient.GetClotheByIdAsync(clotheId.ToString());
-                var reviewsTask = reviewGrpcClient.GetReviewsByClotheIdAsync(clotheId, cancellationToken);
-                var questionsTask = reviewGrpcClient.GetQuestionsAndAnswersByClotheIdAsync(clotheId, cancellationToken);
-                var statsTask = reviewGrpcClient.GetStatisticsByClotheIdAsync(clotheId, cancellationToken);
+                ClotheDetailGrpcResponse clotheInfo = await clotheGrpcClient.GetClotheByIdAsync(slug);
+                
+                var reviewsTask = reviewGrpcClient.GetReviewsByClotheIdAsync(Guid.Parse(clotheInfo.Id), cancellationToken);
+                var questionsTask = reviewGrpcClient.GetQuestionsAndAnswersByClotheIdAsync(Guid.Parse(clotheInfo.Id), cancellationToken);
+                var statsTask = reviewGrpcClient.GetStatisticsByClotheIdAsync(Guid.Parse(clotheInfo.Id), cancellationToken);
 
-                await Task.WhenAll(clotheTask, reviewsTask, questionsTask, statsTask);
+                await Task.WhenAll(reviewsTask, questionsTask, statsTask);
 
-                ClotheDetailGrpcResponse clotheDetail = clotheTask.Result;
                 ReviewsListGrpcResponse reviews = reviewsTask.Result;
                 QuestionsListGrpcResponse questions = questionsTask.Result;
                 ReviewStatisticGrpcResponse stats = statsTask.Result;
 
                 ClotheDetailFullDTO clotheDetailFullDTO = new ClotheDetailFullDTO
                 {
-                    ClotheDetailDTO = clotheDetail,
+                    ClotheDetailDTO = clotheInfo,
                     Reviews = reviews.Reviews.ToList(),
                     Questions = questions.Questions.ToList(),
                     Statistics = stats
                 };
 
-                logger.LogInformation("Successfully aggregated full detail for ClotheId: {ClotheId}", clotheId);
+                logger.LogInformation("Successfully aggregated full detail for ClotheId: {ClotheId}", clotheInfo.Id);
 
                 return clotheDetailFullDTO;
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error while aggregating data for ClotheId: {ClotheId}", clotheId);
+                logger.LogError(ex, "Error while aggregating data for Slug: {Slug}", slug);
                 throw;
             }
         }

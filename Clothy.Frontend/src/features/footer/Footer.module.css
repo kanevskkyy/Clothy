@@ -1,32 +1,36 @@
 .footer {
     background-color: #0C0C0C;
     color: #ffffff;
-    margin-top: 80px;
+    margin-top: auto;
     border-top: 2px solid #2a2a2a;
 }
 
 .container {
     max-width: 1740px;
     margin: 0 auto;
-    padding: 64px 30px 32px;
+    padding: 48px 30px 32px;
 }
 
 .grid {
     display: flex;
     justify-content: center;
     gap: 80px;
-    margin-bottom: 48px;
+    margin-bottom: 32px;
 }
 
 @media (max-width: 768px) {
     .grid {
         flex-direction: column;
         gap: 40px;
-        margin-bottom: 40px;
+        margin-bottom: 24px;
     }
 
     .container {
-        padding: 48px 16px 24px;
+        padding: 40px 16px 24px;
+    }
+
+    .footer {
+        margin-top: 32px;
     }
 }
 
@@ -130,5 +134,9 @@
     .listItem,
     .link {
         font-size: 14px;
+    }
+
+    .footer {
+        margin-top: 24px;
     }
 }

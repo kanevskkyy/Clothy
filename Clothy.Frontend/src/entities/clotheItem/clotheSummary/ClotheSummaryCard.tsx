@@ -1,31 +1,33 @@
-import { useNavigate } from "react-router-dom";
-import type {IClotheSummaryDTO} from "../clothe.ts";
+import { Link } from "react-router-dom";
+import { memo, useState } from "react";
+import type { IClotheSummaryDTO } from "../clothe.ts";
 import styles from "./ClotheSummaryCard.module.css";
 
 interface ClotheSummaryCardProps {
     product: IClotheSummaryDTO;
 }
 
-const ClotheSummaryCard = ({ product }: ClotheSummaryCardProps) => {
-    const navigate = useNavigate();
-
-    const handleClick = () => {
-        navigate(`/clothe/${product.slug}/${product.id}`);
-    };
+const ClotheSummaryCard = memo(({ product }: ClotheSummaryCardProps) => {
+    const [selectedColor, setSelectedColor] = useState(product.colors[0]);
 
     return (
-        <div className={styles.card} onClick={handleClick}>
+        <Link
+            to={`/clothe/${product.slug}/colorId=${selectedColor.colorId}`}
+            className={styles.card}
+        >
             <div className={styles.imageContainer}>
                 <img
-                    src={product.colors[0].mainPhotoURL}
+                    src={selectedColor.mainPhotoURL}
                     alt={product.name}
                     className={styles.image}
+                    loading="lazy"
+                    decoding="async"
                 />
+
                 {product.discountPercent && (
-                    <div className={styles.discountBadge}>
-                        -{product.discountPercent}%
-                    </div>
+                    <div className={styles.discountBadge}>-{product.discountPercent}%</div>
                 )}
+
                 {!product.isAvailable && (
                     <div className={styles.unavailableBadge}>
                         Немає в наявності
@@ -35,22 +37,36 @@ const ClotheSummaryCard = ({ product }: ClotheSummaryCardProps) => {
 
             <div className={styles.content}>
                 <div className={styles.brandInfo}>
-                    <img src={product.brand.photoURL}
-                         alt={product.brand.name}
-                         width="20px"
-                         height="20px"
+                    <img
+                        src={product.brand.photoURL}
+                        alt={product.brand.name}
+                        width="20"
+                        height="20"
+                        loading="lazy"
+                        decoding="async"
                     />
                     <div className={styles.brand}>{product.brand.name}</div>
                 </div>
+
                 <div className={styles.name}>{product.name}</div>
 
                 <div className={styles.colors}>
                     {product.colors.map((color) => (
-                        <div
+                        <button
                             key={color.id}
-                            className={styles.colorDot}
+                            type="button"
+                            className={`${styles.colorDot} ${
+                                selectedColor.id === color.id
+                                    ? styles.activeColor
+                                    : ""
+                            }`}
                             style={{ backgroundColor: color.hexCode }}
                             title={color.colorId}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setSelectedColor(color);
+                            }}
                         />
                     ))}
                 </div>
@@ -58,12 +74,15 @@ const ClotheSummaryCard = ({ product }: ClotheSummaryCardProps) => {
                 <div className={styles.priceContainer}>
                     <span className={styles.price}>{product.price} $</span>
                     {product.oldPrice && (
-                        <span className={styles.oldPrice}>{product.oldPrice} $</span>
+                        <span className={styles.oldPrice}>
+                            {product.oldPrice} $
+                        </span>
                     )}
                 </div>
             </div>
-        </div>
+        </Link>
     );
-};
+});
 
+ClotheSummaryCard.displayName = "ClotheSummaryCard";
 export default ClotheSummaryCard;

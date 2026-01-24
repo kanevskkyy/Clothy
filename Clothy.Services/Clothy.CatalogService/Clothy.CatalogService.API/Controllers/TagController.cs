@@ -32,19 +32,6 @@ namespace Clothy.CatalogService.API.Controllers
         }
 
         /// <summary>
-        /// Get all tags with clothe item count.
-        /// </summary>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>List of tags with item count.</returns>
-        [HttpGet("with-item-count")]
-        public async Task<IActionResult> GetAllWithItemCount(CancellationToken cancellationToken)
-        {
-            logger.LogInformation("Fetching all tags with clothe count.");
-            List<TagWithCountDTO> tags = await tagService.GetAllWithCountAsync(cancellationToken);
-            return Ok(tags);
-        }
-
-        /// <summary>
         /// Get a tag by its ID.
         /// </summary>
         /// <param name="id">Tag ID (GUID).</param>

@@ -41,14 +41,6 @@ namespace Clothy.CatalogService.BLL.Services
             return mapper.Map<List<CollectionReadDTO>>(await unitOfWork.Collections.GetAllAsync(cancellationToken));
         }
 
-        public async Task<List<CollectionWithCountDTO>> GetAllWithCountAsync(CancellationToken cancellationToken = default)
-        {
-            Dictionary<Collection, int> collectionsWithCount = await unitOfWork.Collections.GetCollectionsCountWithStockAsync(cancellationToken);
-            return collectionsWithCount
-                .Select(pair => mapper.Map<CollectionWithCountDTO>(pair))
-                .ToList();
-        }
-
         public async Task<CollectionReadDTO> CreateAsync(CollectionCreateDTO collectionCreateDTO, CancellationToken cancellationToken = default)
         {
             bool exists = await unitOfWork.Collections.IsNameAlreadyExistsAsync(collectionCreateDTO.Name, null, cancellationToken);

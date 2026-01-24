@@ -1,0 +1,164 @@
+.storySection {
+    padding: 32px 0 16px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.sectionTitle {
+    font-size: clamp(24px, 5vw, 36px);
+    color: #111827;
+    margin: 32px 0 20px;
+    text-align: center;
+}
+
+.storySection p {
+    font-size: 16px;
+    line-height: 1.7;
+    color: #251D15;
+    font-weight: 500;
+    margin-bottom: 12px;
+}
+
+.brandName {
+    font-weight: 600;
+    color: #111827;
+}
+
+.statsSection {
+    padding: 32px 0;
+    margin-bottom: 50px;
+    background-color: #f9fafb;
+}
+
+.statsContainer {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.statCard {
+    text-align: center;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 12px;
+    border: 2px solid #e5e7eb;
+    font-weight: 500;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.statNumber {
+    font-weight: 600;
+    font-size: clamp(28px, 7vw, 48px);
+    color: #111827;
+    margin-bottom: 6px;
+}
+
+.statLabel {
+    font-size: 15px;
+    color: #747071;
+}
+
+.valuesSection {
+    padding: 48px 0;
+}
+
+.valuesContainer {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.valueCard {
+    text-align: center;
+    padding: 32px 20px;
+}
+
+.valueTitle {
+    font-size: 20px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 10px;
+}
+
+.valueText {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #6b7280;
+}
+
+@media (max-width: 480px) {
+    .statsSection {
+        margin-bottom: 0;
+    }
+
+    .sectionTitle {
+        margin-top: 50px;
+    }
+
+    .statsContainer {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (min-width: 481px) and (max-width: 767px) {
+    .statsSection {
+        margin-bottom: 20px;
+    }
+
+    .sectionTitle {
+        margin-top: 40px;
+    }
+
+    .statsContainer {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    .statsSection {
+        margin-bottom: 30px;
+    }
+
+    .storySection {
+        padding: 40px 0 20px;
+    }
+
+    .statsContainer {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+    }
+
+    .statsSection {
+        padding: 40px 0;
+    }
+
+    .valuesContainer {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .storySection {
+        padding: 48px 0 24px;
+    }
+
+    .statsContainer {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+    }
+
+    .valuesContainer {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+    }
+
+    .storySection p {
+        font-size: 18px;
+    }
+}

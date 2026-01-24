@@ -122,7 +122,7 @@ namespace Clothy.CatalogService.BLL.Services
 
             stockUpdatedCounter.Add(1, new KeyValuePair<string, object?>("operation", "create"));
 
-            await cacheService.RemoveAsync($"clothe:{stock.ClotheId}");
+            await cacheService.RemoveAsync($"clothe:{clotheItem.Slug}");
             await cacheInvalidationService.InvalidateAllAsync();
             await filterCacheInvalidationService.InvalidateAsync();
 
@@ -150,7 +150,7 @@ namespace Clothy.CatalogService.BLL.Services
             await cacheInvalidationService.InvalidateAllAsync();
             await cacheInvalidationService.InvalidateByIdAsync(id);
 
-            await cacheService.RemoveAsync($"clothe:{stock.ClotheId}");
+            await cacheService.RemoveAsync($"clothe:{stock.Clothe.Slug}");
             await filterCacheInvalidationService.InvalidateAsync();
 
             return await GetByIdWithDetailsAsync(stock.Id, cancellationToken);
@@ -163,7 +163,7 @@ namespace Clothy.CatalogService.BLL.Services
 
             unitOfWork.ClothesStocks.Delete(stock);
             await unitOfWork.SaveChangesAsync(cancellationToken);
-            await cacheService.RemoveAsync($"clothe:{stock.ClotheId}");
+            await cacheService.RemoveAsync($"clothe:{stock.Clothe.Slug}");
 
             await cacheInvalidationService.InvalidateByIdAsync(id);
             await cacheInvalidationService.InvalidateAllAsync();
@@ -197,7 +197,7 @@ namespace Clothy.CatalogService.BLL.Services
             }
 
             await unitOfWork.SaveChangesAsync();
-            await cacheService.RemoveAsync($"clothe:{clotheId}");
+            await cacheService.RemoveAsync($"clothe:{clotheStock.Clothe.Slug}");
             await cacheService.RemoveAsync("clothe:top8_most_popular");
 
             await cacheInvalidationService.InvalidateAllAsync();

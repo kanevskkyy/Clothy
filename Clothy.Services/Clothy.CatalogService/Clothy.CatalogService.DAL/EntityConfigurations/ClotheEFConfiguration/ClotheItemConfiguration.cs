@@ -28,6 +28,9 @@ namespace Clothy.CatalogService.DAL.EntityConfigurations.ClotheEFConfiguration
             builder.HasIndex(property => property.Slug)
                 .IsUnique();
 
+            builder.Property(property => property.Gender)
+                .IsRequired();
+
             builder.Property(property => property.Description)
                 .IsRequired()
                 .HasMaxLength(1000);

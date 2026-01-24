@@ -21,13 +21,13 @@ namespace Clothy.CatalogService.DAL.Specification
 
             Query.Include(property => property.ClotheTags)
                 .ThenInclude(property => property.Tag);
-            
+
             Query.Include(property => property.ClothyType);
-            
+
             Query.Include(property => property.Collection);
-            
+
             Query.Include(property => property.Brand);
-            
+
             Query.Include(property => property.Photos)
                 .ThenInclude(property => property.Color);
 
@@ -38,9 +38,14 @@ namespace Clothy.CatalogService.DAL.Specification
             {
                 string filterName = parameters.Name.ToLower();
 
-                Query.Where(property => property.Name.ToLower().Contains(filterName) 
-                || property.Brand.Name.Contains(filterName) 
+                Query.Where(property => property.Name.ToLower().Contains(filterName)
+                || property.Brand.Name.Contains(filterName)
                 || property.ClothyType.Name.Contains(filterName));
+            }
+
+            if (parameters.Gender.HasValue)
+            {
+                Query.Where(property => property.Gender == parameters.Gender);
             }
 
             if (parameters.ShowOnlyWithDiscounts)

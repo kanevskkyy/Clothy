@@ -33,20 +33,6 @@ namespace Clothy.CatalogService.API.Controllers
         }
 
         /// <summary>
-        /// Get all materials with clothe count.
-        /// </summary>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>List of materials including the number of clothes using each material.</returns>
-        [HttpGet("with-clothe-count")]
-        public async Task<IActionResult> GetAllWithClotheCount(CancellationToken cancellationToken)
-        {
-            logger.LogInformation("Fetching all materials with clothe count.");
-            List<MaterialWithCountDTO> materials = await materialService.GetAllWithCountAsync(cancellationToken);
-            
-            return Ok(materials);
-        }
-
-        /// <summary>
         /// Get a material by its ID.
         /// </summary>
         /// <param name="id">Material ID (GUID).</param>

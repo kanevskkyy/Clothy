@@ -9,6 +9,7 @@ message BrandsGrpcResponse {
 	string name = 2;
 	string slug = 3;
 	string photoUrl = 4;
+	int32 clotheItemCount = 5;
 }
 
 message ClothingTypesGrpcResponse {
@@ -57,6 +58,12 @@ message PriceGrpcResponse {
 	string maxPrice = 2;
 }
 
+message GenderGrpcResponse {
+	int32 maleCount = 1;
+	int32 femaleCount = 2;
+	int32 unisexCount = 3;
+}
+
 message FilterResponse {
 	repeated BrandsGrpcResponse brands = 1;
 	repeated ClothingTypesGrpcResponse clothingTypes = 2;
@@ -66,6 +73,7 @@ message FilterResponse {
 	repeated SizesGrpcResponse sizes = 6;
 	repeated TagsGrpcResponse tags = 7;
 	PriceGrpcResponse priceRange = 8;
+	GenderGrpcResponse gender = 9;
 }
 
 service ClotheFilterServiceGrpc {

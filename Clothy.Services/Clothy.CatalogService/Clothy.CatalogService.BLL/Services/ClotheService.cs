@@ -30,10 +30,9 @@ namespace Clothy.CatalogService.BLL.Services
         private IMapper mapper;
         private IImageService imageService;
         private IEntityCacheService cacheService;
-        private IEntityCacheInvalidationService<ClotheItem> cacheInvalidationService;
+        private IEntityCacheInvalidationService<ClotheItem> clotheItemInvalidationService;
         private IPublishEndpoint publishEndpoint;
-        private ILogger<ClotheService> logger;
-        private IEntityCacheInvalidationService<ClothesStock> cacheInvalidatonClotheStock;
+        private IEntityCacheInvalidationService<ClothesStock> clotheStockInvalidationService;
         private IFilterCacheInvalidationService filterCacheInvalidationService;
 
         private const int MAX_CASHED_PAGES = 10;
@@ -50,22 +49,21 @@ namespace Clothy.CatalogService.BLL.Services
             IImageService imageService, 
             IEntityCacheService cacheService, 
             IEntityCacheInvalidationService<ClotheItem> cacheInvalidationService, 
-            Meter meter, ILogger<ClotheService> logger, 
+            Meter meter,
             IEntityCacheInvalidationService<ClothesStock> cacheInvalidatonClotheStock, 
             IPublishEndpoint publishEndpoint,
             IFilterCacheInvalidationService filterCacheInvalidationService)
         {
-            this.logger = logger;
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
             this.imageService = imageService;
             this.cacheService = cacheService;
-            this.cacheInvalidationService = cacheInvalidationService;
+            this.clotheItemInvalidationService = cacheInvalidationService;
             clotheCreatedMetric = meter.CreateCounter<long>(
                 "clothy.catalog.clotheItem.created_total",
                 "items",
                 "Total numbers of clothes created");
-            this.cacheInvalidatonClotheStock = cacheInvalidatonClotheStock;
+            this.clotheStockInvalidationService = cacheInvalidatonClotheStock;
             this.publishEndpoint = publishEndpoint;
             this.filterCacheInvalidationService = filterCacheInvalidationService;
         }
@@ -95,15 +93,15 @@ namespace Clothy.CatalogService.BLL.Services
             return new PagedList<ClotheSummaryDTO>(mapped, paged.TotalCount, paged.CurrentPage, paged.PageSize);
         }
 
-        public async Task<ClotheDetailDTO> GetDetailByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<ClotheDetailDTO> GetDetailBySlugAsync(string slug, CancellationToken cancellationToken = default)
         {
-            string cacheKey = $"clothe:{id}";
+            string cacheKey = $"clothe:{slug}";
             ClotheDetailDTO? cached = await cacheService.GetOrSetAsync(
                 cacheKey,
                 async () =>
                 {
-                    ClotheItem? clotheItem = await unitOfWork.ClotheItems.GetByIdWithDetailsAsync(id, cancellationToken);
-                    if (clotheItem == null) throw new NotFoundException($"Clothe item not found with ID: {id}");
+                    ClotheItem? clotheItem = await unitOfWork.ClotheItems.GetBySlugWithDetailsAsync(slug, cancellationToken);
+                    if (clotheItem == null) throw new NotFoundException($"Clothe item not found with slug: {slug}");
                     return mapper.Map<ClotheDetailDTO>(clotheItem);
                 },
                 MEMORY_TTL_CLOTHE_DETAIL,
@@ -214,12 +212,12 @@ namespace Clothy.CatalogService.BLL.Services
             clotheCreatedMetric.Add(1, new KeyValuePair<string, object?>("collection", collection.Name),
                               new KeyValuePair<string, object?>("clotheType", clothingType.Name));
 
-            await cacheInvalidationService.InvalidateAllAsync();
-            await cacheInvalidatonClotheStock.InvalidateAllAsync();
+            await clotheItemInvalidationService.InvalidateAllAsync();
+            await clotheStockInvalidationService.InvalidateAllAsync();
             await filterCacheInvalidationService.InvalidateAsync();
             await cacheService.RemoveAsync("clothe:top8_most_popular");
 
-            return await GetDetailByIdAsync(clothe.Id, cancellationToken);
+            return await GetDetailBySlugAsync(clothe.Slug, cancellationToken);
         }
 
         public async Task<ClotheDetailDTO> UpdateAsync(Guid id, ClotheUpdateDTO clotheUpdateDTO, CancellationToken cancellationToken = default)
@@ -241,6 +239,7 @@ namespace Clothy.CatalogService.BLL.Services
             decimal currentPrice = clotheItem.Price;
             decimal? currentOldPrice = clotheItem.OldPrice;
 
+            await cacheService.RemoveAsync($"clothe:{clotheItem.Slug}");
             mapper.Map(clotheUpdateDTO, clotheItem);
 
             if (clotheItem.Price < currentPrice)
@@ -255,8 +254,7 @@ namespace Clothy.CatalogService.BLL.Services
             unitOfWork.ClotheItems.Update(clotheItem);
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
-            await cacheInvalidationService.InvalidateAllAsync();
-            await cacheInvalidationService.InvalidateByIdAsync(id);
+            await clotheItemInvalidationService.InvalidateAllAsync();
 
             ClotheItemUpdatedEvent clotheItemUpdatedEvent = new ClotheItemUpdatedEvent
             {
@@ -265,11 +263,11 @@ namespace Clothy.CatalogService.BLL.Services
                 Price = clotheItem.Price,
             };
             await publishEndpoint.Publish(clotheItemUpdatedEvent, cancellationToken);
-            await cacheInvalidatonClotheStock.InvalidateAllAsync();
+            await clotheStockInvalidationService.InvalidateAllAsync();
             await filterCacheInvalidationService.InvalidateAsync();
             await cacheService.RemoveAsync("clothe:top8_most_popular");
 
-            return await GetDetailByIdAsync(clotheItem.Id, cancellationToken);
+            return await GetDetailBySlugAsync(clotheItem.Slug, cancellationToken);
         }
 
         public async Task<PriceRangeDTO> GetMinAndMaxPriceAsync(CancellationToken cancellationToken = default)
@@ -284,21 +282,21 @@ namespace Clothy.CatalogService.BLL.Services
 
         public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            ClotheItem? clothe = await unitOfWork.ClotheItems.GetByIdWithDetailsAsync(id, cancellationToken);
-            if (clothe == null) throw new NotFoundException($"Clothe item not found with ID: {id}");
+            ClotheItem? clotheItem = await unitOfWork.ClotheItems.GetByIdWithDetailsAsync(id, cancellationToken);
+            if (clotheItem == null) throw new NotFoundException($"Clothe item not found with ID: {id}");
 
-            foreach (PhotoClothes photo in clothe.Photos)
+            foreach (PhotoClothes photo in clotheItem.Photos)
             {
                 if (!string.IsNullOrEmpty(photo.PhotoURL)) await imageService.DeleteImageAsync(photo.PhotoURL);
             }
 
-            unitOfWork.ClotheItems.Delete(clothe);
+            unitOfWork.ClotheItems.Delete(clotheItem);
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
-            await cacheInvalidationService.InvalidateByIdAsync(id);
-            await cacheInvalidationService.InvalidateAllAsync();
+            await cacheService.RemoveAsync($"clothe:{clotheItem.Slug}");
+            await clotheItemInvalidationService.InvalidateAllAsync();
 
-            await cacheInvalidatonClotheStock.InvalidateAllAsync();
+            await clotheStockInvalidationService.InvalidateAllAsync();
             await filterCacheInvalidationService.InvalidateAsync();
             await cacheService.RemoveAsync("clothe:top8_most_popular");
 

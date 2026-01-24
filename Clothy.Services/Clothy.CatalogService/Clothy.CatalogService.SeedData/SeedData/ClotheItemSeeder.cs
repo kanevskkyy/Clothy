@@ -30,7 +30,8 @@ namespace Clothy.CatalogService.SeedData.SeedData
                 .RuleFor(p => p.Price, fakeData => Math.Round(fakeData.Random.Decimal(10, 500), 2))
                 .RuleFor(p => p.BrandId, fakeData => fakeData.PickRandom(brands).Id)
                 .RuleFor(p => p.CollectionId, fakeData => fakeData.PickRandom(collections).Id)
-                .RuleFor(p => p.ClothingTypeId, fakeData => fakeData.PickRandom(clothingTypes).Id);
+                .RuleFor(p => p.ClothingTypeId, fakeData => fakeData.PickRandom(clothingTypes).Id)
+                .RuleFor(p => p.Gender, fakeData => fakeData.PickRandomParam(Gender.Male, Gender.Female, Gender.Unisex));
 
             List<ClotheItem> clotheItems = faker.Generate(40);
             

@@ -30,6 +30,9 @@ namespace Clothy.CatalogService.BLL.FluentValidation.ClotheValidation
             RuleFor(x => x.Price)
                 .GreaterThan(0).WithMessage("Price must be greater than 0.");
 
+            RuleFor(x => x.Gender)
+                .NotEmpty().WithMessage("Gender is required.");
+
             RuleFor(x => x.BrandId)
                 .NotEmpty().WithMessage("BrandId is required.");
 

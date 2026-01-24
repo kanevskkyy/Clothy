@@ -36,16 +36,16 @@
 
 .navLink {
     font-size: 15px;
-    color: #393434;
+    color: #251D15;
+    font-weight: 600;
     text-decoration: none;
-    font-weight: 400;
     transition: color 0.2s;
     white-space: nowrap;
 }
 
 .navLink:hover,
 .navLinkActive {
-    color: #0C0C0C;
+    color: #221c1c;
     font-weight: 500;
 }
 
@@ -154,8 +154,8 @@
 
     .navLink:hover,
     .navLink:active {
-        background: #fef5f2;
-        color: #E86130;
+        background: #edefed;
+        color: #050505;
     }
 
     .right {

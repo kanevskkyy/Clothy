@@ -52,7 +52,7 @@
     }
 
     .item {
-        justify-content: flex-start;
+        justify-content: normal;
     }
 }
 @media (max-width: 640px) {

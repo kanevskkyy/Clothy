@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Clothy.CatalogService.Domain.Entities.Clothe;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,7 @@ namespace Clothy.CatalogService.Domain.QueryParameters
         public string? Name { get; set; }
         public decimal? MinPrice { get; set; }
         public decimal? MaxPrice { get; set; }
+        public Gender? Gender { get; set; }
         public List<string>? Brands { get; set; } = new List<string>();
         public List<string>? Materials { get; set; } = new List<string>();
         public List<string>? Collections { get; set; } = new List<string>();
@@ -27,6 +29,7 @@ namespace Clothy.CatalogService.Domain.QueryParameters
             if (!string.IsNullOrEmpty(Name)) stringBuilder.Append($"name:{Name}:");
             if (MinPrice.HasValue) stringBuilder.Append($"minprice:{MinPrice}:");
             if (MaxPrice.HasValue) stringBuilder.Append($"maxprice:{MaxPrice}:");
+            if (Gender.HasValue) stringBuilder.Append($"gender:{Gender.Value}:");
             if (Brands?.Any() == true) stringBuilder.Append($"brands:{string.Join(",", Brands.OrderBy(x => x))}:");
             if (Collections?.Any() == true) stringBuilder.Append($"collections:{string.Join(",", Collections.OrderBy(x => x))}:");
             if (Sizes?.Any() == true) stringBuilder.Append($"sizes:{string.Join(",", Sizes.OrderBy(x => x))}:");

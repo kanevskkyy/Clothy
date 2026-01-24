@@ -26,6 +26,8 @@ namespace Clothy.CatalogService.Domain.Entities.Clothe
         public Guid? CollectionId { get; set; }
         public Collection? Collection { get; set; }
 
+        public Gender Gender { get; set; }
+
         public ICollection<PhotoClothes> Photos { get; set; } = new List<PhotoClothes>();
         public ICollection<ClothePopularity> ClothePopularities { get; set; } = new List<ClothePopularity>();
         public ICollection<ClothesStock> Stocks { get; set; } = new List<ClothesStock>();

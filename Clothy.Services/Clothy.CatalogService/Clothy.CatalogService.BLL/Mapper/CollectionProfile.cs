@@ -14,15 +14,11 @@ namespace Clothy.CatalogService.BLL.Mapper
         public CollectionProfile()
         {
             CreateMap<Collection, CollectionReadDTO>();
+
             CreateMap<CollectionCreateDTO, Collection>();
+
             CreateMap<CollectionUpdateDTO, Collection>()
                 .ForMember(entity => entity.UpdatedAt, map => map.MapFrom(dto => DateTime.UtcNow.ToUniversalTime())); ;
-
-            CreateMap<KeyValuePair<Collection, int>, CollectionWithCountDTO>()
-                .ForMember(entity => entity.Id, map => map.MapFrom(dto => dto.Key.Id))
-                .ForMember(entity => entity.Name, map => map.MapFrom(dto => dto.Key.Name))
-                .ForMember(entity => entity.Slug, map => map.MapFrom(dto => dto.Key.Slug))
-                .ForMember(entity => entity.ClotheItemCount, map => map.MapFrom(dto => dto.Value));
         }
     }
 }

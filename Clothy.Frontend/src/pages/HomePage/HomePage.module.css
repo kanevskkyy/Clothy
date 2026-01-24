@@ -1,0 +1,29 @@
+.productsSection {
+    margin-top: 0;
+    padding: 30px 0;
+    background-color: #ffffff;
+}
+
+.container {
+    max-width: 1740px;
+    margin: 0 auto;
+}
+
+.title {
+    font-size: 36px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 30px 0;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .container{
+        padding: 0 0;
+    }
+
+    .title {
+        font-size: 28px;
+        margin-bottom: 32px;
+    }
+}

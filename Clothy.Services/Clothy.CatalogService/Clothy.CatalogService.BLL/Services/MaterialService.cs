@@ -39,13 +39,6 @@ namespace Clothy.CatalogService.BLL.Services
             return mapper.Map<List<MaterialReadDTO>>(await unitOfWork.Materials.GetAllAsync(cancellationToken));
         }
 
-        public async Task<List<MaterialWithCountDTO>> GetAllWithCountAsync(CancellationToken cancellationToken = default)
-        {
-            return (await unitOfWork.Materials.GetMaterialsWithStockAsync(cancellationToken))
-                .Select(pair => mapper.Map<MaterialWithCountDTO>(pair))
-                .ToList();
-        }
-
         public async Task<MaterialReadDTO> CreateAsync(MaterialCreateDTO materialCreateDTO, CancellationToken cancellationToken = default)
         {
             bool exists = await unitOfWork.Materials.IsNameAlreadyExistsAsync(materialCreateDTO.Name, null, cancellationToken);

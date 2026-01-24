@@ -27,7 +27,7 @@ namespace Clothy.CatalogService.gRPC.Server.Services
 
             try
             {
-                IReadOnlyList<Brand> brands = await unitOfWork.Brands.GetAllAsync(context.CancellationToken);
+                Dictionary<Brand, int> brands = await unitOfWork.Brands.GetBrandsWithStockCountAsync(context.CancellationToken);
                 IReadOnlyList<ClothingType> clothingTypes = await unitOfWork.ClothingTypes.GetAllAsync(context.CancellationToken);
                 Dictionary<Collection, int> collections = await unitOfWork.Collections.GetCollectionsCountWithStockAsync(context.CancellationToken);
                 Dictionary<Color, int> colors = await unitOfWork.Colors.GetColorsCountWithStockAsync(context.CancellationToken);
@@ -35,18 +35,20 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                 IReadOnlyList<Size> sizes = await unitOfWork.Sizes.GetAllAsync(context.CancellationToken);
                 Dictionary<Tag, int> tags = await unitOfWork.Tags.GetTagsWithStockCountAsync(context.CancellationToken);
                 (decimal minPrice, decimal maxPrice) priceRange = await unitOfWork.ClotheItems.GetMinAndMaxPriceAsync(context.CancellationToken);
+                (int maleCount, int femaleCount, int unisexCount) genderCount = await unitOfWork.ClotheItems.GetClotheItemCountByGenderAsync(context.CancellationToken);
 
                 logger.LogInformation("Succesfully collected all filters!");
 
                 FilterResponse response = new FilterResponse();
-                response.Brands.AddRange(convertBrandsToGrpcResponse(brands));
-                response.ClothingTypes.AddRange(convertClothingTypesToGrpcResponse(clothingTypes));
-                response.Collections.AddRange(convertCollectionsToGrpcResponse(collections));
-                response.Colors.AddRange(convertColorsToGrpcResponse(colors));
-                response.Materials.AddRange(convertMaterialsToGrpcResponse(materials));
-                response.Sizes.AddRange(convertSizesToGrpcResponse(sizes));
-                response.Tags.AddRange(convertTagsToGrpcResponse(tags));
-                response.PriceRange = convertPriceRangeToGrpcResponse(priceRange);
+                response.Brands.AddRange(ConvertBrandsToGrpcResponse(brands));
+                response.ClothingTypes.AddRange(ConvertClothingTypesToGrpcResponse(clothingTypes));
+                response.Collections.AddRange(ConvertCollectionsToGrpcResponse(collections));
+                response.Colors.AddRange(ConvertColorsToGrpcResponse(colors));
+                response.Materials.AddRange(ConvertMaterialsToGrpcResponse(materials));
+                response.Sizes.AddRange(ConvertSizesToGrpcResponse(sizes));
+                response.Tags.AddRange(ConvertTagsToGrpcResponse(tags));
+                response.PriceRange = ConvertPriceRangeToGrpcResponse(priceRange);
+                response.Gender = ConvertGenderCountToGrpcResponse(genderCount);
 
                 return response;
             }
@@ -57,18 +59,19 @@ namespace Clothy.CatalogService.gRPC.Server.Services
             }
         }
 
-        private List<BrandsGrpcResponse> convertBrandsToGrpcResponse(IReadOnlyList<Brand> brands)
+        private List<BrandsGrpcResponse> ConvertBrandsToGrpcResponse(Dictionary<Brand, int> brands)
         {
             return brands.Select(brand => new BrandsGrpcResponse
             {
-                Id = brand.Id.ToString(),
-                Name = brand.Name,
-                Slug = brand.Slug,
-                PhotoUrl = brand.PhotoURL,
+                Id = brand.Key.Id.ToString(),
+                Name = brand.Key.Name,
+                Slug = brand.Key.Slug,
+                PhotoUrl = brand.Key.PhotoURL,
+                ClotheItemCount = brand.Value
             }).ToList();
         }
 
-        private List<ClothingTypesGrpcResponse> convertClothingTypesToGrpcResponse(IReadOnlyList<ClothingType> clothingTypes)
+        private List<ClothingTypesGrpcResponse> ConvertClothingTypesToGrpcResponse(IReadOnlyList<ClothingType> clothingTypes)
         {
             return clothingTypes.Select(clothingType => new ClothingTypesGrpcResponse
             {
@@ -78,7 +81,7 @@ namespace Clothy.CatalogService.gRPC.Server.Services
             }).ToList();
         }
 
-        private List<CollectionsGrpcResponse> convertCollectionsToGrpcResponse(Dictionary<Collection, int> collections)
+        private List<CollectionsGrpcResponse> ConvertCollectionsToGrpcResponse(Dictionary<Collection, int> collections)
         {
             return collections.Select(pair => new CollectionsGrpcResponse
             {
@@ -89,7 +92,7 @@ namespace Clothy.CatalogService.gRPC.Server.Services
             }).ToList();
         }
 
-        private List<ColorsGrpcResponse> convertColorsToGrpcResponse(Dictionary<Color, int> colors)
+        private List<ColorsGrpcResponse> ConvertColorsToGrpcResponse(Dictionary<Color, int> colors)
         {
             return colors.Select(pair => new ColorsGrpcResponse
             {
@@ -101,7 +104,7 @@ namespace Clothy.CatalogService.gRPC.Server.Services
             }).ToList();
         }
 
-        private List<MaterialsGrpcResponse> convertMaterialsToGrpcResponse(Dictionary<Material, int> materials)
+        private List<MaterialsGrpcResponse> ConvertMaterialsToGrpcResponse(Dictionary<Material, int> materials)
         {
             return materials.Select(pair => new MaterialsGrpcResponse
             {
@@ -112,7 +115,7 @@ namespace Clothy.CatalogService.gRPC.Server.Services
             }).ToList();
         }
 
-        private List<SizesGrpcResponse> convertSizesToGrpcResponse(IReadOnlyList<Size> sizes)
+        private List<SizesGrpcResponse> ConvertSizesToGrpcResponse(IReadOnlyList<Size> sizes)
         {
             return sizes.Select(size => new SizesGrpcResponse
             {
@@ -122,7 +125,7 @@ namespace Clothy.CatalogService.gRPC.Server.Services
             }).ToList();
         }   
 
-        private List<TagsGrpcResponse> convertTagsToGrpcResponse(Dictionary<Tag, int> tags)
+        private List<TagsGrpcResponse> ConvertTagsToGrpcResponse(Dictionary<Tag, int> tags)
         {
             return tags.Select(pair => new TagsGrpcResponse
             {
@@ -133,12 +136,22 @@ namespace Clothy.CatalogService.gRPC.Server.Services
             }).ToList();
         }
 
-        private PriceGrpcResponse convertPriceRangeToGrpcResponse((decimal minPrice, decimal maxPrice) priceRange)
+        private PriceGrpcResponse ConvertPriceRangeToGrpcResponse((decimal minPrice, decimal maxPrice) priceRange)
         {
             return new PriceGrpcResponse
             {
                 MaxPrice = priceRange.maxPrice.ToString(),
                 MinPrice = priceRange.minPrice.ToString(),
+            };
+        }
+
+        private GenderGrpcResponse ConvertGenderCountToGrpcResponse((int maleCount, int femaleCount, int unisexCount) genderCount)
+        {
+            return new GenderGrpcResponse
+            {
+                MaleCount = genderCount.maleCount,
+                FemaleCount = genderCount.femaleCount,
+                UnisexCount = genderCount.unisexCount
             };
         }
     }

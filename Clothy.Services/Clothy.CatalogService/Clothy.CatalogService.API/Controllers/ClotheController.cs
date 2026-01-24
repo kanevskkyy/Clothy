@@ -36,16 +36,16 @@ namespace Clothy.CatalogService.API.Controllers
         }
 
         /// <summary>
-        /// Get a single clothe item by ID with details.
+        /// Get a single clothe item by Slug with details.
         /// </summary>
-        /// <param name="id">Clothe ID (GUID).</param>
+        /// <param name="slug">Clothe slug.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Clothe details.</returns>
-        [HttpGet("{id:guid}")]
-        public async Task<ActionResult<ClotheDetailDTO>> GetById(Guid id, CancellationToken cancellationToken)
+        [HttpGet("{slug}")]
+        public async Task<ActionResult<ClotheDetailDTO>> GetBySlug(string slug, CancellationToken cancellationToken)
         {
-            logger.LogInformation("Fetching clothe with ID: {Id}", id);
-            ClotheDetailDTO clothe = await clotheService.GetDetailByIdAsync(id, cancellationToken);
+            logger.LogInformation("Fetching clothe with Slug: {Slug}", slug);
+            ClotheDetailDTO clothe = await clotheService.GetDetailBySlugAsync(slug, cancellationToken);
             
             return Ok(clothe);
         }
@@ -64,7 +64,7 @@ namespace Clothy.CatalogService.API.Controllers
             ClotheDetailDTO created = await clotheService.CreateAsync(clotheCreateDTO, cancellationToken);
 
             logger.LogInformation("Clothe created with ID: {Id}", created.Id);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+            return CreatedAtAction(nameof(GetBySlug), new { slug = created.Slug }, created);
         }
 
         /// <summary>

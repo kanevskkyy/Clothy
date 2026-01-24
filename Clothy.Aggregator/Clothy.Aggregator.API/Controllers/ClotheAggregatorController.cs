@@ -21,15 +21,15 @@ namespace Clothy.Aggregator.API.Controllers
         /// <summary>
         /// Get detailed aggregated information about a specific clothing item.
         /// </summary>
-        /// <param name="clotheId">ID of the clothing item.</param>
+        /// <param name="slug">Slug of the clothing item.</param>
         /// <param name="cancelletionToken">Cancellation token.</param>
         /// <returns>Full details of the clothing item.</returns>
-        [HttpGet("{clotheId}")]
-        public async Task<ActionResult<ClotheDetailFullDTO>> GetClotheFullDetail(Guid clotheId, CancellationToken cancelletionToken)
+        [HttpGet("{slug}")]
+        public async Task<ActionResult<ClotheDetailFullDTO>> GetClotheFullDetail(string slug, CancellationToken cancelletionToken)
         {
-            logger.LogInformation("Starting getting detailed aggregated information on clothing with ID: {Id}", clotheId);
+            logger.LogInformation("Starting getting detailed aggregated information on clothing with slug: {Slug}", slug);
 
-            ClotheDetailFullDTO? result = await aggregatorService.GetFullClotheDetailAsync(clotheId, cancelletionToken);
+            ClotheDetailFullDTO? result = await aggregatorService.GetFullClotheDetailAsync(slug, cancelletionToken);
             return Ok(result);
         }
     }

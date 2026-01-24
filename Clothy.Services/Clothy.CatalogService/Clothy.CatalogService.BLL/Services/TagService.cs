@@ -42,17 +42,6 @@ namespace Clothy.CatalogService.BLL.Services
             return mapper.Map<List<TagReadDTO>>(await unitOfWork.Tags.GetAllAsync(cancellationToken));
         }
 
-        public async Task<List<TagWithCountDTO>> GetAllWithCountAsync(CancellationToken cancellationToken = default)
-        {
-            Dictionary<Tag, int> tagsWithCount = await unitOfWork.Tags.GetTagsWithStockCountAsync(cancellationToken);
-
-            List<TagWithCountDTO> result = tagsWithCount
-                .Select(pair => mapper.Map<TagWithCountDTO>(pair))
-                .ToList();
-
-            return result;
-        }
-
         public async Task<TagReadDTO> CreateAsync(TagCreateDTO tagCreateDTO, CancellationToken cancellationToken = default)
         {
             bool exists = await unitOfWork.Tags.IsNameAlreadyExistsAsync(tagCreateDTO.Name, null, cancellationToken);

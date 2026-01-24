@@ -19,10 +19,10 @@ namespace Clothy.Aggregator.Aggregate.Clients
             this.logger = logger;
         }
 
-        public async Task<ClotheDetailGrpcResponse> GetClotheByIdAsync(string id, CancellationToken cancellationToken = default)
+        public async Task<ClotheDetailGrpcResponse> GetClotheByIdAsync(string slug, CancellationToken cancellationToken = default)
         {
             ClotheIdGrpcRequest request = new ClotheIdGrpcRequest { 
-                Id = id
+                Slug = slug
             };
             ClotheDetailGrpcResponse response = await client.GetClotheByIdAsync(request, cancellationToken: cancellationToken);
             return response;

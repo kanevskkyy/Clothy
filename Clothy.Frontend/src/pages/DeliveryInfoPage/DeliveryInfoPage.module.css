@@ -1,0 +1,301 @@
+.storySection {
+    padding: 32px 16px 16px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.sectionTitle {
+    font-size: clamp(24px, 5vw, 36px);
+    color: #111827;
+    margin: 49px 0 32px;
+    text-align: center;
+    font-weight: 700;
+}
+
+.deliveryOptions {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.deliveryItem {
+    border: 2px solid #e5e7eb;
+    padding: 24px;
+    border-radius: 16px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    transition: border-color 0.2s;
+}
+
+.icon {
+    padding: 12px;
+    background-color: #f3f4f6;
+    border-radius: 12px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.deliveryInfo {
+    display: flex;
+    font-weight: 500;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+}
+
+.deliveryInfo h4 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+}
+
+.deliveryInfo > p {
+    font-size: 14px;
+    color: #747071;
+    margin: 0;
+}
+
+.details {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 4px;
+}
+
+.detailItem {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 14px;
+    color: #111827;
+}
+
+.detailItem p {
+    margin: 0;
+}
+
+.detailPrice {
+    font-weight: 600;
+    font-size: 14px;
+    color: #111827;
+}
+
+.freeShippingBanner {
+    background-color: #0C0C0C;
+    color: white;
+    padding: 24px;
+    border-radius: 16px;
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.freeShippingBanner p {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.returnPolicy {
+    border-top: 2px solid #e5e7eb;
+    padding-top: 32px;
+}
+
+.returnHeader {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.returnHeader h3 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+}
+
+.returnContent {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 30px;
+}
+
+.returnContent p {
+    color: #111827;
+    line-height: 1.6;
+    margin: 0;
+    font-weight: 500;
+}
+
+.highlight {
+    color: #111827;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .storySection {
+        padding: 24px 12px 12px;
+    }
+
+    .sectionTitle {
+        margin: 60px 0 24px;
+        font-size: 28px;
+    }
+
+    .deliveryItem {
+        padding: 16px;
+        gap: 12px;
+    }
+
+    .icon {
+        padding: 10px;
+    }
+
+    .icon svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .deliveryInfo h4 {
+        font-size: 16px;
+    }
+
+    .deliveryInfo > p {
+        font-size: 13px;
+    }
+
+    .details {
+        gap: 12px;
+        margin-top: 2px;
+    }
+
+    .detailItem {
+        font-size: 13px;
+        gap: 4px;
+    }
+
+    .detailItem svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .detailPrice {
+        font-size: 13px;
+    }
+
+    .freeShippingBanner {
+        padding: 20px 16px;
+    }
+
+    .freeShippingBanner p {
+        font-size: 17px;
+    }
+
+    .returnHeader {
+        gap: 8px;
+    }
+
+    .returnHeader svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .returnHeader h3 {
+        font-size: 20px;
+    }
+
+    .returnContent {
+        gap: 12px;
+    }
+
+    .returnContent p {
+        font-size: 14px;
+        line-height: 1.5;
+    }
+}
+
+@media (max-width: 480px) {
+    .sectionTitle {
+        font-size: 24px;
+        margin: 60px 0 20px;
+    }
+
+    .deliveryOptions {
+        gap: 12px;
+    }
+
+    .deliveryItem {
+        padding: 14px;
+        gap: 10px;
+        border-radius: 12px;
+    }
+
+    .icon {
+        padding: 8px;
+        border-radius: 8px;
+    }
+
+    .icon svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .deliveryInfo {
+        gap: 6px;
+    }
+
+    .deliveryInfo h4 {
+        font-size: 15px;
+    }
+
+    .deliveryInfo > p {
+        font-size: 12px;
+    }
+
+    .details {
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .detailItem {
+        font-size: 12px;
+    }
+
+    .detailItem svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    .detailPrice {
+        font-size: 12px;
+    }
+
+    .freeShippingBanner {
+        padding: 18px 14px;
+        border-radius: 12px;
+        margin-bottom: 24px;
+    }
+
+    .freeShippingBanner p {
+        font-size: 15px;
+        line-height: 1.4;
+    }
+
+    .returnPolicy {
+        padding-top: 24px;
+    }
+
+    .returnHeader h3 {
+        font-size: 18px;
+    }
+
+    .returnContent p {
+        font-size: 13px;
+    }
+}

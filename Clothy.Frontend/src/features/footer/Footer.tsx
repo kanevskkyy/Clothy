@@ -29,13 +29,13 @@ const Footer = () => {
                         <h4 className={styles.sectionTitle}>Інформація</h4>
                         <ul className={styles.list}>
                             <li className={styles.listItem}>
+                                <Link to="/catalog" className={styles.link}>Каталог</Link>
+                            </li>
+                            <li className={styles.listItem}>
                                 <Link to="/about-us" className={styles.link}>Про нас</Link>
                             </li>
                             <li className={styles.listItem}>
                                 <Link to="/delivery-info" className={styles.link}>Доставка та оплата</Link>
-                            </li>
-                            <li className={styles.listItem}>
-                                <a href="#" className={styles.link}>Повернення та обмін</a>
                             </li>
                         </ul>
                     </div>
