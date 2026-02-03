@@ -12,11 +12,13 @@ namespace Clothy.BasketService.BLL.DTOs
         public Guid SizeId { get; set; }
         public Guid ColorId { get; set; }
         public string? ClotheName { get; set; }
+        public string? ClotheSlug { get; set; }
         public decimal Price { get; set; }
         public string? MainPhoto { get; set; }
         public string? SizeName { get; set; }
         public string? HexCode { get; set; }
         public string? ColorName { get; set; }
+        public string? ColorSlug { get; set; }
         public int Quantity { get; set; }
     }
 }

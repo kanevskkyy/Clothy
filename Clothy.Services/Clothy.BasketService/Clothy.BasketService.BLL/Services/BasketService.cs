@@ -108,6 +108,8 @@ namespace Clothy.BasketService.BLL.Services
                     basketItemDto.MainPhoto = validation.MainPhotoUrl;
                     basketItemDto.SizeName = validation.SizeName;
                     basketItemDto.HexCode = validation.ColorHexCode;
+                    basketItemDto.ColorSlug = validation.ColorSlug;
+                    basketItemDto.ClotheSlug = validation.ClotheSlug;
                     basketDto.Items.Add(basketItemDto);
                 }
                 else await basketRepository.RemoveItemAsync(userId, item.ClotheId, item.SizeId, item.ColorId);

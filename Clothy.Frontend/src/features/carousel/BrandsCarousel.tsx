@@ -2,7 +2,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, FreeMode } from "swiper/modules";
 import "swiper/swiper.css";
 import styles from './BrandsCarousel.module.css';
-import type { IBrandReadDTO } from "../../entities/brand/brand.ts";
+import type {IBrandReadDTO} from "../../entities/brand/interfaces/IBrandReadDTO.ts";
 
 const brands: IBrandReadDTO[] = [
     { id: "550e8400-e29b-41d4-a716-446655440000", name: "Nike", slug: "nike", photoURL: "https://pngimg.com/d/nike_PNG18.png", createdAt: "", updatedAt: "" },

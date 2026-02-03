@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { memo, useState } from "react";
-import type { IClotheSummaryDTO } from "../clothe.ts";
 import styles from "./ClotheSummaryCard.module.css";
+import type {IClotheSummaryDTO} from "../interfaces/IClotheSummaryDTO.ts";
 
 interface ClotheSummaryCardProps {
     product: IClotheSummaryDTO;
@@ -12,12 +12,12 @@ const ClotheSummaryCard = memo(({ product }: ClotheSummaryCardProps) => {
 
     return (
         <Link
-            to={`/clothe/${product.slug}/colorId=${selectedColor.colorId}`}
+            to={`/clothe/${product.slug}/${selectedColor.colorSlug}`}
             className={styles.card}
         >
             <div className={styles.imageContainer}>
                 <img
-                    src={selectedColor.mainPhotoURL}
+                    src={selectedColor.photoUrl}
                     alt={product.name}
                     className={styles.image}
                     loading="lazy"

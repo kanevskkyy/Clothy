@@ -9,7 +9,7 @@ namespace Clothy.Shared.Helpers.CloudinaryConfig.ImageService
 {
     public interface IImageService
     {
-        Task<string> UploadAsync(IFormFile file, string folderPath = null);
+        Task<string> UploadAsync(IFormFile file, string folderPath = null, bool removeBackground = false);
         Task DeleteImageAsync(string publicId);
     }
 }

@@ -52,10 +52,6 @@ const DeliveryInfoPage = () => {
                 ))}
             </div>
 
-            <div className={styles.freeShippingBanner}>
-                <p>Безкоштовна доставка при замовленні від 1500 ₴</p>
-            </div>
-
             <div className={styles.returnPolicy}>
                 <div className={styles.returnHeader}>
                     <RotateCcw size={24} />

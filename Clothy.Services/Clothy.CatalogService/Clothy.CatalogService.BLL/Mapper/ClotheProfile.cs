@@ -21,8 +21,9 @@ namespace Clothy.CatalogService.BLL.Mapper
         {
             CreateMap<PhotoClothes, ClotheColorSummaryDTO>()
                 .ForMember(dto => dto.Id, m => m.MapFrom(p => p.Id))
-                .ForMember(dto => dto.MainPhotoURL, m => m.MapFrom(p => p.PhotoURL))
+                .ForMember(dto => dto.PhotoURL, m => m.MapFrom(p => p.PhotoURL))
                 .ForMember(dto => dto.ColorId, m => m.MapFrom(p => p.ColorId))
+                .ForMember(dto => dto.ColorSlug, m => m.MapFrom(p => p.Color.Slug))
                 .ForMember(dto => dto.HexCode, m => m.MapFrom(p => p.Color.HexCode));
 
             CreateMap<ClotheItem, ClotheSummaryDTO>()

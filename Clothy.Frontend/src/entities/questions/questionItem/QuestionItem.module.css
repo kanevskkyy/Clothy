@@ -1,0 +1,46 @@
+.questionItem {
+    padding: 20px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.questionSection, .answerSection {
+    display: flex;
+    justify-content: space-between;
+}
+
+.questionWrapper, .answerWrapper {
+    display: flex;
+    gap: 15px;
+}
+
+.questionInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.questionAvatar, .answerAvatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.questionAuthor, .answerAuthor {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.questionDate, .answerDate {
+    color: #999;
+    font-size: 14px;
+}
+
+.questionText, .answerText {
+    color: #444;
+    line-height: 1.6;
+}
+
+.answerSection {
+    padding-top: 40px;
+    padding-left: 50px;
+}

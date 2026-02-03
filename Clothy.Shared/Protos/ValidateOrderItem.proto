@@ -20,6 +20,8 @@ message ValidateOrderItemResponse {
     string colorHexCode = 6;
     string sizeName = 7;
     string colorName = 8;
+    string colorSlug = 9;
+    string clotheSlug = 10;
 }
 
 message ValidateOrderItemsResponse {

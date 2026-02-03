@@ -1,6 +1,6 @@
-import type { IClotheSummaryDTO } from "../../entities/clotheItem/clothe.ts";
 import styles from "./ProductList.module.css";
 import ClotheSummaryCard from "../../entities/clotheItem/clotheSummary/ClotheSummaryCard.tsx";
+import type {IClotheSummaryDTO} from "../../entities/clotheItem/interfaces/IClotheSummaryDTO.ts";
 
 interface ProductListProps {
     products: IClotheSummaryDTO[];

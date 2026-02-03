@@ -128,6 +128,7 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                         response.IsValid = true;
                         response.ErrorMessage = string.Empty;
                         response.ClotheName = clotheItem.Name;
+                        response.ClotheSlug = clotheItem.Slug;
                         response.Price = clotheItem.Price.ToString();
                         
                         PhotoClothes? mainPhotoForColor = clotheItem.Photos.FirstOrDefault(p => p.ColorId == colorId && p.IsMain);
@@ -136,6 +137,7 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                         response.ColorHexCode = color.HexCode;
                         response.SizeName = size.Name;
                         response.ColorName = color.Name;
+                        response.ColorSlug = color.Slug;
 
                         logger.LogInformation("Successfully validated item: ClotheId={ClotheId}, ColorId={ColorId}, SizeId={SizeId}", clotheId, colorId, sizeId);
                     }

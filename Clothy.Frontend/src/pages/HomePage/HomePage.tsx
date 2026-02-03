@@ -4,8 +4,8 @@ import BrandsCarousel from "../../features/carousel/BrandsCarousel.tsx";
 import styles from "./HomePage.module.css";
 import ProductList from "../../features/productList/ProductList.tsx";
 import SaleBanner from "../../features/saleBanner/SaleBanner.tsx";
-import type {IClotheSummaryDTO} from "../../entities/clotheItem/clothe.ts";
 import Container from "../../shared/Container/Container.tsx";
+import type {IClotheSummaryDTO} from "../../entities/clotheItem/interfaces/IClotheSummaryDTO.ts";
 
 const mockProducts: IClotheSummaryDTO[] = [
     {
@@ -26,15 +26,17 @@ const mockProducts: IClotheSummaryDTO[] = [
         colors: [
             {
                 id: "8f83347a-de5b-4c6c-9087-6fcdc09863f8",
-                mainPhotoURL: "https://res.cloudinary.com/dkdljnfja/image/upload/v1769171770/clotheThirdSecond_mljouz.jpg",
+                photoUrl: "https://res.cloudinary.com/dkdljnfja/image/upload/v1769171770/clotheThirdSecond_mljouz.jpg",
                 colorId: "6a1dd9e3-b170-47fc-ad0b-c86ffd699f15",
-                hexCode: "#000000"
+                hexCode: "#000000",
+                colorSlug: "black"
             },
             {
                 id: "5dbab66c-402b-4039-a158-a7caa5bf53af",
-                mainPhotoURL: "https://res.cloudinary.com/dkdljnfja/image/upload/v1769171770/clotheThirdSecond_mljouz.jpg",
+                photoUrl: "https://res.cloudinary.com/dkdljnfja/image/upload/v1769171770/clotheThirdSecond_mljouz.jpg",
                 colorId: "9790c7d4-9402-47a3-801b-7510c35ce76a",
-                hexCode: "#FFFFFF"
+                hexCode: "#FFFFFF",
+                colorSlug: "white"
             }
         ],
         isAvailable: true
@@ -55,9 +57,10 @@ const mockProducts: IClotheSummaryDTO[] = [
         colors: [
             {
                 id: "775afb72-67f0-49c4-abb4-659e6de8df8c",
-                mainPhotoURL: "https://res.cloudinary.com/dkdljnfja/image/upload/v1769171770/clotheThirdSecond_mljouz.jpg",
+                photoUrl: "https://res.cloudinary.com/dkdljnfja/image/upload/v1769171770/clotheThirdSecond_mljouz.jpg",
                 colorId: "6c6116e4-b01b-46a4-a8da-0ecb66a372e1",
-                hexCode: "#1E3A8A"
+                hexCode: "#1E3A8A",
+                colorSlug: "dark-blue"
             }
         ],
         isAvailable: true
@@ -80,15 +83,17 @@ const mockProducts: IClotheSummaryDTO[] = [
         colors: [
             {
                 id: "2befbb5f-0d8f-405e-aaab-8c8dc2cbd087",
-                mainPhotoURL: "https://res.cloudinary.com/dkdljnfja/image/upload/v1769171770/clotheThirdSecond_mljouz.jpg",
+                photoUrl: "https://res.cloudinary.com/dkdljnfja/image/upload/v1769171770/clotheThirdSecond_mljouz.jpg",
                 colorId: "f2a7d8ec-fc9c-46e2-ab23-6862b931b5f7",
-                hexCode: "#D4C5B9"
+                hexCode: "#D4C5B9",
+                colorSlug: "light",
             },
             {
                 id: "9c505311-9104-49b4-9b82-a98a5c7cfc50",
-                mainPhotoURL: "https://res.cloudinary.com/dkdljnfja/image/upload/v1765717386/clothes/rdf6ew5pirs5le3baz2o.jpg",
+                photoUrl: "https://res.cloudinary.com/dkdljnfja/image/upload/v1765717386/clothes/rdf6ew5pirs5le3baz2o.jpg",
                 colorId: "46716456-7be5-47c1-9d40-86c1f6f5d3b3",
-                hexCode: "#6B7280"
+                hexCode: "#6B7280",
+                colorSlug: "test"
             }
         ],
         isAvailable: false
@@ -109,9 +114,10 @@ const mockProducts: IClotheSummaryDTO[] = [
         colors: [
             {
                 id: "a912f610-ddcb-4c64-b2ef-2f719769f857",
-                mainPhotoURL: "https://res.cloudinary.com/dkdljnfja/image/upload/v1769171770/clotheThirdSecond_mljouz.jpg",
+                photoUrl: "https://res.cloudinary.com/dkdljnfja/image/upload/v1769171770/clotheThirdSecond_mljouz.jpg",
                 colorId: "black",
-                hexCode: "#000000"
+                hexCode: "#000000",
+                colorSlug: "test"
             }
         ],
         isAvailable: true
@@ -134,15 +140,17 @@ const mockProducts: IClotheSummaryDTO[] = [
         colors: [
             {
                 id: "16bf6ab7-47fd-40d9-94c5-04c1cef79fd1",
-                mainPhotoURL: "https://res.cloudinary.com/dkdljnfja/image/upload/v1769171770/clotheThirdSecond_mljouz.jpg",
+                photoUrl: "https://res.cloudinary.com/dkdljnfja/image/upload/v1769171770/clotheThirdSecond_mljouz.jpg",
                 colorId: "black",
-                hexCode: "#000000"
+                hexCode: "#000000",
+                colorSlug: "test"
             },
             {
                 id: "5fd5a7c7-3153-465b-a8d6-07bc9553903d",
-                mainPhotoURL: "https://res.cloudinary.com/dkdljnfja/image/upload/v1769172116/OMBB085F25FLE00L_1019_0_tyhswt.webp",
+                photoUrl: "https://res.cloudinary.com/dkdljnfja/image/upload/v1769172116/OMBB085F25FLE00L_1019_0_tyhswt.webp",
                 colorId: "navy",
-                hexCode: "#1E3A8A"
+                hexCode: "#1E3A8A",
+                colorSlug: "test"
             }
         ],
         isAvailable: true
@@ -163,9 +171,10 @@ const mockProducts: IClotheSummaryDTO[] = [
         colors: [
             {
                 id: "05cde1b5-8fa7-48c2-a10c-c04b78b54d49",
-                mainPhotoURL: "https://res.cloudinary.com/dkdljnfja/image/upload/v1769171770/clotheThirdSecond_mljouz.jpg",
+                photoUrl: "https://res.cloudinary.com/dkdljnfja/image/upload/v1769171770/clotheThirdSecond_mljouz.jpg",
                 colorId: "red",
-                hexCode: "#DC2626"
+                hexCode: "#DC2626",
+                colorSlug: "test"
             }
         ],
         isAvailable: true
@@ -188,15 +197,17 @@ const mockProducts: IClotheSummaryDTO[] = [
         colors: [
             {
                 id: "7fcd0426-d642-41eb-be7d-4fd0b1830cd9",
-                mainPhotoURL: "https://res.cloudinary.com/dkdljnfja/image/upload/v1769171770/clotheThirdSecond_mljouz.jpg",
+                photoUrl: "https://res.cloudinary.com/dkdljnfja/image/upload/v1769171770/clotheThirdSecond_mljouz.jpg",
                 colorId: "gray",
-                hexCode: "#6B7280"
+                hexCode: "#6B7280",
+                colorSlug: "test"
             },
             {
                 id: "bdc9b754-a7e1-4809-95e2-d32404759f42",
-                mainPhotoURL: "https://res.cloudinary.com/dkdljnfja/image/upload/v1769171770/clotheThirdSecond_mljouz.jpg",
+                photoUrl: "https://res.cloudinary.com/dkdljnfja/image/upload/v1769171770/clotheThirdSecond_mljouz.jpg",
                 colorId: "black",
-                hexCode: "#000000"
+                hexCode: "#000000",
+                colorSlug: "test"
             }
         ],
         isAvailable: false
@@ -217,9 +228,10 @@ const mockProducts: IClotheSummaryDTO[] = [
         colors: [
             {
                 id: "c12d1e5a6-c7f2-4f82-9d0a-abcdef123460",
-                mainPhotoURL: "https://res.cloudinary.com/dkdljnfja/image/upload/v1769171770/clotheThirdSecond_mljouz.jpg",
+                photoUrl: "https://res.cloudinary.com/dkdljnfja/image/upload/v1769171770/clotheThirdSecond_mljouz.jpg",
                 colorId: "khaki",
-                hexCode: "#78716C"
+                hexCode: "#78716C",
+                colorSlug: "test"
             }
         ],
         isAvailable: true

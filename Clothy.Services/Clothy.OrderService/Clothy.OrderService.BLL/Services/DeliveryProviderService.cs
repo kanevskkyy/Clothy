@@ -81,7 +81,7 @@ namespace Clothy.OrderService.BLL.Services
             if (exists) throw new AlreadyExistsException($"DeliveryProvider with name '{deliveryProviderCreateDTO.Name}' already exists.");
 
             DeliveryProvider provider = mapper.Map<DeliveryProvider>(deliveryProviderCreateDTO);
-            if (deliveryProviderCreateDTO.Icon != null) provider.IconUrl = await imageService.UploadAsync(deliveryProviderCreateDTO.Icon, "delivery-providers");
+            provider.IconUrl = await imageService.UploadAsync(deliveryProviderCreateDTO.Icon, "delivery-providers", true);
 
             provider.Id = await unitOfWork.DeliveryProviders.AddAsync(provider, cancellationToken);
             await unitOfWork.CommitAsync();

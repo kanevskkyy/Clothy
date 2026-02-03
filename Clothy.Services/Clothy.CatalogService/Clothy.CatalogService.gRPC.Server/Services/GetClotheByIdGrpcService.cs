@@ -91,7 +91,8 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                 clotheDetailGrpcResponse.Tags.AddRange(clotheItem?.Tags.Select(tag => new TagGrpcResponse
                 {
                     Id = tag.Id.ToString(),
-                    Name = tag.Name
+                    Name = tag.Name,
+                    Slug = tag.Slug
                 }));
                 clotheDetailGrpcResponse.Materials.AddRange(clotheItem?.Materials.Select(materials => new MaterialWithPercentageGrpcResponse
                 {

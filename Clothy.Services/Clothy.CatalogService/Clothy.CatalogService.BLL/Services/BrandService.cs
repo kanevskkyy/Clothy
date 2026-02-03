@@ -63,7 +63,7 @@ namespace Clothy.CatalogService.BLL.Services
             exists = await unitOfWork.Brands.IsSlugAlreadyExistsAsync(brandCreateDTO.Slug, null, cancellationToken);
             if (exists) throw new AlreadyExistsException("Brand with this slug already exists");
 
-            string photoUrl = await imageService.UploadAsync(brandCreateDTO.Photo, "brands");
+            string photoUrl = await imageService.UploadAsync(brandCreateDTO.Photo, "brands", true);
 
             Brand brand = mapper.Map<Brand>(brandCreateDTO);
             brand.PhotoURL = photoUrl;

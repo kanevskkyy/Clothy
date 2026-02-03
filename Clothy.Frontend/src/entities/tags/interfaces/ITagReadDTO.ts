@@ -1,4 +1,4 @@
-export interface IClothingTypeReadDTO {
+export interface ITagReadDTO {
     id: string;
     name: string;
     slug: string;

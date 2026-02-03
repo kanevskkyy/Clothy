@@ -1,0 +1,258 @@
+.clotheInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-top: 15px;
+}
+
+.clotheInfoHeader h2 {
+    font-size: 32px;
+    margin-bottom: 0;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.clotheInfoHeader {
+    border-bottom: 0;
+}
+
+.priceInfo {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 0;
+}
+
+.price {
+    font-size: 32px;
+    font-weight: bold;
+    color: #1a1a1a;
+}
+
+.oldPrice {
+    font-size: 24px;
+    text-decoration: line-through;
+    color: #999;
+}
+
+h4 {
+    margin-top: 0;
+    margin-right: 0;
+    font-size: 16px;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.colorName, .brandName, .collectionName, .genderName {
+    color: #666;
+    font-weight: normal;
+}
+
+.colorsContainer {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.color {
+    width: 41px;
+    height: 43px;
+    border: 2px solid #D9D9D9;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.color:hover {
+    border-color: #999;
+    transform: scale(1.05);
+}
+
+.activeColor {
+    border-color: #000;
+    border-width: 3px;
+}
+
+.sizes {
+    margin-top: 15px;
+}
+
+.sizes h4 {
+    font-size: 16px;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.sizeContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.size {
+    border: 2px solid #e0e0e0;
+    padding: 12px 20px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 500;
+    min-width: 41px;
+    min-height: 43px;
+    text-align: center;
+}
+
+.size:hover {
+    border-color: #000;
+    background-color: #f5f5f5;
+}
+
+.activeSize {
+    border: 2px solid #534e4e;
+}
+
+.sizeNotAvailable {
+    color: #e0e0e0;
+}
+
+.cart {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    align-items: center;
+}
+
+.itemOptions {
+    display: flex;
+    gap: 0;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.removeCount, .addCount {
+    background: white;
+    border: none;
+    padding: 12px 18px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    color: #1a1a1a;
+}
+
+.removeCount:hover, .addCount:hover {
+    background: #f5f5f5;
+}
+
+.productCount {
+    background: white;
+    border: none;
+    border-left: 1px solid #e0e0e0;
+    border-right: 1px solid #e0e0e0;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
+    min-width: 60px;
+    cursor: default;
+}
+
+.addToCart {
+    background: #171515;
+    color: #ffffff;
+    padding: 14px 40px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    flex: 1;
+}
+
+.addToCart:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.tagsList {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.colors {
+    margin-top: 20px;
+}
+
+.tagItem {
+    border: 1px solid #D9D9D9;
+    padding: 8px 14px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    background: #F3F4F6;
+}
+
+.tryOnYourself {
+    margin-top: 10px;
+    background: #251e1e;
+    color: #ffffff;
+    padding: 18px 40px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    width: 100%;
+}
+
+.tryOnYourself:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.clotheDescription {
+    padding: 25px 0 0;
+}
+
+.clotheDescription h3, .clotheMaterials h3 {
+    font-size: 20px;
+    margin-bottom: 5px;
+    color: #1a1a1a;
+}
+
+.clotheDescription p, .clotheMaterials p {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+.brandInfo {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.brandInfo h4 {
+    margin: 0;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    line-height: 1;
+}
+
+.brandInfo img {
+    border-radius: 0;
+    display: block;
+}
+
+.tagsInfo {
+    margin-top: 10px;
+}
+
+@media (max-width: 1024px) {
+    .clotheInfo{
+        margin-top: 0;
+    }
+}

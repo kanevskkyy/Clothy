@@ -19,7 +19,7 @@ const Hero = () => {
                     <h1 className={styles.title}>
                         Стиль, який
                         <br />
-                        <span className={styles.accent}>підкреслює вас</span>
+                        підкреслює вас
                     </h1>
                     <p className={styles.description}>
                         Відкрийте для себе найкращі бренди та актуальні колекції. Ваш ідеальний образ починається тут.

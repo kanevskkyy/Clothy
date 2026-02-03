@@ -6,6 +6,8 @@ import Footer from '../../features/footer/Footer';
 import styles from './AppRouter.module.css';
 import DeliveryInfoPage from "../../pages/DeliveryInfoPage/DeliveryInfoPage.tsx";
 import ScrollToTop from "../scroll/ScrollToTop.tsx";
+import ClotheDetailPage from "../../pages/ClotheDetailPage/ClotheDetailPage.tsx";
+import CartPage from "../../pages/CartPage/CartPage.tsx";
 
 
 export const AppRouter = () => {
@@ -20,6 +22,8 @@ export const AppRouter = () => {
                         <Route path="/" element={<HomePage/>}/>
                         <Route path="/about-us" element={<AboutUsPage/>}/>
                         <Route path="/delivery-info" element={<DeliveryInfoPage/>}/>
+                        <Route path="/clothe/:slug/:colorSlug" element={<ClotheDetailPage/>}/>
+                        <Route path="/cart" element={<CartPage/>}/>
                     </Routes>
                 </main>
 

@@ -66,7 +66,7 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                 Id = brand.Key.Id.ToString(),
                 Name = brand.Key.Name,
                 Slug = brand.Key.Slug,
-                PhotoUrl = brand.Key.PhotoURL,
+                PhotoURL = brand.Key.PhotoURL,
                 ClotheItemCount = brand.Value
             }).ToList();
         }

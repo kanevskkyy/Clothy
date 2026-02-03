@@ -9,8 +9,9 @@ namespace Clothy.CatalogService.BLL.DTOs.PhotoDTOs
     public class ClotheColorSummaryDTO
     {
         public Guid Id { get; set; }
-        public string? MainPhotoURL { get; set; }
+        public string? PhotoURL { get; set; }
         public Guid ColorId { get; set; }
         public string? HexCode { get; set; }
+        public string? ColorSlug { get; set; }
     }
 }

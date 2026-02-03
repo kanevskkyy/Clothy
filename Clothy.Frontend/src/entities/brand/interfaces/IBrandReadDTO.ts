@@ -3,6 +3,6 @@ export interface IBrandReadDTO {
     name : string;
     slug: string;
     photoURL: string;
-    createdAt: string;
-    updatedAt: string;
+    createdAt?: string;
+    updatedAt?: string;
 }

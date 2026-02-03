@@ -47,7 +47,7 @@ namespace Clothy.Aggregator.Aggregate.Clients
                                 Id = brand.Id,
                                 Name = brand.Name,
                                 Slug = brand.Slug,
-                                PhotoUrl = brand.PhotoUrl,
+                                PhotoURL = brand.PhotoURL,
                                 ClotheItemCount = brand.ClotheItemCount
                             }).ToList(),
 

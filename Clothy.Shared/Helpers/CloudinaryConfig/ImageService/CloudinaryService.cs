@@ -26,7 +26,7 @@ namespace Clothy.Shared.Helpers.CloudinaryConfig
             cloudinary = new Cloudinary(cloudinaryAccount);
         }
 
-        public async Task<string> UploadAsync(IFormFile file, string folderPath = null)
+        public async Task<string> UploadAsync(IFormFile file, string folderPath = null, bool removeBackground = false)
         {
             Stream fileStream = file.OpenReadStream();
 
@@ -37,6 +37,11 @@ namespace Clothy.Shared.Helpers.CloudinaryConfig
                     File = new FileDescription(file.FileName, fileStream),
                     Folder = folderPath
                 };
+
+                if (removeBackground)
+                {
+                    uploadParameters.Transformation = new Transformation().Effect("background_removal");
+                }
 
                 ImageUploadResult uploadResult = await cloudinary.UploadAsync(uploadParameters);
                 return uploadResult.SecureUrl.ToString();

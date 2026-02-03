@@ -1,0 +1,51 @@
+.reviewItem {
+    padding: 20px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.reviewHeader {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 12px;
+}
+
+.reviewAvatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.reviewInfo {
+    flex: 1;
+}
+
+.reviewAuthor {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.reviewStars {
+    display: flex;
+    gap: 2px;
+}
+
+.reviewStars .star {
+    font-size: 16px;
+    color: #ddd;
+}
+
+.reviewStars .filled {
+    color: #FFA500;
+}
+
+.reviewDate {
+    color: #999;
+    font-size: 14px;
+}
+
+.reviewText {
+    color: #444;
+    line-height: 1.6;
+}

@@ -1,6 +1,7 @@
 export interface IClotheColorSummaryDTO{
     id: string;
-    mainPhotoURL: string;
+    photoUrl: string;
     colorId: string;
     hexCode: string;
+    colorSlug: string;
 }

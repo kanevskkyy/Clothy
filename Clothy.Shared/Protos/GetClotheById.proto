@@ -37,6 +37,7 @@ message AdditionalPhotoGrpcResponse {
 message TagGrpcResponse {
 	string id = 1;
 	string name = 2;
+	string slug = 3;
 }
 
 message MaterialWithPercentageGrpcResponse {
