@@ -28,11 +28,11 @@ namespace Clothy.CatalogService.gRPC.Server.Services
             try
             {
                 Dictionary<Brand, int> brands = await unitOfWork.Brands.GetBrandsWithStockCountAsync(context.CancellationToken);
-                IReadOnlyList<ClothingType> clothingTypes = await unitOfWork.ClothingTypes.GetAllAsync(context.CancellationToken);
+                Dictionary<ClothingType, int> clothingTypes = await unitOfWork.ClothingTypes.GetClothingTypeCountWithStockAsync(context.CancellationToken);
                 Dictionary<Collection, int> collections = await unitOfWork.Collections.GetCollectionsCountWithStockAsync(context.CancellationToken);
                 Dictionary<Color, int> colors = await unitOfWork.Colors.GetColorsCountWithStockAsync(context.CancellationToken);
                 Dictionary<Material, int> materials = await unitOfWork.Materials.GetMaterialsWithStockAsync(context.CancellationToken);
-                IReadOnlyList<Size> sizes = await unitOfWork.Sizes.GetAllAsync(context.CancellationToken);
+                Dictionary<Size, int> sizes = await unitOfWork.Sizes.GetSizesCountWithStockAsync(context.CancellationToken);
                 Dictionary<Tag, int> tags = await unitOfWork.Tags.GetTagsWithStockCountAsync(context.CancellationToken);
                 (decimal minPrice, decimal maxPrice) priceRange = await unitOfWork.ClotheItems.GetMinAndMaxPriceAsync(context.CancellationToken);
                 (int maleCount, int femaleCount, int unisexCount) genderCount = await unitOfWork.ClotheItems.GetClotheItemCountByGenderAsync(context.CancellationToken);
@@ -61,23 +61,23 @@ namespace Clothy.CatalogService.gRPC.Server.Services
 
         private List<BrandsGrpcResponse> ConvertBrandsToGrpcResponse(Dictionary<Brand, int> brands)
         {
-            return brands.Select(brand => new BrandsGrpcResponse
+            return brands.Select(pair => new BrandsGrpcResponse
             {
-                Id = brand.Key.Id.ToString(),
-                Name = brand.Key.Name,
-                Slug = brand.Key.Slug,
-                PhotoURL = brand.Key.PhotoURL,
-                ClotheItemCount = brand.Value
+                Id = pair.Key.Id.ToString(),
+                Name = pair.Key.Name,
+                Slug = pair.Key.Slug,
+                ClotheItemCount = pair.Value
             }).ToList();
         }
 
-        private List<ClothingTypesGrpcResponse> ConvertClothingTypesToGrpcResponse(IReadOnlyList<ClothingType> clothingTypes)
+        private List<ClothingTypesGrpcResponse> ConvertClothingTypesToGrpcResponse(Dictionary<ClothingType, int> clothingTypes)
         {
             return clothingTypes.Select(clothingType => new ClothingTypesGrpcResponse
             {
-                Id = clothingType.Id.ToString(),
-                Name = clothingType.Name,
-                Slug = clothingType.Slug,
+                Id = clothingType.Key.Id.ToString(),
+                Name = clothingType.Key.Name,
+                Slug = clothingType.Key.Slug,
+                ClotheItemCount = clothingType.Value
             }).ToList();
         }
 
@@ -98,7 +98,6 @@ namespace Clothy.CatalogService.gRPC.Server.Services
             {
                 Id = pair.Key.Id.ToString(),
                 Name = pair.Key.Name,
-                HexCode = pair.Key.HexCode,
                 Slug = pair.Key.Slug,
                 ClotheItemCount = pair.Value
             }).ToList();
@@ -115,13 +114,14 @@ namespace Clothy.CatalogService.gRPC.Server.Services
             }).ToList();
         }
 
-        private List<SizesGrpcResponse> ConvertSizesToGrpcResponse(IReadOnlyList<Size> sizes)
+        private List<SizesGrpcResponse> ConvertSizesToGrpcResponse(Dictionary<Size, int> sizes)
         {
             return sizes.Select(size => new SizesGrpcResponse
             {
-                Id = size.Id.ToString(),
-                Name = size.Name,
-                Slug = size.Slug
+                Id = size.Key.Id.ToString(),
+                Name = size.Key.Name,
+                Slug = size.Key.Slug,
+                ClotheItemCount = size.Value
             }).ToList();
         }   
 

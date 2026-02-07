@@ -1,13 +1,14 @@
 import { Link } from "react-router-dom";
-import type { ReactNode } from "react";
+import type { ReactNode, ButtonHTMLAttributes } from "react";
 import styles from "./Button.module.css";
 
-interface ButtonProps {
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     children: ReactNode;
     to?: string;
-    onClick?: () => void;
     icon?: ReactNode;
-    variant?: "primary" | "secondary";
+    variant?: "primary" | "secondary" | "outline" | "ghost";
+    fullWidth?: boolean;
+    size?: "sm" | "md" | "lg";
 }
 
 const Button = ({
@@ -16,10 +17,15 @@ const Button = ({
                     onClick,
                     icon,
                     variant = "primary",
+                    fullWidth = false,
+                    size = "md",
+                    disabled,
+                    type = "button",
+                    ...rest
                 }: ButtonProps) => {
-    const className = `${styles.button} ${styles[variant]}`;
+    const className = `${styles.button} ${styles[variant]} ${styles[size]} ${fullWidth ? styles.fullWidth : ''}`;
 
-    if (to) {
+    if (to && !disabled) {
         return (
             <Link to={to} className={className}>
                 <span>{children}</span>
@@ -29,7 +35,13 @@ const Button = ({
     }
 
     return (
-        <button className={className} onClick={onClick}>
+        <button
+            className={className}
+            onClick={onClick}
+            disabled={disabled}
+            type={type}
+            {...rest}
+        >
             <span>{children}</span>
             {icon}
         </button>

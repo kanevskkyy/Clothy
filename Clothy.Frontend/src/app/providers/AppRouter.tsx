@@ -8,12 +8,15 @@ import DeliveryInfoPage from "../../pages/DeliveryInfoPage/DeliveryInfoPage.tsx"
 import ScrollToTop from "../scroll/ScrollToTop.tsx";
 import ClotheDetailPage from "../../pages/ClotheDetailPage/ClotheDetailPage.tsx";
 import CartPage from "../../pages/CartPage/CartPage.tsx";
-
+import NotFoundPage from "../../pages/NotFoundPage/NotFoundPage.tsx";
+import CatalogPage from "../../pages/CatalogPage/CatalogPage.tsx";
+import LoginPage from "../../pages/LoginPage/LoginPage.tsx";
+import RegisterPage from "../../pages/RegisterPage/RegisterPage.tsx";
 
 export const AppRouter = () => {
     return (
         <BrowserRouter>
-            <ScrollToTop />
+            <ScrollToTop/>
             <div className={styles.appWrapper}>
                 <Header/>
 
@@ -24,6 +27,10 @@ export const AppRouter = () => {
                         <Route path="/delivery-info" element={<DeliveryInfoPage/>}/>
                         <Route path="/clothe/:slug/:colorSlug" element={<ClotheDetailPage/>}/>
                         <Route path="/cart" element={<CartPage/>}/>
+                        <Route path="/catalog" element={<CatalogPage/>}/>
+                        <Route path="/login" element={<LoginPage/>}/>
+                        <Route path="/register" element={<RegisterPage/>}/>
+                        <Route path="*" element={<NotFoundPage/>}/>
                     </Routes>
                 </main>
 

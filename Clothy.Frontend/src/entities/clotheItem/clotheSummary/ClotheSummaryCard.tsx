@@ -30,7 +30,7 @@ const ClotheSummaryCard = memo(({ product }: ClotheSummaryCardProps) => {
 
                 {!product.isAvailable && (
                     <div className={styles.unavailableBadge}>
-                        Немає в наявності
+                        Not available
                     </div>
                 )}
             </div>
@@ -84,5 +84,4 @@ const ClotheSummaryCard = memo(({ product }: ClotheSummaryCardProps) => {
     );
 });
 
-ClotheSummaryCard.displayName = "ClotheSummaryCard";
 export default ClotheSummaryCard;

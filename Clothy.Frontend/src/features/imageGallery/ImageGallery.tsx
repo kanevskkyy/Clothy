@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import styles from './ImageGallery.module.css';
 import type { IClothePhotos } from "../../entities/photos/interfaces/IClothePhotos.ts";
 
@@ -32,11 +33,19 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({ additionalPhotos, selectedC
     const safeActiveIndex: number = Math.min(activeIndex, sortedPhotos.length - 1);
     const activePhoto: IClothePhotos = sortedPhotos[safeActiveIndex];
 
+    const handlePrevious = () => {
+        setActiveIndex((prev) => (prev === 0 ? sortedPhotos.length - 1 : prev - 1));
+    };
+
+    const handleNext = () => {
+        setActiveIndex((prev) => (prev === sortedPhotos.length - 1 ? 0 : prev + 1));
+    };
+
     if (!sortedPhotos.length || !activePhoto) {
         return (
             <div className={styles.imageContainer}>
                 <div className={styles.mainImageContainer}>
-                    <div>Немає фото</div>
+                    <div>No photos available</div>
                 </div>
             </div>
         );
@@ -50,6 +59,24 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({ additionalPhotos, selectedC
                     className={styles.mainImage}
                     alt="Product"
                 />
+                {sortedPhotos.length > 1 && (
+                    <>
+                        <button
+                            className={`${styles.arrowButton} ${styles.arrowLeft}`}
+                            onClick={handlePrevious}
+                            aria-label="Previous photo"
+                        >
+                            <ChevronLeft size={24} />
+                        </button>
+                        <button
+                            className={`${styles.arrowButton} ${styles.arrowRight}`}
+                            onClick={handleNext}
+                            aria-label="Next photo"
+                        >
+                            <ChevronRight size={24} />
+                        </button>
+                    </>
+                )}
             </div>
             <div className={styles.additionalImages}>
                 {sortedPhotos.map((photo, index) => (

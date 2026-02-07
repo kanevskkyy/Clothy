@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import styles from "./ClotheDetail.module.css";
 import type {IColorReadDTO} from "../../colors/interfaces/IColorReadDTO.ts";
 import type {ISizeReadDTO} from "../../sizes/interfaces/ISizeReadDTO.ts";
+import Button from "../../../shared/Button/Button.tsx";
 
 interface ProductInfoProps {
     clotheDetail: IClotheDetailDTO;
@@ -71,8 +72,8 @@ const ClotheDetail: React.FC<ProductInfoProps> = ({ clotheDetail, selectedColor,
 
     const isAvailable = maxQuantity > 0;
 
-    const handleAddToCart = () => console.log('Додано в кошик:', { selectedColor, selectedSize, quantity });
-    const handleSubscribe = () => console.log('Підписка:', { selectedColor, selectedSize });
+    const handleAddToCart = () => console.log('Added to cart:', { selectedColor, selectedSize, quantity });
+    const handleSubscribe = () => console.log('Subscription:', { selectedColor, selectedSize });
     const handleTryOnYourself = () => console.log('Try on yourself');
 
     return (
@@ -84,19 +85,19 @@ const ClotheDetail: React.FC<ProductInfoProps> = ({ clotheDetail, selectedColor,
                     {clotheDetail.hasOldPrice && <p className={styles.oldPrice}>{clotheDetail.oldPrice}₴</p>}
                 </div>
                 <div className={styles.brandInfo}>
-                    <h4>Бренд: <span className={styles.brandName}>{clotheDetail.brand.name}</span></h4>
+                    <h4>Brand: <span className={styles.brandName}>{clotheDetail.brand.name}</span></h4>
                     <img src={clotheDetail.brand.photoURL} alt="brand logo" width={50} height={50} />
                 </div>
-                <h4>Колекція: <span className={styles.collectionName}>{clotheDetail.collection.name}</span></h4>
-                <h4>Стать: <span className={styles.genderName}>{clotheDetail.gender}</span></h4>
+                <h4>Collection: <span className={styles.collectionName}>{clotheDetail.collection.name}</span></h4>
+                <h4>Gender: <span className={styles.genderName}>{clotheDetail.gender}</span></h4>
                 <div className={styles.tagsInfo}>
-                    <h4>Теги: </h4>
+                    <h4>Tags: </h4>
                     <div className={styles.tagsList}>
                         {clotheDetail.tags.map(tag => <div key={tag.id} className={styles.tagItem}>{tag.name}</div>)}
                     </div>
                 </div>
                 <div className={styles.colors}>
-                    <h4>Колір: <span className={styles.colorName}>{selectedColor?.name}</span></h4>
+                    <h4>Color: <span className={styles.colorName}>{selectedColor?.name}</span></h4>
                     <div className={styles.colorsContainer}>
                         {uniqueColors.map(color => (
                             <div
@@ -109,7 +110,7 @@ const ClotheDetail: React.FC<ProductInfoProps> = ({ clotheDetail, selectedColor,
                     </div>
                 </div>
                 <div className={styles.sizes}>
-                    <h4>Розмір</h4>
+                    <h4>Size</h4>
                     <div className={styles.sizeContainer}>
                         {sizeAvailability.map(({ size, available }) => (
                             <div
@@ -128,23 +129,49 @@ const ClotheDetail: React.FC<ProductInfoProps> = ({ clotheDetail, selectedColor,
                 <div className={styles.cart}>
                     {isAvailable && (
                         <div className={styles.itemOptions}>
-                            <button className={styles.removeCount} onClick={() => quantity > 1 && setQuantity(q => q - 1)} disabled={quantity <= 1}>-</button>
-                            <button className={styles.productCount}>{quantity}</button>
-                            <button className={styles.addCount} onClick={() => quantity < maxQuantity && setQuantity(q => q + 1)} disabled={quantity >= maxQuantity}>+</button>
+                            <button
+                                className={styles.removeCount}
+                                onClick={() => quantity > 1 && setQuantity(q => q - 1)}
+                                disabled={quantity <= 1}
+                            >
+                                -
+                            </button>
+                            <div className={styles.productCount}>{quantity}</div>
+                            <button
+                                className={styles.addCount}
+                                onClick={() => quantity < maxQuantity && setQuantity(q => q + 1)}
+                                disabled={quantity >= maxQuantity}
+                            >
+                                +
+                            </button>
                         </div>
                     )}
-                    <button className={styles.addToCart} type="button" onClick={isAvailable ? handleAddToCart : handleSubscribe}>
-                        {isAvailable ? 'Додати в кошик' : 'Підписатись на оновлення'}
-                    </button>
+                    <Button
+                        variant="primary"
+                        size="lg"
+                        fullWidth
+                        onClick={isAvailable ? handleAddToCart : handleSubscribe}
+                    >
+                        {isAvailable ? 'Add to cart' : 'Subscribe to updates'}
+                    </Button>
                 </div>
-                <button onClick={handleTryOnYourself} className={styles.tryOnYourself} type="button">Приміряти на себе (АІ)</button>
+                <div className={styles.buttonWrapper}>
+                    <Button
+                        variant="outline"
+                        size="lg"
+                        fullWidth
+                        onClick={handleTryOnYourself}
+                    >
+                        Try it on (AI)
+                    </Button>
+                </div>
             </div>
             <div className={styles.clotheDescription}>
-                <h3>Опис товару</h3>
+                <h3>Product description</h3>
                 <p>{clotheDetail.description}</p>
             </div>
             <div className={styles.clotheMaterials}>
-                <h3>Матеріали</h3>
+                <h3>Materials</h3>
                 <p>{clotheDetail.materials.map((mat, idx) => `${mat.name} (${mat.percentage}%)${idx < clotheDetail.materials.length - 1 ? ', ' : ''}`)}</p>
             </div>
         </div>

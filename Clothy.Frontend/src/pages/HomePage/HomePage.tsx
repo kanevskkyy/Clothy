@@ -4,13 +4,14 @@ import BrandsCarousel from "../../features/carousel/BrandsCarousel.tsx";
 import styles from "./HomePage.module.css";
 import ProductList from "../../features/productList/ProductList.tsx";
 import SaleBanner from "../../features/saleBanner/SaleBanner.tsx";
+import { Helmet } from 'react-helmet';
 import Container from "../../shared/Container/Container.tsx";
 import type {IClotheSummaryDTO} from "../../entities/clotheItem/interfaces/IClotheSummaryDTO.ts";
 
 const mockProducts: IClotheSummaryDTO[] = [
     {
         id: "1692ee7a-e0c5-4fb7-9dd7-e20e362a6713",
-        name: "Футболка базова",
+        name: "Basic T-shirt",
         slug: "futbolka-bazova",
         price: 499,
         oldPrice: 699,
@@ -43,7 +44,7 @@ const mockProducts: IClotheSummaryDTO[] = [
     },
     {
         id: "43c93660-c281-4abf-9769-43d5f1a7fb38",
-        name: "Джинси класичні",
+        name: "Classic jeans",
         slug: "djynsy-klasychni",
         price: 1299,
         brand: {
@@ -67,7 +68,7 @@ const mockProducts: IClotheSummaryDTO[] = [
     },
     {
         id: "1789d9ef-ba23-4992-a5eb-9d0eeb0ece61",
-        name: "Светр в'язаний",
+        name: "Knitted sweater",
         slug: "svetr-vyazanyj",
         price: 899,
         oldPrice: 1199,
@@ -100,7 +101,7 @@ const mockProducts: IClotheSummaryDTO[] = [
     },
     {
         id: "fd616855-8371-43d6-9cc0-890809403f22",
-        name: "Куртка шкіряна",
+        name: "Leather jacket",
         slug: "kurtka-shkiryana",
         price: 3499,
         brand: {
@@ -124,7 +125,7 @@ const mockProducts: IClotheSummaryDTO[] = [
     },
     {
         id: "802fdb77-0cd6-489b-8e7c-8c6d0033657e",
-        name: "Спортивні штани",
+        name: "Sports pants",
         slug: "sportyvni-shtany",
         price: 799,
         oldPrice: 999,
@@ -157,7 +158,7 @@ const mockProducts: IClotheSummaryDTO[] = [
     },
     {
         id: "c0c8c621-052c-4381-b657-05c0e0f75ddf",
-        name: "Сукня вечірня",
+        name: "Evening dress",
         slug: "suknya-vechirnya",
         price: 2199,
         brand: {
@@ -181,7 +182,7 @@ const mockProducts: IClotheSummaryDTO[] = [
     },
     {
         id: "a49f999b-a8be-442f-8471-d0f9b1e7629f",
-        name: "Худі оверсайз",
+        name: "Skinny oversize",
         slug: "hudi-oversajz",
         price: 1099,
         oldPrice: 1399,
@@ -214,7 +215,7 @@ const mockProducts: IClotheSummaryDTO[] = [
     },
     {
         id: "b4d1e5a6-c7f2-4f82-9d0a-abcdef123456",
-        name: "Шорти карго",
+        name: "Cargo shorts",
         slug: "shorty-kargo",
         price: 649,
         brand: {
@@ -239,20 +240,25 @@ const mockProducts: IClotheSummaryDTO[] = [
 ];
 
 const HomePage = () => {
+    // #TODO: Implement API CALL
+
     return (
         <div>
-            <Hero/>
+            <Helmet>
+                <title>Clothy — stylish clothing for your day</title>
+            </Helmet>
+            <Hero />
             <Container>
-                <BenefitsList/>
-                <BrandsCarousel/>
+                <BenefitsList />
+                <BrandsCarousel />
 
                 <section className={styles.productsSection}>
                     <div className={styles.container}>
-                        <h2 className={styles.title}>Популярні товари серед відвідувачів</h2>
-                        <ProductList products={mockProducts}/>
+                        <h2 className={styles.title}>Popular Products Among Visitors</h2>
+                        <ProductList products={mockProducts} />
                     </div>
                 </section>
-                <SaleBanner/>
+                <SaleBanner />
             </Container>
         </div>
     );

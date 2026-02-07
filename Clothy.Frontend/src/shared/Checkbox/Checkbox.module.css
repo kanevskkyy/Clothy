@@ -1,0 +1,30 @@
+.checkboxItem {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    cursor: pointer;
+}
+
+.checkbox {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+    cursor: pointer;
+    accent-color: #0d16c6;
+}
+
+.checkboxLabel {
+    font-weight: 400;
+    font-size: 15px;
+    color: #000000;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.itemCount {
+    color: #000E8A;
+    font-weight: 600;
+    font-size: 14px;
+}

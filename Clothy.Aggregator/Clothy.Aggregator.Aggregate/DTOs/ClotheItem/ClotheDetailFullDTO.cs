@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Clothy.Shared.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,8 +10,8 @@ namespace Clothy.Aggregator.Aggregate.DTOs.ClotheItem
     public class ClotheDetailFullDTO
     {
         public ClotheDetailGrpcResponse? ClotheDetailDTO { get; set; }
-        public List<ReviewGrpcResponse> Reviews { get; set; } = new();
+        public PagedList<ReviewGrpcResponse>? Reviews { get; set; }
         public ReviewStatisticGrpcResponse? Statistics { get; set; }
-        public List<QuestionGrpcResponse> Questions { get; set; } = new();
+        public PagedList<QuestionGrpcResponse>? Questions { get; set; }
     }
 }

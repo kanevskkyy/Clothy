@@ -1,16 +1,12 @@
 import type { IQuestionReadDTO } from "../interfaces/IQuestionReadDTO";
 import styles from "./QuestionItem.module.css";
+import {formatDate} from "../../../shared/formatDate.ts";
 
 interface QuestionItemProps {
     question: IQuestionReadDTO;
 }
 
 const QuestionItem: React.FC<QuestionItemProps> = ({ question }) => {
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('uk-UA');
-    };
-
     return (
         <div className={styles.questionItem}>
             <div className={styles.questionSection}>
@@ -25,7 +21,7 @@ const QuestionItem: React.FC<QuestionItemProps> = ({ question }) => {
                         <p className={styles.questionText}>{question.questionText}</p>
                     </div>
                 </div>
-                <div className={styles.questionDate}>{formatDate(new Date().toISOString())}</div>
+                <div className={styles.questionDate}>{formatDate(question.createdAt)}</div>
             </div>
             {question.answers.map(answer => (
                 <div key={answer.id} className={styles.answerSection}>
@@ -40,7 +36,7 @@ const QuestionItem: React.FC<QuestionItemProps> = ({ question }) => {
                             <p className={styles.answerText}>{answer.answerText}</p>
                         </div>
                     </div>
-                    <div className={styles.answerDate}>{formatDate(new Date().toISOString())}</div>
+                    <div className={styles.answerDate}>{formatDate(answer.createdAt)}</div>
                 </div>
             ))}
         </div>

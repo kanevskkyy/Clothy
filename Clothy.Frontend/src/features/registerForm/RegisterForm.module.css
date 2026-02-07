@@ -1,0 +1,46 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.actions {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 8px;
+}
+
+.login {
+    border-top: 1px solid #e5e5e5;
+    padding-top: 20px;
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    align-items: center;
+}
+
+.loginLink {
+    color: #000;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.loginLink:hover {
+    text-decoration: underline;
+}
+
+.formGroupWrapper{
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.formGroupWrapper:nth-child(2n) {
+    flex: 1;
+}

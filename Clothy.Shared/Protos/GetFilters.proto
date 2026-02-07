@@ -8,14 +8,14 @@ message BrandsGrpcResponse {
 	string id = 1;
 	string name = 2;
 	string slug = 3;
-	string photoURL = 4;
-	int32 clotheItemCount = 5;
+	int32 clotheItemCount = 4;
 }
 
 message ClothingTypesGrpcResponse {
 	string id = 1;
 	string name = 2;
 	string slug = 3;
+	int32 clotheItemCount = 4;
 }
 
 message CollectionsGrpcResponse {
@@ -29,8 +29,7 @@ message ColorsGrpcResponse {
 	string id = 1;
 	string name = 2;
 	string slug = 3;
-	string hexCode = 4;
-	int32 clotheItemCount = 5;
+	int32 clotheItemCount = 4;
 }
 
 message MaterialsGrpcResponse {
@@ -44,6 +43,7 @@ message SizesGrpcResponse {
 	string id = 1;
 	string name = 2;
 	string slug = 3;
+	int32 clotheItemCount = 4;
 }
 
 message TagsGrpcResponse {

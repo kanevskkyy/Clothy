@@ -5,6 +5,8 @@ import ClotheDetail from '../../entities/clotheItem/clotheInfo/ClotheDetail.tsx'
 import ReviewsSection from "../../entities/reviews/reviewSection/ReviewsSection.tsx";
 import {useEffect, useMemo, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
+import { Helmet } from 'react-helmet';
+import PageWrapper from "../../shared/PageWrapper/PageWrapper.tsx";
 
 const ClotheDetailPage = () => {
     const { slug, colorSlug } = useParams<{ slug: string; colorSlug: string }>();
@@ -13,11 +15,11 @@ const ClotheDetailPage = () => {
     const mockData: IClotheAggregatedDetailDTO = {
         clotheDetailDTO: {
             id: "clothe-1",
-            name: "Nike Air Max Футболка",
+            name: "Nike Air Max T-shirt",
             slug: "nike-air-max-tshirt",
-            description: "Класична футболка Nike Air Max виготовлена з високоякісного бавовняного матеріалу. Забезпечує максимальний комфорт під час носіння. Ідеально підходить для повсякденного використання та занять.",
+            description: "The classic Nike Air Max T-shirt is made from high-quality cotton fabric. It provides maximum comfort when worn. Ideal for everyday use and exercise.",
             price: "1299",
-            gender: "Чоловіча",
+            gender: "Male",
             oldPrice: "1599",
             hasOldPrice: true,
             discountPercentage: 19,
@@ -39,7 +41,7 @@ const ClotheDetailPage = () => {
             },
             collection: {
                 id: "collection-1",
-                name: "Зима 2024",
+                name: "Winter 2024",
                 slug: "winter-2024",
                 createdAt: "2025-01-15T10:00:00Z",
                 updatedAt: "2025-01-15T10:00:00Z"
@@ -113,141 +115,149 @@ const ClotheDetailPage = () => {
                 }
             ],
             tags: [
-                { id: "tag-1", name: "Новинка", slug: "new", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
-                { id: "tag-2", name: "Хіт продажу", slug: "bestseller", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
-                { id: "tag-3", name: "Знижка", slug: "sale", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
-                { id: "tag-4", name: "Лімітована колекція", slug: "limited", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
-                { id: "tag-5", name: "Еко-матеріали", slug: "eco", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" }
+                { id: "tag-1", name: "New Arrival", slug: "new", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
+                { id: "tag-2", name: "Bestseller", slug: "bestseller", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
+                { id: "tag-3", name: "Sale", slug: "sale", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
+                { id: "tag-4", name: "Limited Collection", slug: "limited", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
+                { id: "tag-5", name: "Eco Materials", slug: "eco", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" }
             ],
             materials: [
-                { id: "mat-1", name: "Бавовна", percentage: 70 },
-                { id: "mat-2", name: "Катон", percentage: 30 }
+                { id: "mat-1", name: "Cotton", percentage: 70 },
+                { id: "mat-2", name: "Cardon", percentage: 30 }
             ],
             stocks: [
                 {
                     id: "stock-1",
                     size: { id: "size-xs", name: "XS", slug: "xs", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
-                    color: { id: "black", name: "Чорний", slug: "black", hexCode: "#1A1A1A", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
+                    color: { id: "black", name: "Black", slug: "black", hexCode: "#1A1A1A", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
                     quantity: 5
                 },
                 {
                     id: "stock-2",
                     size: { id: "size-s", name: "S", slug: "s", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
-                    color: { id: "black", name: "Чорний", slug: "black", hexCode: "#1A1A1A", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
+                    color: { id: "black", name: "Black", slug: "black", hexCode: "#1A1A1A", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
                     quantity: 0
                 },
                 {
                     id: "stock-3",
                     size: { id: "size-m", name: "M", slug: "m", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
-                    color: { id: "black", name: "Чорний", slug: "black", hexCode: "#1A1A1A", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
+                    color: { id: "black", name: "Black", slug: "black", hexCode: "#1A1A1A", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
                     quantity: 12
                 },
                 {
                     id: "stock-4",
                     size: { id: "size-l", name: "L", slug: "l", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
-                    color: { id: "black", name: "Чорний", slug: "black", hexCode: "#1A1A1A", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
+                    color: { id: "black", name: "Black", slug: "black", hexCode: "#1A1A1A", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
                     quantity: 8
                 },
                 {
                     id: "stock-5",
                     size: { id: "size-xl", name: "XL", slug: "xl", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
-                    color: { id: "black", name: "Чорний", slug: "black", hexCode: "#1A1A1A", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
+                    color: { id: "black", name: "Black", slug: "black", hexCode: "#1A1A1A", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
                     quantity: 3
                 },
                 {
                     id: "stock-6",
                     size: { id: "size-2xl", name: "2XL", slug: "2xl", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
-                    color: { id: "black", name: "Чорний", slug: "black", hexCode: "#1A1A1A", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
+                    color: { id: "black", name: "Black", slug: "black", hexCode: "#1A1A1A", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
                     quantity: 7
                 },
                 {
                     id: "stock-7",
                     size: { id: "size-xs", name: "XS", slug: "xs", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
-                    color: { id: "blue", name: "Синій", slug: "blue", hexCode: "#B9C1E8", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
+                    color: { id: "blue", name: "Blue", slug: "blue", hexCode: "#B9C1E8", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
                     quantity: 3
                 },
                 {
                     id: "stock-8",
                     size: { id: "size-s", name: "S", slug: "s", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
-                    color: { id: "blue", name: "Синій", slug: "blue", hexCode: "#B9C1E8", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
+                    color: { id: "blue", name: "Blue", slug: "blue", hexCode: "#B9C1E8", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
                     quantity: 8
                 },
                 {
                     id: "stock-9",
                     size: { id: "size-m", name: "M", slug: "m", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
-                    color: { id: "blue", name: "Синій", slug: "blue", hexCode: "#B9C1E8", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
+                    color: { id: "blue", name: "Blue", slug: "blue", hexCode: "#B9C1E8", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
                     quantity: 0
                 },
                 {
                     id: "stock-10",
                     size: { id: "size-l", name: "L", slug: "l", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
-                    color: { id: "blue", name: "Синій", slug: "blue", hexCode: "#B9C1E8", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
+                    color: { id: "blue", name: "Blue", slug: "blue", hexCode: "#B9C1E8", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
                     quantity: 4
                 },
                 {
                     id: "stock-11",
                     size: { id: "size-xl", name: "XL", slug: "xl", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
-                    color: { id: "blue", name: "Синій", slug: "blue", hexCode: "#B9C1E8", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
+                    color: { id: "blue", name: "Blue", slug: "blue", hexCode: "#B9C1E8", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
                     quantity: 6
                 },
                 {
                     id: "stock-12",
                     size: { id: "size-2xl", name: "2XL", slug: "2xl", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
-                    color: { id: "blue", name: "Синій", slug: "blue", hexCode: "#B9C1E8", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
+                    color: { id: "blue", name: "Blue", slug: "blue", hexCode: "#B9C1E8", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
                     quantity: 2
                 },
                 {
                     id: "stock-13",
                     size: { id: "size-xs", name: "XS", slug: "xs", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
-                    color: { id: "gray", name: "Сірий", slug: "gray", hexCode: "#6B7280", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
+                    color: { id: "gray", name: "Gray", slug: "gray", hexCode: "#6B7280", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
                     quantity: 10
                 },
                 {
                     id: "stock-14",
                     size: { id: "size-s", name: "S", slug: "s", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
-                    color: { id: "gray", name: "Сірий", slug: "gray", hexCode: "#6B7280", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
+                    color: { id: "gray", name: "Gray", slug: "gray", hexCode: "#6B7280", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
                     quantity: 7
                 },
                 {
                     id: "stock-15",
                     size: { id: "size-m", name: "M", slug: "m", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
-                    color: { id: "gray", name: "Сірий", slug: "gray", hexCode: "#6B7280", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
+                    color: { id: "gray", name: "Gray", slug: "gray", hexCode: "#6B7280", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
                     quantity: 15
                 },
                 {
                     id: "stock-16",
                     size: { id: "size-l", name: "L", slug: "l", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
-                    color: { id: "gray", name: "Сірий", slug: "gray", hexCode: "#6B7280", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
+                    color: { id: "gray", name: "Gray", slug: "gray", hexCode: "#6B7280", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
                     quantity: 0
                 },
                 {
                     id: "stock-17",
                     size: { id: "size-xl", name: "XL", slug: "xl", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
-                    color: { id: "gray", name: "Сірий", slug: "gray", hexCode: "#6B7280", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
+                    color: { id: "gray", name: "Gray", slug: "gray", hexCode: "#6B7280", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
                     quantity: 5
                 },
                 {
                     id: "stock-18",
                     size: { id: "size-2xl", name: "2XL", slug: "2xl", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
-                    color: { id: "gray", name: "Сірий", slug: "gray", hexCode: "#6B7280", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
+                    color: { id: "gray", name: "Gray", slug: "gray", hexCode: "#6B7280", createdAt: "2025-01-01T00:00:00Z", updatedAt: "2025-01-01T00:00:00Z" },
                     quantity: 9
                 }
             ]
         },
-        reviews: [
-            {
-                id: "review-1",
-                user: {
-                    id: "user-1",
-                    firstName: "Максим",
-                    lastName: "П.",
-                    photoUrl: "https://media.gq.com/photos/55828b4f1177d66d68d528a7/master/w_1600%2Cc_limit/blogs-the-feed-2014-04-28-rapper-future-honest-album-release-music-hip-hop.jpg"
-                },
-                rating: 4,
-                comment: "Чудова якість! Дуже задоволений покупкою.",
-                createdAt: "2026-01-04T12:00:00Z"
-            }
-        ],
+        reviews: {
+            currentPage: 1,
+            totalPages: 1,
+            pageSize: 10,
+            totalCount: 1,
+            hasPrevious: false,
+            hasNext: false,
+            items: [
+                {
+                    id: "review-1",
+                    user: {
+                        id: "user-1",
+                        firstName: "Max",
+                        lastName: "B.",
+                        photoUrl: "https://media.gq.com/photos/55828b4f1177d66d68d528a7/master/w_1600%2Cc_limit/blogs-the-feed-2014-04-28-rapper-future-honest-album-release-music-hip-hop.jpg"
+                    },
+                    rating: 4,
+                    comment: "Excellent quality! Very satisfied with the purchase.",
+                    createdAt: "2026-01-04T12:00:00Z"
+                }
+            ]
+        },
         statistics: {
             clotheItemId: "clothe-1",
             totalReviews: 14,
@@ -258,30 +268,40 @@ const ClotheDetailPage = () => {
             oneStars: 0,
             averageRating: 4.5
         },
-        questions: [
-            {
-                id: "question-1",
-                user: {
-                    id: "user-3",
-                    firstName: "Каньовський",
-                    lastName: "Олександр",
-                    photoUrl: "https://media.gq.com/photos/55828b4f1177d66d68d528a7/master/w_1600%2Cc_limit/blogs-the-feed-2014-04-28-rapper-future-honest-album-release-music-hip-hop.jpg"
-                },
-                questionText: "Чі підійде на мене?",
-                answers: [
-                    {
-                        id: "answer-1",
-                        user: {
-                            id: "user-4",
-                            firstName: "Володимир",
-                            lastName: "Іванович",
-                            photoUrl: "https://media.gq.com/photos/55828b4f1177d66d68d528a7/master/w_1600%2Cc_limit/blogs-the-feed-2014-04-28-rapper-future-honest-album-release-music-hip-hop.jpg"
-                        },
-                        answerText: "Так, брав для своєї доньки все підійшло 'на ура'"
-                    }
-                ]
-            }
-        ]
+        questions: {
+            currentPage: 1,
+            totalPages: 13,
+            pageSize: 10,
+            totalCount: 1,
+            hasPrevious: false,
+            hasNext: false,
+            items: [
+                {
+                    id: "question-1",
+                    user: {
+                        id: "user-3",
+                        firstName: "Kanovskiy",
+                        lastName: "Oleksandr",
+                        photoUrl: "https://media.gq.com/photos/55828b4f1177d66d68d528a7/master/w_1600%2Cc_limit/blogs-the-feed-2014-04-28-rapper-future-honest-album-release-music-hip-hop.jpg"
+                    },
+                    questionText: "Will it suit me?",
+                    createdAt: "2026-01-04T12:00:00Z",
+                    answers: [
+                        {
+                            id: "answer-1",
+                            user: {
+                                id: "user-4",
+                                firstName: "Volodymyr",
+                                lastName: "Ivanov",
+                                photoUrl: "https://media.gq.com/photos/55828b4f1177d66d68d528a7/master/w_1600%2Cc_limit/blogs-the-feed-2014-04-28-rapper-future-honest-album-release-music-hip-hop.jpg"
+                            },
+                            answerText: "Yes, I bought everything for my daughter and it was a great success.",
+                            createdAt: "2026-01-04T12:00:00Z"
+                        }
+                    ]
+                }
+            ]
+        }
     };
 
     const uniqueColors = useMemo(() => {
@@ -313,25 +333,35 @@ const ClotheDetailPage = () => {
         navigate(`/clothe/${slug}/${color.slug}`, { replace: true });
     };
 
+    const pageTitle = `${mockData.clotheDetailDTO.name} — Clothy`;
+    const pageDescription = mockData.clotheDetailDTO.description;
+
     return (
-        <div className={styles.pageWrapper}>
-            <div className={styles.container}>
-                <ImageGallery
-                    additionalPhotos={mockData.clotheDetailDTO.additionalPhotos}
-                    selectedColor={selectedColor}
-                />
-                <ClotheDetail
-                    clotheDetail={mockData.clotheDetailDTO}
-                    selectedColor={selectedColor}
-                    onColorChange={handleColorChange}
+        <PageWrapper>
+            <div className={styles.pageWrapper}>
+                <Helmet>
+                    <title>{pageTitle}</title>
+                    <meta name="description" content={pageDescription} />
+                </Helmet>
+
+                <div className={styles.container}>
+                    <ImageGallery
+                        additionalPhotos={mockData.clotheDetailDTO.additionalPhotos}
+                        selectedColor={selectedColor}
+                    />
+                    <ClotheDetail
+                        clotheDetail={mockData.clotheDetailDTO}
+                        selectedColor={selectedColor}
+                        onColorChange={handleColorChange}
+                    />
+                </div>
+                <ReviewsSection
+                    reviews={mockData.reviews}
+                    statistics={mockData.statistics}
+                    questions={mockData.questions}
                 />
             </div>
-            <ReviewsSection
-                reviews={mockData.reviews}
-                statistics={mockData.statistics}
-                questions={mockData.questions}
-            />
-        </div>
+        </PageWrapper>
     );
 };
 

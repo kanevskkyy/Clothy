@@ -1,5 +1,7 @@
+import { Helmet } from "react-helmet";
 import styles from "./DeliveryInfoPage.module.css";
-import {Clock, type LucideIcon, Package, RotateCcw, Truck} from "lucide-react";
+import { Clock, type LucideIcon, Package, RotateCcw, Truck } from "lucide-react";
+import PageWrapper from "../../shared/PageWrapper/PageWrapper";
 
 interface DeliveryOption {
     icon: LucideIcon;
@@ -12,62 +14,72 @@ interface DeliveryOption {
 const deliveryOptions: DeliveryOption[] = [
     {
         icon: Truck,
-        title: 'Нова Пошта',
-        description: 'Доставка у відділення або поштомат',
-        time: '1-3 дні',
-        price: 'від 70 ₴',
+        title: 'Nova Poshta',
+        description: 'Delivery to branch or parcel locker',
+        time: '1-3 days',
+        price: 'from ₴70',
     },
     {
         icon: Package,
-        title: "Кур'єр Нової Пошти",
-        description: 'Доставка за вашою адресою',
-        time: '1-3 дні',
-        price: 'від 100 ₴',
+        title: "Nova Poshta Courier",
+        description: 'Delivery to your address',
+        time: '1-3 days',
+        price: 'from ₴100',
     },
 ];
 
 const DeliveryInfoPage = () => {
     return (
-        <section className={styles.storySection}>
-            <h2 className={styles.sectionTitle}>Доставка та оплата</h2>
+        <PageWrapper>
+            <section className={styles.storySection}>
+                <Helmet>
+                    <title>Clothy — Delivery and Returns</title>
+                    <meta
+                        name="description"
+                        content="Learn how to receive your Clothy orders quickly and reliably. Delivery and return policies."
+                    />
+                </Helmet>
 
-            <div className={styles.deliveryOptions}>
-                {deliveryOptions.map((option, index) => (
-                    <div key={index} className={styles.deliveryItem}>
-                        <div className={styles.icon}>
-                            <option.icon size={24} />
-                        </div>
-                        <div className={styles.deliveryInfo}>
-                            <h4>{option.title}</h4>
-                            <p>{option.description}</p>
-                            <div className={styles.details}>
-                                <div className={styles.detailItem}>
-                                    <Clock size={20} />
-                                    <p>{option.time}</p>
+                <h2 className={styles.sectionTitle}>Delivery and Payment</h2>
+
+                <div className={styles.deliveryOptions}>
+                    {deliveryOptions.map((option, index) => (
+                        <div key={index} className={styles.deliveryItem}>
+                            <div className={styles.icon}>
+                                <option.icon size={24} />
+                            </div>
+                            <div className={styles.deliveryInfo}>
+                                <h4>{option.title}</h4>
+                                <p>{option.description}</p>
+                                <div className={styles.details}>
+                                    <div className={styles.detailItem}>
+                                        <Clock size={20} />
+                                        <p>{option.time}</p>
+                                    </div>
+                                    <div className={styles.detailPrice}>{option.price}</div>
                                 </div>
-                                <div className={styles.detailPrice}>{option.price}</div>
                             </div>
                         </div>
+                    ))}
+                </div>
+
+                <div className={styles.returnPolicy}>
+                    <div className={styles.returnHeader}>
+                        <RotateCcw size={24} />
+                        <h3>Returns and Exchanges</h3>
                     </div>
-                ))}
-            </div>
 
-            <div className={styles.returnPolicy}>
-                <div className={styles.returnHeader}>
-                    <RotateCcw size={24} />
-                    <h3>Повернення та обмін</h3>
+                    <div className={styles.returnContent}>
+                        <p>
+                            You can return or exchange items within <span className={styles.highlight}>14 days </span>
+                            from the date of receipt. The items must be in original packaging, with all tags attached,
+                            and without signs of wear. To initiate a return, contact us by phone or email —
+                            we will help you resolve the issue quickly.
+                        </p>
+                    </div>
                 </div>
-
-                <div className={styles.returnContent}>
-                    <p>
-                        Ви можете повернути або обміняти товар протягом <span className={styles.highlight}>14 днів</span> з
-                        моменту отримання замовлення. Для повернення товар має бути в оригінальній упаковці, з усіма бірками та без слідів
-                        носіння. Для оформлення повернення зв'яжіться з нами за телефоном або напишіть на пошту —
-                        ми допоможемо швидко вирішити питання.
-                    </p>
-                </div>
-            </div>
-        </section>
+            </section>
+        </PageWrapper>
     );
 };
 

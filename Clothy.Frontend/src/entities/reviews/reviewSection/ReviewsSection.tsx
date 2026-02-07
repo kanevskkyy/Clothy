@@ -1,15 +1,17 @@
 import { useState } from "react";
+import type { PagedList } from "../../../shared/pagedList";
 import type { IReviewReadDTO } from "../interfaces/IReviewReadDTO";
 import type { IReviewStatistic } from "../interfaces/IReviewStatistic";
 import type { IQuestionReadDTO } from "../../questions/interfaces/IQuestionReadDTO";
 import styles from "./ReviewsSection.module.css";
 import ReviewItem from "../reviewItem/ReviewItem.tsx";
 import QuestionItem from "../../questions/questionItem/QuestionItem.tsx";
+import Pagination from "../../../shared/Pagination/Pagination.tsx";
 
 interface ReviewsSectionProps {
-    reviews: IReviewReadDTO[];
+    reviews: PagedList<IReviewReadDTO>;
     statistics: IReviewStatistic;
-    questions: IQuestionReadDTO[];
+    questions: PagedList<IQuestionReadDTO>;
 }
 
 const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews, statistics, questions }) => {
@@ -20,6 +22,16 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews, statistics, qu
         return (count / statistics.totalReviews) * 100;
     };
 
+    const handleReviewPageChange = (page: number) => {
+        // TODO: Implement API call to fetch reviews for the selected page
+        console.log('Fetching reviews for page:', page);
+    };
+
+    const handleQuestionPageChange = (page: number) => {
+        // TODO: Implement API call to fetch questions for the selected page
+        console.log('Fetching questions for page:', page);
+    };
+
     return (
         <div className={styles.reviewsWrapper}>
             <div className={styles.reviewsSection}>
@@ -28,13 +40,13 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews, statistics, qu
                         className={`${styles.tabBtn} ${activeTab === 'reviews' ? styles.activeTab : ''}`}
                         onClick={() => setActiveTab('reviews')}
                     >
-                        Відгуки
+                        Reviews
                     </button>
                     <button
                         className={`${styles.tabBtn} ${activeTab === 'questions' ? styles.activeTab : ''}`}
                         onClick={() => setActiveTab('questions')}
                     >
-                        Питання
+                        Question
                     </button>
                 </div>
 
@@ -43,7 +55,7 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews, statistics, qu
                         <div className={styles.ratingSummary}>
                             <div className={styles.ratingNumber}>
                                 <h2>{statistics.averageRating}</h2>
-                                <span>({statistics.totalReviews} відгуків)</span>
+                                <span>({statistics.totalReviews} reviews)</span>
                             </div>
 
                             <div className={styles.ratingBars}>
@@ -85,15 +97,31 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews, statistics, qu
                             </div>
                         </div>
 
-                        {reviews.map(review => (
+                        {reviews.items.map(review => (
                             <ReviewItem key={review.id} review={review} />
                         ))}
+
+                        <Pagination
+                            currentPage={reviews.currentPage}
+                            totalPages={reviews.totalPages}
+                            onPageChange={handleReviewPageChange}
+                        />
                     </>
                 )}
 
-                {activeTab === 'questions' && questions.map(question => (
-                    <QuestionItem key={question.id} question={question} />
-                ))}
+                {activeTab === 'questions' && (
+                    <>
+                        {questions.items.map(question => (
+                            <QuestionItem key={question.id} question={question} />
+                        ))}
+
+                        <Pagination
+                            currentPage={questions.currentPage}
+                            totalPages={questions.totalPages}
+                            onPageChange={handleQuestionPageChange}
+                        />
+                    </>
+                )}
             </div>
         </div>
     );

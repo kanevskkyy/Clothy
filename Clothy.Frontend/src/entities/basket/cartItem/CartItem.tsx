@@ -8,8 +8,10 @@ interface CartItemProps {
 }
 
 const CartItem: React.FC<CartItemProps> = ({ item }) => {
+    // TODO: API config
+
     const handleRemove = () => {
-        console.log('Видалено товар:', {
+        console.log('Product removed:', {
             clotheId: item.clotheId,
             colorId: item.colorId,
             sizeId: item.sizeId,
@@ -18,7 +20,7 @@ const CartItem: React.FC<CartItemProps> = ({ item }) => {
     };
 
     const handleIncrease = () => {
-        console.log('Збільшено кількість:', {
+        console.log('Increased quantity:', {
             clotheId: item.clotheId,
             colorId: item.colorId,
             sizeId: item.sizeId,
@@ -28,7 +30,7 @@ const CartItem: React.FC<CartItemProps> = ({ item }) => {
     };
 
     const handleDecrease = () => {
-        console.log('Зменшено кількість:', {
+        console.log('Reduced quantity:', {
             clotheId: item.clotheId,
             colorId: item.colorId,
             sizeId: item.sizeId,

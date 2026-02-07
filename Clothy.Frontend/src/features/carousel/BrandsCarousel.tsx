@@ -22,6 +22,8 @@ const brands: IBrandReadDTO[] = [
 ];
 
 const BrandsCarousel = () => {
+    // #TODO: Implement API CALL
+
     return (
         <div className={styles.carouselContainer}>
             <Swiper
@@ -35,8 +37,13 @@ const BrandsCarousel = () => {
                     delay: 0,
                     disableOnInteraction: false,
                     pauseOnMouseEnter: false,
+                    stopOnLastSlide: false,
                 }}
                 allowTouchMove={false}
+                simulateTouch={false}
+                touchStartPreventDefault={false}
+                noSwiping={true}
+                noSwipingClass="swiper-slide"
                 className={styles.swiper}
             >
                 {[...brands, ...brands, ...brands, ...brands].map((brand, index) => (

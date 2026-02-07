@@ -20,7 +20,11 @@ message ReviewGrpcResponse {
 }
 
 message ReviewsListGrpcResponse {
-    repeated ReviewGrpcResponse reviews = 1;
+    int32 currentPage = 1;
+    int32 totalPages = 2;
+    int32 pageSize = 3;
+    int32 totalCount = 4;
+    repeated ReviewGrpcResponse items = 5;
 }
 
 message ReviewStatisticGrpcResponse {
@@ -38,17 +42,23 @@ message AnswerGrpcResponse {
     string id = 1;
     UserGrpcResponse user = 2;
     string answerText = 3;
+    string createdAt = 4;
 }
 
 message QuestionGrpcResponse {
     string id = 1;
     UserGrpcResponse user = 2;
     string questionText = 3;
-    repeated AnswerGrpcResponse answers = 4;
+    string createdAt = 4;
+    repeated AnswerGrpcResponse answers = 5;
 }
 
 message QuestionsListGrpcResponse {
-    repeated QuestionGrpcResponse questions = 1;
+    int32 currentPage = 1;
+    int32 totalPages = 2;
+    int32 pageSize = 3;
+    int32 totalCount = 4;
+    repeated QuestionGrpcResponse items = 5;
 }
 
 service ReviewServiceGrpc {

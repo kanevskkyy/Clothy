@@ -17,19 +17,20 @@ const Hero = () => {
             <div className={styles.container}>
                 <div className={styles.content}>
                     <h1 className={styles.title}>
-                        Стиль, який
+                        Style that
                         <br />
-                        підкреслює вас
+                        defines you
                     </h1>
                     <p className={styles.description}>
-                        Відкрийте для себе найкращі бренди та актуальні колекції. Ваш ідеальний образ починається тут.
+                        Discover the best brands and latest collections. Your perfect look starts here.
                     </p>
                     <div className={styles.buttons}>
                         <Button
                             to="/catalog"
+                            variant="secondary"
                             icon={<ArrowRight size={20} />}
                         >
-                            Перейти до каталогу
+                            Go to catalog
                         </Button>
                     </div>
                 </div>

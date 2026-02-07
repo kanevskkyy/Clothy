@@ -10,10 +10,9 @@
 }
 
 .pageWrapper {
-    font-family: 'Beatrice Trial', sans-serif;
     font-weight: 200;
     width: 100%;
-    padding: 20px;
+    padding: 0 20px;
 }
 
 @media (max-width: 1024px) {
@@ -25,8 +24,12 @@
 }
 
 @media (max-width: 768px) {
+    h2{
+        margin-top: 0px;
+    }
+
     .container {
-        padding: 20px;
+        padding: 0px;
         gap: 30px;
     }
 }

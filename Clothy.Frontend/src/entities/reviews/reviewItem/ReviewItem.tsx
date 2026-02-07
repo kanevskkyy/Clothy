@@ -1,16 +1,12 @@
 import type { IReviewReadDTO } from "../interfaces/IReviewReadDTO";
 import styles from "./ReviewItem.module.css";
+import {formatDate} from "../../../shared/formatDate.ts";
 
 interface ReviewItemProps {
     review: IReviewReadDTO;
 }
 
 const ReviewItem: React.FC<ReviewItemProps> = ({ review }) => {
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('uk-UA');
-    };
-
     const renderStars = (rating: number) => {
         return Array.from({ length: 5 }, (_, index) => (
             <span key={index} className={`${styles.star} ${index < rating ? styles.filled : ''}`}>

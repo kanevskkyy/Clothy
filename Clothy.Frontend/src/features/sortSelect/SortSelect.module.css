@@ -1,0 +1,72 @@
+.sortContainer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sortLabel {
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+    white-space: nowrap;
+}
+
+.selectWrapper {
+    position: relative;
+}
+
+.select {
+    appearance: none;
+    padding: 10px 40px 10px 16px;
+    border: 1px solid #D9D9D9;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 400;
+    color: #000;
+    background-color: white;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s;
+    min-width: 180px;
+}
+
+.select:hover {
+    border-color: #999;
+}
+
+.select:focus {
+    border-color: #000;
+}
+
+.selectIcon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #666;
+}
+
+.desktopSort {
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .sortContainer {
+        width: 100%;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .sortLabel {
+        font-size: 13px;
+        display: none;
+    }
+
+    .select {
+        width: 100%;
+        padding: 12px 40px 12px 16px;
+        font-size: 13px;
+    }
+}

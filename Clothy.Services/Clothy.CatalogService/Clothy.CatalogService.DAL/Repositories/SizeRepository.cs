@@ -18,6 +18,25 @@ namespace Clothy.CatalogService.DAL.Repositories
 
         }
 
+        public async Task<Dictionary<Size, int>> GetSizesCountWithStockAsync(CancellationToken cancellationToken = default)
+        {
+            List<Size> sizes = await dbSet
+                .Include(s => s.ClothesStocks)
+                .ToListAsync(cancellationToken);
+
+            Dictionary<Size, int> result = new Dictionary<Size, int>();
+            foreach (Size size in sizes)
+            {
+                int clotheItemCount = size.ClothesStocks
+                    .Select(stock => stock.ClotheId)
+                    .Distinct()
+                    .Count();
+
+                result.Add(size, clotheItemCount);
+            }
+
+            return result;
+        }
         public async Task<bool> IsNameAlreadyExistsAsync(string name, Guid? id = null, CancellationToken cancellationToken = default)
         {
             if (id == null)

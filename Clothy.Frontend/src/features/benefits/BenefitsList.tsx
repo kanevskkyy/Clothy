@@ -10,23 +10,23 @@ interface IBenefitItem {
 const benefits: IBenefitItem[] = [
     {
         icon: Truck,
-        title: "Безкоштовна доставка",
-        description: "від 1500 ₴",
+        title: "Free shipping",
+        description: "from ₴1500",
     },
     {
         icon: RefreshCw,
-        title: "Повернення",
-        description: "14 днів",
+        title: "Returns",
+        description: "14 days",
     },
     {
         icon: Shield,
-        title: "Гарантія якості",
-        description: "100% оригінал",
+        title: "Quality guarantee",
+        description: "100% original",
     },
     {
         icon: Sparkles,
-        title: "Швидка доставка",
-        description: "1–3 дні",
+        title: "Fast delivery",
+        description: "1–3 days",
     },
 ];
 

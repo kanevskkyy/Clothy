@@ -103,3 +103,41 @@
     font-size: 14px;
     color: #666;
 }
+
+@media (max-width: 600px) {
+    .reviewsWrapper{
+        margin-top: 15px;
+        padding: 0;
+    }
+
+    .ratingSummary {
+        padding-top: 0;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+    }
+
+    .ratingNumber {
+        flex-direction: row;
+        gap: 10px;
+        justify-content: center;
+        min-width: auto;
+    }
+
+    .ratingNumber h2 {
+        font-size: 36px;
+    }
+
+    .ratingBars {
+        width: 100%;
+    }
+
+    .ratingLabel {
+        min-width: 38px;
+    }
+
+    .ratingCount {
+        min-width: 24px;
+        font-size: 13px;
+    }
+}

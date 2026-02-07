@@ -1,12 +1,13 @@
-﻿using System;
+﻿using Clothy.Aggregator.Aggregate.Clients.Interfaces;
+using Clothy.Aggregator.Aggregate.DTOs.ClotheItem;
+using Clothy.Aggregator.Aggregate.Services.Interfaces;
+using Clothy.Shared.Helpers;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Clothy.Aggregator.Aggregate.Clients.Interfaces;
-using Clothy.Aggregator.Aggregate.DTOs.ClotheItem;
-using Clothy.Aggregator.Aggregate.Services.Interfaces;
-using Microsoft.Extensions.Logging;
 
 namespace Clothy.Aggregator.Aggregate.Services
 {
@@ -44,8 +45,22 @@ namespace Clothy.Aggregator.Aggregate.Services
                 ClotheDetailFullDTO clotheDetailFullDTO = new ClotheDetailFullDTO
                 {
                     ClotheDetailDTO = clotheInfo,
-                    Reviews = reviews.Reviews.ToList(),
-                    Questions = questions.Questions.ToList(),
+                    Reviews = new PagedList<ReviewGrpcResponse>
+                    {
+                        CurrentPage = reviews.CurrentPage,
+                        TotalPages = reviews.TotalPages,
+                        PageSize = reviews.PageSize,
+                        TotalCount = reviews.TotalCount,
+                        Items = reviews.Items.ToList()
+                    },
+                    Questions = new PagedList<QuestionGrpcResponse>
+                    {
+                        CurrentPage = questions.CurrentPage,
+                        TotalPages = questions.TotalPages,
+                        PageSize = questions.PageSize,
+                        TotalCount = questions.TotalCount,
+                        Items = questions.Items.ToList()
+                    },
                     Statistics = stats
                 };
 

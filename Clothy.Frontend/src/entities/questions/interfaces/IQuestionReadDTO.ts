@@ -5,5 +5,6 @@ export interface IQuestionReadDTO {
     id: string;
     user: IUserInfo;
     questionText: string;
+    createdAt: string;
     answers: IAnswerReadDTO[];
 }

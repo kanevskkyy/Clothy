@@ -126,7 +126,8 @@ h4 {
     gap: 0;
     border: 2px solid #e0e0e0;
     border-radius: 8px;
-    overflow: hidden;
+    overflow: visible;
+    height: fit-content;
 }
 
 .removeCount, .addCount {
@@ -138,10 +139,23 @@ h4 {
     cursor: pointer;
     transition: all 0.3s;
     color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.removeCount:hover, .addCount:hover {
+.removeCount:disabled, .addCount:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.removeCount:hover:not(:disabled),
+.addCount:hover:not(:disabled) {
     background: #f5f5f5;
+}
+
+.buttonWrapper{
+    margin-top: 10px;
 }
 
 .productCount {
@@ -155,23 +169,9 @@ h4 {
     color: #1a1a1a;
     min-width: 60px;
     cursor: default;
-}
-
-.addToCart {
-    background: #171515;
-    color: #ffffff;
-    padding: 14px 40px;
-    font-size: 16px;
-    font-weight: 600;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s;
-    flex: 1;
-}
-
-.addToCart:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .tagsList {
@@ -191,24 +191,7 @@ h4 {
     box-sizing: border-box;
     border-radius: 10px;
     background: #F3F4F6;
-}
-
-.tryOnYourself {
-    margin-top: 10px;
-    background: #251e1e;
-    color: #ffffff;
-    padding: 18px 40px;
-    font-size: 16px;
-    font-weight: bold;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s;
-    width: 100%;
-}
-
-.tryOnYourself:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    font-weight: 400;
 }
 
 .clotheDescription {
@@ -218,6 +201,7 @@ h4 {
 .clotheDescription h3, .clotheMaterials h3 {
     font-size: 20px;
     margin-bottom: 5px;
+    font-weight: 600;
     color: #1a1a1a;
 }
 
@@ -225,10 +209,11 @@ h4 {
     color: #666;
     line-height: 1.6;
     margin-bottom: 0;
+    font-weight: 400;
 }
 
 .brandInfo {
-    margin-top: 10px;
+    margin-top: 0;
     display: flex;
     gap: 10px;
     align-items: center;

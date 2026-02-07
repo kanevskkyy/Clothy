@@ -1,11 +1,10 @@
 .container {
-    font-family: "Beatrice Trial", sans-serif;
-    max-width: 1400px;
+    max-width: 1440px;
+    margin: 60px auto 50px;
     padding: 10px;
     display: flex;
-    gap: 180px;
+    gap: 40px;
     align-items: flex-start;
-    margin: 90px auto 50px 80px;
 }
 
 .basketList {
@@ -13,6 +12,7 @@
     flex-direction: column;
     gap: 0;
     flex: 1;
+    min-width: 0;
 }
 
 .orderSummary {
@@ -31,6 +31,7 @@
     font-size: 28px;
     font-weight: 400;
     margin-bottom: 32px;
+    margin-top: 0;
     letter-spacing: 0;
 }
 
@@ -77,72 +78,24 @@
     margin-left: 8px;
 }
 
-.continueBtn,
-.catalogBtn,
-.clearBtn {
-    width: 100%;
-    padding: 18px 24px;
-    font-size: 16px;
-    border: none;
-    font-weight: 500;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.clearBtn {
-    margin-top: 12px;
-}
-
-.continueBtn {
-    margin-top: 32px;
-    margin-bottom: 12px;
-    background: #D9D9D9;
-    color: #000000;
-}
-
-.continueBtn:hover {
-    background: #bfbfbf;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-}
-
-.continueBtn:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.catalogBtn,
-.clearBtn {
-    background: transparent;
-    color: #000;
-    border: 1px solid #D9D9D9;
-}
-
-.catalogBtn:hover,
-.clearBtn:hover {
-    background: #F5F5F5;
-    border-color: #000;
-    transform: translateY(-1px);
-}
-
-.catalogBtn:active,
-.clearBtn:active {
-    transform: translateY(0);
+.buttonWrapper{
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 @media (max-width: 1440px) {
     .container {
+        gap: 100px;
         padding: 10px 20px;
-        margin-left: 60px;
     }
 }
 
 @media (max-width: 1200px) {
     .container {
         gap: 50px;
-        padding: 10px 30px;
-        margin-left: 40px;
+        padding: 10px 20px;
     }
 
     .orderSummary {
@@ -154,8 +107,7 @@
 @media (max-width: 1024px) {
     .container {
         gap: 40px;
-        padding: 10px 25px;
-        margin-left: 30px;
+        padding: 10px 20px;
     }
 
     .orderSummary {
@@ -174,7 +126,6 @@
         gap: 40px;
         padding: 20px;
         margin-top: 80px;
-        margin-left: auto;
     }
 
     .basketList {
@@ -226,12 +177,5 @@
 
     .totalRow {
         font-size: 18px;
-    }
-
-    .continueBtn,
-    .catalogBtn,
-    .clearBtn {
-        padding: 16px 20px;
-        font-size: 15px;
     }
 }

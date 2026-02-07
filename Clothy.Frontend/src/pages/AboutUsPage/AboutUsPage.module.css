@@ -1,13 +1,13 @@
 .storySection {
     padding: 32px 0 16px;
     max-width: 900px;
-    margin: 10px auto 0;
+    margin: 0 auto ;
 }
 
 .sectionTitle {
     font-size: clamp(24px, 5vw, 36px);
     color: #111827;
-    font-weight: 700;
+    font-weight: 600;
     margin: 32px 0 20px;
     text-align: center;
 }
@@ -16,7 +16,7 @@
     font-size: 16px;
     line-height: 1.7;
     color: #251D15;
-    font-weight: 500;
+    font-weight: 400;
     margin-bottom: 12px;
 }
 
@@ -45,12 +45,11 @@
     background: #ffffff;
     border-radius: 12px;
     border: 2px solid #e5e7eb;
-    font-weight: 500;
+    font-weight: 400;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .statNumber {
-    font-weight: 600;
     font-size: clamp(28px, 7vw, 48px);
     color: #050c1b;
     margin-bottom: 6px;

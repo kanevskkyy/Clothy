@@ -1,52 +1,64 @@
 import Container from '../../shared/Container/Container';
 import styles from './AboutUsPage.module.css';
+import { Helmet } from "react-helmet";
+import PageWrapper from "../../shared/PageWrapper/PageWrapper.tsx";
 
 const AboutUsPage = () => {
     return (
-        <div>
-            <Container>
-                <section className={styles.storySection}>
-                    <h2 className={styles.sectionTitle}>Наша історія</h2>
-                    <p>
-                        <span className={styles.brandName}>Clothy</span> — це український магазин одягу,
-                        який пропонує речі від різних брендів для чоловіків та жінок.
-                        Ми допомагаємо обирати стильний одяг для будь-якого випадку.
-                    </p>
+        <PageWrapper>
+            <div>
+                <Helmet>
+                    <title>Clothy — About Us: Our Style and Story</title>
+                    <meta
+                        name="description"
+                        content="Learn more about Clothy, our team, and brand history. Stylish clothing for modern people."
+                    />
+                </Helmet>
 
-                    <p>
-                        У нашому асортименті ви знайдете одяг, який поєднує сучасний дизайн з комфортом у носінні.
-                        Ми ретельно обираємо бренди та моделі, щоб кожен наш клієнт міг знайти щось для себе.
-                    </p>
+                <Container>
+                    <section className={styles.storySection}>
+                        <h2 className={styles.sectionTitle}>Our Story</h2>
+                        <p>
+                            <span className={styles.brandName}>Clothy</span> is a Ukrainian clothing store
+                            offering items from various brands for men and women.
+                            We help you choose stylish clothes for any occasion.
+                        </p>
 
-                    <p>
-                        Наша команда щодня працює над тим, щоб ви могли виглядати стильно —
-                        чи це робочий день в офісі, чи вихідні з друзями.
-                        Ми прагнемо робити покупки приємними та зручними для кожного.
-                    </p>
-                </section>
+                        <p>
+                            In our collection, you’ll find clothing that combines modern design with comfort.
+                            We carefully select brands and models so every customer can find something for themselves.
+                        </p>
 
-                <section className={styles.statsSection}>
-                    <div className={styles.statsContainer}>
-                        <div className={styles.statCard}>
-                            <div className={styles.statNumber}>2019</div>
-                            <div className={styles.statLabel}>Рік заснування</div>
+                        <p>
+                            Our team works every day to ensure you look stylish —
+                            whether it’s a workday at the office or a weekend with friends.
+                            We strive to make shopping enjoyable and convenient for everyone.
+                        </p>
+                    </section>
+
+                    <section className={styles.statsSection}>
+                        <div className={styles.statsContainer}>
+                            <div className={styles.statCard}>
+                                <div className={styles.statNumber}>2019</div>
+                                <div className={styles.statLabel}>Year Founded</div>
+                            </div>
+                            <div className={styles.statCard}>
+                                <div className={styles.statNumber}>15,000 +</div>
+                                <div className={styles.statLabel}>Satisfied Customers</div>
+                            </div>
+                            <div className={styles.statCard}>
+                                <div className={styles.statNumber}>500 +</div>
+                                <div className={styles.statLabel}>Clothing Models</div>
+                            </div>
+                            <div className={styles.statCard}>
+                                <div className={styles.statNumber}>100%</div>
+                                <div className={styles.statLabel}>Quality Brands</div>
+                            </div>
                         </div>
-                        <div className={styles.statCard}>
-                            <div className={styles.statNumber}>15000 +</div>
-                            <div className={styles.statLabel}>Задоволених клієнтів</div>
-                        </div>
-                        <div className={styles.statCard}>
-                            <div className={styles.statNumber}>500 +</div>
-                            <div className={styles.statLabel}>Моделей одягу</div>
-                        </div>
-                        <div className={styles.statCard}>
-                            <div className={styles.statNumber}>100 %</div>
-                            <div className={styles.statLabel}>Якісні бренди</div>
-                        </div>
-                    </div>
-                </section>
-            </Container>
-        </div>
+                    </section>
+                </Container>
+            </div>
+        </PageWrapper>
     );
 };
 

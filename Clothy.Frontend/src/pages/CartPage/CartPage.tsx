@@ -1,10 +1,16 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import type { IBasketList } from "../../entities/basket/interfaces/IBasketList.ts";
 import styles from './CartPage.module.css';
 import CartItem from "../../entities/basket/cartItem/CartItem.tsx";
+import { Helmet } from 'react-helmet';
+import PageWrapper from "../../shared/PageWrapper/PageWrapper.tsx";
+import EmptyCart from '../../features/emptyCart/EmptyCart.tsx';
+import Button from "../../shared/Button/Button.tsx";
 
 const CartPage = () => {
     const navigate = useNavigate();
+
+    // #TODO: Implement API CALL
 
     const mockCartItems: IBasketList = {
         userId: "user-123",
@@ -94,65 +100,106 @@ const CartPage = () => {
                 quantity: 1
             }
         ],
-        totalPrice: 2900
+        totalPrice: 1400
     };
 
     const handleClearCart = () => {
-        console.log('Корзину очищено');
+        // TODO: API
+        console.log('Cart cleared');
     };
 
     const handleCheckout = () => {
-        console.log('Оформлення замовлення');
-        navigate('/orders');
+        navigate('/checkout');
     };
 
     const totalItems = mockCartItems.items.reduce((sum, item) => sum + item.quantity, 0);
-    const totalPrice = mockCartItems.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+    if (!mockCartItems || !mockCartItems.items || mockCartItems.items.length === 0) {
+        return (
+            <PageWrapper>
+                <Helmet>
+                    <title>Clothy — your cart is empty</title>
+                    <meta name="description" content="Your cart is empty. Start shopping in the Clothy catalog." />
+                </Helmet>
+                <EmptyCart />
+            </PageWrapper>
+        );
+    }
 
     return (
-        <div className={styles.container}>
-            <div className={styles.basketList}>
-                {mockCartItems.items.map((item) => (
-                    <CartItem
-                        key={`${item.clotheId}-${item.colorId}-${item.sizeId}`}
-                        item={item}
+        <PageWrapper>
+            <div className={styles.container}>
+                <Helmet>
+                    <title>{`Clothy — your cart (${totalItems} items)`}</title>
+                    <meta
+                        name="description"
+                        content="View the items in your cart and complete your order quickly and conveniently."
                     />
-                ))}
-            </div>
+                </Helmet>
 
-            <div className={styles.orderSummary}>
-                <h3>Ваше замовлення</h3>
-
-                <div className={styles.orderPriceInfo}>
-                    <div className={styles.priceRow}>
-                        <span className={styles.label}>Товари ({totalItems})</span>
-                        <span className={styles.value}>{totalPrice} ₴</span>
-                    </div>
-
-                    <div className={styles.priceRow}>
-                        <span className={styles.label}>Доставка</span>
-                        <span className={styles.value}>Платна</span>
-                    </div>
-
-                    <div className={styles.divider}></div>
-
-                    <div className={styles.totalRow}>
-                        <span>До сплати</span>
-                        <span>{totalPrice} ₴</span>
-                    </div>
+                <div className={styles.basketList}>
+                    {mockCartItems.items.map((item) => (
+                        <CartItem
+                            key={`${item.clotheId}-${item.colorId}-${item.sizeId}`}
+                            item={item}
+                        />
+                    ))}
                 </div>
 
-                <button className={styles.continueBtn} onClick={handleCheckout}>
-                    Оформити замовлення →
-                </button>
-                <Link to="/catalog">
-                    <button className={styles.catalogBtn}>Продовжити покупки</button>
-                </Link>
-                <button className={styles.clearBtn} onClick={handleClearCart}>
-                    Очистити все
-                </button>
+                <div className={styles.orderSummary}>
+                    <h3>Your Order</h3>
+
+                    <div className={styles.orderPriceInfo}>
+                        <div className={styles.priceRow}>
+                            <span className={styles.label}>Items ({totalItems})</span>
+                            <span className={styles.value}>{mockCartItems.totalPrice} ₴</span>
+                        </div>
+
+                        <div className={styles.priceRow}>
+                            <span className={styles.label}>Delivery</span>
+                            <span className={styles.value}>
+                            {mockCartItems.totalPrice > 1500 ? 'Free' : 'Paid'}
+                        </span>
+                        </div>
+
+                        <div className={styles.divider}></div>
+
+                        <div className={styles.totalRow}>
+                            <span>Total</span>
+                            <span>{mockCartItems.totalPrice} ₴</span>
+                        </div>
+                    </div>
+
+
+                    <div className={styles.buttonWrapper}>
+                        <Button
+                            variant="primary"
+                            size="lg"
+                            fullWidth
+                            onClick={handleCheckout}
+                        >
+                            Checkout →
+                        </Button>
+
+                        <Button
+                            variant="outline"
+                            fullWidth
+                            to="/catalog"
+                        >
+                            Continue Shopping
+                        </Button>
+
+                        <Button
+                            variant="outline"
+                            fullWidth
+                            onClick={handleClearCart}
+                        >
+                            Clear All
+                        </Button>
+                    </div>
+                </div>
             </div>
-        </div>
+        </PageWrapper>
     );
 };
 

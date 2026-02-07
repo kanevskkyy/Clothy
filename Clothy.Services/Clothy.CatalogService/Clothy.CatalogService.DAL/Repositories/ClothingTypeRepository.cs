@@ -22,6 +22,22 @@ namespace Clothy.CatalogService.DAL.Repositories
             return await dbSet.AnyAsync(property => property.Id == id, cancellationToken);
         }
 
+        public async Task<Dictionary<ClothingType, int>> GetClothingTypeCountWithStockAsync(CancellationToken cancellationToken = default)
+        {
+            List<ClothingType> clothingTypes = await dbSet
+                .Include(property => property.Items)
+                .ToListAsync();
+            Dictionary<ClothingType, int> result = new Dictionary<ClothingType, int>();
+
+            foreach (ClothingType clothingType in clothingTypes)
+            {
+                int clotheItemCount = clothingType.Items.Count;
+                result.Add(clothingType, clotheItemCount);
+            }
+
+            return result;
+        }
+
         public async Task<bool> IsNameAlreadyExistsAsync(string name, Guid? id = null, CancellationToken cancellationToken = default)
         {
             if (id == null)

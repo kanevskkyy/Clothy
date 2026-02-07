@@ -47,7 +47,6 @@ namespace Clothy.Aggregator.Aggregate.Clients
                                 Id = brand.Id,
                                 Name = brand.Name,
                                 Slug = brand.Slug,
-                                PhotoURL = brand.PhotoURL,
                                 ClotheItemCount = brand.ClotheItemCount
                             }).ToList(),
 
@@ -55,7 +54,8 @@ namespace Clothy.Aggregator.Aggregate.Clients
                             {
                                 Id = type.Id,
                                 Name = type.Name,
-                                Slug = type.Slug
+                                Slug = type.Slug,
+                                ClotheItemCount = type.ClotheItemCount
                             }).ToList(),
 
                             Collections = gRPCresponse.Collections.Select(collection => new CollectionsGrpcResponse
@@ -70,7 +70,6 @@ namespace Clothy.Aggregator.Aggregate.Clients
                             {
                                 Id = color.Id,
                                 Name = color.Name,
-                                HexCode = color.HexCode,
                                 Slug = color.Slug,
                                 ClotheItemCount = color.ClotheItemCount
                             }).ToList(),
@@ -87,7 +86,8 @@ namespace Clothy.Aggregator.Aggregate.Clients
                             {
                                 Id = size.Id,
                                 Name = size.Name,
-                                Slug = size.Slug
+                                Slug = size.Slug,
+                                ClotheItemCount = size.ClotheItemCount
                             }).ToList(),
 
                             Tags = gRPCresponse.Tags.Select(tag => new TagsGrpcResponse

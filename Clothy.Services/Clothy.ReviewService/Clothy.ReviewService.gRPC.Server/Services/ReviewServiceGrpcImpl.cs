@@ -37,15 +37,21 @@ namespace Clothy.ReviewService.gRPC.Server.Services
                 {
                     ClotheItemId = Guid.Parse(request.Id),
                     PageNumber = 1,
-                    PageSize = 10
                 };
 
                 PagedList<Review> pagedReviews = await reviewRepository.GetReviewsAsync(queryParameters, context.CancellationToken);
 
                 logger.LogInformation("Successfully fetched {Count} reviews for ClotheItemId: {ClotheId}", pagedReviews.Items.Count, request.Id);
 
-                ReviewsListGrpcResponse response = new ReviewsListGrpcResponse();
-                response.Reviews.AddRange(pagedReviews.Items.Select(review => new ReviewGrpcResponse
+                ReviewsListGrpcResponse response = new ReviewsListGrpcResponse
+                {
+                    CurrentPage = pagedReviews.CurrentPage,
+                    TotalPages = pagedReviews.TotalPages,
+                    PageSize = pagedReviews.PageSize,
+                    TotalCount = pagedReviews.TotalCount,
+                };
+
+                response.Items.AddRange(pagedReviews.Items.Select(review => new ReviewGrpcResponse
                 {
                     Id = review.Id.ToString(),
                     User = new UserGrpcResponse
@@ -79,15 +85,21 @@ namespace Clothy.ReviewService.gRPC.Server.Services
                 {
                     ClotheItemId = Guid.Parse(request.Id),
                     PageNumber = 1,
-                    PageSize = 10
                 };
 
                 PagedList<Question> pagedQuestions = await questionRepository.GetQuestionsAsync(queryParameters, context.CancellationToken);
 
                 logger.LogInformation("Successfully fetched {Count} questions for ClotheItemId: {ClotheId}", pagedQuestions.Items.Count, request.Id);
 
-                QuestionsListGrpcResponse response = new QuestionsListGrpcResponse();
-                response.Questions.AddRange(pagedQuestions.Items.Select(question => new QuestionGrpcResponse
+                QuestionsListGrpcResponse response = new QuestionsListGrpcResponse
+                {
+                    CurrentPage = pagedQuestions.CurrentPage,
+                    TotalPages = pagedQuestions.TotalPages,
+                    PageSize = pagedQuestions.PageSize,
+                    TotalCount = pagedQuestions.TotalCount,
+                };
+
+                response.Items.AddRange(pagedQuestions.Items.Select(question => new QuestionGrpcResponse
                 {
                     Id = question.Id.ToString(),
                     User = new UserGrpcResponse
@@ -98,18 +110,23 @@ namespace Clothy.ReviewService.gRPC.Server.Services
                         PhotoUrl = question.User.PhotoUrl
                     },
                     QuestionText = question.QuestionText,
-                    Answers = { question.Answers.Select(answer => new AnswerGrpcResponse
-                    {
-                        Id = answer.Id.ToString(),
-                        User = new UserGrpcResponse
+                    CreatedAt = question.CreatedAt.ToString(),
+                    Answers =
+                    { 
+                        question.Answers.Select(answer => new AnswerGrpcResponse
                         {
-                            Id = answer.User.UserId.ToString(),
-                            FirstName = answer.User.FirstName,
-                            LastName = answer.User.LastName,
-                            PhotoUrl = answer.User.PhotoUrl
-                        },
-                        AnswerText = answer.AnswerText
-                    })}
+                            Id = answer.Id.ToString(),
+                            User = new UserGrpcResponse
+                            {
+                                Id = answer.User.UserId.ToString(),
+                                FirstName = answer.User.FirstName,
+                                LastName = answer.User.LastName,
+                                PhotoUrl = answer.User.PhotoUrl
+                            },
+                            AnswerText = answer.AnswerText,
+                            CreatedAt = answer.CreatedAt.ToString()
+                        })
+                    }
                 }));
 
                 return response;

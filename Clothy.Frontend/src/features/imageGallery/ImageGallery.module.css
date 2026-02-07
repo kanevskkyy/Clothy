@@ -8,6 +8,7 @@
 }
 
 .mainImageContainer {
+    position: relative;
     width: 100%;
     aspect-ratio: 4 / 5;
     background: #fafafa;
@@ -21,6 +22,40 @@
     object-fit: cover;
     display: block;
     border-radius: 10px;
+}
+
+.arrowButton {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.arrowButton:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+.arrowButton svg {
+    color: #333;
+}
+
+.arrowLeft {
+    left: 12px;
+}
+
+.arrowRight {
+    right: 12px;
 }
 
 .additionalImages {
@@ -76,6 +111,24 @@
         border-radius: 10px;
     }
 
+    .arrowButton {
+        width: 36px;
+        height: 36px;
+    }
+
+    .arrowButton svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .arrowLeft {
+        left: 8px;
+    }
+
+    .arrowRight {
+        right: 8px;
+    }
+
     .additionalImages {
         grid-template-columns: repeat(5, 1fr);
         gap: 6px;
@@ -96,6 +149,24 @@
 
     .mainImageContainer {
         border-radius: 8px;
+    }
+
+    .arrowButton {
+        width: 32px;
+        height: 32px;
+    }
+
+    .arrowButton svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .arrowLeft {
+        left: 6px;
+    }
+
+    .arrowRight {
+        right: 6px;
     }
 
     .additionalImages {
@@ -122,5 +193,26 @@
     .additionalImages {
         grid-template-columns: repeat(3, 1fr);
         gap: 4px;
+    }
+}
+@media (max-width: 600px) {
+    .mainImageContainer{
+        margin-top: 40px;
+    }
+
+    .additionalImages {
+        grid-template-columns: repeat(6, 1fr);
+    }
+}
+
+@media (max-width: 420px) {
+    .additionalImages {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+@media (max-width: 360px) {
+    .additionalImages {
+        grid-template-columns: repeat(4, 1fr);
     }
 }

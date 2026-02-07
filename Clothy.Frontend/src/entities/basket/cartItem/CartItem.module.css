@@ -5,11 +5,6 @@
     padding: 40px 20px;
     border-bottom: 1px solid #D9D9D9;
     position: relative;
-    transition: background 0.3s ease;
-}
-
-.basketCard:hover {
-    background: #FAFAFA;
 }
 
 .clotheAdditionalInfo {

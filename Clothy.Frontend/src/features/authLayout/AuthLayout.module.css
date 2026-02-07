@@ -1,0 +1,45 @@
+.container {
+    max-width: 560px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+}
+
+.header {
+    text-align: center;
+}
+
+.title {
+    font-size: 32px;
+    font-weight: 600;
+    color: #000;
+    margin-bottom: 2px;
+    letter-spacing: 0.5px;
+}
+
+.subtitle {
+    font-size: 16px;
+    color: #676767;
+    font-weight: 400;
+}
+
+.formWrapper {
+    background: #fff;
+    border: 2px solid #d9d9d9;
+    border-radius: 4px;
+    padding: 50px 70px;
+    width: 100%;
+    max-width: 560px;
+}
+
+@media (max-width: 640px) {
+    .title {
+        font-size: 36px;
+    }
+
+    .formWrapper {
+        padding: 40px 30px;
+    }
+}

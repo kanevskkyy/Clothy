@@ -10,7 +10,7 @@ const Footer = () => {
                     <div className={styles.brandSection}>
                         <Link to="/" className={styles.brandTitle}>Clothy</Link>
                         <p className={styles.brandDescription}>
-                            Ваш стильний гардероб. Найкращі бренди та актуальні колекції.
+                            Your stylish wardrobe. The best brands and latest collections.
                         </p>
                         <div className={styles.socialLinks}>
                             <Link to="https://www.instagram.com/clothy-shop" className={styles.socialLink}>
@@ -26,26 +26,26 @@ const Footer = () => {
                     </div>
 
                     <div className={styles.section}>
-                        <h4 className={styles.sectionTitle}>Інформація</h4>
+                        <h4 className={styles.sectionTitle}>Information</h4>
                         <ul className={styles.list}>
                             <li className={styles.listItem}>
-                                <Link to="/catalog" className={styles.link}>Каталог</Link>
+                                <Link to="/catalog" className={styles.link}>Catalog</Link>
                             </li>
                             <li className={styles.listItem}>
-                                <Link to="/about-us" className={styles.link}>Про нас</Link>
+                                <Link to="/about-us" className={styles.link}>About us</Link>
                             </li>
                             <li className={styles.listItem}>
-                                <Link to="/delivery-info" className={styles.link}>Доставка та оплата</Link>
+                                <Link to="/delivery-info" className={styles.link}>Delivery and payment</Link>
                             </li>
                         </ul>
                     </div>
 
                     <div className={styles.section}>
-                        <h4 className={styles.sectionTitle}>Контакти</h4>
+                        <h4 className={styles.sectionTitle}>Contacts</h4>
                         <ul className={styles.list}>
                             <li className={styles.listItem}>+38 (050) 238-19-39</li>
                             <li className={styles.listItem}>info@clothy.ua</li>
-                            <li className={styles.listItem}>Пн-Пт: 9:00 - 21:00</li>
+                            <li className={styles.listItem}>Mon–Fri: 9:00 - 21:00</li>
                         </ul>
                     </div>
                 </div>
