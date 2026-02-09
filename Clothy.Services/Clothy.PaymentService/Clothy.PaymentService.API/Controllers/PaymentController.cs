@@ -82,5 +82,25 @@ namespace Clothy.PaymentService.API.Controllers
 
             return Ok();
         }
+
+        /// <summary>
+        /// Retry a cancelled or failed payment.
+        /// </summary>
+        /// <param name="paymentId">ID of the previous payment.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>New payment response with PaymentId, URL, and status.</returns>
+        [HttpPost("retry/{paymentId}")]
+        [Authorize]
+        public async Task<ActionResult<CreatePaymentResponseDTO>> RetryPayment(Guid paymentId, CancellationToken cancellationToken = default)
+        {
+            logger.LogInformation("Retrying payment {PaymentId}", paymentId);
+
+            IPaymentService paymentService = paymentServiceFactory.GetPaymentService(PaymentMethod.Card);
+            CreatePaymentResponseDTO payment = await paymentService.RetryPaymentAsync(paymentId, User, cancellationToken);
+
+            logger.LogInformation("Retry payment created. OldPaymentId={OldPaymentId}, NewPaymentId={NewPaymentId}", paymentId, payment.PaymentId);
+
+            return Ok(payment);
+        }
     }
 }

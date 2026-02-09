@@ -27,15 +27,12 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<IKeycloakAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
-// FLUENT VALIDATION
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssembly(typeof(LoginDTOValidator).Assembly);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
-//RABBIT MQ
 builder.Services.AddMassTransit(x =>
 {
     x.UsingRabbitMq((context, cfg) =>
@@ -49,7 +46,6 @@ builder.Services.AddMassTransit(x =>
         cfg.ConfigureEndpoints(context);
     });
 });
-//
 
 var app = builder.Build();
 app.UseServiceDefaults();
@@ -58,7 +54,6 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.MapDefaultEndpoints();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

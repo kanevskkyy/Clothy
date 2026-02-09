@@ -85,7 +85,7 @@ const CatalogPage = () => {
                     id: "b1",
                     name: "Nike",
                     slug: "nike",
-                    photoURL: "https://res-console.cloudinary.com/dkdljnfja/thumbnails/v1/image/upload/v1769175662/bmlrZUxvZ29feWkyczR2/template_primary/ZV9iYWNrZ3JvdW5kX3JlbW92YWwvZl9wbmc=",
+                    photoURL: "../../../src/assets/images/mockBrands/nikeLogo.png",
                     createdAt: "2024-01-01",
                     updatedAt: "2024-01-01"
                 },
@@ -110,7 +110,7 @@ const CatalogPage = () => {
                     id: "b2",
                     name: "Adidas",
                     slug: "adidas",
-                    photoURL: "https://res-console.cloudinary.com/dkdljnfja/thumbnails/v1/image/upload/v1769175662/bmlrZUxvZ29feWkyczR2/template_primary/ZV9iYWNrZ3JvdW5kX3JlbW92YWwvZl9wbmc=",
+                    photoURL: "../../../src/assets/images/mockBrands/nikeLogo.png",
                     createdAt: "2024-01-01",
                     updatedAt: "2024-01-01"
                 },
@@ -135,7 +135,7 @@ const CatalogPage = () => {
                     id: "b3",
                     name: "Zara",
                     slug: "zara",
-                    photoURL: "https://res-console.cloudinary.com/dkdljnfja/thumbnails/v1/image/upload/v1769175662/bmlrZUxvZ29feWkyczR2/template_primary/ZV9iYWNrZ3JvdW5kX3JlbW92YWwvZl9wbmc=",
+                    photoURL: "../../../src/assets/images/mockBrands/nikeLogo.png",
                     createdAt: "2024-01-01",
                     updatedAt: "2024-01-01"
                 },
@@ -149,7 +149,128 @@ const CatalogPage = () => {
                     }
                 ],
                 isAvailable: true
-            }
+            },
+            {
+                id: "4",
+                name: "Jacket leather",
+                slug: "leather-jacket",
+                price: 3499,
+                brand: {
+                    id: "b3",
+                    name: "Zara",
+                    slug: "zara",
+                    photoURL: "../../../src/assets/images/mockBrands/nikeLogo.png",
+                    createdAt: "2024-01-01",
+                    updatedAt: "2024-01-01"
+                },
+                colors: [
+                    {
+                        id: "c3",
+                        photoUrl: "https://res.cloudinary.com/dkdljnfja/image/upload/v1769944046/%D1%84%D0%BE%D1%82%D0%BE_1_ykfs8f.webp",
+                        colorId: "black",
+                        hexCode: "#000",
+                        colorSlug: "black"
+                    }
+                ],
+                isAvailable: true
+            },
+            {
+                id: "5",
+                name: "Jacket leather",
+                slug: "leather-jacket",
+                price: 3499,
+                brand: {
+                    id: "b3",
+                    name: "Zara",
+                    slug: "zara",
+                    photoURL: "../../../src/assets/images/mockBrands/nikeLogo.png",
+                    createdAt: "2024-01-01",
+                    updatedAt: "2024-01-01"
+                },
+                colors: [
+                    {
+                        id: "c3",
+                        photoUrl: "https://res.cloudinary.com/dkdljnfja/image/upload/v1769944046/%D1%84%D0%BE%D1%82%D0%BE_1_ykfs8f.webp",
+                        colorId: "black",
+                        hexCode: "#000",
+                        colorSlug: "black"
+                    }
+                ],
+                isAvailable: true
+            },
+            {
+                id: "6",
+                name: "Jacket leather",
+                slug: "leather-jacket",
+                price: 3499,
+                brand: {
+                    id: "b3",
+                    name: "Zara",
+                    slug: "zara",
+                    photoURL: "../../../src/assets/images/mockBrands/nikeLogo.png",
+                    createdAt: "2024-01-01",
+                    updatedAt: "2024-01-01"
+                },
+                colors: [
+                    {
+                        id: "c3",
+                        photoUrl: "https://res.cloudinary.com/dkdljnfja/image/upload/v1769944046/%D1%84%D0%BE%D1%82%D0%BE_1_ykfs8f.webp",
+                        colorId: "black",
+                        hexCode: "#000",
+                        colorSlug: "black"
+                    }
+                ],
+                isAvailable: true
+            },
+            {
+                id: "7",
+                name: "Jacket leather",
+                slug: "leather-jacket",
+                price: 3499,
+                brand: {
+                    id: "b3",
+                    name: "Zara",
+                    slug: "zara",
+                    photoURL: "../../../src/assets/images/mockBrands/nikeLogo.png",
+                    createdAt: "2024-01-01",
+                    updatedAt: "2024-01-01"
+                },
+                colors: [
+                    {
+                        id: "c3",
+                        photoUrl: "https://res.cloudinary.com/dkdljnfja/image/upload/v1769944046/%D1%84%D0%BE%D1%82%D0%BE_1_ykfs8f.webp",
+                        colorId: "black",
+                        hexCode: "#000",
+                        colorSlug: "black"
+                    }
+                ],
+                isAvailable: true
+            },
+            {
+                id: "8",
+                name: "Jacket leather",
+                slug: "leather-jacket",
+                price: 3499,
+                brand: {
+                    id: "b3",
+                    name: "Zara",
+                    slug: "zara",
+                    photoURL: "../../../src/assets/images/mockBrands/nikeLogo.png",
+                    createdAt: "2024-01-01",
+                    updatedAt: "2024-01-01"
+                },
+                colors: [
+                    {
+                        id: "c3",
+                        photoUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTOcACkmZVJHz4WDnjq_JNbS2XMWkFqz3MdIg&s",
+                        colorId: "black",
+                        hexCode: "#000",
+                        colorSlug: "black"
+                    }
+                ],
+                isAvailable: true
+            },
+
         ]
     };
 

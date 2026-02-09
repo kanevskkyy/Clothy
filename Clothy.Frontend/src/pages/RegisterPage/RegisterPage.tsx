@@ -7,7 +7,7 @@ import RegisterForm from "../../features/registerForm/RegisterForm.tsx";
 const RegisterPage = () => {
     return (
         <PageWrapper>
-            <div className={styles.page} style={{ marginTop: '72px' }}>
+            <div className={styles.page}>
                 <Helmet>
                     <title>Register - Clothy</title>
                     <meta name="description" content="Register your account in Clothy" />

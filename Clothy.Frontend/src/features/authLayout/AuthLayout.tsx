@@ -3,7 +3,7 @@ import styles from "./AuthLayout.module.css";
 
 interface AuthLayoutProps {
     title: string;
-    subtitle: string;
+    subtitle: ReactNode;
     children: ReactNode;
 }
 

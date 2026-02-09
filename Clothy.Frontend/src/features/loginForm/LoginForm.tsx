@@ -85,7 +85,7 @@ const LoginForm = () => {
                 <Button type="submit" variant="primary" size="lg" fullWidth>
                     Sign in
                 </Button>
-                <div className={styles.register}>
+                <div className={styles.login}>
                     <span>Don't have an account?</span>
                     <Link to="/register" className={styles.registerLink}>Register</Link>
                 </div>

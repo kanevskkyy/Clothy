@@ -55,10 +55,8 @@ builder.Services.PostConfigure<CryptoSettings>(options =>
 
 builder.Services.AddHttpClient("NowPayments");
 
-// FLUENT VALIDATION
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssembly(typeof(CreatePaymentRequestDTOValidator).Assembly);
-//
 
 builder.Services.AddScoped<IPaymentService, StripeService>();
 builder.Services.AddScoped<IPaymentService, NowPaymentsService>();
@@ -74,7 +72,6 @@ await using (var scope = builder.Services.BuildServiceProvider().CreateAsyncScop
     await dbContext.Database.MigrateAsync();
 }
 
-//MassTransit
 builder.Services.AddMassTransit(x =>
 {
     x.UsingRabbitMq((context, cfg) =>
@@ -85,8 +82,6 @@ builder.Services.AddMassTransit(x =>
         cfg.Message<OrderPaidEvent>(e => e.SetEntityName("order-paid"));
     });
 });
-//
-
 
 var app = builder.Build();
 app.UseServiceDefaults();
@@ -95,7 +90,6 @@ app.MapDefaultEndpoints();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

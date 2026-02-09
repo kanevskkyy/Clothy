@@ -40,11 +40,9 @@ builder.Services.AddIdentityCore<ApplicationUser>(options =>
 .AddDefaultTokenProviders()
 .AddSignInManager<SignInManager<ApplicationUser>>();
 
-// FLUENT VALIDATION
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssembly(typeof(UserUpdateDTOValidation).Assembly);
 
-// REGISTER AUTO MAPPER
 builder.Services.AddAutoMapper(cfg =>
 {
     cfg.AddMaps(typeof(UserProfile).Assembly);

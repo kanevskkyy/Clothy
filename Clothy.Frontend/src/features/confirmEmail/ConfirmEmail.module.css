@@ -1,0 +1,21 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.emailNotReceived{
+    font-size: 13px;
+    color: #666;
+    text-align: center;
+    padding: 10px 14px;
+    background: #fafafa;
+    border-radius: 20px;
+}
+
+.buttonGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 8px;
+}

@@ -6,15 +6,15 @@ using System.Collections.Generic;
 
 return await Deployment.RunAsync(() =>
 {
-    var config = new Pulumi.Config();
-    var keycloakUrl = config.Get("keycloakUrl") ?? "http://localhost:8080";
-    var realmName = "clothy-realm";
-    var clientId = "clothy-api";
-    var defaultPhotoUrl = "https://res.cloudinary.com/dkdljnfja/image/upload/v1763818143/Profile_Avatar_cfazhc.png";
+    Pulumi.Config config = new Pulumi.Config();
+    string? KEYCLOAL_URL = config.Get("keycloakUrl") ?? "http://localhost:8080";
+    const string REALM_NAME = "clothy-realm";
+    const string CLIENT_ID = "clothy-api";
+    const string DEFAULT_PHOTO_URL = "https://res.cloudinary.com/dkdljnfja/image/upload/v1763818143/Profile_Avatar_cfazhc.png";
 
-    var realm = new Realm("clothy-realm", new RealmArgs
+    Realm realm = new Realm("clothy-realm", new RealmArgs
     {
-        RealmName = realmName,
+        RealmName = REALM_NAME,
         Enabled = true,
         DisplayName = "Clothy Application",
         DisplayNameHtml = "<b>Clothy</b>",
@@ -66,28 +66,28 @@ return await Deployment.RunAsync(() =>
         }
     });
 
-    var adminRole = new Role("admin-role", new RoleArgs
+    Role adminRole = new Role("admin-role", new RoleArgs
     {
         RealmId = realm.Id,
         Name = "Admin",
         Description = "Administrator role with full access"
     });
 
-    var managerRole = new Role("manager-role", new RoleArgs
+    Role managerRole = new Role("manager-role", new RoleArgs
     {
         RealmId = realm.Id,
         Name = "Manager",
         Description = "Manager role with limited administrative access"
     });
 
-    var userRole = new Role("user-role", new RoleArgs
+    Role userRole = new Role("user-role", new RoleArgs
     {
         RealmId = realm.Id,
         Name = "User",
         Description = "Regular user role"
     });
 
-    var userProfile = new RealmUserProfile("user-profile", new RealmUserProfileArgs
+    RealmUserProfile userProfile = new RealmUserProfile("user-profile", new RealmUserProfileArgs
     {
         RealmId = realm.Id,
         Attributes = new InputList<RealmUserProfileAttributeArgs>
@@ -169,10 +169,10 @@ return await Deployment.RunAsync(() =>
         }
     });
 
-    var client = new Client("clothy-api-client", new ClientArgs
+    Client client = new Client("clothy-api-client", new ClientArgs
     {
         RealmId = realm.Id,
-        ClientId = clientId,
+        ClientId = CLIENT_ID,
         Name = "Clothy API",
         Description = "Main API client for Clothy application",
         Enabled = true,
@@ -224,18 +224,18 @@ return await Deployment.RunAsync(() =>
         ClientOfflineSessionMaxLifespan = "5184000", 
     });
 
-    var audienceMapper = new AudienceProtocolMapper("audience-mapper", new AudienceProtocolMapperArgs
+    AudienceProtocolMapper audienceMapper = new AudienceProtocolMapper("audience-mapper", new AudienceProtocolMapperArgs
     {
         RealmId = realm.Id,
         ClientId = client.Id,
         Name = "clothy-api-audience",
 
-        IncludedClientAudience = clientId,
+        IncludedClientAudience = CLIENT_ID,
         AddToAccessToken = true,
         AddToIdToken = true,
     });
 
-    var realmRoleMapper = new UserRealmRoleProtocolMapper("realm-role-mapper", new UserRealmRoleProtocolMapperArgs
+    UserRealmRoleProtocolMapper realmRoleMapper = new UserRealmRoleProtocolMapper("realm-role-mapper", new UserRealmRoleProtocolMapperArgs
     {
         RealmId = realm.Id,
         ClientId = client.Id,
@@ -250,7 +250,7 @@ return await Deployment.RunAsync(() =>
         AddToUserinfo = true,
     });
 
-    var phoneNumberMapper = new UserAttributeProtocolMapper("phone-mapper", new UserAttributeProtocolMapperArgs
+    UserAttributeProtocolMapper phoneNumberMapper = new UserAttributeProtocolMapper("phone-mapper", new UserAttributeProtocolMapperArgs
     {
         RealmId = realm.Id,
         ClientId = client.Id,
@@ -265,7 +265,7 @@ return await Deployment.RunAsync(() =>
         AddToUserinfo = true,
     });
 
-    var photoUrlMapper = new UserAttributeProtocolMapper("photo-url-mapper", new UserAttributeProtocolMapperArgs
+    UserAttributeProtocolMapper photoUrlMapper = new UserAttributeProtocolMapper("photo-url-mapper", new UserAttributeProtocolMapperArgs
     {
         RealmId = realm.Id,
         ClientId = client.Id,
@@ -280,7 +280,7 @@ return await Deployment.RunAsync(() =>
         AddToUserinfo = true,
     });
 
-    var userIdMapper = new UserAttributeProtocolMapper("user-id-mapper", new UserAttributeProtocolMapperArgs
+    UserAttributeProtocolMapper userIdMapper = new UserAttributeProtocolMapper("user-id-mapper", new UserAttributeProtocolMapperArgs
     {
         RealmId = realm.Id,
         ClientId = client.Id,
@@ -295,7 +295,7 @@ return await Deployment.RunAsync(() =>
         AddToUserinfo = true,
     });
 
-    var adminUser = new User("admin-user", new UserArgs
+    User adminUser = new User("admin-user", new UserArgs
     {
         RealmId = realm.Id,
         Username = "admin",
@@ -315,14 +315,14 @@ return await Deployment.RunAsync(() =>
         Attributes = new InputMap<string>
         {
             ["phoneNumber"] = "+380123456789",
-            ["photoURL"] = defaultPhotoUrl
+            ["photoURL"] = DEFAULT_PHOTO_URL
         }
     }, new CustomResourceOptions
     {
         DependsOn = { userProfile }
     });
 
-    var managerUser = new User("manager-user", new UserArgs
+    User managerUser = new User("manager-user", new UserArgs
     {
         RealmId = realm.Id,
         Username = "manager",
@@ -342,14 +342,14 @@ return await Deployment.RunAsync(() =>
         Attributes = new InputMap<string>
         {
             ["phoneNumber"] = "+380956145258",
-            ["photoURL"] = defaultPhotoUrl
+            ["photoURL"] = DEFAULT_PHOTO_URL
         }
     }, new CustomResourceOptions
     {
         DependsOn = { userProfile }
     });
 
-    var regularUser = new User("regular-user", new UserArgs
+    User regularUser = new User("regular-user", new UserArgs
     {
         RealmId = realm.Id,
         Username = "user",
@@ -369,14 +369,14 @@ return await Deployment.RunAsync(() =>
         Attributes = new InputMap<string>
         {
             ["phoneNumber"] = "+380987654321",
-            ["photoURL"] = defaultPhotoUrl
+            ["photoURL"] = DEFAULT_PHOTO_URL
         }
     }, new CustomResourceOptions
     {
         DependsOn = { userProfile }
     });
 
-    var adminUserRoles = new UserRoles("admin-user-roles", new UserRolesArgs
+    UserRoles adminUserRoles = new UserRoles("admin-user-roles", new UserRolesArgs
     {
         RealmId = realm.Id,
         UserId = adminUser.Id,
@@ -387,7 +387,7 @@ return await Deployment.RunAsync(() =>
         }
     });
 
-    var managerUserRoles = new UserRoles("manager-user-roles", new UserRolesArgs
+    UserRoles managerUserRoles = new UserRoles("manager-user-roles", new UserRolesArgs
     {
         RealmId = realm.Id,
         UserId = managerUser.Id,
@@ -398,7 +398,7 @@ return await Deployment.RunAsync(() =>
         }
     });
 
-    var regularUserRoles = new UserRoles("regular-user-roles", new UserRolesArgs
+    UserRoles regularUserRoles = new UserRoles("regular-user-roles", new UserRolesArgs
     {
         RealmId = realm.Id,
         UserId = regularUser.Id,
@@ -414,11 +414,11 @@ return await Deployment.RunAsync(() =>
         ["realmId"] = realm.Id,
         ["clientId"] = client.ClientId,
         ["clientSecret"] = client.ClientSecret,
-        ["keycloakUrl"] = keycloakUrl,
-        ["tokenEndpoint"] = Output.Format($"{keycloakUrl}/realms/{realmName}/protocol/openid-connect/token"),
-        ["authEndpoint"] = Output.Format($"{keycloakUrl}/realms/{realmName}/protocol/openid-connect/auth"),
-        ["userInfoEndpoint"] = Output.Format($"{keycloakUrl}/realms/{realmName}/protocol/openid-connect/userinfo"),
-        ["logoutEndpoint"] = Output.Format($"{keycloakUrl}/realms/{realmName}/protocol/openid-connect/logout"),
+        ["keycloakUrl"] = KEYCLOAL_URL,
+        ["tokenEndpoint"] = Output.Format($"{KEYCLOAL_URL}/realms/{REALM_NAME}/protocol/openid-connect/token"),
+        ["authEndpoint"] = Output.Format($"{KEYCLOAL_URL}/realms/{REALM_NAME}/protocol/openid-connect/auth"),
+        ["userInfoEndpoint"] = Output.Format($"{KEYCLOAL_URL}/realms/{REALM_NAME}/protocol/openid-connect/userinfo"),
+        ["logoutEndpoint"] = Output.Format($"{KEYCLOAL_URL}/realms/{REALM_NAME}/protocol/openid-connect/logout"),
         ["adminUsername"] = adminUser.Username,
         ["adminEmail"] = adminUser.Email,
         ["managerUsername"] = managerUser.Username,

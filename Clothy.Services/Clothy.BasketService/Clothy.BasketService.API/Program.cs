@@ -26,7 +26,6 @@ builder.Services.AddScoped<IBasketService, BasketService>();
 
 builder.Services.AddGrpc();
 
-//GRPC
 builder.Services.AddScoped<IOrderItemValidatorGrpcClient, OrderItemValidatorGrpcClient>();
 builder.Services.AddConfiguredGrpcClient<OrderItemValidator.OrderItemValidatorClient>("catalog")
     .AddStandardResilienceHandler(resilience =>
@@ -35,15 +34,12 @@ builder.Services.AddConfiguredGrpcClient<OrderItemValidator.OrderItemValidatorCl
         resilience.CircuitBreaker.FailureRatio = 0.3;
     });
 
-//AUTOMAPPER
 builder.Services.AddAutoMapper(typeof(BasketProfile));
 
-// FLUENT VALIDATION
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssembly(typeof(BasketItemCreateDTOValidator).Assembly);
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -66,14 +62,11 @@ builder.Services.AddMassTransit(x =>
 
 var app = builder.Build();
 
-//Grpc server
 app.MapGrpcService<BasketGrpcService>();
-//
 
 app.UseServiceDefaults();
 app.MapDefaultEndpoints();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

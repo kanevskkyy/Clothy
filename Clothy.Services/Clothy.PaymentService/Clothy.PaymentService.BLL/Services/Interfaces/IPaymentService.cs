@@ -13,6 +13,7 @@ namespace Clothy.PaymentService.BLL.Services.Interfaces
     {
         Task<CreatePaymentResponseDTO> CreatePaymentAsync(CreatePaymentRequestDTO request, ClaimsPrincipal claimsPrincipal, CancellationToken cancellationToken);
         Task HandleWebhookAsync(string payload, string stripeSignature, CancellationToken cancellationToken);
+        Task<CreatePaymentResponseDTO> RetryPaymentAsync(Guid paymentId, ClaimsPrincipal claimsPrincipal, CancellationToken cancellationToken);
 
         PaymentMethod PaymentMethod { get; }
     }

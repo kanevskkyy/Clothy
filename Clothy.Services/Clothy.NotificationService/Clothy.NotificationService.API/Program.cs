@@ -27,7 +27,6 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//RABBIT MQ
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<OrderCreatedEmailConsumer>();
@@ -58,14 +57,12 @@ builder.Services.AddMassTransit(x =>
         });
     });
 });
-//
 
 var app = builder.Build();
 app.UseServiceDefaults();
 
 app.MapDefaultEndpoints();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

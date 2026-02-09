@@ -65,22 +65,17 @@ public static class Extensions
             });
         });
 
-
-        // REDIS CONFIGURATION
         builder.Services.AddMemoryCache();
         builder.Services.AddCaching();
-        //
 
         builder.Services.AddHealthChecks();
 
-        //RABBIT MQ
         builder.AddRabbitMQClient(connectionName: "rabbitmq");
         builder.Services.AddHealthChecks()
             .AddRabbitMQ(
                 name: "rabbitmq",
                 tags: new[] { "ready" }
             );
-        //
 
         builder.ConfigureOpenTelemetry();
 
@@ -106,7 +101,6 @@ public static class Extensions
 
         //
 
-        // KEYCLOAK
         builder.Services.AddTransient<IClaimsTransformation, KeycloakRolesClaimsTransformation>();
         builder.Services.AddKeycloakAuthentication();
 

@@ -102,12 +102,12 @@ const RegisterForm = () => {
                 label="Phone number"
                 htmlFor="phoneNumber"
                 required
-                error={errors.email}
+                error={errors.phoneNumber}
             >
                 <Input
                     type="tel"
                     id="phoneNumber"
-                    placeholder="enter your phone number"
+                    placeholder="enter your phone number (+380671234567)"
                     value={formData.phoneNumber}
                     onChange={handleChange("phoneNumber")}
                     error={!!errors.phoneNumber}

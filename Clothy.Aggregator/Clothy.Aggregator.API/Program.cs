@@ -30,15 +30,11 @@ builder.Services.AddMemoryCache(options =>
     options.CompactionPercentage = 0.2;
 });
 
-// REGISTER CLIENTS
 builder.Services.AddScoped<IFilterGrpcClient, FilterGrpcClient>();
 builder.Services.AddScoped<IClotheGrpcClient, ClotheGrpcClient>();
 builder.Services.AddScoped<IReviewGrpcClient, ReviewGrpcClient>();
-//
 
-// REGISTER SERVICES
 builder.Services.AddScoped<IClotheAggregateService, ClotheAggregateService>();
-//
 
 builder.Services.AddConfiguredGrpcClient<ClotheFilterServiceGrpc.ClotheFilterServiceGrpcClient>("catalog")
     .AddStandardResilienceHandler(resilience =>

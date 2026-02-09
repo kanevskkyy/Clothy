@@ -48,7 +48,6 @@ builder.AddServiceDefaults();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// REGISTER REPOSITORIES DI
 builder.Services.AddScoped<IBrandRepository, BrandRepository>();
 builder.Services.AddScoped<IClotheItemRepository, ClotheItemRepository>();
 builder.Services.AddScoped<IClothesStockRepository, ClothesStockRepository>();
@@ -61,16 +60,13 @@ builder.Services.AddScoped<IClothingTypeRepository, ClothingTypeRepository>();
 builder.Services.AddScoped<IStockNotificationRepository, StockNotificationRepository>();
 builder.Services.AddScoped<IClothePopularityRepository, ClothePopularityRepository>();
 
-// REGISTER UNIT OF WORK
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-// REGISTER AUTO MAPPER
 builder.Services.AddAutoMapper(cfg =>
 {
     cfg.AddMaps(typeof(TagProfile).Assembly);
 });
 
-// REGISTER SERVICES DI
 builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddScoped<ISizeService, SizeService>();
 builder.Services.AddScoped<IMaterialService, MaterialService>();
@@ -82,17 +78,13 @@ builder.Services.AddScoped<IClotheService, ClotheService>();
 builder.Services.AddScoped<IClothesStockService, ClothesStockService>();
 builder.Services.AddScoped<IStockNotificationService, StockNotificationService>();
 
-// REDIS
 builder.Services.AddTransient<IEntityCacheInvalidationService<ClotheItem>, ClotheItemCacheInvalidationService>();
 builder.Services.AddTransient<IEntityCacheInvalidationService<ClothesStock>, ClothesStockCacheInvalidationService>();
 
-// CLOUDINARY CONFIG
 builder.Services.AddCloudinary(builder.Configuration);
 
-// FILTERS CACHE SERVICE
 builder.Services.AddScoped<IFilterCacheInvalidationService, FilterCacheInvalidationService>();
 
-// FLUENT VALIDATION
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssembly(typeof(BrandCreateDTOValidator).Assembly);
 
@@ -107,13 +99,10 @@ await using (var scope = builder.Services.BuildServiceProvider().CreateAsyncScop
     await dbContext.Database.MigrateAsync();
 }
 
-// OPEN TELEMETRY CONFIG
 builder.Services.AddConfiguredOpenTelemetry("CatalogService", builder.Configuration);
 Meter meter = builder.Services.AddOrGetMeter("CatalogService");
 builder.Services.AddSingleton(meter);
-//
 
-//RabbitMQ 
 builder.Services.AddScoped<IEventLogService, EventLogService>();
 
 builder.Services.AddMassTransit(x =>
@@ -138,7 +127,6 @@ builder.Services.AddMassTransit(x =>
         cfg.ConfigureEndpoints(context);
     });
 });
-//
 
 var app = builder.Build();
 

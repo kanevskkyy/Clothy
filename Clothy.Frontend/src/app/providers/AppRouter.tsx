@@ -12,6 +12,10 @@ import NotFoundPage from "../../pages/NotFoundPage/NotFoundPage.tsx";
 import CatalogPage from "../../pages/CatalogPage/CatalogPage.tsx";
 import LoginPage from "../../pages/LoginPage/LoginPage.tsx";
 import RegisterPage from "../../pages/RegisterPage/RegisterPage.tsx";
+import ForgotPasswordPage from "../../pages/ForgotPasswordPage/ForgotPasswordPage.tsx";
+import VerifyEmailPage from "../../pages/VerifyEmailPage/VerifyEmailPage.tsx";
+import PaymentSuccessfulPage from "../../pages/PaymentSuccessfulPage/PaymentSuccessfulPage.tsx";
+import PaymentCancelledPage from "../../pages/PaymentCancelledPage/PaymentCancelledPage.tsx";
 
 export const AppRouter = () => {
     return (
@@ -30,6 +34,10 @@ export const AppRouter = () => {
                         <Route path="/catalog" element={<CatalogPage/>}/>
                         <Route path="/login" element={<LoginPage/>}/>
                         <Route path="/register" element={<RegisterPage/>}/>
+                        <Route path="/forgot-password" element={<ForgotPasswordPage/>}/>
+                        <Route path="/email-verification" element={<VerifyEmailPage/>}/>
+                        <Route path="/payment/success" element={<PaymentSuccessfulPage/>}/>
+                        <Route path="/payment/cancelled" element={<PaymentCancelledPage/>}/>
                         <Route path="*" element={<NotFoundPage/>}/>
                     </Routes>
                 </main>

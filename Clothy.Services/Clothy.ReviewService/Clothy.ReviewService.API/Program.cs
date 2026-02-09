@@ -45,25 +45,19 @@ builder.Services.AddMongoDb(builder.Configuration);
 
 builder.Services.AddGrpc();
 
-// MediatR
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<UpdateQuestionWithIdCommandHandler>());
 
-// Behaviors
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ExceptionHandlingBehavior<,>));
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceBehavior<,>));
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
-// REPOSITORIES DI
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
 
-// FLUENT VALIDATION
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssembly(typeof(CreateQuestionDTOValidator).Assembly);
-//
 
-// RABBIT MQ
 builder.Services.AddScoped<IEventLogService, EventLogService>();
 
 builder.Services.AddMassTransit(x =>
@@ -96,11 +90,9 @@ builder.Services.AddMassTransit(x =>
         });
     });
 });
-//
 
 builder.Services.AddEndpointsApiExplorer();
 
-// GRPC
 builder.Services.AddScoped<ICheckUserPurchasedClotheGrpcClient, CheckUserPurchasedClotheGrpcClient>();
 builder.Services.AddConfiguredGrpcClient<CheckUserPurchasedGrpc.CheckUserPurchasedGrpcClient>("orders")
     .AddStandardResilienceHandler(resilience =>
@@ -116,21 +108,16 @@ builder.Services.AddConfiguredGrpcClient<ClotheItemIdValidator.ClotheItemIdValid
         resilience.Retry.MaxRetryAttempts = 3;
         resilience.CircuitBreaker.FailureRatio = 0.4;
     });
-//
 
-// OPEN TELEMETRY CONFIG
 builder.Services.AddConfiguredOpenTelemetry("ReviewService", builder.Configuration);
 Meter meter = builder.Services.AddOrGetMeter("ReviewService");
 builder.Services.AddSingleton(meter);
-//
 
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-//Grpc server
 app.MapGrpcService<ReviewServiceGrpcImpl>();
-//
 
 using (var scope = app.Services.CreateScope())
 {

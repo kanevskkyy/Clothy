@@ -1,0 +1,35 @@
+.stepList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.stepItem {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 20px 16px;
+    border: 1px solid #d9d9d9;
+    border-radius: 10px;
+    background-color: #F9F9F9;
+}
+
+.stepNumber {
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.stepInstruction {
+    font-size: 14px;
+    color: #676767;
+    line-height: 1.5;
+}

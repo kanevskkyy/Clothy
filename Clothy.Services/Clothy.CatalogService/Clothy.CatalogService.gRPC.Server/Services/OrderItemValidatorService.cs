@@ -132,7 +132,7 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                         response.Price = clotheItem.Price.ToString();
                         
                         PhotoClothes? mainPhotoForColor = clotheItem.Photos.FirstOrDefault(p => p.ColorId == colorId && p.IsMain);
-                        response.MainPhotoUrl = mainPhotoForColor?.PhotoURL;
+                        response.MainPhotoUrl = mainPhotoForColor?.PhotoURL ?? "";
 
                         response.ColorHexCode = color.HexCode;
                         response.SizeName = size.Name;

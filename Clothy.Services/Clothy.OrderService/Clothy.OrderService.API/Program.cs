@@ -40,7 +40,6 @@ Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
-//HEALTH CHECK FOR POSTGRES
 builder.Services.AddHealthChecks()
     .AddNpgSql(
         connectionString: builder.Configuration.GetConnectionString("ClothyOrder")!,
@@ -56,7 +55,6 @@ builder.Services.AddHealthChecks()
         tags: new[] { "ready", "cache", "redis" },
         timeout: TimeSpan.FromSeconds(3)
     );
-//
 builder.AddServiceDefaults();
 
 builder.Services.AddSingleton<IConnectionFactory>(sp =>
@@ -67,16 +65,11 @@ builder.Services.AddSingleton<IConnectionFactory>(sp =>
 
 builder.AddRedisClient("clothy-redis");
 
-
-//NOVAPOSHTA API
 builder.Services.PostConfigure<NovaPoshtaConfig>(options =>
 {
     options.APIKey = Environment.GetEnvironmentVariable("NOVAPOSHTA__API_KEY");
 });
-//
 
-
-// REGISTER REPOSITORY
 builder.Services.AddScoped<IOrderStatusRepository, OrderStatusRepository>();
 builder.Services.AddScoped<IDeliveryProviderRepository, DeliveryProviderRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
@@ -86,9 +79,7 @@ builder.Services.AddScoped<IRegionRepository, RegionRepository>();
 builder.Services.AddScoped<ISettlementRepository, SettlementRepository>();
 builder.Services.AddScoped<IPickupPointRepository, PickupPointRepository>();
 builder.Services.AddScoped<IOrderReservationRepository, OrderReservationRepository>();
-//
 
-//HTTP FACTORY
 builder.Services.AddScoped<IDeliveryAPIClient, NovaPoshtaAPIClient>();
 builder.Services.AddHttpClient("NovaPoshtaAPI", client =>
 {
@@ -98,22 +89,16 @@ builder.Services.AddHttpClient("NovaPoshtaAPI", client =>
 {
     MaxConnectionsPerServer = 20
 });
-//
 
-//BACKGROUND SERVICE
 builder.Services.AddHostedService<ExpiredOrdersCleanupService>();
 builder.Services.AddHostedService<PickupPointSyncBackgroundService>();
-//
 
-// REGISTER UNIT OF WORK
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddGrpc();
 
-// AUTO MAPPER REGISTER
 builder.Services.AddAutoMapper(typeof(OrderProfile).Assembly);
 
-// SERVICES REGISTER
 builder.Services.AddScoped<IDeliveryProviderService, DeliveryProviderService>();
 builder.Services.AddScoped<IOrderStatusService, OrderStatusService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
@@ -122,7 +107,6 @@ builder.Services.AddScoped<ISettlementService, SettlementService>();
 builder.Services.AddScoped<IPickupPointService, PickupPointService>();
 builder.Services.AddScoped<IOrderItemService, OrderItemService>();
 
-//RabbitMQ
 builder.Services.AddScoped<IEventLogService, EventLogService>();
 
 builder.Services.AddMassTransit(x =>
@@ -159,28 +143,21 @@ builder.Services.AddMassTransit(x =>
         cfg.Message<OrderCreatedEmailEvent>(e => e.SetEntityName("send-notification-order-created"));
     });
 });
-//
 
-// CLOUDINARY CONFIG
 builder.Services.AddCloudinary(builder.Configuration);
-//
 
-//REDIS
 builder.Services.AddTransient<IEntityCacheInvalidationService<Order>, OrderCacheInvalidationService>();
 builder.Services.AddTransient<IEntityCacheInvalidationService<OrderStatus>, OrderStatusCacheInvalidationService>();
 builder.Services.AddTransient<IEntityCacheInvalidationService<DeliveryProvider>, DeliveryProviderCacheInvalidationService>();
 builder.Services.AddTransient<IEntityCacheInvalidationService<Region>, RegionCacheInvalidationService>();
 builder.Services.AddTransient<IEntityCacheInvalidationService<PickupPoints>, PickupPointCacheInvalidationService>();
 builder.Services.AddTransient<IEntityCacheInvalidationService<Settlement>, SettlementCacheInvalidationService>();
-//
 
-// FLUENT VALIDATION
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssembly(typeof(OrderStatusCreateDTOValidator).Assembly);
 
 builder.Services.AddEndpointsApiExplorer();
 
-//GRPC 
 builder.Services.AddScoped<IOrderItemValidatorGrpcClient, OrderItemValidatorGrpcClient>();
 builder.Services.AddScoped<IBasketGrpcClient, BasketGrpcClient>();
 
@@ -198,11 +175,9 @@ builder.Services.AddConfiguredGrpcClient<BasketGrpc.BasketGrpcClient>("basket")
         resilience.CircuitBreaker.FailureRatio = 0.3;
     });
 
-// OPEN TELEMETRY CONFIG
 builder.Services.AddConfiguredOpenTelemetry("OrderService", builder.Configuration);
 Meter meter = builder.Services.AddOrGetMeter("OrderService");
 builder.Services.AddSingleton(meter);
-//
 
 var app = builder.Build();
 

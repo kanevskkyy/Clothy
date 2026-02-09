@@ -105,6 +105,24 @@ const CatalogFilter = memo(({ filters, onFilterChange }: CatalogFilterProps) => 
         onFilterChange(resetState);
     };
 
+    const handleCheckboxListScroll = (e: React.WheelEvent<HTMLDivElement>) => {
+        const element = e.currentTarget;
+        const isScrollable = element.scrollHeight > element.clientHeight;
+
+        if (!isScrollable) {
+            return;
+        }
+
+        const isAtTop = element.scrollTop === 0;
+        const isAtBottom = element.scrollTop + element.clientHeight >= element.scrollHeight - 1;
+
+        if ((isAtTop && e.deltaY < 0) || (isAtBottom && e.deltaY > 0)) {
+            return;
+        }
+
+        e.stopPropagation();
+    };
+
     return (
         <>
             <button className={styles.mobileFilterButton} onClick={() => setIsOpen(true)}>
@@ -131,7 +149,7 @@ const CatalogFilter = memo(({ filters, onFilterChange }: CatalogFilterProps) => 
                     </div>
                     {expandedSections.has('brand') && (
                         <div className={styles.filterContent}>
-                            <div className={styles.checkboxList}>
+                            <div className={styles.checkboxList} onWheel={handleCheckboxListScroll}>
                                 {filters.brands.map(brand => (
                                     <Checkbox
                                         key={brand.id}
@@ -157,7 +175,7 @@ const CatalogFilter = memo(({ filters, onFilterChange }: CatalogFilterProps) => 
                     </div>
                     {expandedSections.has('type') && (
                         <div className={styles.filterContent}>
-                            <div className={styles.checkboxList}>
+                            <div className={styles.checkboxList} onWheel={handleCheckboxListScroll}>
                                 {filters.clothingTypes.map(type => (
                                     <Checkbox
                                         key={type.id}
@@ -183,7 +201,7 @@ const CatalogFilter = memo(({ filters, onFilterChange }: CatalogFilterProps) => 
                     </div>
                     {expandedSections.has('color') && (
                         <div className={styles.filterContent}>
-                            <div className={styles.checkboxList}>
+                            <div className={styles.checkboxList} onWheel={handleCheckboxListScroll}>
                                 {filters.colors.map(color => (
                                     <Checkbox
                                         key={color.id}
@@ -209,7 +227,7 @@ const CatalogFilter = memo(({ filters, onFilterChange }: CatalogFilterProps) => 
                     </div>
                     {expandedSections.has('material') && (
                         <div className={styles.filterContent}>
-                            <div className={styles.checkboxList}>
+                            <div className={styles.checkboxList} onWheel={handleCheckboxListScroll}>
                                 {filters.materials.map(material => (
                                     <Checkbox
                                         key={material.id}
@@ -235,7 +253,7 @@ const CatalogFilter = memo(({ filters, onFilterChange }: CatalogFilterProps) => 
                     </div>
                     {expandedSections.has('size') && (
                         <div className={styles.filterContent}>
-                            <div className={styles.checkboxList}>
+                            <div className={styles.checkboxList} onWheel={handleCheckboxListScroll}>
                                 {filters.sizes.map(size => (
                                     <Checkbox
                                         key={size.id}
@@ -261,7 +279,7 @@ const CatalogFilter = memo(({ filters, onFilterChange }: CatalogFilterProps) => 
                     </div>
                     {expandedSections.has('tags') && (
                         <div className={styles.filterContent}>
-                            <div className={styles.checkboxList}>
+                            <div className={styles.checkboxList} onWheel={handleCheckboxListScroll}>
                                 {filters.tags.map(tag => (
                                     <Checkbox
                                         key={tag.id}
@@ -287,7 +305,7 @@ const CatalogFilter = memo(({ filters, onFilterChange }: CatalogFilterProps) => 
                     </div>
                     {expandedSections.has('collections') && (
                         <div className={styles.filterContent}>
-                            <div className={styles.checkboxList}>
+                            <div className={styles.checkboxList} onWheel={handleCheckboxListScroll}>
                                 {filters.collections.map(collection => (
                                     <Checkbox
                                         key={collection.id}
@@ -313,7 +331,7 @@ const CatalogFilter = memo(({ filters, onFilterChange }: CatalogFilterProps) => 
                     </div>
                     {expandedSections.has('gender') && (
                         <div className={styles.filterContent}>
-                            <div className={styles.checkboxList}>
+                            <div className={styles.checkboxList} onWheel={handleCheckboxListScroll}>
                                 <Checkbox
                                     id="gender-male"
                                     label="Male"

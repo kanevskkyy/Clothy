@@ -34,8 +34,8 @@ namespace Clothy.PaymentService.BLL.Services
 
         private const string PAY_CURRENCY = "usd";
 
-        public StripeService(PaymentDbContext dbContext, 
-            IGetOrderInfoClient orderInfoClient, 
+        public StripeService(PaymentDbContext dbContext,
+            IGetOrderInfoClient orderInfoClient,
             ILogger<StripeService> logger,
             IOptions<CardSettings> stripeSettings,
             IUserClaimsExtractor userClaimsExtractor,
@@ -66,15 +66,16 @@ namespace Clothy.PaymentService.BLL.Services
                 OrderId = Guid.Parse(orderInfoResponse.OrderId),
                 UserId = Guid.Parse(orderInfoResponse.UserId),
                 Price = decimal.Parse(orderInfoResponse.Price),
-                Status = PaymentStatus.Pending
-            };           
+                Status = PaymentStatus.Pending,
+                PaymentMethod = Domain.Entities.PaymentMethod.Card
+            };
 
             StripeConfiguration.ApiKey = stripeSettings.ApiKey;
             SessionCreateOptions sessionCreateOptions = new SessionCreateOptions()
             {
                 Mode = "payment",
                 SuccessUrl = stripeSettings.SuccessURL,
-                CancelUrl = stripeSettings.CancelURL,
+                CancelUrl = $"{stripeSettings.CancelURL}?paymentId={paymentRecord.Id}",
                 LineItems = new List<SessionLineItemOptions>()
                 {
                     new SessionLineItemOptions
@@ -93,15 +94,9 @@ namespace Clothy.PaymentService.BLL.Services
                 },
                 Metadata = new Dictionary<string, string>()
                 {
-                    { 
-                        "payment_id", paymentRecord.Id.ToString() 
-                    },
-                    { 
-                        "order_id", paymentRecord.OrderId.ToString() 
-                    },
-                    {
-                        "user_id", paymentRecord.UserId.ToString() 
-                    }
+                    { "payment_id", paymentRecord.Id.ToString() },
+                    { "order_id", paymentRecord.OrderId.ToString() },
+                    { "user_id", paymentRecord.UserId.ToString() }
                 }
             };
 
@@ -119,6 +114,80 @@ namespace Clothy.PaymentService.BLL.Services
                 PaymentId = paymentRecord.Id,
                 PaymentUrl = session.Url,
                 Status = paymentRecord.Status
+            };
+        }
+
+        public async Task<CreatePaymentResponseDTO> RetryPaymentAsync(Guid paymentId, ClaimsPrincipal claimsPrincipal, CancellationToken cancellationToken)
+        {
+            logger.LogInformation("Retrying payment {PaymentId}", paymentId);
+
+            PaymentRecordEF? oldPayment = await dbContext.PaymentRecords.FindAsync(new object[] { paymentId }, cancellationToken);
+
+            if (oldPayment == null) throw new NotFoundException($"Payment with ID {paymentId} not found!");
+
+            Guid userId = userClaimsExtractor.GetUserId(claimsPrincipal);
+            if (userId != oldPayment.UserId) throw new ValidationFailedException("You cannot retry someone else's payment!");
+
+            if (oldPayment.Status == PaymentStatus.Paid) throw new ValidationFailedException("Cannot retry already paid payment!");
+
+            GetOrderInfoResponse orderInfoResponse = await orderInfoClient.GetOrderInfoAsync(oldPayment.OrderId, cancellationToken);
+
+            if (orderInfoResponse.Status.ToLower() != "awaiting payment") throw new ValidationFailedException($"The order {oldPayment.OrderId} is no longer available for payment!");
+
+            PaymentRecordEF newPaymentRecord = new PaymentRecordEF
+            {
+                Id = Guid.NewGuid(),
+                OrderId = oldPayment.OrderId,
+                UserId = oldPayment.UserId,
+                Price = decimal.Parse(orderInfoResponse.Price),
+                Status = PaymentStatus.Pending,
+                PaymentMethod = Domain.Entities.PaymentMethod.Card
+            };
+
+            StripeConfiguration.ApiKey = stripeSettings.ApiKey;
+            SessionCreateOptions sessionCreateOptions = new SessionCreateOptions()
+            {
+                Mode = "payment",
+                SuccessUrl = stripeSettings.SuccessURL,
+                CancelUrl = $"{stripeSettings.CancelURL}?paymentId={newPaymentRecord.Id}",
+                LineItems = new List<SessionLineItemOptions>()
+                {
+                    new SessionLineItemOptions
+                    {
+                        Quantity = 1,
+                        PriceData = new SessionLineItemPriceDataOptions
+                        {
+                            Currency = PAY_CURRENCY,
+                            UnitAmount = (long)(newPaymentRecord.Price * 100),
+                            ProductData = new SessionLineItemPriceDataProductDataOptions
+                            {
+                                Name = $"Order {newPaymentRecord.OrderId}"
+                            }
+                        }
+                    }
+                },
+                Metadata = new Dictionary<string, string>()
+                {
+                    { "payment_id", newPaymentRecord.Id.ToString() },
+                    { "order_id", newPaymentRecord.OrderId.ToString() },
+                    { "user_id", newPaymentRecord.UserId.ToString() }
+                }
+            };
+
+            SessionService sessionService = new SessionService();
+            Session session = await sessionService.CreateAsync(sessionCreateOptions, cancellationToken: cancellationToken);
+
+            newPaymentRecord.TransactionId = session.Id;
+            await dbContext.PaymentRecords.AddAsync(newPaymentRecord, cancellationToken);
+            await dbContext.SaveChangesAsync(cancellationToken);
+
+            logger.LogInformation("Retry payment created. OldPaymentId={OldPaymentId}, NewPaymentId={NewPaymentId}, SessionId={SessionId}", paymentId, newPaymentRecord.Id, session.Id);
+
+            return new CreatePaymentResponseDTO
+            {
+                PaymentId = newPaymentRecord.Id,
+                PaymentUrl = session.Url,
+                Status = newPaymentRecord.Status
             };
         }
 

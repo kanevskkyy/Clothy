@@ -1,0 +1,31 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.sectionHeader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 8px;
+}
+
+.sectionTitle {
+    font-size: 18px;
+    font-weight: 500;
+    color: #000;
+}
+
+.buttonGroup {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+@media (max-width: 640px) {
+    .buttonGroup {
+        flex-direction: column;
+    }
+}

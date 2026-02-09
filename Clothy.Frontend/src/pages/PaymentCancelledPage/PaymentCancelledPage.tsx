@@ -1,0 +1,27 @@
+import PageWrapper from "../../shared/PageWrapper/PageWrapper.tsx";
+import styles from "./PaymentCancelledPage.module.css";
+import {Helmet} from "react-helmet";
+import AuthLayout from "../../features/authLayout/AuthLayout.tsx";
+import PaymentCancelled from "../../features/paymentCancelled/PaymentCancelled.tsx";
+
+const PaymentCancelledPage = () => {
+    return (
+        <PageWrapper>
+            <div className={styles.page}>
+                <Helmet>
+                    <title>Payment Cancelled - Clothy</title>
+                    <meta name="description" content="Your payment was cancelled" />
+                </Helmet>
+
+                <AuthLayout
+                    title="Payment canceled!"
+                    subtitle="Unfortunately, your payment was not completed. This may have been due to a canceled transaction or technical issues. Your items are still in your cart."
+                >
+                    <PaymentCancelled />
+                </AuthLayout>
+            </div>
+        </PageWrapper>
+    );
+};
+
+export default PaymentCancelledPage;
