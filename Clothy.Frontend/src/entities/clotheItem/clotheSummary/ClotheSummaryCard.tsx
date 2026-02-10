@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { memo, useState } from "react";
 import styles from "./ClotheSummaryCard.module.css";
-import type {IClotheSummaryDTO} from "../interfaces/IClotheSummaryDTO.ts";
+import type {IClotheSummaryDTO} from "../IClotheSummaryDTO.ts";
 
 interface ClotheSummaryCardProps {
     product: IClotheSummaryDTO;

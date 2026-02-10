@@ -1,0 +1,11 @@
+.select {
+    font-size: 14px;
+}
+
+.select.error :global(.custom-select__control) {
+    border-color: #dc3545 !important;
+}
+
+.select.error :global(.custom-select__control:hover) {
+    border-color: #dc3545 !important;
+}

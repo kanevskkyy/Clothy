@@ -1,4 +1,4 @@
-import type { IQuestionReadDTO } from "../interfaces/IQuestionReadDTO";
+import type { IQuestionReadDTO } from "../IQuestionReadDTO.ts";
 import styles from "./QuestionItem.module.css";
 import {formatDate} from "../../../shared/formatDate.ts";
 

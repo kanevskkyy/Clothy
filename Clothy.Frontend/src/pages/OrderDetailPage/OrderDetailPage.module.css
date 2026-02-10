@@ -1,0 +1,393 @@
+.container {
+    padding: 20px;
+    max-width: 736px;
+    display: flex;
+    margin: 72px auto;
+    align-items: stretch;
+    justify-content: center;
+    gap: 24px;
+    flex-direction: column;
+}
+
+.orderHeader {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.orderStatus {
+    display: flex;
+    justify-content: center;
+    padding: 5px 10px;
+    border: 2px solid #d9d9d9;
+    border-radius: 30px;
+    font-size: 14px;
+    line-height: 20px;
+    white-space: nowrap;
+}
+
+.orderHeaderTitle {
+    font-size: 24px;
+    line-height: 32px;
+}
+
+.orderDate {
+    font-size: 14px;
+    color: rgb(102, 102, 102);
+    line-height: 20px;
+}
+
+.productTitle {
+    line-height: 28px;
+    color: rgb(13, 13, 13);
+    font-size: 18px;
+    margin-bottom: 16px;
+}
+
+.orderItemsList {
+    width: 100%;
+    background: white;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 24px;
+}
+
+.orderItems {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.orderItem {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 0;
+}
+
+.itemImage {
+    width: 100px;
+    height: 100px;
+    object-fit: scale-down;
+    flex-shrink: 0;
+}
+
+.itemDetails {
+    flex: 1;
+    min-width: 0;
+}
+
+.itemName {
+    font-size: 16px;
+    line-height: 24px;
+    color: rgb(13, 13, 13);
+    margin-bottom: 4px;
+}
+
+.itemVariant {
+    font-size: 14px;
+    line-height: 20px;
+    color: rgb(102, 102, 102);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.itemPrice {
+    font-size: 16px;
+    line-height: 24px;
+    color: rgb(13, 13, 13);
+    font-weight: 500;
+    flex-shrink: 0;
+}
+
+.orderSummary {
+    padding-top: 24px;
+    border-top: 1px solid #e5e5e5;
+}
+
+.summaryRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    line-height: 20px;
+    color: rgb(102, 102, 102);
+    margin-bottom: 12px;
+}
+
+.summaryRow.total {
+    font-size: 18px;
+    line-height: 28px;
+    color: rgb(13, 13, 13);
+}
+
+.totalPrice {
+    font-weight: 600;
+}
+
+.freeDelivery {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.free {
+    color: #10B981;
+}
+
+.paid {
+    color: #FF0000;
+}
+
+.commentSection {
+    padding: 16px 0;
+    margin-top: 8px;
+    border-top: 1px solid #e5e5e5;
+}
+
+.commentTitle {
+    font-size: 14px;
+    line-height: 20px;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.commentText {
+    font-size: 14px;
+    line-height: 20px;
+    color: rgb(13, 13, 13);
+}
+
+.orderSections {
+    width: 100%;
+    display: flex;
+    gap: 24px;
+}
+
+.section {
+    flex: 1;
+    background: white;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 24px;
+}
+
+.sectionTitle {
+    font-size: 18px;
+    line-height: 28px;
+    color: rgb(13, 13, 13);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sectionContent {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.deliveryMethod {
+    font-size: 14px;
+    line-height: 20px;
+    color: rgb(13, 13, 13);
+}
+
+.deliveryAddress {
+    font-size: 14px;
+    line-height: 20px;
+    color: rgb(102, 102, 102);
+}
+
+.recipientName {
+    font-size: 14px;
+    line-height: 20px;
+    color: rgb(13, 13, 13);
+}
+
+.recipientPhone,
+.recipientEmail {
+    font-size: 14px;
+    line-height: 20px;
+    color: rgb(102, 102, 102);
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 16px;
+    }
+
+    .container {
+        padding: 16px;
+        gap: 20px;
+    }
+
+    .orderHeaderTitle {
+        font-size: 20px;
+        line-height: 28px;
+    }
+
+    .orderStatus {
+        font-size: 12px;
+        padding: 4px 8px;
+    }
+
+    .orderItemsList {
+        padding: 20px;
+    }
+
+    .section {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 640px) {
+    body {
+        padding: 12px;
+    }
+
+    .container {
+        padding: 0;
+        gap: 16px;
+    }
+
+    .orderHeader {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .orderHeaderInfo {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .orderHeaderTitle {
+        font-size: 18px;
+        line-height: 24px;
+    }
+
+    .orderDate {
+        font-size: 12px;
+    }
+
+    .orderStatus {
+        font-size: 11px;
+        padding: 4px 8px;
+    }
+
+    .orderItemsList {
+        padding: 16px;
+    }
+
+    .productTitle {
+        font-size: 16px;
+        line-height: 24px;
+        margin-bottom: 12px;
+    }
+
+    .orderItem {
+        gap: 12px;
+        padding: 8px 0;
+    }
+
+    .itemImage {
+        width: 80px;
+        height: 80px;
+    }
+
+    .itemName {
+        font-size: 14px;
+        line-height: 20px;
+    }
+
+    .itemVariant {
+        font-size: 12px;
+        line-height: 16px;
+    }
+
+    .itemPrice {
+        font-size: 14px;
+        line-height: 20px;
+    }
+
+    .orderSummary {
+        margin-top: 16px;
+        padding-top: 16px;
+    }
+
+    .summaryRow.total {
+        font-size: 16px;
+        line-height: 24px;
+    }
+
+    .freeDelivery {
+        font-size: 12px;
+    }
+
+    .freeDelivery svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .orderSections {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .section {
+        padding: 16px;
+    }
+
+    .sectionTitle {
+        font-size: 16px;
+        line-height: 24px;
+        margin-bottom: 12px;
+    }
+
+    .sectionTitle svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .sectionContent {
+        gap: 6px;
+    }
+
+    .deliveryMethod,
+    .deliveryAddress,
+    .recipientName,
+    .recipientPhone,
+    .recipientEmail {
+        font-size: 13px;
+        line-height: 18px;
+    }
+}
+
+@media (max-width: 375px) {
+    .orderHeader {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .orderStatus {
+        align-self: flex-start;
+    }
+
+    .itemImage {
+        width: 70px;
+        height: 70px;
+    }
+
+    .itemName {
+        font-size: 13px;
+    }
+
+    .itemPrice {
+        font-size: 13px;
+    }
+}

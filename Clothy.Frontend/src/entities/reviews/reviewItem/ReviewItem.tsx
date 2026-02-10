@@ -1,4 +1,4 @@
-import type { IReviewReadDTO } from "../interfaces/IReviewReadDTO";
+import type { IReviewReadDTO } from "../IReviewReadDTO.ts";
 import styles from "./ReviewItem.module.css";
 import {formatDate} from "../../../shared/formatDate.ts";
 

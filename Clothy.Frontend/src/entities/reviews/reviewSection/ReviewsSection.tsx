@@ -1,8 +1,8 @@
 import { useState } from "react";
 import type { PagedList } from "../../../shared/pagedList";
-import type { IReviewReadDTO } from "../interfaces/IReviewReadDTO";
-import type { IReviewStatistic } from "../interfaces/IReviewStatistic";
-import type { IQuestionReadDTO } from "../../questions/interfaces/IQuestionReadDTO";
+import type { IReviewReadDTO } from "../IReviewReadDTO.ts";
+import type { IReviewStatistic } from "../IReviewStatistic.ts";
+import type { IQuestionReadDTO } from "../../questions/IQuestionReadDTO.ts";
 import styles from "./ReviewsSection.module.css";
 import ReviewItem from "../reviewItem/ReviewItem.tsx";
 import QuestionItem from "../../questions/questionItem/QuestionItem.tsx";

@@ -1,9 +1,9 @@
 import type React from "react";
-import type { IClotheDetailDTO } from "../interfaces/IClotheDetailDTO";
+import type { IClotheDetailDTO } from "../IClotheDetailDTO.ts";
 import { useEffect, useMemo, useState } from "react";
 import styles from "./ClotheDetail.module.css";
-import type {IColorReadDTO} from "../../colors/interfaces/IColorReadDTO.ts";
-import type {ISizeReadDTO} from "../../sizes/interfaces/ISizeReadDTO.ts";
+import type {IColorReadDTO} from "../../colors/IColorReadDTO.ts";
+import type {ISizeReadDTO} from "../../sizes/ISizeReadDTO.ts";
 import Button from "../../../shared/Button/Button.tsx";
 
 interface ProductInfoProps {

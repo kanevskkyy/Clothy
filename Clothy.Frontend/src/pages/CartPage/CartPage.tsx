@@ -1,11 +1,12 @@
 import { useNavigate } from 'react-router-dom';
-import type { IBasketList } from "../../entities/basket/interfaces/IBasketList.ts";
+import type { IBasketList } from "../../entities/basket/IBasketList.ts";
 import styles from './CartPage.module.css';
 import CartItem from "../../entities/basket/cartItem/CartItem.tsx";
 import { Helmet } from 'react-helmet';
 import PageWrapper from "../../shared/PageWrapper/PageWrapper.tsx";
-import EmptyCart from '../../features/emptyCart/EmptyCart.tsx';
+import EmptyCart from '../../features/cart/emptyCart/EmptyCart.tsx';
 import Button from "../../shared/Button/Button.tsx";
+import OrderSummary from "../../features/checkout/orderSummary/OrderSummary.tsx";
 
 const CartPage = () => {
     const navigate = useNavigate();
@@ -146,58 +147,42 @@ const CartPage = () => {
                     ))}
                 </div>
 
-                <div className={styles.orderSummary}>
-                    <h3>Your Order</h3>
+                <OrderSummary
+                    title="Your Order"
+                    priceRows={[
+                        { label: `Items (${totalItems})`, value: `${mockCartItems.totalPrice} ₴` },
+                        { label: 'Delivery', value: mockCartItems.totalPrice > 1500 ? 'Free' : 'Paid' }
+                    ]}
+                    totalPrice={mockCartItems.totalPrice}
+                    buttons={
+                        <>
+                            <Button
+                                variant="primary"
+                                size="lg"
+                                fullWidth
+                                onClick={handleCheckout}
+                            >
+                                Checkout →
+                            </Button>
 
-                    <div className={styles.orderPriceInfo}>
-                        <div className={styles.priceRow}>
-                            <span className={styles.label}>Items ({totalItems})</span>
-                            <span className={styles.value}>{mockCartItems.totalPrice} ₴</span>
-                        </div>
+                            <Button
+                                variant="outline"
+                                fullWidth
+                                to="/catalog"
+                            >
+                                Continue Shopping
+                            </Button>
 
-                        <div className={styles.priceRow}>
-                            <span className={styles.label}>Delivery</span>
-                            <span className={styles.value}>
-                            {mockCartItems.totalPrice > 1500 ? 'Free' : 'Paid'}
-                        </span>
-                        </div>
-
-                        <div className={styles.divider}></div>
-
-                        <div className={styles.totalRow}>
-                            <span>Total</span>
-                            <span>{mockCartItems.totalPrice} ₴</span>
-                        </div>
-                    </div>
-
-
-                    <div className={styles.buttonWrapper}>
-                        <Button
-                            variant="primary"
-                            size="lg"
-                            fullWidth
-                            onClick={handleCheckout}
-                        >
-                            Checkout →
-                        </Button>
-
-                        <Button
-                            variant="outline"
-                            fullWidth
-                            to="/catalog"
-                        >
-                            Continue Shopping
-                        </Button>
-
-                        <Button
-                            variant="outline"
-                            fullWidth
-                            onClick={handleClearCart}
-                        >
-                            Clear All
-                        </Button>
-                    </div>
-                </div>
+                            <Button
+                                variant="outline"
+                                fullWidth
+                                onClick={handleClearCart}
+                            >
+                                Clear All
+                            </Button>
+                        </>
+                    }
+                />
             </div>
         </PageWrapper>
     );

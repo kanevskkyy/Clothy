@@ -1,8 +1,8 @@
 import PageWrapper from "../../shared/PageWrapper/PageWrapper.tsx";
 import styles from "../LoginPage/LoginPage.module.css";
 import {Helmet} from "react-helmet";
-import AuthLayout from "../../features/authLayout/AuthLayout.tsx";
-import RegisterForm from "../../features/registerForm/RegisterForm.tsx";
+import AuthLayout from "../../features/forms/authLayout/AuthLayout.tsx";
+import RegisterForm from "../../features/forms/registerForm/RegisterForm.tsx";
 
 const RegisterPage = () => {
     return (

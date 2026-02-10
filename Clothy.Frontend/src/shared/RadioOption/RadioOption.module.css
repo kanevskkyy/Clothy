@@ -1,0 +1,66 @@
+.radioOption {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border: 2px solid #e5e5e5;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: #fff;
+}
+
+.radioOption:hover {
+    border-color: #1a1a1a;
+}
+
+.radioOption.checked {
+    border-color: #1a1a1a;
+    background: #f9f9f9;
+}
+
+.radioInput {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.radioContent {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: #f5f5f5;
+    flex-shrink: 0;
+}
+
+.icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.textContent {
+    flex: 1;
+}
+
+.label {
+    font-size: 15px;
+    font-weight: 400;
+    color: #1a1a1a;
+    margin-bottom: 2px;
+}
+
+.description {
+    font-size: 13px;
+    color: #666;
+}

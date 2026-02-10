@@ -15,76 +15,6 @@
     min-width: 0;
 }
 
-.orderSummary {
-    width: 445px;
-    flex-shrink: 0;
-    border: 2px solid #D9D9D9;
-    padding: 40px;
-    border-radius: 8px;
-    height: fit-content;
-    background: white;
-    position: sticky;
-    top: 100px;
-}
-
-.orderSummary h3 {
-    font-size: 28px;
-    font-weight: 400;
-    margin-bottom: 32px;
-    margin-top: 0;
-    letter-spacing: 0;
-}
-
-.orderPriceInfo {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.priceRow {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 16px;
-}
-
-.priceRow .label {
-    font-weight: 400;
-}
-
-.priceRow .value {
-    font-weight: 500;
-}
-
-.divider {
-    height: 2px;
-    background: #D9D9D9;
-    margin: 12px 0;
-}
-
-.totalRow {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 24px;
-    font-weight: 500;
-    margin-top: 8px;
-}
-
-.totalRow .taxNote {
-    font-size: 14px;
-    color: #8A8A8A;
-    font-weight: 400;
-    margin-left: 8px;
-}
-
-.buttonWrapper{
-    margin-top: 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
 @media (max-width: 1440px) {
     .container {
         gap: 100px;
@@ -97,26 +27,12 @@
         gap: 50px;
         padding: 10px 20px;
     }
-
-    .orderSummary {
-        width: 400px;
-        padding: 35px;
-    }
 }
 
 @media (max-width: 1024px) {
     .container {
         gap: 40px;
         padding: 10px 20px;
-    }
-
-    .orderSummary {
-        width: 360px;
-        padding: 30px;
-    }
-
-    .orderSummary h3 {
-        font-size: 26px;
     }
 }
 
@@ -131,12 +47,6 @@
     .basketList {
         width: 100%;
     }
-
-    .orderSummary {
-        width: 100%;
-        position: static;
-        padding: 30px;
-    }
 }
 
 @media (max-width: 768px) {
@@ -146,36 +56,10 @@
         margin-top: 70px;
         margin-bottom: 20px;
     }
-
-    .orderSummary {
-        padding: 24px;
-    }
-
-    .orderSummary h3 {
-        font-size: 24px;
-        margin-bottom: 24px;
-    }
-
-    .totalRow {
-        font-size: 20px;
-    }
 }
 
 @media (max-width: 480px) {
     .container {
         padding: 15px 10px;
-    }
-
-    .orderSummary {
-        padding: 20px;
-    }
-
-    .orderSummary h3 {
-        font-size: 22px;
-        margin-bottom: 20px;
-    }
-
-    .totalRow {
-        font-size: 18px;
     }
 }

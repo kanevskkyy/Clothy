@@ -1,6 +1,6 @@
-import type { IClotheAggregatedDetailDTO } from '../../entities/clotheItem/interfaces/IClotheAggregatedDetailDTO';
+import type { IClotheAggregatedDetailDTO } from '../../entities/clotheItem/IClotheAggregatedDetailDTO.ts';
 import styles from "./ClotheDetailPage.module.css";
-import ImageGallery from "../../features/imageGallery/ImageGallery.tsx";
+import ImageGallery from "../../features/clothe/imageGallery/ImageGallery.tsx";
 import ClotheDetail from '../../entities/clotheItem/clotheInfo/ClotheDetail.tsx';
 import ReviewsSection from "../../entities/reviews/reviewSection/ReviewsSection.tsx";
 import {useEffect, useMemo, useState} from "react";

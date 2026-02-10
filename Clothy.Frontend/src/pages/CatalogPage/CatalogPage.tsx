@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import PageWrapper from "../../shared/PageWrapper/PageWrapper";
-import CatalogFilter, { type FilterState } from "../../features/catalogFilter/CatalogFilter.tsx";
-import SortSelect, { type SortOption } from "../../features/sortSelect/SortSelect";
+import CatalogFilter, { type FilterState } from "../../features/catalog/catalogFilter/CatalogFilter.tsx";
+import SortSelect, { type SortOption } from "../../features/catalog/sortSelect/SortSelect";
 import Pagination from "../../shared/Pagination/Pagination.tsx";
-import ProductList from "../../features/productList/ProductList.tsx";
-import type { IFiltersResponse } from "../../entities/filters/interfaces/IFiltersResponse";
-import type { IClotheSummaryDTO } from "../../entities/clotheItem/interfaces/IClotheSummaryDTO";
+import ProductList from "../../features/catalog/productList/ProductList.tsx";
+import type { IFiltersResponse } from "../../entities/filters/IFiltersResponse.ts";
+import type { IClotheSummaryDTO } from "../../entities/clotheItem/IClotheSummaryDTO.ts";
 import styles from "./CatalogPage.module.css";
 import type {PagedList} from "../../shared/pagedList.ts";
 import { Helmet } from "react-helmet";

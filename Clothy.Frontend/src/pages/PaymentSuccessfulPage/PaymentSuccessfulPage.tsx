@@ -1,8 +1,8 @@
 import PageWrapper from "../../shared/PageWrapper/PageWrapper.tsx";
 import styles from "./PaymentSuccessfulPage.module.css";
 import { Helmet } from "react-helmet";
-import AuthLayout from "../../features/authLayout/AuthLayout.tsx";
-import PaymentSuccessful from "../../features/paymantSuccessful/PaymentSuccessful.tsx";
+import AuthLayout from "../../features/forms/authLayout/AuthLayout.tsx";
+import PaymentSuccessful from "../../features/checkout/paymantSuccessful/PaymentSuccessful.tsx";
 
 const PaymentSuccessfulPage = () => {
     return (

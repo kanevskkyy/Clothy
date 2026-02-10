@@ -1,7 +1,7 @@
 import PageWrapper from "../../shared/PageWrapper/PageWrapper.tsx";
 import {Helmet} from "react-helmet";
-import AuthLayout from "../../features/authLayout/AuthLayout.tsx";
-import ForgotPasswordForm from "../../features/forgotPasswordForm/ForgotPasswordForm.tsx";
+import AuthLayout from "../../features/forms/authLayout/AuthLayout.tsx";
+import ForgotPasswordForm from "../../features/forms/forgotPasswordForm/ForgotPasswordForm.tsx";
 import styles from "./ForgotPasswordPage.module.css";
 
 const ForgotPasswordPage = () => {

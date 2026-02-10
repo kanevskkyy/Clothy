@@ -1,12 +1,12 @@
-import Hero from "../../features/hero/Hero.tsx";
-import BenefitsList from "../../features/benefits/BenefitsList.tsx";
-import BrandsCarousel from "../../features/carousel/BrandsCarousel.tsx";
+import Hero from "../../features/marketing/hero/Hero.tsx";
+import BenefitsList from "../../features/marketing/benefits/BenefitsList.tsx";
+import BrandsCarousel from "../../features/marketing/carousel/BrandsCarousel.tsx";
 import styles from "./HomePage.module.css";
-import ProductList from "../../features/productList/ProductList.tsx";
-import SaleBanner from "../../features/saleBanner/SaleBanner.tsx";
+import ProductList from "../../features/catalog/productList/ProductList.tsx";
+import SaleBanner from "../../features/marketing/saleBanner/SaleBanner.tsx";
 import { Helmet } from 'react-helmet';
 import Container from "../../shared/Container/Container.tsx";
-import type {IClotheSummaryDTO} from "../../entities/clotheItem/interfaces/IClotheSummaryDTO.ts";
+import type {IClotheSummaryDTO} from "../../entities/clotheItem/IClotheSummaryDTO.ts";
 
 const mockProducts: IClotheSummaryDTO[] = [
     {

@@ -1,8 +1,8 @@
 import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import HomePage from '../../pages/HomePage/HomePage';
 import AboutUsPage from '../../pages/AboutUsPage/AboutUsPage.tsx';
-import Header from '../../features/header/Header';
-import Footer from '../../features/footer/Footer';
+import Header from '../../features/layout/header/Header';
+import Footer from '../../features/layout/footer/Footer';
 import styles from './AppRouter.module.css';
 import DeliveryInfoPage from "../../pages/DeliveryInfoPage/DeliveryInfoPage.tsx";
 import ScrollToTop from "../scroll/ScrollToTop.tsx";
@@ -16,6 +16,8 @@ import ForgotPasswordPage from "../../pages/ForgotPasswordPage/ForgotPasswordPag
 import VerifyEmailPage from "../../pages/VerifyEmailPage/VerifyEmailPage.tsx";
 import PaymentSuccessfulPage from "../../pages/PaymentSuccessfulPage/PaymentSuccessfulPage.tsx";
 import PaymentCancelledPage from "../../pages/PaymentCancelledPage/PaymentCancelledPage.tsx";
+import CheckoutPage from "../../pages/CheckoutPage/CheckoutPage.tsx";
+import OrderDetailPage from "../../pages/OrderDetailPage/OrderDetailPage.tsx";
 
 export const AppRouter = () => {
     return (
@@ -38,6 +40,8 @@ export const AppRouter = () => {
                         <Route path="/email-verification" element={<VerifyEmailPage/>}/>
                         <Route path="/payment/success" element={<PaymentSuccessfulPage/>}/>
                         <Route path="/payment/cancelled" element={<PaymentCancelledPage/>}/>
+                        <Route path="/checkout" element={<CheckoutPage/>}/>
+                        <Route path="/order/:orderId" element={<OrderDetailPage/>}/>
                         <Route path="*" element={<NotFoundPage/>}/>
                     </Routes>
                 </main>

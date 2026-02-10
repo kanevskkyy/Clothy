@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet";
-import AuthLayout from "../../features/authLayout/AuthLayout.tsx";
+import AuthLayout from "../../features/forms/authLayout/AuthLayout.tsx";
 import PageWrapper from "../../shared/PageWrapper/PageWrapper.tsx";
-import ConfirmEmail from "../../features/confirmEmail/ConfirmEmail.tsx";
+import ConfirmEmail from "../../features/forms/confirmEmail/ConfirmEmail.tsx";
 import styles from "./VerifyEmailPage.module.css";
 
 const VerifyEmailPage = () => {
