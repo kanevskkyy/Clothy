@@ -1,0 +1,129 @@
+.banner {
+    border-radius: 10px;
+    border: 1px solid #FACC7B;
+    background-color: #FFFBEB;
+    padding: 20px 40px;
+    margin-top: 50px;
+    margin-bottom: 24px;
+}
+
+.content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.iconWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: #f59e0b;
+    flex-shrink: 0;
+}
+
+.textWrapper {
+    flex: 1;
+    min-width: 0;
+}
+
+.title {
+    margin: 0 0 4px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #92400e;
+}
+
+.message {
+    margin: 0;
+    font-size: 14px;
+    color: #78350f;
+    line-height: 1.5;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.closeButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: #78350f;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.closeButton:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.closeButton:active {
+    transform: scale(0.95);
+}
+
+@media (max-width: 1023px) {
+    .banner {
+        padding: 18px 24px;
+    }
+
+    .content {
+        gap: 14px;
+    }
+}
+
+@media (max-width: 767px) {
+    .banner {
+        padding: 16px;
+    }
+
+    .content {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .iconWrapper {
+        width: 36px;
+        height: 36px;
+    }
+
+    .textWrapper {
+        flex: 1 1 100%;
+        order: 2;
+    }
+
+    .title {
+        font-size: 15px;
+    }
+
+    .message {
+        font-size: 13px;
+    }
+
+    .actions {
+        flex: 1 1 100%;
+        order: 3;
+        justify-content: space-between;
+    }
+
+    .actions button {
+        width: 100%;
+        font-size: 14px;
+        padding: 10px 16px;
+    }
+
+    .closeButton {
+        order: 1;
+        margin-left: auto;
+    }
+}

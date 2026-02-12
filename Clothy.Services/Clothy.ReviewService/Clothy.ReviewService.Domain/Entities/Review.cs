@@ -10,8 +10,8 @@ namespace Clothy.ReviewService.Domain.Entities
 {
     public class Review : BaseEntity
     {
-        [BsonElement("clotheItemId")]
-        public Guid ClotheItemId { get; private set; }
+        [BsonElement("clothe")]
+        public ClotheInfo ClotheInfo { get; set; }
 
         [BsonElement("rating")]
         public int Rating { get; private set; }  
@@ -28,9 +28,9 @@ namespace Clothy.ReviewService.Domain.Entities
             
         }
 
-        public Review(Guid clotheItemId, UserInfo user, int rating, string comment)
+        public Review(ClotheInfo clotheInfo, UserInfo user, int rating, string comment)
         {
-            ClotheItemId = clotheItemId;
+            ClotheInfo = clotheInfo;
             User = user;
             Rating = rating;
             Comment = comment.Trim();
@@ -42,7 +42,6 @@ namespace Clothy.ReviewService.Domain.Entities
             Status = ReviewStatus.Confirmed;
             UpdateTimestamp();
         }
-
 
         public void UpdateComment(string newComment, int newRating)
         {

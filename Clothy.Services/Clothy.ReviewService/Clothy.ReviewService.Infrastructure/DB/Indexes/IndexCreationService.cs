@@ -23,7 +23,7 @@ namespace Clothy.ReviewService.Infrastructure.DB.Indexes
             var reviewKeys = Builders<Review>.IndexKeys;
 
             reviewCollection.Indexes.CreateOne(new CreateIndexModel<Review>(reviewKeys.Ascending(r => r.User.UserId)));
-            reviewCollection.Indexes.CreateOne(new CreateIndexModel<Review>(reviewKeys.Ascending(r => r.ClotheItemId)));
+            reviewCollection.Indexes.CreateOne(new CreateIndexModel<Review>(reviewKeys.Ascending(r => r.ClotheInfo.ClotheItemId)));
             reviewCollection.Indexes.CreateOne(new CreateIndexModel<Review>(reviewKeys.Ascending(r => r.Rating)));
 
             var questionCollection = dbContext.Questions;

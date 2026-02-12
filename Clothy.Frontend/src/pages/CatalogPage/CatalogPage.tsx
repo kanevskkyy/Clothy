@@ -10,11 +10,12 @@ import type { IClotheSummaryDTO } from "../../entities/clotheItem/IClotheSummary
 import styles from "./CatalogPage.module.css";
 import type {PagedList} from "../../shared/pagedList.ts";
 import { Helmet } from "react-helmet";
+import {getCurrentPage, handlePageChange as handlePageChangeUtil} from "../../shared/paginationUtils.ts";
 
 const CatalogPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [sortBy, setSortBy] = useState(searchParams.get("sort") || "newest");
-    const currentPage = Number(searchParams.get("page")) || 1;
+    const currentPage = getCurrentPage(searchParams);
 
     const sortOptions: SortOption[] = [
         { value: "newest", label: 'Creation Date: Newest First' },
@@ -319,10 +320,7 @@ const CatalogPage = () => {
     };
 
     const handlePageChange = (page: number) => {
-        const params = new URLSearchParams(searchParams);
-        params.set("page", page.toString());
-        setSearchParams(params);
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        handlePageChangeUtil(page, searchParams, setSearchParams);
     };
 
     return (

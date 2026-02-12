@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using Clothy.Aggregator.Aggregate.RedisCache;
 using Clothy.CatalogService.BLL.DTOs.ClothingTypeDTOs;
 using Clothy.CatalogService.BLL.DTOs.CollectionDTOs;
@@ -11,7 +6,15 @@ using Clothy.CatalogService.BLL.Exceptions;
 using Clothy.CatalogService.BLL.Interfaces;
 using Clothy.CatalogService.DAL.UOW;
 using Clothy.CatalogService.Domain.Entities.Catalog;
+using Clothy.CatalogService.Domain.Entities.Clothe;
+using Clothy.Shared.Cache.Interfaces;
 using Clothy.Shared.Helpers.Exceptions;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Clothy.CatalogService.BLL.Services
 {
@@ -20,12 +23,17 @@ namespace Clothy.CatalogService.BLL.Services
         private IUnitOfWork unitOfWork;
         private IMapper mapper;
         private IFilterCacheInvalidationService filterCacheInvalidationService;
+        private IEntityCacheInvalidationService<ClotheItem> clotheItemInvalidationService;
 
-        public CollectionService(IUnitOfWork unitOfWork, IMapper mapper, IFilterCacheInvalidationService filterCacheInvalidationService)
+        public CollectionService(IUnitOfWork unitOfWork, 
+            IMapper mapper, 
+            IFilterCacheInvalidationService filterCacheInvalidationService,
+            IEntityCacheInvalidationService<ClotheItem> clotheItemInvalidationService)
         {
             this.filterCacheInvalidationService = filterCacheInvalidationService;
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
+            this.clotheItemInvalidationService = clotheItemInvalidationService;
         }
 
         public async Task<CollectionReadDTO> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
@@ -52,6 +60,7 @@ namespace Clothy.CatalogService.BLL.Services
             Collection collection = mapper.Map<Collection>(collectionCreateDTO);
             await unitOfWork.Collections.AddAsync(collection, cancellationToken);
             await unitOfWork.SaveChangesAsync(cancellationToken);
+            
             await filterCacheInvalidationService.InvalidateAsync();
 
             return mapper.Map<CollectionReadDTO>(collection);
@@ -72,7 +81,9 @@ namespace Clothy.CatalogService.BLL.Services
 
             unitOfWork.Collections.Update(collection);
             await unitOfWork.SaveChangesAsync(cancellationToken);
+            
             await filterCacheInvalidationService.InvalidateAsync();
+            await clotheItemInvalidationService.InvalidateAllAsync();
 
             return mapper.Map<CollectionReadDTO>(collection);
         }
@@ -84,7 +95,9 @@ namespace Clothy.CatalogService.BLL.Services
 
             unitOfWork.Collections.Delete(collection);
             await unitOfWork.SaveChangesAsync(cancellationToken);
+            
             await filterCacheInvalidationService.InvalidateAsync();
+            await clotheItemInvalidationService.InvalidateAllAsync();
         }
     }
 }

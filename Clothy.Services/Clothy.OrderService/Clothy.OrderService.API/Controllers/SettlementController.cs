@@ -48,7 +48,7 @@ namespace Clothy.OrderService.API.Controllers
         {
             logger.LogInformation("Fetching settlement with ID: {Id}", id);
             SettlementReadDTO settlementReadDTO = await settlementService.GetByIdAsync(id, cancellationToken);
-            
+
             return Ok(settlementReadDTO);
         }
 

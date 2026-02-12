@@ -24,7 +24,7 @@ namespace Clothy.ReviewService.Infrastructure.Repositories
 
         public async Task<ReviewStatistics> GetReviewStatisticsAsync(Guid clotheItemId, CancellationToken cancellationToken = default)
         {
-            var filter = Builders<Review>.Filter.Eq(review => review.ClotheItemId, clotheItemId) & 
+            var filter = Builders<Review>.Filter.Eq(review => review.ClotheInfo.ClotheItemId, clotheItemId) & 
                 Builders<Review>.Filter.Eq(r => r.Status, ReviewStatus.Confirmed);
 
             var reviews = await collection.Find(filter).ToListAsync(cancellationToken);
@@ -66,7 +66,7 @@ namespace Clothy.ReviewService.Infrastructure.Repositories
 
             if (queryParameters.ClotheItemId.HasValue)
             {
-                filter &= filterBuilder.Eq(review => review.ClotheItemId, queryParameters.ClotheItemId.Value);
+                filter &= filterBuilder.Eq(review => review.ClotheInfo.ClotheItemId, queryParameters.ClotheItemId.Value);
 
                 if (!queryParameters.Status.HasValue)
                 {
@@ -93,7 +93,7 @@ namespace Clothy.ReviewService.Infrastructure.Repositories
         {
             var filterBuilder = Builders<Review>.Filter;
             var filter = filterBuilder.Eq(review => review.User.UserId, userId) &
-                         filterBuilder.Eq(review => review.ClotheItemId, clotheItemId);
+                         filterBuilder.Eq(review => review.ClotheInfo.ClotheItemId, clotheItemId);
 
             long count = await collection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
             return count > 0;
@@ -101,14 +101,14 @@ namespace Clothy.ReviewService.Infrastructure.Repositories
 
         public async Task<bool> ClotheItemExistsAsync(Guid clotheItemId, CancellationToken cancellationToken = default)
         {
-            var filterBuilder = Builders<Review>.Filter.Eq(review => review.ClotheItemId, clotheItemId);
+            var filterBuilder = Builders<Review>.Filter.Eq(review => review.ClotheInfo.ClotheItemId, clotheItemId);
             long count = await collection.CountDocumentsAsync(filterBuilder, cancellationToken: cancellationToken);
             return count > 0;
         }
 
         public async Task DeleteAllReviewsByClotheId(Guid clotheId, CancellationToken cancellationToken = default)
         {
-            var reviewsByClotheId = Builders<Review>.Filter.Eq(tempReview => tempReview.ClotheItemId, clotheId);
+            var reviewsByClotheId = Builders<Review>.Filter.Eq(tempReview => tempReview.ClotheInfo.ClotheItemId, clotheId);
 
             await collection.DeleteManyAsync(reviewsByClotheId, cancellationToken);
         }

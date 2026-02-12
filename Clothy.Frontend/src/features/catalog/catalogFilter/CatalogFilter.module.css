@@ -1,67 +1,3 @@
-.catalogContainer {
-    display: grid;
-    margin: 50px auto 0;
-    max-width: 1440px;
-    grid-template-columns: 276px 1fr;
-    gap: 32px;
-    padding: 20px 10px;
-}
-
-.filterSidebar {
-    position: relative;
-}
-
-.catalogMain {
-    min-width: 0;
-}
-
-.catalogHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-
-.resultsCount {
-    font-size: 14px;
-    color: #666;
-    white-space: nowrap;
-}
-
-@media (max-width: 1024px) {
-    .catalogContainer {
-        grid-template-columns: 240px 1fr;
-        gap: 24px;
-    }
-}
-
-@media (max-width: 768px) {
-    .catalogContainer {
-        grid-template-columns: 1fr;
-        gap: 0;
-    }
-
-    .filterSidebar {
-        position: static;
-        margin-bottom: 16px;
-    }
-
-    .catalogHeader {
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 16px;
-        gap: 12px;
-    }
-
-    .resultsCount {
-        margin-bottom: 0;
-        flex: 1;
-    }
-}
-
 .filterContainer {
     max-width: 276px;
     background-color: white;
@@ -70,6 +6,28 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     position: sticky;
     top: 20px;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scroll-behavior: smooth;
+}
+
+.filterContainer::-webkit-scrollbar {
+    width: 8px;
+}
+
+.filterContainer::-webkit-scrollbar-track {
+    background: #f5f5f5;
+    border-radius: 4px;
+}
+
+.filterContainer::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}
+
+.filterContainer::-webkit-scrollbar-thumb:hover {
+    background: #999;
 }
 
 .filterHeader {
@@ -127,7 +85,7 @@
     transform: rotate(0deg);
 }
 
-.filterContent {
+.sectionContent {
     animation: slideDown 0.3s ease;
 }
 
@@ -170,7 +128,6 @@
 
 .resetButtonWrapper {
     padding: 16px 24px;
-    border-bottom: 1px solid #D9D9D9;
 }
 
 .resetButton {
@@ -196,6 +153,7 @@
 
 @media (max-width: 768px) {
     .mobileFilterButton {
+        background-color: #FFFFFF;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -218,6 +176,7 @@
         z-index: 999;
         opacity: 0;
         animation: fadeIn 0.3s forwards;
+        touch-action: none;
     }
 
     @keyframes fadeIn {
@@ -239,6 +198,11 @@
         transition: transform 0.3s ease;
         border-radius: 0;
         max-height: 100vh;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
     }
 
     .filterContainer.open {
@@ -251,10 +215,9 @@
         align-items: center;
         padding: 20px 24px;
         border-bottom: 1px solid #D9D9D9;
-        position: sticky;
-        top: 0;
         background-color: white;
         z-index: 10;
+        flex-shrink: 0;
     }
 
     .filterMainTitle {
@@ -273,5 +236,17 @@
         cursor: pointer;
         padding: 4px;
         color: #000;
+    }
+
+    .filterContent {
+        flex: 1;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .resetButtonWrapper {
+        border-top: 1px solid #D9D9D9;
+        border-bottom: none;
     }
 }

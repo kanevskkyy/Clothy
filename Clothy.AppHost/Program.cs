@@ -4,8 +4,9 @@ using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-string ENV_PATH = Path.Combine(Directory.GetCurrentDirectory(), ".env");
-Env.Load(ENV_PATH);
+string ENV_PATH = Path.Combine(Directory.GetCurrentDirectory(), "..", ".env");
+if (File.Exists(ENV_PATH)) Env.Load(ENV_PATH);
+else throw new FileNotFoundException($".env file not found at path: {ENV_PATH}. Application cannot start without environment variables.");
 
 var postgresPassword = builder.AddParameter("postgres-password", secret: true);
 

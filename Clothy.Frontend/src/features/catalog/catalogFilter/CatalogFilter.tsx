@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo, useState, useEffect } from "react";
 import { ChevronDown, X, SlidersHorizontal } from "lucide-react";
 import styles from "./CatalogFilter.module.css";
 import type { IFiltersResponse } from "../../../entities/filters/IFiltersResponse.ts";
@@ -39,6 +39,32 @@ const CatalogFilter = memo(({ filters, onFilterChange }: CatalogFilterProps) => 
         minPrice: Number(filters.priceRange.minPrice),
         maxPrice: Number(filters.priceRange.maxPrice),
     });
+
+    useEffect(() => {
+        if (isOpen) {
+            const scrollY = window.scrollY;
+            document.body.style.position = 'fixed';
+            document.body.style.top = `-${scrollY}px`;
+            document.body.style.width = '100%';
+            document.body.style.overflow = 'hidden';
+        } else {
+            const scrollY = document.body.style.top;
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.width = '';
+            document.body.style.overflow = '';
+            if (scrollY) {
+                window.scrollTo(0, parseInt(scrollY || '0') * -1);
+            }
+        }
+
+        return () => {
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.width = '';
+            document.body.style.overflow = '';
+        };
+    }, [isOpen]);
 
     const toggleSection = (section: string) => {
         setExpandedSections(prev => {
@@ -123,6 +149,22 @@ const CatalogFilter = memo(({ filters, onFilterChange }: CatalogFilterProps) => 
         e.stopPropagation();
     };
 
+    const handleFilterContainerScroll = (e: React.WheelEvent<HTMLDivElement>) => {
+        const element = e.currentTarget;
+        const isScrollable = element.scrollHeight > element.clientHeight;
+
+        if (!isScrollable) {
+            return;
+        }
+
+        const isAtTop = element.scrollTop === 0;
+        const isAtBottom = Math.abs(element.scrollHeight - element.scrollTop - element.clientHeight) < 2;
+
+        if (!((isAtTop && e.deltaY < 0) || (isAtBottom && e.deltaY > 0))) {
+            e.stopPropagation();
+        }
+    };
+
     return (
         <>
             <button className={styles.mobileFilterButton} onClick={() => setIsOpen(true)}>
@@ -131,7 +173,10 @@ const CatalogFilter = memo(({ filters, onFilterChange }: CatalogFilterProps) => 
 
             {isOpen && <div className={styles.overlay} onClick={() => setIsOpen(false)} />}
 
-            <div className={`${styles.filterContainer} ${isOpen ? styles.open : ''}`}>
+            <div
+                className={`${styles.filterContainer} ${isOpen ? styles.open : ''}`}
+                onWheel={handleFilterContainerScroll}
+            >
                 <div className={styles.filterHeader}>
                     <h2 className={styles.filterMainTitle}>Filters</h2>
                     <button className={styles.closeButton} onClick={() => setIsOpen(false)}>
@@ -139,254 +184,256 @@ const CatalogFilter = memo(({ filters, onFilterChange }: CatalogFilterProps) => 
                     </button>
                 </div>
 
-                <div className={styles.filterSection}>
-                    <div className={styles.sectionHeader} onClick={() => toggleSection('brand')}>
-                        <h2 className={styles.filterTitle}>Brand</h2>
-                        <ChevronDown
-                            className={`${styles.toggleIcon} ${expandedSections.has('brand') ? styles.expanded : ''}`}
-                            size={20}
-                        />
-                    </div>
-                    {expandedSections.has('brand') && (
-                        <div className={styles.filterContent}>
-                            <div className={styles.checkboxList} onWheel={handleCheckboxListScroll}>
-                                {filters.brands.map(brand => (
-                                    <Checkbox
-                                        key={brand.id}
-                                        id={`brand-${brand.id}`}
-                                        label={brand.name}
-                                        count={brand.clotheItemCount}
-                                        checked={selectedFilters.brands.includes(brand.slug)}
-                                        onChange={(checked) => handleCheckboxChange('brands', brand.slug, checked)}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                </div>
-
-                <div className={styles.filterSection}>
-                    <div className={styles.sectionHeader} onClick={() => toggleSection('type')}>
-                        <h2 className={styles.filterTitle}>Clothing Type</h2>
-                        <ChevronDown
-                            className={`${styles.toggleIcon} ${expandedSections.has('type') ? styles.expanded : ''}`}
-                            size={20}
-                        />
-                    </div>
-                    {expandedSections.has('type') && (
-                        <div className={styles.filterContent}>
-                            <div className={styles.checkboxList} onWheel={handleCheckboxListScroll}>
-                                {filters.clothingTypes.map(type => (
-                                    <Checkbox
-                                        key={type.id}
-                                        id={`type-${type.id}`}
-                                        label={type.name}
-                                        count={type.clotheItemCount}
-                                        checked={selectedFilters.clothingTypes.includes(type.slug)}
-                                        onChange={(checked) => handleCheckboxChange('clothingTypes', type.slug, checked)}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                </div>
-
-                <div className={styles.filterSection}>
-                    <div className={styles.sectionHeader} onClick={() => toggleSection('color')}>
-                        <h2 className={styles.filterTitle}>Colors</h2>
-                        <ChevronDown
-                            className={`${styles.toggleIcon} ${expandedSections.has('color') ? styles.expanded : ''}`}
-                            size={20}
-                        />
-                    </div>
-                    {expandedSections.has('color') && (
-                        <div className={styles.filterContent}>
-                            <div className={styles.checkboxList} onWheel={handleCheckboxListScroll}>
-                                {filters.colors.map(color => (
-                                    <Checkbox
-                                        key={color.id}
-                                        id={`color-${color.id}`}
-                                        label={color.name}
-                                        count={color.clotheItemCount}
-                                        checked={selectedFilters.colors.includes(color.slug)}
-                                        onChange={(checked) => handleCheckboxChange('colors', color.slug, checked)}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                </div>
-
-                <div className={styles.filterSection}>
-                    <div className={styles.sectionHeader} onClick={() => toggleSection('material')}>
-                        <h2 className={styles.filterTitle}>Materials</h2>
-                        <ChevronDown
-                            className={`${styles.toggleIcon} ${expandedSections.has('material') ? styles.expanded : ''}`}
-                            size={20}
-                        />
-                    </div>
-                    {expandedSections.has('material') && (
-                        <div className={styles.filterContent}>
-                            <div className={styles.checkboxList} onWheel={handleCheckboxListScroll}>
-                                {filters.materials.map(material => (
-                                    <Checkbox
-                                        key={material.id}
-                                        id={`material-${material.id}`}
-                                        label={material.name}
-                                        count={material.clotheItemCount}
-                                        checked={selectedFilters.materials.includes(material.slug)}
-                                        onChange={(checked) => handleCheckboxChange('materials', material.slug, checked)}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                </div>
-
-                <div className={styles.filterSection}>
-                    <div className={styles.sectionHeader} onClick={() => toggleSection('size')}>
-                        <h2 className={styles.filterTitle}>Sizes</h2>
-                        <ChevronDown
-                            className={`${styles.toggleIcon} ${expandedSections.has('size') ? styles.expanded : ''}`}
-                            size={20}
-                        />
-                    </div>
-                    {expandedSections.has('size') && (
-                        <div className={styles.filterContent}>
-                            <div className={styles.checkboxList} onWheel={handleCheckboxListScroll}>
-                                {filters.sizes.map(size => (
-                                    <Checkbox
-                                        key={size.id}
-                                        id={`size-${size.id}`}
-                                        label={size.name}
-                                        count={size.clotheItemCount}
-                                        checked={selectedFilters.sizes.includes(size.slug)}
-                                        onChange={(checked) => handleCheckboxChange('sizes', size.slug, checked)}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                </div>
-
-                <div className={styles.filterSection}>
-                    <div className={styles.sectionHeader} onClick={() => toggleSection('tags')}>
-                        <h2 className={styles.filterTitle}>Tags</h2>
-                        <ChevronDown
-                            className={`${styles.toggleIcon} ${expandedSections.has('tags') ? styles.expanded : ''}`}
-                            size={20}
-                        />
-                    </div>
-                    {expandedSections.has('tags') && (
-                        <div className={styles.filterContent}>
-                            <div className={styles.checkboxList} onWheel={handleCheckboxListScroll}>
-                                {filters.tags.map(tag => (
-                                    <Checkbox
-                                        key={tag.id}
-                                        id={`tag-${tag.id}`}
-                                        label={tag.name}
-                                        count={tag.clotheItemCount}
-                                        checked={selectedFilters.tags.includes(tag.slug)}
-                                        onChange={(checked) => handleCheckboxChange('tags', tag.slug, checked)}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                </div>
-
-                <div className={styles.filterSection}>
-                    <div className={styles.sectionHeader} onClick={() => toggleSection('collections')}>
-                        <h2 className={styles.filterTitle}>Collections</h2>
-                        <ChevronDown
-                            className={`${styles.toggleIcon} ${expandedSections.has('collections') ? styles.expanded : ''}`}
-                            size={20}
-                        />
-                    </div>
-                    {expandedSections.has('collections') && (
-                        <div className={styles.filterContent}>
-                            <div className={styles.checkboxList} onWheel={handleCheckboxListScroll}>
-                                {filters.collections.map(collection => (
-                                    <Checkbox
-                                        key={collection.id}
-                                        id={`collection-${collection.id}`}
-                                        label={collection.name}
-                                        count={collection.clotheItemCount}
-                                        checked={selectedFilters.collections.includes(collection.slug)}
-                                        onChange={(checked) => handleCheckboxChange('collections', collection.slug, checked)}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                </div>
-
-                <div className={styles.filterSection}>
-                    <div className={styles.sectionHeader} onClick={() => toggleSection('gender')}>
-                        <h2 className={styles.filterTitle}>Gender</h2>
-                        <ChevronDown
-                            className={`${styles.toggleIcon} ${expandedSections.has('gender') ? styles.expanded : ''}`}
-                            size={20}
-                        />
-                    </div>
-                    {expandedSections.has('gender') && (
-                        <div className={styles.filterContent}>
-                            <div className={styles.checkboxList} onWheel={handleCheckboxListScroll}>
-                                <Checkbox
-                                    id="gender-male"
-                                    label="Male"
-                                    count={filters.gender.maleCount}
-                                    checked={selectedFilters.gender.includes('male')}
-                                    onChange={(checked) => handleCheckboxChange('gender', 'male', checked)}
-                                />
-                                <Checkbox
-                                    id="gender-female"
-                                    label="Female"
-                                    count={filters.gender.femaleCount}
-                                    checked={selectedFilters.gender.includes('female')}
-                                    onChange={(checked) => handleCheckboxChange('gender', 'female', checked)}
-                                />
-                                <Checkbox
-                                    id="gender-unisex"
-                                    label="Unisex"
-                                    count={filters.gender.unisexCount}
-                                    checked={selectedFilters.gender.includes('unisex')}
-                                    onChange={(checked) => handleCheckboxChange('gender', 'unisex', checked)}
-                                />
-                            </div>
-                        </div>
-                    )}
-                </div>
-
-                <div className={styles.filterSection}>
-                    <div className={styles.sectionHeader} onClick={() => toggleSection('price')}>
-                        <h2 className={styles.filterTitle}>Price</h2>
-                        <ChevronDown
-                            className={`${styles.toggleIcon} ${expandedSections.has('price') ? styles.expanded : ''}`}
-                            size={20}
-                        />
-                    </div>
-                    {expandedSections.has('price') && (
-                        <div className={styles.filterContent}>
-                            <PriceSlider
-                                min={Number(filters.priceRange.minPrice)}
-                                max={Number(filters.priceRange.maxPrice)}
-                                currentMin={selectedFilters.minPrice}
-                                currentMax={selectedFilters.maxPrice}
-                                onChange={handlePriceChange}
+                <div className={styles.filterContent}>
+                    <div className={styles.filterSection}>
+                        <div className={styles.sectionHeader} onClick={() => toggleSection('brand')}>
+                            <h2 className={styles.filterTitle}>Brand</h2>
+                            <ChevronDown
+                                className={`${styles.toggleIcon} ${expandedSections.has('brand') ? styles.expanded : ''}`}
+                                size={20}
                             />
                         </div>
+                        {expandedSections.has('brand') && (
+                            <div className={styles.sectionContent}>
+                                <div className={styles.checkboxList} onWheel={handleCheckboxListScroll}>
+                                    {filters.brands.map(brand => (
+                                        <Checkbox
+                                            key={brand.id}
+                                            id={`brand-${brand.id}`}
+                                            label={brand.name}
+                                            count={brand.clotheItemCount}
+                                            checked={selectedFilters.brands.includes(brand.slug)}
+                                            onChange={(checked) => handleCheckboxChange('brands', brand.slug, checked)}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className={styles.filterSection}>
+                        <div className={styles.sectionHeader} onClick={() => toggleSection('type')}>
+                            <h2 className={styles.filterTitle}>Clothing Type</h2>
+                            <ChevronDown
+                                className={`${styles.toggleIcon} ${expandedSections.has('type') ? styles.expanded : ''}`}
+                                size={20}
+                            />
+                        </div>
+                        {expandedSections.has('type') && (
+                            <div className={styles.sectionContent}>
+                                <div className={styles.checkboxList} onWheel={handleCheckboxListScroll}>
+                                    {filters.clothingTypes.map(type => (
+                                        <Checkbox
+                                            key={type.id}
+                                            id={`type-${type.id}`}
+                                            label={type.name}
+                                            count={type.clotheItemCount}
+                                            checked={selectedFilters.clothingTypes.includes(type.slug)}
+                                            onChange={(checked) => handleCheckboxChange('clothingTypes', type.slug, checked)}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className={styles.filterSection}>
+                        <div className={styles.sectionHeader} onClick={() => toggleSection('color')}>
+                            <h2 className={styles.filterTitle}>Colors</h2>
+                            <ChevronDown
+                                className={`${styles.toggleIcon} ${expandedSections.has('color') ? styles.expanded : ''}`}
+                                size={20}
+                            />
+                        </div>
+                        {expandedSections.has('color') && (
+                            <div className={styles.sectionContent}>
+                                <div className={styles.checkboxList} onWheel={handleCheckboxListScroll}>
+                                    {filters.colors.map(color => (
+                                        <Checkbox
+                                            key={color.id}
+                                            id={`color-${color.id}`}
+                                            label={color.name}
+                                            count={color.clotheItemCount}
+                                            checked={selectedFilters.colors.includes(color.slug)}
+                                            onChange={(checked) => handleCheckboxChange('colors', color.slug, checked)}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className={styles.filterSection}>
+                        <div className={styles.sectionHeader} onClick={() => toggleSection('material')}>
+                            <h2 className={styles.filterTitle}>Materials</h2>
+                            <ChevronDown
+                                className={`${styles.toggleIcon} ${expandedSections.has('material') ? styles.expanded : ''}`}
+                                size={20}
+                            />
+                        </div>
+                        {expandedSections.has('material') && (
+                            <div className={styles.sectionContent}>
+                                <div className={styles.checkboxList} onWheel={handleCheckboxListScroll}>
+                                    {filters.materials.map(material => (
+                                        <Checkbox
+                                            key={material.id}
+                                            id={`material-${material.id}`}
+                                            label={material.name}
+                                            count={material.clotheItemCount}
+                                            checked={selectedFilters.materials.includes(material.slug)}
+                                            onChange={(checked) => handleCheckboxChange('materials', material.slug, checked)}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className={styles.filterSection}>
+                        <div className={styles.sectionHeader} onClick={() => toggleSection('size')}>
+                            <h2 className={styles.filterTitle}>Sizes</h2>
+                            <ChevronDown
+                                className={`${styles.toggleIcon} ${expandedSections.has('size') ? styles.expanded : ''}`}
+                                size={20}
+                            />
+                        </div>
+                        {expandedSections.has('size') && (
+                            <div className={styles.sectionContent}>
+                                <div className={styles.checkboxList} onWheel={handleCheckboxListScroll}>
+                                    {filters.sizes.map(size => (
+                                        <Checkbox
+                                            key={size.id}
+                                            id={`size-${size.id}`}
+                                            label={size.name}
+                                            count={size.clotheItemCount}
+                                            checked={selectedFilters.sizes.includes(size.slug)}
+                                            onChange={(checked) => handleCheckboxChange('sizes', size.slug, checked)}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className={styles.filterSection}>
+                        <div className={styles.sectionHeader} onClick={() => toggleSection('tags')}>
+                            <h2 className={styles.filterTitle}>Tags</h2>
+                            <ChevronDown
+                                className={`${styles.toggleIcon} ${expandedSections.has('tags') ? styles.expanded : ''}`}
+                                size={20}
+                            />
+                        </div>
+                        {expandedSections.has('tags') && (
+                            <div className={styles.sectionContent}>
+                                <div className={styles.checkboxList} onWheel={handleCheckboxListScroll}>
+                                    {filters.tags.map(tag => (
+                                        <Checkbox
+                                            key={tag.id}
+                                            id={`tag-${tag.id}`}
+                                            label={tag.name}
+                                            count={tag.clotheItemCount}
+                                            checked={selectedFilters.tags.includes(tag.slug)}
+                                            onChange={(checked) => handleCheckboxChange('tags', tag.slug, checked)}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className={styles.filterSection}>
+                        <div className={styles.sectionHeader} onClick={() => toggleSection('collections')}>
+                            <h2 className={styles.filterTitle}>Collections</h2>
+                            <ChevronDown
+                                className={`${styles.toggleIcon} ${expandedSections.has('collections') ? styles.expanded : ''}`}
+                                size={20}
+                            />
+                        </div>
+                        {expandedSections.has('collections') && (
+                            <div className={styles.sectionContent}>
+                                <div className={styles.checkboxList} onWheel={handleCheckboxListScroll}>
+                                    {filters.collections.map(collection => (
+                                        <Checkbox
+                                            key={collection.id}
+                                            id={`collection-${collection.id}`}
+                                            label={collection.name}
+                                            count={collection.clotheItemCount}
+                                            checked={selectedFilters.collections.includes(collection.slug)}
+                                            onChange={(checked) => handleCheckboxChange('collections', collection.slug, checked)}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className={styles.filterSection}>
+                        <div className={styles.sectionHeader} onClick={() => toggleSection('gender')}>
+                            <h2 className={styles.filterTitle}>Gender</h2>
+                            <ChevronDown
+                                className={`${styles.toggleIcon} ${expandedSections.has('gender') ? styles.expanded : ''}`}
+                                size={20}
+                            />
+                        </div>
+                        {expandedSections.has('gender') && (
+                            <div className={styles.sectionContent}>
+                                <div className={styles.checkboxList} onWheel={handleCheckboxListScroll}>
+                                    <Checkbox
+                                        id="gender-male"
+                                        label="Male"
+                                        count={filters.gender.maleCount}
+                                        checked={selectedFilters.gender.includes('male')}
+                                        onChange={(checked) => handleCheckboxChange('gender', 'male', checked)}
+                                    />
+                                    <Checkbox
+                                        id="gender-female"
+                                        label="Female"
+                                        count={filters.gender.femaleCount}
+                                        checked={selectedFilters.gender.includes('female')}
+                                        onChange={(checked) => handleCheckboxChange('gender', 'female', checked)}
+                                    />
+                                    <Checkbox
+                                        id="gender-unisex"
+                                        label="Unisex"
+                                        count={filters.gender.unisexCount}
+                                        checked={selectedFilters.gender.includes('unisex')}
+                                        onChange={(checked) => handleCheckboxChange('gender', 'unisex', checked)}
+                                    />
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className={styles.filterSection}>
+                        <div className={styles.sectionHeader} onClick={() => toggleSection('price')}>
+                            <h2 className={styles.filterTitle}>Price</h2>
+                            <ChevronDown
+                                className={`${styles.toggleIcon} ${expandedSections.has('price') ? styles.expanded : ''}`}
+                                size={20}
+                            />
+                        </div>
+                        {expandedSections.has('price') && (
+                            <div className={styles.sectionContent}>
+                                <PriceSlider
+                                    min={Number(filters.priceRange.minPrice)}
+                                    max={Number(filters.priceRange.maxPrice)}
+                                    currentMin={selectedFilters.minPrice}
+                                    currentMax={selectedFilters.maxPrice}
+                                    onChange={handlePriceChange}
+                                />
+                            </div>
+                        )}
+                    </div>
+
+                    {hasActiveFilters() && (
+                        <div className={styles.resetButtonWrapper}>
+                            <button className={styles.resetButton} onClick={resetFilters}>
+                                <X size={16} />
+                                Clear filters
+                            </button>
+                        </div>
                     )}
                 </div>
-
-                {hasActiveFilters() && (
-                    <div className={styles.resetButtonWrapper}>
-                        <button className={styles.resetButton} onClick={resetFilters}>
-                            <X size={16} />
-                            Clear filters
-                        </button>
-                    </div>
-                )}
             </div>
         </>
     );

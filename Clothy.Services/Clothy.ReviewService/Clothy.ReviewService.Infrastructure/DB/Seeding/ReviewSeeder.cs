@@ -26,37 +26,37 @@ namespace Clothy.ReviewService.Infrastructure.DB.Seeding
             List<Review> fakeData = new List<Review>
             {
                 new Review(
-                    Guid.NewGuid(),
+                    new ClotheInfo(Guid.NewGuid(), "Test clothe 1", "https://randomPhotoURL"),
                     new UserInfo(Guid.NewGuid(), "Alice", "Smith", "https://randomuser.me/api/portraits/women/1.jpg"),
                     5,
                     "Absolutely love it! Great quality and fit."
                 ),
                 new Review(
-                    Guid.NewGuid(),
+                    new ClotheInfo(Guid.NewGuid(), "Test clothe 2", "https://randomPhotoURL"),
                     new UserInfo(Guid.NewGuid(), "Bob", "Johnson", "https://randomuser.me/api/portraits/men/2.jpg"),
                     4,
                     "Pretty good, but shipping was slow."
                 ),
                 new Review(
-                    Guid.NewGuid(),
+                    new ClotheInfo(Guid.NewGuid(), "Test clothe 3", "https://randomPhotoURL"),
                     new UserInfo(Guid.NewGuid(), "Clara", "Davis", "https://randomuser.me/api/portraits/women/3.jpg"),
                     3,
                     "Average product, nothing special."
                 ),
                 new Review(
-                    Guid.NewGuid(),
+                    new ClotheInfo(Guid.NewGuid(), "Test clothe 4", "https://randomPhotoURL"),
                     new UserInfo(Guid.NewGuid(), "David", "Brown", "https://randomuser.me/api/portraits/men/4.jpg"),
                     5,
                     "Excellent! Would buy again."
                 ),
                 new Review(
-                    Guid.NewGuid(),
+                    new ClotheInfo(Guid.NewGuid(), "Test clothe 5", "https://randomPhotoURL"),
                     new UserInfo(Guid.NewGuid(), "Eva", "Miller", "https://randomuser.me/api/portraits/women/5.jpg"),
                     2,
                     "Not satisfied, the material feels cheap."
                 ),
                 new Review(
-                    Guid.NewGuid(),
+                    new ClotheInfo(Guid.NewGuid(), "Test clothe 6", "https://randomPhotoURL"),
                     new UserInfo(Guid.NewGuid(), "Frank", "Wilson", "https://randomuser.me/api/portraits/men/6.jpg"),
                     4,
                     "Good product, reasonable price."

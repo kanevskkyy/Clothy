@@ -1,17 +1,17 @@
 import { useState } from "react";
 import type { PagedList } from "../../../shared/pagedList";
-import type { IReviewReadDTO } from "../IReviewReadDTO.ts";
+import type { IReviewAggregatedReadDTO } from "../IReviewAggregatedReadDTO.ts";
 import type { IReviewStatistic } from "../IReviewStatistic.ts";
-import type { IQuestionReadDTO } from "../../questions/IQuestionReadDTO.ts";
+import type { IQuestionAggregatedReadDTO } from "../../questions/IQuestionAggregatedReadDTO.ts";
 import styles from "./ReviewsSection.module.css";
 import ReviewItem from "../reviewItem/ReviewItem.tsx";
 import QuestionItem from "../../questions/questionItem/QuestionItem.tsx";
 import Pagination from "../../../shared/Pagination/Pagination.tsx";
 
 interface ReviewsSectionProps {
-    reviews: PagedList<IReviewReadDTO>;
+    reviews: PagedList<IReviewAggregatedReadDTO>;
     statistics: IReviewStatistic;
-    questions: PagedList<IQuestionReadDTO>;
+    questions: PagedList<IQuestionAggregatedReadDTO>;
 }
 
 const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews, statistics, questions }) => {

@@ -1,9 +1,9 @@
-import type { IReviewReadDTO } from "../IReviewReadDTO.ts";
+import type { IReviewAggregatedReadDTO } from "../IReviewAggregatedReadDTO.ts";
 import styles from "./ReviewItem.module.css";
 import {formatDate} from "../../../shared/formatDate.ts";
 
 interface ReviewItemProps {
-    review: IReviewReadDTO;
+    review: IReviewAggregatedReadDTO;
 }
 
 const ReviewItem: React.FC<ReviewItemProps> = ({ review }) => {

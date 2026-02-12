@@ -21,23 +21,25 @@ namespace Clothy.OrderService.BLL.Services
         private IImageService imageService;
         private IEntityCacheService cacheService;
         private IEntityCacheInvalidationService<DeliveryProvider> cacheInvalidationService;
+        private IEntityCacheInvalidationService<PickupPoints> pickupPointInvalidationService;
+        
         private const string ALL_CACHE_KEY = "delivery-provider:all";
         private static TimeSpan MEMORY_TTL_DELIVERY_PROVIDER = TimeSpan.FromHours(12);
         private static TimeSpan REDIS_TTL_DELIVERY_PROVIDER = TimeSpan.FromDays(7);
 
-
-        public DeliveryProviderService(
-            IUnitOfWork unitOfWork, 
-            IMapper mapper, 
-            IImageService imageService, 
-            IEntityCacheService cacheService, 
-            IEntityCacheInvalidationService<DeliveryProvider> cacheInvalidationService)
+        public DeliveryProviderService(IUnitOfWork unitOfWork, 
+            IMapper mapper,
+            IImageService imageService,
+            IEntityCacheService cacheService,
+            IEntityCacheInvalidationService<DeliveryProvider> cacheInvalidationService,
+            IEntityCacheInvalidationService<PickupPoints> pickupPointInvalidationService)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
             this.imageService = imageService;
             this.cacheService = cacheService;
             this.cacheInvalidationService = cacheInvalidationService;
+            this.pickupPointInvalidationService = pickupPointInvalidationService;
         }
 
         public async Task<List<DeliveryProviderReadDTO>> GetAllAsync(CancellationToken cancellationToken = default)
@@ -126,7 +128,8 @@ namespace Clothy.OrderService.BLL.Services
             await unitOfWork.CommitAsync();
 
             await cacheInvalidationService.InvalidateByIdAsync(id);
-            await cacheInvalidationService.InvalidateAllAsync(); 
+            await cacheInvalidationService.InvalidateAllAsync();
+            await pickupPointInvalidationService.InvalidateAllAsync();
         }
     }
 }

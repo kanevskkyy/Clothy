@@ -20,27 +20,27 @@ namespace Clothy.OrderService.BLL.Services
         private IUnitOfWork unitOfWork;
         private IMapper mapper;
         private IEntityCacheService cacheService;
-        private IEntityCacheInvalidationService<PickupPoints> cacheInvalidationService;
+        private IEntityCacheInvalidationService<PickupPoints> pickupPointInvalidationService;
 
         private static TimeSpan MEMORY_TTL = TimeSpan.FromHours(6);
         private static TimeSpan REDIS_TTL = TimeSpan.FromDays(1);
         private const int MAX_CACHED_PAGES = 3;
 
         public PickupPointService(IUnitOfWork unitOfWork,
-            IMapper mapper, 
-            IEntityCacheService cacheService, 
+            IMapper mapper,
+            IEntityCacheService cacheService,
             IEntityCacheInvalidationService<PickupPoints> cacheInvalidationService)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
             this.cacheService = cacheService;
-            this.cacheInvalidationService = cacheInvalidationService;
+            this.pickupPointInvalidationService = cacheInvalidationService;
         }
 
         public async Task<PickupPointReadDTO> CreateAsync(PickupPointCreateDTO pickupPointCreateDTO, CancellationToken cancellationToken = default)
         {
             Settlement? settlement = await unitOfWork.Settlement.GetByIdAsync(pickupPointCreateDTO.SettlementId, cancellationToken);
-            if(settlement == null) throw new NotFoundException($"Settlement with ID: {pickupPointCreateDTO.SettlementId}");
+            if (settlement == null) throw new NotFoundException($"Settlement with ID: {pickupPointCreateDTO.SettlementId}");
 
             DeliveryProvider? deliveryProvider = await unitOfWork.DeliveryProviders.GetByIdAsync(pickupPointCreateDTO.DeliveryProviderId, cancellationToken);
             if (deliveryProvider == null) throw new NotFoundException($"DeliveryProvider with ID: {pickupPointCreateDTO.DeliveryProviderId}");
@@ -49,7 +49,7 @@ namespace Clothy.OrderService.BLL.Services
             entity.Id = await unitOfWork.PickupPoint.AddAsync(entity, cancellationToken);
             await unitOfWork.CommitAsync();
 
-            await cacheInvalidationService.InvalidateAllAsync();
+            await pickupPointInvalidationService.InvalidateAllAsync();
 
             return mapper.Map<PickupPointReadDTO>(entity);
         }
@@ -94,7 +94,7 @@ namespace Clothy.OrderService.BLL.Services
         {
             var (items, totalCount) = await unitOfWork.PickupPoint.GetPagedAsync(filter, cancellationToken);
             List<PickupPointReadDTO> dtos = mapper.Map<List<PickupPointReadDTO>>(items);
-            
+
             return new PagedList<PickupPointReadDTO>(dtos, totalCount, filter.PageNumber, filter.PageSize);
         }
 
@@ -113,8 +113,8 @@ namespace Clothy.OrderService.BLL.Services
             await unitOfWork.PickupPoint.UpdateAsync(entity);
             await unitOfWork.CommitAsync();
 
-            await cacheInvalidationService.InvalidateByIdAsync(id);
-            await cacheInvalidationService.InvalidateAllAsync();
+            await pickupPointInvalidationService.InvalidateByIdAsync(id);
+            await pickupPointInvalidationService.InvalidateAllAsync();
 
             return mapper.Map<PickupPointReadDTO>(entity);
         }
@@ -127,8 +127,8 @@ namespace Clothy.OrderService.BLL.Services
             await unitOfWork.PickupPoint.DeleteAsync(id, cancellationToken);
             await unitOfWork.CommitAsync();
 
-            await cacheInvalidationService.InvalidateByIdAsync(id);
-            await cacheInvalidationService.InvalidateAllAsync();
+            await pickupPointInvalidationService.InvalidateByIdAsync(id);
+            await pickupPointInvalidationService.InvalidateAllAsync();
         }
     }
 }

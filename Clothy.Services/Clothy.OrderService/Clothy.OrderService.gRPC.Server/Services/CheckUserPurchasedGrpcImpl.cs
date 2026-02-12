@@ -27,12 +27,14 @@ namespace Clothy.OrderService.gRPC.Server.Services
 
             try
             {
-                bool userOrdered = await unitOfWork.OrderItems.HasUserPurchasedClotheAsync(Guid.Parse(request.UserId), Guid.Parse(request.ClotheId), context.CancellationToken);
+                (bool hasPurchased, string? clotheName, string? clothePhotoUrl) result = await unitOfWork.OrderItems.HasUserPurchasedClotheAsync(Guid.Parse(request.UserId), Guid.Parse(request.ClotheId), context.CancellationToken);
 
                 logger.LogInformation("Succesfully checked whether user ordered clothe!");
 
                 CheckUserPurchasedResponse response = new CheckUserPurchasedResponse();
-                response.Purchased = userOrdered;
+                response.Purchased = result.hasPurchased;
+                response.ClotheName = response.ClotheName;
+                response.ClothePhotoURL = response.ClothePhotoURL;
 
                 return response;
             }

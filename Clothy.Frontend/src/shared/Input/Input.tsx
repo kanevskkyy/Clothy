@@ -1,17 +1,22 @@
-import type { InputHTMLAttributes } from "react";
+import { forwardRef, type InputHTMLAttributes } from "react";
 import styles from "./Input.module.css";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
     error?: boolean;
 }
 
-const Input = ({ error, className, ...rest }: InputProps) => {
-    return (
-        <input
-            className={`${styles.input} ${error ? styles.error : ""} ${className || ""}`}
-            {...rest}
-        />
-    );
-};
+const Input = forwardRef<HTMLInputElement, InputProps>(
+    ({ error, className, ...rest }, ref) => {
+        return (
+            <input
+                ref={ref}
+                className={`${styles.input} ${error ? styles.error : ""} ${className || ""}`}
+                {...rest}
+            />
+        );
+    }
+);
+
+Input.displayName = "Input";
 
 export default Input;

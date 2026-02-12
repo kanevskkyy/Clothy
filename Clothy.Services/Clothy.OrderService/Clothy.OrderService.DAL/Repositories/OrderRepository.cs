@@ -244,7 +244,7 @@ namespace Clothy.OrderService.DAL.Repositories
                 new CommandDefinition(sql, new
                 {
                     UserId = userId
-                }, 
+                },
                 cancellationToken: cancellationToken
             ));
             return count > 0;

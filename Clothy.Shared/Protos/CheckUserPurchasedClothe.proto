@@ -7,6 +7,8 @@ message CheckUserPurchasedRequest{
 
 message CheckUserPurchasedResponse{
 	bool purchased = 1;
+	string clotheName = 2;
+	string clothePhotoURL = 3;
 }
 
 service CheckUserPurchasedGrpc{

@@ -1,6 +1,6 @@
 import type React from "react";
 import type { IClotheDetailDTO } from "../IClotheDetailDTO.ts";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import styles from "./ClotheDetail.module.css";
 import type {IColorReadDTO} from "../../colors/IColorReadDTO.ts";
 import type {ISizeReadDTO} from "../../sizes/ISizeReadDTO.ts";
@@ -31,6 +31,7 @@ const ClotheDetail: React.FC<ProductInfoProps> = ({ clotheDetail, selectedColor,
 
     const [selectedSize, setSelectedSize] = useState<ISizeReadDTO | null>(null);
     const [quantity, setQuantity] = useState(1);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const sizeAvailability = useMemo(() => {
         return uniqueSizes.map(size => {
@@ -72,9 +73,28 @@ const ClotheDetail: React.FC<ProductInfoProps> = ({ clotheDetail, selectedColor,
 
     const isAvailable = maxQuantity > 0;
 
+    // Get main photo for current color
+    const currentClotheImage = useMemo(() => {
+        const photo = clotheDetail.additionalPhotos.find(
+            p => p.colorId === selectedColor.id && p.isMain
+        );
+        return photo?.photoUrl || clotheDetail.additionalPhotos[0]?.photoUrl || '';
+    }, [selectedColor.id, clotheDetail.additionalPhotos]);
+
     const handleAddToCart = () => console.log('Added to cart:', { selectedColor, selectedSize, quantity });
     const handleSubscribe = () => console.log('Subscription:', { selectedColor, selectedSize });
-    const handleTryOnYourself = () => console.log('Try on yourself');
+
+    const handleTryOnYourself = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            console.log('User photo:', file);
+            console.log('Clothe image URL:', currentClotheImage);
+        }
+    };
 
     return (
         <div className={styles.clotheInfo}>
@@ -156,6 +176,13 @@ const ClotheDetail: React.FC<ProductInfoProps> = ({ clotheDetail, selectedColor,
                     </Button>
                 </div>
                 <div className={styles.buttonWrapper}>
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+                        onChange={handleFileChange}
+                        style={{ display: 'none' }}
+                    />
                     <Button
                         variant="outline"
                         size="lg"

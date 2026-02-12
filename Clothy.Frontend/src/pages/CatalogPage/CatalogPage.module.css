@@ -38,6 +38,10 @@
     display: block;
 }
 
+.productWrapper {
+    min-height: 100vh;
+}
+
 @media (max-width: 1024px) {
     .catalogContainer {
         grid-template-columns: 240px 1fr;

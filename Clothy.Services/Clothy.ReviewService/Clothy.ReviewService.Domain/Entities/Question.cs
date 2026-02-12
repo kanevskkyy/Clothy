@@ -14,12 +14,12 @@ namespace Clothy.ReviewService.Domain.Entities
         public Guid ClotheItemId { get; private set; }
 
         [BsonElement("questionText")]
-        public string QuestionText { get; private set; }  
+        public string QuestionText { get; private set; }
 
         [BsonElement("answers")]
         public List<Answer> Answers { get; private set; } = new();
 
-        private Question() 
+        private Question()
         {
 
         }

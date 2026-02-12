@@ -29,7 +29,7 @@ namespace Clothy.OrderService.BLL.Services
         private IMapper mapper;
         private IEntityCacheService cacheService;
         private IPublishEndpoint publishEndpoint;
-        private IEntityCacheInvalidationService<Order> cacheInvalidationService;
+        private IEntityCacheInvalidationService<Order> orderInvalidationService;
         private IOrderItemValidatorGrpcClient validatorGrpcClient;
         private IBasketGrpcClient basketGrpcClient;
         private IUserClaimsExtractor userClaimsExtractor;
@@ -61,7 +61,7 @@ namespace Clothy.OrderService.BLL.Services
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
             this.cacheService = cacheService;
-            this.cacheInvalidationService = cacheInvalidationService;
+            this.orderInvalidationService = cacheInvalidationService;
             this.validatorGrpcClient = validatorGrpcClient;
             this.basketGrpcClient = basketGrpcClient;
             this.publishEndpoint = publishEndpoint;
@@ -212,7 +212,7 @@ namespace Clothy.OrderService.BLL.Services
                     new KeyValuePair<string, object?>("status", "Pending"),
                     new KeyValuePair<string, object?>("pickupPointAddress", pickupPoints.Address));
 
-                await cacheInvalidationService.InvalidateAllAsync();
+                await orderInvalidationService.InvalidateAllAsync();
 
                 operationLatency.Record(
                     stopwatch.ElapsedMilliseconds,
@@ -321,8 +321,8 @@ namespace Clothy.OrderService.BLL.Services
                 await unitOfWork.OrderReservation.UpdateAsync(reservation, cancellationToken);
             }
             await unitOfWork.CommitAsync();
-            await cacheInvalidationService.InvalidateAllAsync();
-            await cacheInvalidationService.InvalidateByIdAsync(orderPaidEvent.OrderId);
+            await orderInvalidationService.InvalidateAllAsync();
+            await orderInvalidationService.InvalidateByIdAsync(orderPaidEvent.OrderId);
         }
 
         public async Task<OrderDetailDTO> GetByIdAsync(Guid id, ClaimsPrincipal? claimsPrincipal = null, CancellationToken cancellationToken = default)
@@ -396,8 +396,8 @@ namespace Clothy.OrderService.BLL.Services
             Order? updatedOrder = await unitOfWork.Orders.UpdateAsync(order, cancellationToken);
             await unitOfWork.CommitAsync();
 
-            await cacheInvalidationService.InvalidateAllAsync();
-            await cacheInvalidationService.InvalidateByIdAsync(updatedOrder.Id);
+            await orderInvalidationService.InvalidateAllAsync();
+            await orderInvalidationService.InvalidateByIdAsync(updatedOrder.Id);
 
             OrderDetailDTO orderDetailDTO = await GetByIdAsync(updatedOrder.Id, cancellationToken: cancellationToken);
 
@@ -422,8 +422,8 @@ namespace Clothy.OrderService.BLL.Services
             await unitOfWork.Orders.DeleteAsync(order.Id, cancellationToken);
             await unitOfWork.CommitAsync();
 
-            await cacheInvalidationService.InvalidateByIdAsync(id);
-            await cacheInvalidationService.InvalidateAllAsync();
+            await orderInvalidationService.InvalidateByIdAsync(id);
+            await orderInvalidationService.InvalidateAllAsync();
         }
     }
 }

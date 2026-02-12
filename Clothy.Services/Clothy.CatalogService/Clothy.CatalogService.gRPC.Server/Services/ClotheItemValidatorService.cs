@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Clothy.CatalogService.DAL.UOW;
+using Clothy.CatalogService.Domain.Entities.Clothe;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 
@@ -41,15 +42,24 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                 ClotheItemResponse clotheItemResponse = new ClotheItemResponse();
                 context.CancellationToken.ThrowIfCancellationRequested();
 
-                if (!Guid.TryParse(request.ClotheId, out Guid clotheItemId) || await unitOfWork.ClotheItems.GetByIdAsync(clotheItemId, context.CancellationToken) == null)
+                if (!Guid.TryParse(request.ClotheId, out Guid clotheItemId))
                 {
                     clotheItemResponse.IsValid = false;
-                    clotheItemResponse.ErrorMessage = $"Invalid ClotheItemId: {clotheItemId}. Cannot find in DB or invalid GUID format";
+                    clotheItemResponse.ErrorMessage = $"Invalid ClotheItemId: {clotheItemId}.Invalid GUID format";
                     logger.LogWarning("Clothe item not found or invalid GUID format: {ClotheId}", clotheItemId);
                 }
+
+                ClotheItem? clotheItem = await unitOfWork.ClotheItems.GetByIdWithDetailsAsync(clotheItemId, context.CancellationToken);
+                if (clotheItem == null)
+                {
+                    clotheItemResponse.IsValid = false;
+                    clotheItemResponse.ErrorMessage = $"Invalid ClotheItemId: {clotheItemId}.Cannot find in DB clothe with ID: {clotheItem}";
+                    logger.LogWarning("Clothe item not found: {ClotheId}", clotheItemId);
+                }
+
                 else
                 {
-                    clotheItemResponse.IsValid = true;
+                    clotheItemResponse.IsValid = true;                   
                     logger.LogInformation("ClotheItemId {ClotheItemId} is valid", clotheItemId);
                 }
 

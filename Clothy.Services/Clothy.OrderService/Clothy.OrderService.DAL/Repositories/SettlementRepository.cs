@@ -72,7 +72,7 @@ namespace Clothy.OrderService.DAL.Repositories
         public async Task<(IEnumerable<Settlement>, int totalCount)> GetPagedAsync(SettlementFilterDTO settlementFilterDTO, CancellationToken cancellationToken = default)
         {
             using IDbConnection dbConnection = await GetOpenConnectionAsync();
-            
+
             StringBuilder sql = new StringBuilder("SELECT * FROM settlements WHERE 1=1 ");
             StringBuilder countSql = new StringBuilder("SELECT COUNT(*) FROM settlements WHERE 1=1 ");
             DynamicParameters parameters = new DynamicParameters();

@@ -16,7 +16,13 @@ namespace Clothy.ReviewService.Infrastructure.DB.MappingConfig
             BsonClassMap.RegisterClassMap<UserInfo>(cm =>
             {
                 cm.AutoMap();
-                cm.MapCreator(u => new UserInfo(u.UserId, u.FirstName, u.LastName, u.PhotoUrl));
+                cm.MapCreator(userInfo => new UserInfo(userInfo.UserId, userInfo.FirstName, userInfo.LastName, userInfo.PhotoUrl));
+            });
+
+            BsonClassMap.RegisterClassMap<ClotheInfo>(cm =>
+            {
+                cm.AutoMap();
+                cm.MapCreator(clotheInfo => new ClotheInfo(clotheInfo.ClotheItemId, clotheInfo.ClotheName, clotheInfo.ClothePhotoURL));
             });
 
             BsonClassMap.RegisterClassMap<Answer>(cm => cm.AutoMap());

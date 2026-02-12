@@ -19,10 +19,12 @@ namespace Clothy.OrderService.BLL.Services
         private IUnitOfWork unitOfWork;
         private IMapper mapper;
         private IEntityCacheService cacheService;
-        private IEntityCacheInvalidationService<OrderStatus> cacheInvalidationService;
+        private IEntityCacheInvalidationService<OrderStatus> orderStatusInvalidationService;
+        
         private const string ALL_STATUSES_KEY = "order-status:all";
-        private static readonly TimeSpan MEMORY_TTL_ORDER_STATUS = TimeSpan.FromHours(1);
-        private static readonly TimeSpan REDIS_TTL_ORDER_STATUS = TimeSpan.FromDays(7);
+        
+        private static TimeSpan MEMORY_TTL_ORDER_STATUS = TimeSpan.FromHours(1);
+        private static TimeSpan REDIS_TTL_ORDER_STATUS = TimeSpan.FromDays(7);
 
         public OrderStatusService(
             IUnitOfWork unitOfWork, 
@@ -33,7 +35,7 @@ namespace Clothy.OrderService.BLL.Services
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
             this.cacheService = cacheService;
-            this.cacheInvalidationService = cacheInvalidationService;
+            this.orderStatusInvalidationService = cacheInvalidationService;
         }
 
         public async Task<List<OrderStatusReadDTO>> GetAllAsync(CancellationToken cancellationToken = default)
@@ -80,7 +82,7 @@ namespace Clothy.OrderService.BLL.Services
             status.Id = await unitOfWork.OrderStatuses.AddAsync(status, cancellationToken);
             await unitOfWork.CommitAsync();
 
-            await cacheInvalidationService.InvalidateAllAsync();
+            await orderStatusInvalidationService.InvalidateAllAsync();
 
             return mapper.Map<OrderStatusReadDTO>(status);
         }
@@ -97,8 +99,8 @@ namespace Clothy.OrderService.BLL.Services
             await unitOfWork.OrderStatuses.UpdateAsync(status, cancellationToken);
             await unitOfWork.CommitAsync();
 
-            await cacheInvalidationService.InvalidateByIdAsync(id);
-            await cacheInvalidationService.InvalidateAllAsync();
+            await orderStatusInvalidationService.InvalidateByIdAsync(id);
+            await orderStatusInvalidationService.InvalidateAllAsync();
 
             return mapper.Map<OrderStatusReadDTO>(status);
         }
@@ -111,8 +113,8 @@ namespace Clothy.OrderService.BLL.Services
             await unitOfWork.OrderStatuses.DeleteAsync(id, cancellationToken);
             await unitOfWork.CommitAsync();
 
-            await cacheInvalidationService.InvalidateByIdAsync(id);
-            await cacheInvalidationService.InvalidateAllAsync();
+            await orderStatusInvalidationService.InvalidateByIdAsync(id);
+            await orderStatusInvalidationService.InvalidateAllAsync();
         }
     }
 }

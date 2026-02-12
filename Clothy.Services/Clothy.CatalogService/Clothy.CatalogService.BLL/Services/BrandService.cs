@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Metrics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using Clothy.Aggregator.Aggregate.RedisCache;
 using Clothy.CatalogService.BLL.DTOs.BrandDTOs;
 using Clothy.CatalogService.BLL.Exceptions;
@@ -12,8 +6,16 @@ using Clothy.CatalogService.BLL.Helpers;
 using Clothy.CatalogService.BLL.Interfaces;
 using Clothy.CatalogService.DAL.UOW;
 using Clothy.CatalogService.Domain.Entities.Catalog;
+using Clothy.CatalogService.Domain.Entities.Clothe;
+using Clothy.Shared.Cache.Interfaces;
 using Clothy.Shared.Helpers.CloudinaryConfig.ImageService;
 using Clothy.Shared.Helpers.Exceptions;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.Metrics;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Clothy.CatalogService.BLL.Services
 {
@@ -23,18 +25,22 @@ namespace Clothy.CatalogService.BLL.Services
         private IMapper mapper;
         private IImageService imageService;
         private IFilterCacheInvalidationService filterCacheInvalidationService;
+        private IEntityCacheInvalidationService<ClotheItem> clotheItemInvalidationService;
         private Counter<long> brandsCreatedCounter;
 
         public BrandService(IUnitOfWork unitOfWork, 
             IMapper mapper, 
             IImageService imageService, 
             IFilterCacheInvalidationService filterCacheInvalidationService, 
-            Meter meter)
+            Meter meter,
+            IEntityCacheInvalidationService<ClotheItem> clotheItemInvalidationService)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
             this.filterCacheInvalidationService = filterCacheInvalidationService;
             this.imageService = imageService;
+            this.clotheItemInvalidationService = clotheItemInvalidationService;
+
             brandsCreatedCounter = meter.CreateCounter<long>(
                     "clothy.catalog.brands.createdBrands",
                     "items",
@@ -99,6 +105,7 @@ namespace Clothy.CatalogService.BLL.Services
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
             await filterCacheInvalidationService.InvalidateAsync();
+            await clotheItemInvalidationService.InvalidateAllAsync();
             return mapper.Map<BrandReadDTO>(brand);
         }
 
@@ -113,6 +120,7 @@ namespace Clothy.CatalogService.BLL.Services
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
             await filterCacheInvalidationService.InvalidateAsync();
+            await clotheItemInvalidationService.InvalidateAllAsync();
         }
     }
 }

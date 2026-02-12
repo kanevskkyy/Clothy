@@ -13,7 +13,7 @@ namespace Clothy.OrderService.BLL.Interfaces
     public interface ISettlementService
     {
         Task<PagedList<SettlementReadDTO>> GetPagedAsync(SettlementFilterDTO settlementFilterDTO, CancellationToken cancellationToken = default);
-        Task<SettlementReadDTO> GetByIdAsync(Guid id,  CancellationToken cancellationToken = default);
+        Task<SettlementReadDTO> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
         Task<SettlementReadDTO> CreateAsync(SettlementCreateDTO settlementCreateDTO, CancellationToken cancellationToken = default);
         Task<SettlementReadDTO> UpdateAsync(Guid id, SettlementUpdateDTO settlementUpdateDTO, CancellationToken cancellationToken = default);
         Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);

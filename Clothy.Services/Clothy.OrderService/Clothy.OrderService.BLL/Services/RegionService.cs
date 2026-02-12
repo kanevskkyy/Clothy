@@ -20,21 +20,24 @@ namespace Clothy.OrderService.BLL.Services
         private IUnitOfWork unitOfWork;
         private IMapper mapper;
         private IEntityCacheService cacheService;
-        private IEntityCacheInvalidationService<Region> cacheInvalidationService;
+        private IEntityCacheInvalidationService<Region> regionInvalidationService;
+        private IEntityCacheInvalidationService<Settlement> settlementInvalidationService;
+        
         private static TimeSpan MEMORY_TTL = TimeSpan.FromMinutes(10);
         private static TimeSpan REDIS_TTL = TimeSpan.FromHours(1);
-        private const int MAX_CACHED_PAGES = 3;
 
         public RegionService(
             IUnitOfWork unitOfWork, 
-            IMapper mapper, 
-            IEntityCacheService cacheService, 
-            IEntityCacheInvalidationService<Region> cacheInvalidationService)
+            IMapper mapper,
+            IEntityCacheService cacheService,
+            IEntityCacheInvalidationService<Region> cacheInvalidationService,
+            IEntityCacheInvalidationService<Settlement> settlementInvalidationService)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
             this.cacheService = cacheService;
-            this.cacheInvalidationService = cacheInvalidationService;
+            this.regionInvalidationService = cacheInvalidationService;
+            this.settlementInvalidationService = settlementInvalidationService;
         }
 
         public async Task<List<RegionReadDTO>> GetAllAsync(CancellationToken cancellationToken = default)
@@ -73,7 +76,7 @@ namespace Clothy.OrderService.BLL.Services
             region.Id = await unitOfWork.Region.AddAsync(region);
             await unitOfWork.CommitAsync();
 
-            await cacheInvalidationService.InvalidateAllAsync();
+            await regionInvalidationService.InvalidateAllAsync();
 
             return mapper.Map<RegionReadDTO>(region);
         }
@@ -90,8 +93,8 @@ namespace Clothy.OrderService.BLL.Services
             await unitOfWork.Region.UpdateAsync(region, cancellationToken);
             await unitOfWork.CommitAsync();
 
-            await cacheInvalidationService.InvalidateByIdAsync(region.Id);
-            await cacheInvalidationService.InvalidateAllAsync();
+            await regionInvalidationService.InvalidateByIdAsync(region.Id);
+            await regionInvalidationService.InvalidateAllAsync();
 
             return mapper.Map<RegionReadDTO>(region);
         }
@@ -104,8 +107,9 @@ namespace Clothy.OrderService.BLL.Services
             await unitOfWork.Region.DeleteAsync(id, cancellationToken);
             await unitOfWork.CommitAsync();
 
-            await cacheInvalidationService.InvalidateByIdAsync(id);
-            await cacheInvalidationService.InvalidateAllAsync();
+            await regionInvalidationService.InvalidateByIdAsync(id);
+            await regionInvalidationService.InvalidateAllAsync();
+            await settlementInvalidationService.InvalidateAllAsync();
         }
     }
 }

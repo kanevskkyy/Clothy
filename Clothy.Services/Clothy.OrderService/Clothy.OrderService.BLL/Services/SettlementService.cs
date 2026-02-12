@@ -20,17 +20,23 @@ namespace Clothy.OrderService.BLL.Services
         private IUnitOfWork unitOfWork;
         private IMapper mapper;
         private IEntityCacheService cacheService;
-        private IEntityCacheInvalidationService<Settlement> cacheInvalidationService;
+        private IEntityCacheInvalidationService<Settlement> settlementInvalidationService;
+        private IEntityCacheInvalidationService<PickupPoints> pickupPointInvalidationService;
 
         private static TimeSpan MEMORY_TTL = TimeSpan.FromHours(1);
         private static TimeSpan REDIS_TTL = TimeSpan.FromDays(7);
 
-        public SettlementService(IUnitOfWork unitOfWork, IMapper mapper, IEntityCacheService cacheService, IEntityCacheInvalidationService<Settlement> cacheInvalidationService)
+        public SettlementService(IUnitOfWork unitOfWork, 
+            IMapper mapper, 
+            IEntityCacheService cacheService, 
+            IEntityCacheInvalidationService<Settlement> cacheInvalidationService,
+            IEntityCacheInvalidationService<PickupPoints> pickupPointInvalidationService)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
             this.cacheService = cacheService;
-            this.cacheInvalidationService = cacheInvalidationService;
+            this.settlementInvalidationService = cacheInvalidationService;
+            this.pickupPointInvalidationService = pickupPointInvalidationService;
         }
 
         public async Task<SettlementReadDTO> CreateAsync(SettlementCreateDTO settlementCreateDTO, CancellationToken cancellationToken = default)
@@ -45,7 +51,7 @@ namespace Clothy.OrderService.BLL.Services
             settlement.Id = await unitOfWork.Settlement.AddAsync(settlement, cancellationToken);
             await unitOfWork.CommitAsync();
 
-            await cacheInvalidationService.InvalidateAllAsync();
+            await settlementInvalidationService.InvalidateAllAsync();
 
             return mapper.Map<SettlementReadDTO>(settlement);
         }
@@ -103,8 +109,8 @@ namespace Clothy.OrderService.BLL.Services
             await unitOfWork.Settlement.UpdateAsync(settlement);
             await unitOfWork.CommitAsync();
 
-            await cacheInvalidationService.InvalidateByIdAsync(id);
-            await cacheInvalidationService.InvalidateAllAsync();
+            await settlementInvalidationService.InvalidateByIdAsync(id);
+            await settlementInvalidationService.InvalidateAllAsync();
 
             return mapper.Map<SettlementReadDTO>(settlement);
         }
@@ -117,8 +123,10 @@ namespace Clothy.OrderService.BLL.Services
             await unitOfWork.Settlement.DeleteAsync(id, cancellationToken);
             await unitOfWork.CommitAsync();
 
-            await cacheInvalidationService.InvalidateByIdAsync(id);
-            await cacheInvalidationService.InvalidateAllAsync();
+            await settlementInvalidationService.InvalidateByIdAsync(id);
+            await settlementInvalidationService.InvalidateAllAsync();
+
+            await pickupPointInvalidationService.InvalidateAllAsync();
         }
     }
 }

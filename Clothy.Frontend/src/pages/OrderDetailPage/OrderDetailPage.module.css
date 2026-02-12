@@ -20,7 +20,9 @@
     display: flex;
     justify-content: center;
     padding: 5px 10px;
-    border: 2px solid #d9d9d9;
+    border: 2px solid #FCE2B7;
+    color: #F6A821;
+    background: #FEF1DB;
     border-radius: 30px;
     font-size: 14px;
     line-height: 20px;
@@ -218,10 +220,6 @@
 }
 
 @media (max-width: 768px) {
-    body {
-        padding: 16px;
-    }
-
     .container {
         padding: 16px;
         gap: 20px;
@@ -247,12 +245,9 @@
 }
 
 @media (max-width: 640px) {
-    body {
-        padding: 12px;
-    }
-
     .container {
-        padding: 0;
+        padding: 10px;
+        margin: 0;
         gap: 16px;
     }
 

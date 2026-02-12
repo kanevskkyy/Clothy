@@ -18,6 +18,10 @@ import PaymentSuccessfulPage from "../../pages/PaymentSuccessfulPage/PaymentSucc
 import PaymentCancelledPage from "../../pages/PaymentCancelledPage/PaymentCancelledPage.tsx";
 import CheckoutPage from "../../pages/CheckoutPage/CheckoutPage.tsx";
 import OrderDetailPage from "../../pages/OrderDetailPage/OrderDetailPage.tsx";
+import AccountLayout from '../../features/auth/accountLayout/AccountLayout.tsx';
+import AccountProfilePage from "../../pages/AccountProfilePage/AccountProfilePage.tsx";
+import AccountOrderPage from "../../pages/AccountOrderPage/AccountOrderPage.tsx";
+import AccountReviewsPage from "../../pages/AccountReviewsPage/AccountReviewsPage.tsx";
 
 export const AppRouter = () => {
     return (
@@ -42,6 +46,12 @@ export const AppRouter = () => {
                         <Route path="/payment/cancelled" element={<PaymentCancelledPage/>}/>
                         <Route path="/checkout" element={<CheckoutPage/>}/>
                         <Route path="/order/:orderId" element={<OrderDetailPage/>}/>
+
+                        <Route path="/account" element={<AccountLayout />}>
+                            <Route index element={<AccountProfilePage />} />
+                            <Route path="orders" element={<AccountOrderPage />} />
+                            <Route path="reviews" element={<AccountReviewsPage />} />
+                        </Route>
                         <Route path="*" element={<NotFoundPage/>}/>
                     </Routes>
                 </main>

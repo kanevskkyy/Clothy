@@ -41,27 +41,31 @@ namespace Clothy.OrderService.DAL.Repositories
             return orderItems.ToList();
         }
 
-        public async Task<bool> HasUserPurchasedClotheAsync(Guid userId, Guid clotheId, CancellationToken cancellationToken = default)
+        public async Task<(bool hasPurchased, string? clotheName, string? clothePhotoUrl)> HasUserPurchasedClotheAsync(Guid userId, Guid clotheId,CancellationToken cancellationToken = default)
         {
             using IDbConnection connection = await GetOpenConnectionAsync();
-
             string sql = @"
-                SELECT 1
+                SELECT 
+                    oi.clothename AS ClotheName,
+                    oi.mainphoto AS ClothePhotoUrl
                 FROM order_item oi
                 INNER JOIN orders o ON oi.orderid = o.id
                 WHERE o.userid = @UserId
                   AND oi.clotheid = @ClotheId
-                LIMIT 1;"; 
+                LIMIT 1;";
 
-            int? result = await connection.ExecuteScalarAsync<int?>(
+            (string ClotheName, string ClothePhotoUrl) result = await connection.QueryFirstOrDefaultAsync<(string ClotheName, string ClothePhotoUrl)>(
                 new CommandDefinition(
                     sql,
-                    new { UserId = userId, ClotheId = clotheId },
+                    new { 
+                        UserId = userId, 
+                        ClotheId = clotheId 
+                    },
                     cancellationToken: cancellationToken
                 )
             );
 
-            return result.HasValue;
+            return (result != default, result.ClotheName, result.ClothePhotoUrl);
         }
     }
 }

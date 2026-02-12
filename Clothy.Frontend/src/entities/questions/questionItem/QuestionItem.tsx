@@ -1,9 +1,9 @@
-import type { IQuestionReadDTO } from "../IQuestionReadDTO.ts";
+import type { IQuestionAggregatedReadDTO } from "../IQuestionAggregatedReadDTO.ts";
 import styles from "./QuestionItem.module.css";
 import {formatDate} from "../../../shared/formatDate.ts";
 
 interface QuestionItemProps {
-    question: IQuestionReadDTO;
+    question: IQuestionAggregatedReadDTO;
 }
 
 const QuestionItem: React.FC<QuestionItemProps> = ({ question }) => {
