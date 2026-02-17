@@ -48,6 +48,7 @@ namespace Clothy.CatalogService.BLL.Mapper
             CreateMap<ClotheTag, TagReadDTO>()
                 .ForMember(dto => dto.Id, map => map.MapFrom(ct => ct.Tag.Id))
                 .ForMember(dto => dto.Name, map => map.MapFrom(ct => ct.Tag.Name))
+                .ForMember(dto => dto.Slug, map => map.MapFrom(ct => ct.Tag.Slug))
                 .ForMember(dto => dto.CreatedAt, map => map.MapFrom(ct => ct.Tag.CreatedAt));
 
             CreateMap<ClotheCreateDTO, ClotheItem>()

@@ -27,6 +27,7 @@ namespace Clothy.CatalogService.API.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Paged list of clothes.</returns>
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<PagedList<ClotheSummaryDTO>>> GetPaged([FromQuery] ClotheItemSpecificationParameters parameters, CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching paged clothes.");
@@ -42,6 +43,7 @@ namespace Clothy.CatalogService.API.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Clothe details.</returns>
         [HttpGet("{slug}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ClotheDetailDTO>> GetBySlug(string slug, CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching clothe with Slug: {Slug}", slug);
@@ -91,6 +93,7 @@ namespace Clothy.CatalogService.API.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Object with min and max price.</returns>
         [HttpGet("pricerange")]
+        [AllowAnonymous]
         public async Task<ActionResult<PriceRangeDTO>> GetPriceRange(CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching price range for clothes.");
@@ -122,6 +125,7 @@ namespace Clothy.CatalogService.API.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>List of top 8 popular clothes.</returns>
         [HttpGet("top8")]
+        [AllowAnonymous]
         public async Task<ActionResult<List<ClotheSummaryDTO>>> GetTop8MostPopular(CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching top 8 most popular clothes.");

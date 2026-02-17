@@ -1,8 +1,8 @@
 import PageWrapper from "../../shared/PageWrapper/PageWrapper.tsx";
 import {Truck, User} from "lucide-react";
 import styles from "./OrderDetailPage.module.css";
-import type {IOrderDetailDTO} from "../../entities/orders/order/IOrderDetailDTO.ts";
-import {formatDate} from "../../shared/formatDate.ts";
+import type {IOrderDetailDTO} from "../../entities/ordersService/order/IOrderDetailDTO.ts";
+import {formatDate} from "../../shared/utils/formatDate.ts";
 import {useParams} from "react-router-dom";
 
 const OrderDetailPage = () => {

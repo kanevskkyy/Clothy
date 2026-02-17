@@ -40,6 +40,7 @@ namespace Clothy.ReviewService.API.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Paginated list of reviews.</returns>
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetReviews([FromQuery] ReviewQueryParameters queryParams, CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching paged reviews. Page: {PageNumber}, PageSize: {PageSize}", queryParams.PageNumber, queryParams.PageSize);
@@ -68,6 +69,7 @@ namespace Clothy.ReviewService.API.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Review details.</returns>
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetReviewById(string id, CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching review with ID: {Id}", id);

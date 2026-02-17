@@ -24,6 +24,7 @@ namespace Clothy.CatalogService.API.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>List of all clothing types.</returns>
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<ClothingTypeReadDTO>>> GetAll(CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching all clothing types.");
@@ -39,6 +40,7 @@ namespace Clothy.CatalogService.API.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Clothing type details.</returns>
         [HttpGet("{id:guid}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ClothingTypeReadDTO>> GetById(Guid id, CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching clothing type with ID: {Id}", id);

@@ -9,8 +9,8 @@ namespace Clothy.CatalogService.BLL.Interfaces
 {
     public interface IBrandService
     {
-        Task<List<BrandReadDTO>> GetAllAsync(CancellationToken cancellationToken = default);
-        Task<BrandReadDTO> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+        Task<List<BrandReadDTO>?> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<BrandReadDTO?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
         Task<BrandReadDTO> CreateAsync(BrandCreateDTO brandCreateDTO, CancellationToken cancellationToken = default);
         Task<BrandReadDTO> UpdateAsync(Guid id, BrandUpdateDTO brandUpdateDTO, CancellationToken cancellationToken = default);
         Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);

@@ -26,39 +26,69 @@ namespace Clothy.CatalogService.BLL.Services
         private IImageService imageService;
         private IFilterCacheInvalidationService filterCacheInvalidationService;
         private IEntityCacheInvalidationService<ClotheItem> clotheItemInvalidationService;
+        private IEntityCacheInvalidationService<Brand> brandInvalidationService;
+        private IEntityCacheService cacheService;
         private Counter<long> brandsCreatedCounter;
 
-        public BrandService(IUnitOfWork unitOfWork, 
-            IMapper mapper, 
-            IImageService imageService, 
-            IFilterCacheInvalidationService filterCacheInvalidationService, 
+        private static TimeSpan MEMORY_TTL_BRANDS = TimeSpan.FromMinutes(30);
+        private static TimeSpan REDIS_TTL_BRANDS = TimeSpan.FromHours(1);
+
+        public BrandService(
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IImageService imageService,
+            IFilterCacheInvalidationService filterCacheInvalidationService,
             Meter meter,
-            IEntityCacheInvalidationService<ClotheItem> clotheItemInvalidationService)
+            IEntityCacheInvalidationService<ClotheItem> clotheItemInvalidationService,
+            IEntityCacheInvalidationService<Brand> brandInvalidationService,
+            IEntityCacheService cacheService)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
             this.filterCacheInvalidationService = filterCacheInvalidationService;
             this.imageService = imageService;
             this.clotheItemInvalidationService = clotheItemInvalidationService;
+            this.brandInvalidationService = brandInvalidationService;
+            this.cacheService = cacheService;
 
             brandsCreatedCounter = meter.CreateCounter<long>(
-                    "clothy.catalog.brands.createdBrands",
-                    "items",
-                    "Number of brands created"
-                );
+                "clothy.catalog.brands.createdBrands",
+                "items",
+                "Number of brands created"
+            );
         }
 
-        public async Task<List<BrandReadDTO>> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<List<BrandReadDTO>?> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            return mapper.Map<List<BrandReadDTO>>(await unitOfWork.Brands.GetAllAsync(cancellationToken));
+            string cacheKey = "brands:all";
+
+            return await cacheService.GetOrSetAsync(
+                cacheKey,
+                async () =>
+                {
+                    var brands = await unitOfWork.Brands.GetAllAsync(cancellationToken);
+                    return mapper.Map<List<BrandReadDTO>>(brands);
+                },
+                MEMORY_TTL_BRANDS,
+                REDIS_TTL_BRANDS
+            );
         }
 
-        public async Task<BrandReadDTO> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<BrandReadDTO?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            Brand? brand = await unitOfWork.Brands.GetByIdAsync(id, cancellationToken);
-            if (brand == null) throw new NotFoundException($"Brand not found with ID: {id}");
+            string cacheKey = $"brand:{id}";
 
-            return mapper.Map<BrandReadDTO>(brand);
+            return await cacheService.GetOrSetAsync(
+                cacheKey,
+                async () =>
+                {
+                    Brand? brand = await unitOfWork.Brands.GetByIdAsync(id, cancellationToken);
+                    if (brand == null) throw new NotFoundException($"Brand not found with ID: {id}");
+                    return mapper.Map<BrandReadDTO>(brand);
+                },
+                MEMORY_TTL_BRANDS,
+                REDIS_TTL_BRANDS
+            );
         }
 
         public async Task<BrandReadDTO> CreateAsync(BrandCreateDTO brandCreateDTO, CancellationToken cancellationToken = default)
@@ -79,7 +109,9 @@ namespace Clothy.CatalogService.BLL.Services
 
             brandsCreatedCounter.Add(1, new KeyValuePair<string, object?>("userType", "Admin"));
 
+            await brandInvalidationService.InvalidateAllAsync();
             await filterCacheInvalidationService.InvalidateAsync();
+
             return mapper.Map<BrandReadDTO>(brand);
         }
 
@@ -104,8 +136,12 @@ namespace Clothy.CatalogService.BLL.Services
             unitOfWork.Brands.Update(brand);
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
+            await brandInvalidationService.InvalidateAllAsync();
+            await brandInvalidationService.InvalidateByIdAsync(id);
+
             await filterCacheInvalidationService.InvalidateAsync();
             await clotheItemInvalidationService.InvalidateAllAsync();
+
             return mapper.Map<BrandReadDTO>(brand);
         }
 
@@ -119,6 +155,8 @@ namespace Clothy.CatalogService.BLL.Services
             unitOfWork.Brands.Delete(brand);
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
+            await brandInvalidationService.InvalidateByIdAsync(id);
+            await brandInvalidationService.InvalidateAllAsync();
             await filterCacheInvalidationService.InvalidateAsync();
             await clotheItemInvalidationService.InvalidateAllAsync();
         }

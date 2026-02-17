@@ -1,11 +1,11 @@
 import styles from "./AccountReviewsPage.module.css";
-import type { IReviewReadDTO } from "../../entities/reviews/IReviewReadDTO";
-import ReviewCard from "../../entities/reviews/reviewCard/ReviewCard.tsx";
+import type { IReviewReadDTO } from "../../entities/reviewsService/reviews/IReviewReadDTO";
+import ReviewCard from "../../entities/reviewsService/reviews/reviewCard/ReviewCard.tsx";
 import Pagination from "../../shared/Pagination/Pagination.tsx";
 import { Helmet } from "react-helmet";
 import { useSearchParams } from "react-router-dom";
-import type { PagedList } from "../../shared/pagedList.ts";
-import {getCurrentPage, handlePageChange} from "../../shared/paginationUtils.ts";
+import type { PagedList } from "../../shared/utils/pagedList.ts";
+import {getCurrentPage, handlePageChange} from "../../shared/utils/paginationUtils.ts";
 
 const AccountReviewsPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();

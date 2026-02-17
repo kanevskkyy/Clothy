@@ -28,6 +28,7 @@ namespace Clothy.OrderService.API.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Paged list of pickup points.</returns>
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<PagedList<PickupPointReadDTO>>> GetPagedAsync([FromQuery] PickupPointFilterDTO pickupPointFilterDTO, CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching paged pickup points. Page: {PageNumber}, PageSize: {PageSize}", pickupPointFilterDTO.PageNumber, pickupPointFilterDTO.PageSize);
@@ -43,6 +44,7 @@ namespace Clothy.OrderService.API.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Pickup point details.</returns>
         [HttpGet("{id:guid}")]
+        [AllowAnonymous]
         public async Task<ActionResult<PickupPointReadDTO>> GetById(Guid id, CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching pickup point with ID: {Id}", id);

@@ -7,6 +7,7 @@ using Clothy.CatalogService.BLL.DTOs.ClotheDTOs;
 using Clothy.CatalogService.BLL.Interfaces;
 using Clothy.CatalogService.DAL.UOW;
 using Clothy.CatalogService.Domain.Entities;
+using Clothy.Shared.Helpers.Exceptions;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 
@@ -42,13 +43,8 @@ namespace Clothy.CatalogService.gRPC.Server.Services
             try
             {
                 context.CancellationToken.ThrowIfCancellationRequested();
+                ClotheDetailDTO clotheItem = await clotheService.GetDetailBySlugAsync(request.Slug, context.CancellationToken);
 
-                ClotheDetailDTO? clotheItem = await clotheService.GetDetailBySlugAsync(request.Slug, context.CancellationToken);
-                if (clotheItem == null)
-                {
-                    logger.LogWarning("Clothe with slug {Slug} not found", request.Slug);
-                    throw new RpcException(new Status(StatusCode.NotFound, $"Clothe with Slug {request.Slug} not found"));
-                }
                 ClotheDetailGrpcResponse clotheDetailGrpcResponse = new ClotheDetailGrpcResponse
                 {
                     Id = clotheItem.Id.ToString(),
@@ -62,7 +58,7 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                         Id = clotheItem?.Brand?.Id.ToString(),
                         Name = clotheItem?.Brand?.Name,
                         Slug = clotheItem?.Brand?.Slug,
-                        PhotoUrl = clotheItem?.Brand?.PhotoURL
+                        PhotoURL = clotheItem?.Brand?.PhotoURL
                     },
                     ClothingType = new ClothingTypeGrpcResponse
                     {
@@ -88,18 +84,21 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                     ColorId = photo.ColorId?.ToString(),
                     IsMain = photo.IsMain
                 }));
+
                 clotheDetailGrpcResponse.Tags.AddRange(clotheItem?.Tags.Select(tag => new TagGrpcResponse
                 {
                     Id = tag.Id.ToString(),
                     Name = tag.Name,
-                    Slug = tag.Slug
+                    Slug = tag.Slug ?? string.Empty
                 }));
+
                 clotheDetailGrpcResponse.Materials.AddRange(clotheItem?.Materials.Select(materials => new MaterialWithPercentageGrpcResponse
                 {
                     Id = materials.Id.ToString(),
                     Name = materials.Name,
                     Percentage = materials.Percentage
                 }));
+
                 clotheDetailGrpcResponse.Stocks.AddRange(clotheItem?.Stocks.Select(s => new ClotheStockGrpcResponse
                 {
                     Id = s.StockId.ToString(),
@@ -118,10 +117,15 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                         Slug = s?.Color?.Slug
                     }
                 }));
-                logger.LogInformation("Starting finding clothe with Slug: {Slug}", request.Slug);
+
+                logger.LogInformation("Successfully found clothe with Slug: {Slug}", request.Slug);
 
                 return clotheDetailGrpcResponse;
-
+            }
+            catch (NotFoundException notFoundEx)
+            {
+                logger.LogWarning(notFoundEx, "Clothe with slug {Slug} not found", request.Slug);
+                throw new RpcException(new Status(StatusCode.NotFound, notFoundEx.Message));
             }
             catch (RpcException)
             {

@@ -1,0 +1,134 @@
+.wrapper {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    max-width: 440px;
+    margin: 0 auto;
+    padding: 40px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: normal;
+    flex-direction: column;
+}
+
+.mainIcon {
+    width: 48px;
+    height: 48px;
+    padding: 12px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container h1 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #0D0D0D;
+}
+
+.container p {
+    margin-top: 5px;
+    color: #6B6B6B;
+    text-align: center;
+}
+
+.actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.actions a {
+    display: flex;
+    text-decoration: none;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    cursor: pointer;
+}
+
+.primaryButton {
+    background-color: #0D0D0D;
+    border: 1px solid #0D0D0D;
+    color: #fff;
+    border-radius: 6px;
+    transition: transform 0.3s ease;
+}
+
+.secondaryButton {
+    background-color: #ffffff;
+    border: 2px solid #D9D9D9;
+    color: #0D0D0D;
+    border-radius: 6px;
+    transition: transform 0.3s ease;
+}
+
+.primaryButton:hover,
+.secondaryButton:hover {
+    transform: scale(1.02);
+}
+
+@media (max-width: 768px) {
+    .wrapper {
+        padding-top: 64px;
+    }
+
+    .container {
+        max-width: 90%;
+        padding: 20px 10px;
+    }
+
+    .container h1 {
+        font-size: 22px;
+        text-align: center;
+    }
+
+    .container p {
+        text-align: center;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .wrapper {
+        padding: 64px 0 40px;
+    }
+
+    .container {
+        max-width: 92%;
+    }
+
+    .mainIcon {
+        width: 44px;
+        height: 44px;
+        padding: 10px;
+    }
+
+    .container h1 {
+        font-size: 20px;
+    }
+
+    .container p {
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .actions {
+        flex-direction: column;
+        width: 100%;
+        gap: 12px;
+    }
+
+    .actions a {
+        width: 100%;
+        justify-content: center;
+    }
+}

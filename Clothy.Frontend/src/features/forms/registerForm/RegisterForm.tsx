@@ -4,10 +4,14 @@ import FormField from "../../../shared/FormField/FormField.tsx";
 import styles from "./RegisterForm.module.css";
 import Input from "../../../shared/Input/Input.tsx";
 import PasswordInput from "../passwordInput/PasswordInput.tsx";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import Button from "../../../shared/Button/Button.tsx";
+import {authApi} from "../../../app/api/authApi.ts";
+import {toast} from "sonner";
+import {getErrorMessage} from "../../../shared/utils/errorHandler.ts";
 
 const RegisterForm = () => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState<RegisterFormData>({
         email: "",
         password: "",
@@ -18,6 +22,8 @@ const RegisterForm = () => {
 
     const [errors, setErrors] = useState<Partial<Record<keyof RegisterFormData, string>>>({});
 
+    const [isTryingRegister, setIsTryingRegister] = useState(false);
+
     const handleChange = (field: keyof RegisterFormData) => (
         e: React.ChangeEvent<HTMLInputElement>
     ) => {
@@ -27,8 +33,9 @@ const RegisterForm = () => {
         }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setIsTryingRegister(true);
 
         const result = registerSchema.safeParse(formData);
 
@@ -39,11 +46,25 @@ const RegisterForm = () => {
                 fieldErrors[field] = issue.message;
             });
             setErrors(fieldErrors);
+            setIsTryingRegister(false);
             return;
         }
 
-        // TODO: Connect to API
-        console.log("Register successful:", result.data);
+        try {
+            await authApi.registerAsync(formData);
+            toast.success("Registration successful!")
+            navigate("/email-verification");
+        } catch (error) {
+            const msg = getErrorMessage(error);
+
+            if (msg?.includes("User exists")) {
+                toast.error("An account with this email already exists.");
+            } else {
+                toast.error("Registration failed. Please try again.");
+            }
+        } finally {
+            setIsTryingRegister(false);
+        }
     };
 
     return (
@@ -130,7 +151,12 @@ const RegisterForm = () => {
             </FormField>
 
             <div className={styles.actions}>
-                <Button type="submit" variant="primary" size="lg" fullWidth>
+                <Button
+                    type="submit"
+                    variant="primary"
+                    disabled={isTryingRegister}
+                    size="lg"
+                    fullWidth>
                     Register
                 </Button>
                 <div className={styles.login}>

@@ -79,6 +79,7 @@ namespace Clothy.CatalogService.DAL.Repositories
         public async Task<ClotheItem?> GetBySlugWithDetailsAsync(string slug, CancellationToken cancellationToken = default)
         {
             return await dbSet
+                .AsNoTracking()
                 .Include(property => property.Collection)
                 .Include(property => property.Brand)
                 .Include(property => property.ClothyType)

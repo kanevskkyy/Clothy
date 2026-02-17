@@ -22,6 +22,7 @@ namespace Clothy.CatalogService.DAL.Repositories
         {
             List<Tag> tags = await dbSet
                 .Include(property => property.ClotheTags)
+                .AsNoTracking()
                 .ToListAsync(cancellationToken);
 
             Dictionary<Tag, int> result = new Dictionary<Tag, int>();
@@ -39,7 +40,7 @@ namespace Clothy.CatalogService.DAL.Repositories
         {
             if (tagIds == null || !tagIds.Any()) return true;
 
-            var existingIds = await dbSet
+            List<Guid> existingIds = await dbSet
                 .Where(tag => tagIds.Contains(tag.Id))
                 .Select(tag => tag.Id)
                 .ToListAsync(cancellationToken);

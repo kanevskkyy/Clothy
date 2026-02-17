@@ -1,303 +1,179 @@
-import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import {useState, useEffect} from "react";
+import {useSearchParams} from "react-router-dom";
 import PageWrapper from "../../shared/PageWrapper/PageWrapper";
-import CatalogFilter, { type FilterState } from "../../features/catalog/catalogFilter/CatalogFilter.tsx";
-import SortSelect, { type SortOption } from "../../features/catalog/sortSelect/SortSelect";
+import CatalogFilter, {type FilterState} from "../../features/catalog/catalogFilter/CatalogFilter.tsx";
+import SortSelect, {type SortOption} from "../../features/catalog/sortSelect/SortSelect";
 import Pagination from "../../shared/Pagination/Pagination.tsx";
 import ProductList from "../../features/catalog/productList/ProductList.tsx";
-import type { IFiltersResponse } from "../../entities/filters/IFiltersResponse.ts";
-import type { IClotheSummaryDTO } from "../../entities/clotheItem/IClotheSummaryDTO.ts";
+import type {IFiltersResponse} from "../../entities/catalogService/filters/IFiltersResponse.ts";
+import type {IClotheSummaryDTO} from "../../entities/catalogService/clotheItem/IClotheSummaryDTO.ts";
 import styles from "./CatalogPage.module.css";
-import type {PagedList} from "../../shared/pagedList.ts";
-import { Helmet } from "react-helmet";
-import {getCurrentPage, handlePageChange as handlePageChangeUtil} from "../../shared/paginationUtils.ts";
+import type {PagedList} from "../../shared/utils/pagedList.ts";
+import {Helmet} from "react-helmet";
+import {getCurrentPage, handlePageChange as handlePageChangeUtil} from "../../shared/utils/paginationUtils.ts";
+import {catalogApi} from "../../app/api/catalogApi.ts";
+import Loader from "../../shared/Loader/Loader.tsx";
+import {parsePrice} from "../../shared/utils/parsePrice.ts";
+import {toast} from "sonner";
+import {getErrorMessage} from "../../shared/utils/errorHandler.ts";
 
 const CatalogPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [sortBy, setSortBy] = useState(searchParams.get("sort") || "newest");
     const currentPage = getCurrentPage(searchParams);
 
+    const [filters, setFilters] = useState<IFiltersResponse | null>(null);
+    const [pagedClothes, setPagedClothes] = useState<PagedList<IClotheSummaryDTO> | null>(null);
+    const [loading, setLoading] = useState(true);
+
     const sortOptions: SortOption[] = [
-        { value: "newest", label: 'Creation Date: Newest First' },
-        { value: 'price-asc', label: 'Price: Low to High' },
-        { value: 'price-desc', label: 'Price: High to Low' },
-        { value: 'name-asc', label: 'Name: A-Z' },
-        { value: 'name-desc', label: 'Name: Z-A' },
+        {value: "newest", label: 'Creation Date: Newest First'},
+        {value: 'price-asc', label: 'Price: Low to High'},
+        {value: 'price-desc', label: 'Price: High to Low'},
+        {value: 'name-asc', label: 'Name: A-Z'},
+        {value: 'name-desc', label: 'Name: Z-A'},
     ];
 
-    const mockFilters: IFiltersResponse = {
-        priceRange: { minPrice: "349", maxPrice: "47890" },
-        gender: { maleCount: 78, femaleCount: 82, unisexCount: 54 },
+    const getInitialFilters = (): FilterState => {
+        if (!filters) {
+            return {
+                brands: [],
+                clothingTypes: [],
+                colors: [],
+                materials: [],
+                sizes: [],
+                tags: [],
+                collections: [],
+                gender: [],
+                minPrice: 0,
+                maxPrice: 0,
+            };
+        }
 
-        brands: [
-            { id: "b1", name: "Nike", slug: "nike", clotheItemCount: 846 },
-            { id: "b2", name: "Adidas", slug: "adidas", clotheItemCount: 131 },
-            { id: "b3", name: "Puma", slug: "puma", clotheItemCount: 77 },
-        ],
-
-        clothingTypes: [
-            { id: "t1", name: "T-Shirts", slug: "tees", clotheItemCount: 124 },
-            { id: "t2", name: "Hoodies", slug: "hoodies", clotheItemCount: 58 },
-        ],
-
-        colors: [
-            { id: "c1", name: "Dark", slug: "black", clotheItemCount: 86 },
-            { id: "c2", name: "White", slug: "white", clotheItemCount: 74 },
-        ],
-
-        materials: [
-            { id: "m1", name: "Cotton", slug: "cotton", clotheItemCount: 92 },
-            { id: "m2", name: "Polyester", slug: "polyester", clotheItemCount: 67 },
-        ],
-
-        sizes: [
-            { id: "s1", name: "S", slug: "s", clotheItemCount: 38 },
-            { id: "s2", name: "M", slug: "m", clotheItemCount: 64 },
-        ],
-
-        tags: [
-            { id: "tag1", name: "New", slug: "new", clotheItemCount: 28 },
-            { id: "tag2", name: "Sale", slug: "sale", clotheItemCount: 35 },
-        ],
-
-        collections: [
-            { id: "col1", name: "Spring–Summer 2025", slug: "ss25", clotheItemCount: 64 },
-            { id: "col2", name: "Essentials", slug: "essentials", clotheItemCount: 73 },
-        ],
+        return {
+            brands: searchParams.get("brands")?.split(",").filter(Boolean) || [],
+            clothingTypes: searchParams.get("clothingTypes")?.split(",").filter(Boolean) || [],
+            colors: searchParams.get("colors")?.split(",").filter(Boolean) || [],
+            materials: searchParams.get("materials")?.split(",").filter(Boolean) || [],
+            sizes: searchParams.get("sizes")?.split(",").filter(Boolean) || [],
+            tags: searchParams.get("tags")?.split(",").filter(Boolean) || [],
+            collections: searchParams.get("collections")?.split(",").filter(Boolean) || [],
+            gender: searchParams.get("gender")?.split(",").filter(Boolean) || [],
+            minPrice: Number(searchParams.get("minPrice")) || parsePrice(filters.priceRange.minPrice),
+            maxPrice: Number(searchParams.get("maxPrice")) || parsePrice(filters.priceRange.maxPrice),
+        };
     };
 
-    const mockPagedClothes: PagedList<IClotheSummaryDTO> = {
-        currentPage: 1,
-        pageSize: 27,
-        totalCount: 200,
-        totalPages: 8,
-        hasPrevious: false,
-        hasNext: true,
-
-        items: [
-            {
-                id: "1",
-                name: "T-Shirt Base",
-                slug: "basic-tee",
-                price: 499,
-                oldPrice: 699,
-                discountPercent: 29,
-                brand: {
-                    id: "b1",
-                    name: "Nike",
-                    slug: "nike",
-                    photoURL: "../../../src/assets/images/mockBrands/nikeLogo.png",
-                    createdAt: "2024-01-01",
-                    updatedAt: "2024-01-01"
-                },
-                colors: [
-                    {
-                        id: "c1",
-                        photoUrl: "https://res.cloudinary.com/dkdljnfja/image/upload/v1769944208/ajnj_5_y96hah.webp",
-                        colorId: "black",
-                        hexCode: "#000",
-                        colorSlug: "black"
-                    }
-                ],
-                isAvailable: true
-            },
-
-            {
-                id: "2",
-                name: "Hoodie oversize",
-                slug: "oversize-hoodie",
-                price: 1199,
-                brand: {
-                    id: "b2",
-                    name: "Adidas",
-                    slug: "adidas",
-                    photoURL: "../../../src/assets/images/mockBrands/nikeLogo.png",
-                    createdAt: "2024-01-01",
-                    updatedAt: "2024-01-01"
-                },
-                colors: [
-                    {
-                        id: "c2",
-                        photoUrl: "https://yesoriginal.com.ua/media/cache/catalog/products/c2/d5/cf/90256904-1-1340x1410_-jpeg-84.webp",
-                        colorId: "white",
-                        hexCode: "#fff",
-                        colorSlug: "white"
-                    }
-                ],
-                isAvailable: true
-            },
-
-            {
-                id: "3",
-                name: "Jacket leather",
-                slug: "leather-jacket",
-                price: 3499,
-                brand: {
-                    id: "b3",
-                    name: "Zara",
-                    slug: "zara",
-                    photoURL: "../../../src/assets/images/mockBrands/nikeLogo.png",
-                    createdAt: "2024-01-01",
-                    updatedAt: "2024-01-01"
-                },
-                colors: [
-                    {
-                        id: "c3",
-                        photoUrl: "https://res.cloudinary.com/dkdljnfja/image/upload/v1769944046/%D1%84%D0%BE%D1%82%D0%BE_1_ykfs8f.webp",
-                        colorId: "black",
-                        hexCode: "#000",
-                        colorSlug: "black"
-                    }
-                ],
-                isAvailable: true
-            },
-            {
-                id: "4",
-                name: "Jacket leather",
-                slug: "leather-jacket",
-                price: 3499,
-                brand: {
-                    id: "b3",
-                    name: "Zara",
-                    slug: "zara",
-                    photoURL: "../../../src/assets/images/mockBrands/nikeLogo.png",
-                    createdAt: "2024-01-01",
-                    updatedAt: "2024-01-01"
-                },
-                colors: [
-                    {
-                        id: "c3",
-                        photoUrl: "https://res.cloudinary.com/dkdljnfja/image/upload/v1769944046/%D1%84%D0%BE%D1%82%D0%BE_1_ykfs8f.webp",
-                        colorId: "black",
-                        hexCode: "#000",
-                        colorSlug: "black"
-                    }
-                ],
-                isAvailable: true
-            },
-            {
-                id: "5",
-                name: "Jacket leather",
-                slug: "leather-jacket",
-                price: 3499,
-                brand: {
-                    id: "b3",
-                    name: "Zara",
-                    slug: "zara",
-                    photoURL: "../../../src/assets/images/mockBrands/nikeLogo.png",
-                    createdAt: "2024-01-01",
-                    updatedAt: "2024-01-01"
-                },
-                colors: [
-                    {
-                        id: "c3",
-                        photoUrl: "https://res.cloudinary.com/dkdljnfja/image/upload/v1769944046/%D1%84%D0%BE%D1%82%D0%BE_1_ykfs8f.webp",
-                        colorId: "black",
-                        hexCode: "#000",
-                        colorSlug: "black"
-                    }
-                ],
-                isAvailable: true
-            },
-            {
-                id: "6",
-                name: "Jacket leather",
-                slug: "leather-jacket",
-                price: 3499,
-                brand: {
-                    id: "b3",
-                    name: "Zara",
-                    slug: "zara",
-                    photoURL: "../../../src/assets/images/mockBrands/nikeLogo.png",
-                    createdAt: "2024-01-01",
-                    updatedAt: "2024-01-01"
-                },
-                colors: [
-                    {
-                        id: "c3",
-                        photoUrl: "https://res.cloudinary.com/dkdljnfja/image/upload/v1769944046/%D1%84%D0%BE%D1%82%D0%BE_1_ykfs8f.webp",
-                        colorId: "black",
-                        hexCode: "#000",
-                        colorSlug: "black"
-                    }
-                ],
-                isAvailable: true
-            },
-            {
-                id: "7",
-                name: "Jacket leather",
-                slug: "leather-jacket",
-                price: 3499,
-                brand: {
-                    id: "b3",
-                    name: "Zara",
-                    slug: "zara",
-                    photoURL: "../../../src/assets/images/mockBrands/nikeLogo.png",
-                    createdAt: "2024-01-01",
-                    updatedAt: "2024-01-01"
-                },
-                colors: [
-                    {
-                        id: "c3",
-                        photoUrl: "https://res.cloudinary.com/dkdljnfja/image/upload/v1769944046/%D1%84%D0%BE%D1%82%D0%BE_1_ykfs8f.webp",
-                        colorId: "black",
-                        hexCode: "#000",
-                        colorSlug: "black"
-                    }
-                ],
-                isAvailable: true
-            },
-            {
-                id: "8",
-                name: "Jacket leather",
-                slug: "leather-jacket",
-                price: 3499,
-                brand: {
-                    id: "b3",
-                    name: "Zara",
-                    slug: "zara",
-                    photoURL: "../../../src/assets/images/mockBrands/nikeLogo.png",
-                    createdAt: "2024-01-01",
-                    updatedAt: "2024-01-01"
-                },
-                colors: [
-                    {
-                        id: "c3",
-                        photoUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTOcACkmZVJHz4WDnjq_JNbS2XMWkFqz3MdIg&s",
-                        colorId: "black",
-                        hexCode: "#000",
-                        colorSlug: "black"
-                    }
-                ],
-                isAvailable: true
-            },
-
-        ]
+    const convertSlugsToIds = (slugs: string[], items: Array<{ id: string; slug: string }>): string[] => {
+        return slugs
+            .map(slug => {
+                const item = items.find(i => i.slug === slug);
+                return item?.id;
+            })
+            .filter((id): id is string => id !== undefined);
     };
 
-    const handleFilterChange = (filters: FilterState) => {
+    const fetchClothes = async () => {
+        if (!filters) return;
+
+        setLoading(true);
+        try {
+            const selectedFilters = getInitialFilters();
+
+            const brandIds = convertSlugsToIds(selectedFilters.brands, filters.brands);
+            const clothingTypeIds = convertSlugsToIds(selectedFilters.clothingTypes, filters.clothingTypes);
+            const colorIds = convertSlugsToIds(selectedFilters.colors, filters.colors);
+            const materialIds = convertSlugsToIds(selectedFilters.materials, filters.materials);
+            const sizeIds = convertSlugsToIds(selectedFilters.sizes, filters.sizes);
+            const tagIds = convertSlugsToIds(selectedFilters.tags, filters.tags);
+            const collectionIds = convertSlugsToIds(selectedFilters.collections, filters.collections);
+
+            let sortByParam: 'price' | 'name' | undefined;
+            let sortDescending = false;
+
+            if (sortBy === 'price-asc') sortByParam = 'price';
+            else if (sortBy === 'price-desc') {
+                sortByParam = 'price';
+                sortDescending = true;
+            }
+            else if (sortBy === 'name-asc') {
+                sortByParam = 'name';
+            }
+            else if (sortBy === 'name-desc') {
+                sortByParam = 'name';
+                sortDescending = true;
+            }
+
+            const defaultMinPrice = parsePrice(filters.priceRange.minPrice);
+            const defaultMaxPrice = parsePrice(filters.priceRange.maxPrice);
+
+            const data = await catalogApi.getClothesPagedAsync({
+                pageNumber: currentPage,
+                pageSize: 27,
+                brands: brandIds.length > 0 ? brandIds : undefined,
+                clothingTypes: clothingTypeIds.length > 0 ? clothingTypeIds : undefined,
+                colors: colorIds.length > 0 ? colorIds : undefined,
+                materials: materialIds.length > 0 ? materialIds : undefined,
+                sizes: sizeIds.length > 0 ? sizeIds : undefined,
+                tags: tagIds.length > 0 ? tagIds : undefined,
+                collections: collectionIds.length > 0 ? collectionIds : undefined,
+                gender: selectedFilters.gender.length > 0 ? selectedFilters.gender : undefined,
+                minPrice: selectedFilters.minPrice !== defaultMinPrice ? selectedFilters.minPrice : undefined,
+                maxPrice: selectedFilters.maxPrice !== defaultMaxPrice ? selectedFilters.maxPrice : undefined,
+                sortBy: sortByParam,
+                sortDescending: sortDescending ? true : undefined,
+            });
+
+            setPagedClothes(data);
+        } catch (error) {
+            toast.error(getErrorMessage(error));
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        const loadFilters = async () => {
+            try {
+                const data = await catalogApi.getFiltersAsync();
+                setFilters(data);
+            } catch (error) {
+                toast.error(getErrorMessage(error));
+            }
+        };
+
+        loadFilters();
+    }, []);
+
+    useEffect(() => {
+        if (filters) {
+            fetchClothes();
+        }
+    }, [filters, searchParams, sortBy, currentPage]);
+
+    const handleFilterChange = (filterState: FilterState) => {
         const params = new URLSearchParams(searchParams);
 
         const setOrDelete = (key: string, arr: string[]) =>
             arr.length ? params.set(key, arr.join(",")) : params.delete(key);
 
-        setOrDelete("brands", filters.brands);
-        setOrDelete("clothingTypes", filters.clothingTypes);
-        setOrDelete("colors", filters.colors);
-        setOrDelete("materials", filters.materials);
-        setOrDelete("sizes", filters.sizes);
-        setOrDelete("tags", filters.tags);
-        setOrDelete("collections", filters.collections);
-        setOrDelete("gender", filters.gender);
+        setOrDelete("brands", filterState.brands);
+        setOrDelete("clothingTypes", filterState.clothingTypes);
+        setOrDelete("colors", filterState.colors);
+        setOrDelete("materials", filterState.materials);
+        setOrDelete("sizes", filterState.sizes);
+        setOrDelete("tags", filterState.tags);
+        setOrDelete("collections", filterState.collections);
+        setOrDelete("gender", filterState.gender);
 
-        if (filters.minPrice !== Number(mockFilters.priceRange.minPrice)) {
-            params.set("minPrice", filters.minPrice.toString());
+        if (filters && filterState.minPrice !== parsePrice(filters.priceRange.minPrice)) {
+            params.set("minPrice", filterState.minPrice.toString());
         } else {
             params.delete("minPrice");
         }
 
-        if (filters.maxPrice !== Number(mockFilters.priceRange.maxPrice)) {
-            params.set("maxPrice", filters.maxPrice.toString());
+        if (filters && filterState.maxPrice !== parsePrice(filters.priceRange.maxPrice)) {
+            params.set("maxPrice", filterState.maxPrice.toString());
         } else {
             params.delete("maxPrice");
         }
@@ -323,15 +199,19 @@ const CatalogPage = () => {
         handlePageChangeUtil(page, searchParams, setSearchParams);
     };
 
+    if (!filters || !pagedClothes) {
+        return <Loader marginTop="75px"/>;
+    }
+
     return (
         <PageWrapper>
             <Helmet>
-                <title>{`Clothy — Clothing Catalog | Page ${currentPage} • ${mockPagedClothes.totalCount} items`}</title>
+                <title>{`Clothy — Clothing Catalog | Page ${currentPage} • ${pagedClothes.totalCount} items`}</title>
                 <meta
                     name="description"
-                    content={`Clothy clothing catalog: ${mockPagedClothes.totalCount}+ items. Filter by brand, size, and price — fast and convenient online shopping.`}
+                    content={`Clothy clothing catalog: ${pagedClothes.totalCount}+ items. Filter by brand, size, and price — fast and convenient online shopping.`}
                 />
-                <meta property="og:title" content="Clothy — Clothing Catalog" />
+                <meta property="og:title" content="Clothy — Clothing Catalog"/>
                 <meta
                     property="og:description"
                     content="Wide selection of clothing in the Clothy catalog. Discounts, new arrivals, and popular brands."
@@ -341,7 +221,8 @@ const CatalogPage = () => {
             <div className={styles.catalogContainer}>
                 <aside className={styles.filterSidebar}>
                     <CatalogFilter
-                        filters={mockFilters}
+                        filters={filters}
+                        initialFilters={getInitialFilters()}
                         onFilterChange={handleFilterChange}
                     />
                 </aside>
@@ -349,7 +230,7 @@ const CatalogPage = () => {
                 <main className={styles.catalogMain}>
                     <div className={styles.catalogHeader}>
                         <div className={styles.resultsCount}>
-                            Items found: {mockPagedClothes.totalCount}
+                            Items found: {pagedClothes.totalCount}
                         </div>
 
                         <div className={styles.desktopSort}>
@@ -362,7 +243,8 @@ const CatalogPage = () => {
 
                         <div className={styles.mobileFiltersRow}>
                             <CatalogFilter
-                                filters={mockFilters}
+                                filters={filters}
+                                initialFilters={getInitialFilters()}
                                 onFilterChange={handleFilterChange}
                             />
                             <SortSelect
@@ -373,15 +255,21 @@ const CatalogPage = () => {
                         </div>
                     </div>
 
-                    <div className={styles.productWrapper}>
-                        <ProductList products={mockPagedClothes.items} />
-                    </div>
+                    {loading ? (
+                        <Loader/>
+                    ) : (
+                        <>
+                            <div className={styles.productWrapper}>
+                                <ProductList products={pagedClothes.items}/>
+                            </div>
 
-                    <Pagination
-                        currentPage={currentPage}
-                        totalPages={mockPagedClothes.totalPages}
-                        onPageChange={handlePageChange}
-                    />
+                            <Pagination
+                                currentPage={currentPage}
+                                totalPages={pagedClothes.totalPages}
+                                onPageChange={handlePageChange}
+                            />
+                        </>
+                    )}
                 </main>
             </div>
         </PageWrapper>

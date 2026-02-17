@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import styles from './ImageGallery.module.css';
-import type { IClothePhotos } from "../../../entities/photos/IClothePhotos.ts";
+import type { IClothePhotos } from "../../../entities/catalogService/photos/IClothePhotos.ts";
 
 interface ImageGalleryProps {
     additionalPhotos: IClothePhotos[];

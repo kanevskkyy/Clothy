@@ -2,6 +2,7 @@ using Clothy.Aggregator.Aggregate.Clients;
 using Clothy.Aggregator.Aggregate.Clients.Interfaces;
 using Clothy.Aggregator.Aggregate.Services;
 using Clothy.Aggregator.Aggregate.Services.Interfaces;
+using Clothy.Aggregator.API.Middleware;
 using Clothy.ServiceDefaults.Middleware.CorrelationId;
 using Clothy.ServiceDefaults.Middleware.Grpc;
 using System.Text.Json;
@@ -69,6 +70,8 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseServiceDefaults();
 app.UseAuthentication();

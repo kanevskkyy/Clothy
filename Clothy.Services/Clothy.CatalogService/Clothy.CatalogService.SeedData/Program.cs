@@ -40,10 +40,6 @@ namespace Clothy.CatalogService.SeedData
                 new CollectionSeeder(),
                 new ClothingTypeSeeder(),
                 new ClotheItemSeeder(),
-                new ClotheMaterialSeeder(),
-                new ClothesStockSeeder(),
-                new ClotheTagSeeder(),
-                new PhotoClothesSeeder(),
             };
 
             Console.WriteLine("Start seeding data!");

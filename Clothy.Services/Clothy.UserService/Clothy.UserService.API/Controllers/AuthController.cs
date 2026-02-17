@@ -29,6 +29,7 @@ namespace Clothy.UserService.API.Controllers
         /// <param name="registerDTO">User registration data.</param>
         /// <returns>JWT access and refresh tokens.</returns>
         [HttpPost("register")]
+        [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
         {
             logger.LogInformation("Registering user with email: {Email}", registerDTO.Email);
@@ -44,6 +45,7 @@ namespace Clothy.UserService.API.Controllers
         /// <param name="loginDTO">User login data.</param>
         /// <returns>JWT access and refresh tokens.</returns>
         [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
         {
             logger.LogInformation("Login attempt for email: {Email}", loginDTO.Email);
@@ -59,6 +61,7 @@ namespace Clothy.UserService.API.Controllers
         /// <param name="refreshTokenDTO">Refresh token DTO.</param>
         /// <returns>New access and refresh tokens.</returns>
         [HttpPost("refresh")]
+        [AllowAnonymous]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenDTO refreshTokenDTO)
         {
             logger.LogInformation("Refreshing token.");
@@ -74,7 +77,7 @@ namespace Clothy.UserService.API.Controllers
         /// <param name="refreshTokenDTO">Refresh token DTO.</param>
         /// <returns>No content if successful.</returns>
         [HttpPost("logout")]
-        [Authorize]
+        [AllowAnonymous]
         public async Task<IActionResult> Logout([FromBody] RefreshTokenDTO refreshTokenDTO)
         {
             logger.LogInformation("Revoking refresh token for user {UserId}", User.FindFirst(ClaimTypes.NameIdentifier)?.Value);

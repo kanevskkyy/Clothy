@@ -67,6 +67,34 @@
     margin: 0;
 }
 
+.collectionWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 24px;
+    background-color: #1E1D1D;
+    color: #FFFFFF;
+    font-size: 16px;
+    font-weight: 500;
+    border: 2px solid #494949;
+    max-width: 201px;
+    white-space: nowrap;
+}
+
+.collectionWrapper svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.collection {
+    line-height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 
 .buttons {
     display: flex;
@@ -143,6 +171,13 @@
         justify-content: center;
     }
 }
+
+@media (max-width: 650px) {
+    .collectionWrapper{
+        display: none;
+    }
+}
+
 @media (max-width: 480px) {
     .hero {
         min-height: 400px;

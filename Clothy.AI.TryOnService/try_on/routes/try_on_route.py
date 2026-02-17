@@ -1,3 +1,4 @@
+# router.py
 from fastapi import HTTPException, APIRouter, UploadFile, File, Form
 
 from try_on import Config
@@ -7,22 +8,17 @@ from try_on.services.lightx_service import LightXService
 
 router = APIRouter(prefix='/try-on', tags=['try-on'])
 
-
-@router.post('/', response_model=TryOnResponse)
+@router.post('', response_model=TryOnResponse)
 async def try_on(
-        person_image: UploadFile = File(..., description='Person image file'),
-        clothe_image_url: str = Form(..., description='URL of the clothe image')
+    person_image: UploadFile = File(..., alias='personImage'),
+    clothe_image_url: str = Form(..., alias='clotheImageUrl')
 ) -> TryOnResponse:
     light_x_service = LightXService(Config.LIGHT_X_API_KEY)
 
     try:
         person_image_bytes = await person_image.read()
 
-        request = TryOnRequest(
-            person_image=person_image_bytes,
-            clothe_image_url=clothe_image_url
-        )
-
+        request = TryOnRequest(person_image=person_image_bytes,clothe_image_url=clothe_image_url)
         response = await light_x_service.create_try_on(request)
         return response
     except TimeoutError as e:

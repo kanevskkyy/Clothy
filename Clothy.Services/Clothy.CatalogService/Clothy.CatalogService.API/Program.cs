@@ -1,34 +1,34 @@
-﻿using Clothy.CatalogService.BLL.Interfaces;
+﻿using Clothy.Aggregator.Aggregate.RedisCache;
+using Clothy.CatalogService.API.Middleware;
+using Clothy.CatalogService.BLL.Consumers;
+using Clothy.CatalogService.BLL.FluentValidation.BrandValidation;
+using Clothy.CatalogService.BLL.Interfaces;
 using Clothy.CatalogService.BLL.Mapper;
+using Clothy.CatalogService.BLL.RedisCache;
 using Clothy.CatalogService.BLL.Services;
 using Clothy.CatalogService.DAL.DB;
+using Clothy.CatalogService.DAL.EventLog;
 using Clothy.CatalogService.DAL.Interfaces;
 using Clothy.CatalogService.DAL.Repositories;
 using Clothy.CatalogService.DAL.UOW;
-using FluentValidation.AspNetCore;
-using FluentValidation;
-using Clothy.CatalogService.BLL.FluentValidation.BrandValidation;
-using Clothy.CatalogService.API.Middleware;
-using Clothy.CatalogService.BLL.RedisCache.Clothe;
-using Clothy.CatalogService.BLL.RedisCache.StockCache;
-using Clothy.Shared.Cache.Interfaces;
-using Clothy.CatalogService.gRPC.Server.Services;
-using Clothy.Aggregator.Aggregate.RedisCache;
-using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
-using System.Diagnostics.Metrics;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using MassTransit;
-using Clothy.CatalogService.BLL.Consumers;
-using Clothy.Shared.Events.ClotheItemEvents;
-using Clothy.Shared.Events;
-using Clothy.CatalogService.DAL.EventLog;
-using Clothy.ServiceDefaults.Middleware.OpenTelemetry;
-using Clothy.Shared.Helpers.CloudinaryConfig;
-using Clothy.Shared.Events.EmailEvents.ClotheStockUpdated;
+using Clothy.CatalogService.Domain.Entities.Catalog;
 using Clothy.CatalogService.Domain.Entities.Clothe;
 using Clothy.CatalogService.Domain.Entities.Stock;
+using Clothy.CatalogService.gRPC.Server.Services;
+using Clothy.ServiceDefaults.Middleware.OpenTelemetry;
+using Clothy.Shared.Cache.Interfaces;
+using Clothy.Shared.Events;
+using Clothy.Shared.Events.ClotheItemEvents;
+using Clothy.Shared.Events.EmailEvents.ClotheStockUpdated;
+using Clothy.Shared.Helpers.CloudinaryConfig;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using MassTransit;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using System.Diagnostics.Metrics;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -80,6 +80,7 @@ builder.Services.AddScoped<IStockNotificationService, StockNotificationService>(
 
 builder.Services.AddTransient<IEntityCacheInvalidationService<ClotheItem>, ClotheItemCacheInvalidationService>();
 builder.Services.AddTransient<IEntityCacheInvalidationService<ClothesStock>, ClothesStockCacheInvalidationService>();
+builder.Services.AddScoped<IEntityCacheInvalidationService<Brand>, BrandCacheInvalidationService>();
 
 builder.Services.AddCloudinary(builder.Configuration);
 

@@ -26,17 +26,19 @@ namespace Clothy.AuthService.API.Controllers
         /// </summary>
         /// <param name="registerDTO">Registration data (Email, Password, FirstName, LastName, PhoneNumber)</param>
         /// <param name="cancellationToken">Operation cancellation token</param>
-        /// <returns>Registered user data</returns>
+        /// <returns>Registered user data and tokens</returns>
         /// <response code="200">User successfully registered</response>
         /// <response code="400">Error during registration</response>
         [HttpPost("register")]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO, CancellationToken cancellationToken)
         {
             logger.LogInformation("Registration attempt for {Email}", registerDTO.Email);
-            var user = await authService.RegisterUserAsync(registerDTO, cancellationToken);
-            return Ok(user);
+            RegisterResponseDTO registerResponseDTO = await authService.RegisterUserAsync(registerDTO, cancellationToken);
+            
+            return Ok(registerResponseDTO);
         }
 
         /// <summary>
@@ -44,19 +46,21 @@ namespace Clothy.AuthService.API.Controllers
         /// </summary>
         /// <param name="loginDTO">Login details (Email, Password)</param>
         /// <param name="cancellationToken">Operation cancellation token</param>
-        /// <returns>Access tokens (AccessToken, RefreshToken)</returns>
+        /// <returns>Access tokens (AccessToken, RefreshToken) and info about user</returns>
         /// <response code="200">Successful login</response>
         /// <response code="401">Invalid email or password</response>
         /// <response code="400">Login error</response>
         [HttpPost("login")]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO, CancellationToken cancellationToken)
         {
             logger.LogInformation("Login attempt for {Email}", loginDTO.Email);
-            var tokenResponse = await authService.LoginAsync(loginDTO, cancellationToken);
-            return Ok(tokenResponse);
+            LoginResponseDTO loginResponseDTO = await authService.LoginAsync(loginDTO, cancellationToken);
+            
+            return Ok(loginResponseDTO);
         }
 
         /// <summary>
@@ -69,14 +73,16 @@ namespace Clothy.AuthService.API.Controllers
         /// <response code="401">Invalid refresh token</response>
         /// <response code="400">Token refresh error</response>
         [HttpPost("refresh")]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenDTO refreshTokenDTO, CancellationToken cancellationToken)
         {
             logger.LogInformation("Token refresh attempt");
-            var tokenResponse = await authService.RefreshTokenAsync(refreshTokenDTO, cancellationToken);
-            return Ok(tokenResponse);
+            TokenResponseDTO tokenResponseDTO = await authService.RefreshTokenAsync(refreshTokenDTO, cancellationToken);
+            
+            return Ok(tokenResponseDTO);
         }
 
         /// <summary>
@@ -95,6 +101,7 @@ namespace Clothy.AuthService.API.Controllers
         {
             logger.LogInformation("Logout attempt");
             await authService.LogoutAsync(refreshTokenDTO.RefreshToken, cancellationToken);
+            
             return Ok(new { message = "Logged out successfully" });
         }
 
@@ -107,12 +114,14 @@ namespace Clothy.AuthService.API.Controllers
         /// <response code="200">Password reset email sent</response>
         /// <response code="400">Error sending email</response>
         [HttpPost("forgot-password")]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDTO forgotPasswordDTO, CancellationToken cancellationToken)
         {
             logger.LogInformation("Forgot password request for {Email}", forgotPasswordDTO.Email);
             await authService.SendPasswordResetEmailAsync(forgotPasswordDTO, cancellationToken);
+            
             return Ok(new { message = "Password reset email sent" });
         }
 
@@ -134,24 +143,27 @@ namespace Clothy.AuthService.API.Controllers
         {
             logger.LogInformation("Password reset attempt");
             await authService.ResetPasswordAsync(resetPasswordDTO, User, cancellationToken);
+            
             return Ok(new { message = "Password changed successfully" });
         }
 
         /// <summary>
         /// Resend email for verification
         /// </summary>
-        /// <param name="email">User's email address</param>
+        /// <param name="resendVerificationEmailDTO">Email verification request</param>
         /// <param name="cancellationToken">Operation cancellation token</param>
         /// <returns>Confirmation of email sending</returns>
         /// <response code="200">Verification email sent</response>
         /// <response code="400">Error sending email</response>
         [HttpPost("resend-verification")]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> ResendVerificationEmail([FromQuery] string email, CancellationToken cancellationToken)
+        public async Task<IActionResult> ResendVerificationEmail([FromBody] ResendVerificationEmailDTO resendVerificationEmailDTO, CancellationToken cancellationToken)
         {
-            logger.LogInformation("Resend verification request for {Email}", email);
-            await authService.ResendVerificationEmailAsync(email, cancellationToken);
+            logger.LogInformation("Resend verification request for {Email}", resendVerificationEmailDTO.Email);
+            await authService.ResendVerificationEmailAsync(resendVerificationEmailDTO, cancellationToken);
+
             return Ok(new { message = "Verification email sent" });
         }
     }

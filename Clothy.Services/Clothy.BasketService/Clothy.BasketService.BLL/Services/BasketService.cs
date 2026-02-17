@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Clothy.BasketService.BLL.DTOs;
@@ -100,20 +99,37 @@ namespace Clothy.BasketService.BLL.Services
                     Quantity = item.Quantity
                 };
 
+                basketItemDto.ClotheName = validation.ClotheName ?? "Unknown product";
+                basketItemDto.ColorName = validation.ColorName ?? "";
+                basketItemDto.SizeName = validation.SizeName ?? "";
+                basketItemDto.MainPhoto = validation.MainPhotoUrl ?? "";
+                basketItemDto.HexCode = validation.ColorHexCode ?? "";
+                basketItemDto.ColorSlug = validation.ColorSlug ?? "";
+                basketItemDto.ClotheSlug = validation.ClotheSlug ?? "";
+
+                if (!string.IsNullOrEmpty(validation.Price) && decimal.TryParse(validation.Price, out decimal price))
+                {
+                    basketItemDto.Price = price;
+                }
+                else
+                {
+                    basketItemDto.Price = 0;
+                }
+
                 if (validation != null && validation.IsValid)
                 {
-                    basketItemDto.ColorName = validation.ColorName;
-                    basketItemDto.ClotheName = validation.ClotheName;
-                    basketItemDto.Price = decimal.Parse(validation.Price);
-                    basketItemDto.MainPhoto = validation.MainPhotoUrl;
-                    basketItemDto.SizeName = validation.SizeName;
-                    basketItemDto.HexCode = validation.ColorHexCode;
-                    basketItemDto.ColorSlug = validation.ColorSlug;
-                    basketItemDto.ClotheSlug = validation.ClotheSlug;
-                    basketDto.Items.Add(basketItemDto);
+                    basketItemDto.IsAvailable = true;
+                    basketItemDto.ValidationMessage = null;
                 }
-                else await basketRepository.RemoveItemAsync(userId, item.ClotheId, item.SizeId, item.ColorId);
+                else
+                {
+                    basketItemDto.IsAvailable = false;
+                    basketItemDto.ValidationMessage = validation?.ErrorMessage ?? "This item is no longer available";
+                }
+
+                basketDto.Items.Add(basketItemDto);
             }
+
             return basketDto;
         }
 
@@ -140,8 +156,12 @@ namespace Clothy.BasketService.BLL.Services
                 ValidateOrderItemResponse? validationResult = validateOrderItems.Results.FirstOrDefault();
                 if (validationResult == null || !validationResult.IsValid) throw new ValidationFailedException(validationResult?.ErrorMessage ?? "Validation failed via gRPC");
 
-                await basketRepository.UpdateItemQuantityAsync(userId, updateDto.ClotheId, updateDto.SizeId, updateDto.ColorId, updateDto.Quantity);         
-                return await GetBasketAsync(userId) ?? new BasketDTO { UserId = userId, Items = new List<BasketItemDTO>() };
+                await basketRepository.UpdateItemQuantityAsync(userId, updateDto.ClotheId, updateDto.SizeId, updateDto.ColorId, updateDto.Quantity);
+                return await GetBasketAsync(userId) ?? new BasketDTO
+                {
+                    UserId = userId,
+                    Items = new List<BasketItemDTO>()
+                };
             }
             catch (RpcException rpcEx)
             {

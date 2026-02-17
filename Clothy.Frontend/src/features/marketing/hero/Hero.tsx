@@ -1,5 +1,5 @@
 import styles from './Hero.module.css';
-import { ArrowRight } from "lucide-react";
+import {ArrowRight, Sparkles} from "lucide-react";
 import Button from '../../../shared/Button/Button.tsx';
 
 const Hero = () => {
@@ -16,6 +16,10 @@ const Hero = () => {
 
             <div className={styles.container}>
                 <div className={styles.content}>
+                    <div className={styles.collectionWrapper}>
+                        <Sparkles size={16} />
+                        <span className={styles.collection}>New collection 2026</span>
+                    </div>
                     <h1 className={styles.title}>
                         Style that
                         <br />

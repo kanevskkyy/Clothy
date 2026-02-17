@@ -20,6 +20,7 @@ namespace Clothy.CatalogService.DAL.Repositories
         public async Task<List<StockNotification>> GetAllSubscribersByStockId(Guid stockId, CancellationToken cancellationToken = default)
         {
             return await dbSet
+                .AsNoTracking()
                 .Include(property => property.Stock)
                 .ThenInclude(property => property!.Clothe)
                 .Include(property => property.Stock)

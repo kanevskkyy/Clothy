@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
-import type { IBasketList } from "../../entities/basket/IBasketList.ts";
+import type { IBasketList } from "../../entities/basketService/IBasketList.ts";
 import styles from './CartPage.module.css';
-import CartItem from "../../entities/basket/cartItem/CartItem.tsx";
+import CartItem from "../../entities/basketService/cartItem/CartItem.tsx";
 import { Helmet } from 'react-helmet';
 import PageWrapper from "../../shared/PageWrapper/PageWrapper.tsx";
 import EmptyCart from '../../features/cart/emptyCart/EmptyCart.tsx';

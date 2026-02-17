@@ -1,37 +1,30 @@
-import { Home, SearchIcon, ShoppingBasket } from 'lucide-react';
-import styles from './NotFound.module.css';
-import { Helmet } from "react-helmet";
-import PageWrapper from "../../shared/PageWrapper/PageWrapper.tsx";
+import ErrorPage from '../ErrorPage/ErrorPage';
+import {Home, SearchIcon, ShoppingBasket} from "lucide-react";
 
 const NotFoundPage = () => {
     return (
-        <PageWrapper>
-            <div className={styles.wrapper}>
-                <Helmet>
-                    <title>Page Not Found | Clothy</title>
-                </Helmet>
-
-                <div className={styles.container}>
-                    <div className={styles.mainIcon}>
-                        <SearchIcon size={24} color="#6B6B6B" />
-                    </div>
-                    <h1>Page Not Found</h1>
-                    <p>
-                        It seems the page got lost along the way. No worries — we still have plenty of great products for you!
-                    </p>
-                    <div className={styles.actions}>
-                        <a href="/" className={styles.primaryButton}>
-                            <Home size={20} />
-                            Home
-                        </a>
-                        <a href="/catalog" className={styles.secondaryButton}>
-                            <ShoppingBasket size={20} />
-                            To Catalog
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </PageWrapper>
+        <ErrorPage
+            title="Page Not Found"
+            message="It seems the page got lost along the way. No worries — we still have plenty of great products for you!"
+            icon={SearchIcon}
+            pageTitle="Page Not Found"
+            iconColor="#6B6B6B"
+            iconBgColor="#E1E1E1"
+            actions={[
+                {
+                    label: 'Home',
+                    href: '/',
+                    icon: Home,
+                    variant: 'primary'
+                },
+                {
+                    label: 'To Catalog',
+                    href: '/catalog',
+                    icon: ShoppingBasket,
+                    variant: 'secondary'
+                }
+            ]}
+        />
     );
 };
 

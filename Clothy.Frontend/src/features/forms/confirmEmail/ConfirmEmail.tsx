@@ -3,10 +3,15 @@ import { ArrowRight } from "lucide-react";
 import Button from "../../../shared/Button/Button.tsx";
 import { useState, useEffect } from "react";
 import StepList, {type Step} from "../../onboarding/stepList/StepList.tsx";
+import {useAuthStore} from "../../../app/api/stores/authStore.ts";
+import {authApi, type IResendVerificationEmailRequest} from "../../../app/api/authApi.ts";
+import { toast } from "sonner";
+import {getErrorMessage} from "../../../shared/utils/errorHandler.ts";
 
 const ConfirmEmail = () => {
     const [resendTimer, setResendTimer] = useState(0);
     const [isResending, setIsResending] = useState(false);
+    const user = useAuthStore(state => state.user);
 
     useEffect(() => {
         if (resendTimer > 0) {
@@ -22,13 +27,20 @@ const ConfirmEmail = () => {
         setIsResending(true);
 
         try {
-            // #TODO: integrate API call
+            if (!user?.email) {
+                toast.error("Email not found");
+                return;
+            }
 
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            const body: IResendVerificationEmailRequest = {
+                email: user.email
+            }
 
+            await authApi.resendVerificationEmailAsync(body);
+            toast.success("We have successfully sent you a confirmation email");
             setResendTimer(60);
         } catch (error) {
-            console.error("Failed to resend email:", error);
+            toast.error(getErrorMessage(error));
         } finally {
             setIsResending(false);
         }

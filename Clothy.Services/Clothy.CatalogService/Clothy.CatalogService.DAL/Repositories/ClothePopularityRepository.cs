@@ -26,6 +26,7 @@ namespace Clothy.CatalogService.DAL.Repositories
         public async Task<List<ClotheItem>> GetTop8MostPopularAsync(CancellationToken cancellationToken = default)
         {
             return await dbSet
+                .AsNoTracking()
                 .Include(property => property.ClotheItem) 
                     .ThenInclude(property => property.Stocks)
                 .Include(property => property.ClotheItem)

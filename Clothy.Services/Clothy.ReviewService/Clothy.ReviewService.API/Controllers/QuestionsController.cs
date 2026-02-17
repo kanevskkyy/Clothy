@@ -38,6 +38,7 @@ namespace Clothy.ReviewService.API.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Paginated list of questions.</returns>
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetQuestions([FromQuery] QuestionQueryParameters queryParams, CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching paged questions. Page: {PageNumber}, PageSize: {PageSize}", queryParams.PageNumber, queryParams.PageSize);
@@ -54,6 +55,7 @@ namespace Clothy.ReviewService.API.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Question details.</returns>
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetQuestionById(string id, CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching question with ID: {Id}", id);

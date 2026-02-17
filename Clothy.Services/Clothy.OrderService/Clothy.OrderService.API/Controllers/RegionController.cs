@@ -26,6 +26,7 @@ namespace Clothy.OrderService.API.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Paginated list of regions.</returns>
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<PagedList<RegionReadDTO>>> GetPagedAsync(CancellationToken cancellationToken = default)
         {
             logger.LogInformation("Fetching all regions");
@@ -41,6 +42,7 @@ namespace Clothy.OrderService.API.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Region details.</returns>
         [HttpGet("{id:guid}")]
+        [AllowAnonymous]
         public async Task<ActionResult<RegionReadDTO>> GetById(Guid id, CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching region with ID: {Id}", id);

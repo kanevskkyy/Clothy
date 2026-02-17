@@ -57,6 +57,29 @@
     width: 100%;
 }
 
+.passwordSection {
+    border-top: 2px solid #d9d9d9;
+    padding-top: 20px;
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    align-items: center;
+}
+
+.passwordLink {
+    color: #000;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.passwordLink:hover {
+    text-decoration: underline;
+}
+
 @media (max-width: 1023px) {
     .page {
         max-width: 100%;

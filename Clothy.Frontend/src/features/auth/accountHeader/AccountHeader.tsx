@@ -1,16 +1,27 @@
 import { LogOut } from "lucide-react";
 import styles from "./AccountHeader.module.css";
 import Button from "../../../shared/Button/Button.tsx";
-import type { IUserReadDTO } from "../../../entities/users/IUserReadDTO.ts";
+import type { IUserReadDTO } from "../../../entities/usersService/IUserReadDTO.ts";
+import { authApi } from "../../../app/api/authApi.ts";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+import { getErrorMessage } from "../../../shared/utils/errorHandler.ts";
 
 interface AccountHeaderProps {
     user: IUserReadDTO;
 }
 
 const AccountHeader = ({ user }: AccountHeaderProps) => {
-    const handleLogout = () => {
-        // TODO: Connect to API
-        console.log("Logout clicked");
+    const navigate = useNavigate();
+
+    const handleLogout = async () => {
+        try {
+            await authApi.logoutAsync();
+            toast.success("Successfully logged out");
+            navigate("/login", { replace: true });
+        } catch (error) {
+            toast.error(getErrorMessage(error));
+        }
     };
 
     return (

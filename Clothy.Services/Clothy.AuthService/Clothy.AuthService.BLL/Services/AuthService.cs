@@ -1,19 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using AutoMapper;
 using Clothy.AuthService.BLL.Config;
 using Clothy.AuthService.BLL.DTOs.Auth;
 using Clothy.AuthService.BLL.DTOs.Users;
 using Clothy.AuthService.BLL.Services.Interfaces;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using System.Net.Http.Headers;
+using Clothy.Shared.Cache.Interfaces;
 using Clothy.Shared.Helpers.Exceptions;
 using Clothy.Shared.Helpers.JWT;
-using Clothy.Shared.Cache.Interfaces;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
+using System.Net.Http.Headers;
+using System.Security.Claims;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace Clothy.AuthService.BLL.Services
 {
@@ -23,22 +24,28 @@ namespace Clothy.AuthService.BLL.Services
         private ILogger<AuthService> logger;
         private IUserClaimsExtractor userClaimsExtractor;
         private KeycloakSettings keycloakSettings;
-        
+        private IMapper mapper;
+        private IKeycloakUserHelper keycloakUserHelper;
+
         private const string DEFAULT_PHOTO_URL = "https://res.cloudinary.com/dkdljnfja/image/upload/v1763818143/Profile_Avatar_cfazhc.png";
 
         public AuthService(
             HttpClient httpClient,
             ILogger<AuthService> logger,
             IOptions<KeycloakSettings> keycloakOptions,
-            IUserClaimsExtractor userClaimsExtractor)
+            IUserClaimsExtractor userClaimsExtractor,
+            IMapper mapper,
+            IKeycloakUserHelper keycloakUserHelper)
         {
             this.userClaimsExtractor = userClaimsExtractor;
             this.httpClient = httpClient;
             this.logger = logger;
+            this.mapper = mapper;
             keycloakSettings = keycloakOptions.Value;
+            this.keycloakUserHelper = keycloakUserHelper;
         }
 
-        public async Task<UserReadDTO> RegisterUserAsync(RegisterDTO registerDTO, CancellationToken cancellationToken = default)
+        public async Task<RegisterResponseDTO> RegisterUserAsync(RegisterDTO registerDTO, CancellationToken cancellationToken = default)
         {
             logger.LogInformation("Starting user registration for email: {Email}", registerDTO.Email);
 
@@ -80,33 +87,29 @@ namespace Clothy.AuthService.BLL.Services
             {
                 string error = await response.Content.ReadAsStringAsync(cancellationToken);
                 logger.LogError("Registration failed: {Error}", error);
-                
                 throw new Exception($"Registration failed: {error}");
             }
 
-            string userId = await GetUserIdByEmailAsync(registerDTO.Email, adminToken, cancellationToken);
+            string userId = await keycloakUserHelper.GetUserIdByEmailAsync(registerDTO.Email, adminToken, cancellationToken);
             await AssignRoleToUserAsync(userId, "User", adminToken, cancellationToken);
-
             await SendVerificationEmailAsync(userId, adminToken, cancellationToken);
 
             logger.LogInformation("User registered successfully with ID: {UserId}", userId);
 
-            return new UserReadDTO
+            LoginResponseDTO loginResponse = await LoginAsync(new LoginDTO
             {
-                Id = Guid.Parse(userId),
                 Email = registerDTO.Email,
-                FirstName = registerDTO.FirstName,
-                LastName = registerDTO.LastName,
-                PhoneNumber = registerDTO.PhoneNumber,
-                PhotoUrl = DEFAULT_PHOTO_URL,
-                EmailVerified = false,
-                Roles = new List<string> { 
-                    "User" 
-                }
+                Password = registerDTO.Password
+            }, cancellationToken);
+
+            return new RegisterResponseDTO
+            {
+                User = loginResponse.User,
+                Tokens = loginResponse.Tokens
             };
         }
 
-        public async Task<TokenResponseDTO> LoginAsync(LoginDTO loginDTO, CancellationToken cancellationToken = default)
+        public async Task<LoginResponseDTO> LoginAsync(LoginDTO loginDTO, CancellationToken cancellationToken = default)
         {
             logger.LogInformation("User login attempt for email: {Email}", loginDTO.Email);
 
@@ -129,16 +132,24 @@ namespace Clothy.AuthService.BLL.Services
             {
                 string error = await response.Content.ReadAsStringAsync(cancellationToken);
                 logger.LogWarning("Login failed for email: {Email}. Error: {Error}", loginDTO.Email, error);
-                
-                throw new UnauthorizedAccessException("Invalid email or password");
+                throw new ValidationFailedException("Invalid email or password");
             }
 
             string json = await response.Content.ReadAsStringAsync(cancellationToken);
-            TokenResponseDTO tokenResponse = JsonSerializer.Deserialize<TokenResponseDTO>(json)!;
+            KeycloakTokenResponse keycloakResponse = JsonSerializer.Deserialize<KeycloakTokenResponse>(json)!;
+
+            TokenResponseDTO tokens = mapper.Map<TokenResponseDTO>(keycloakResponse);
+
+            string adminToken = await GetAdminTokenAsync(cancellationToken);
+            UserReadDTO user = await keycloakUserHelper.GetUserByEmailAsync(loginDTO.Email, adminToken, cancellationToken);
 
             logger.LogInformation("User logged in successfully: {Email}", loginDTO.Email);
 
-            return tokenResponse;
+            return new LoginResponseDTO
+            {
+                Tokens = tokens,
+                User = user
+            };
         }
 
         public async Task<TokenResponseDTO> RefreshTokenAsync(RefreshTokenDTO refreshTokenDTO, CancellationToken cancellationToken = default)
@@ -162,12 +173,13 @@ namespace Clothy.AuthService.BLL.Services
             {
                 string error = await response.Content.ReadAsStringAsync(cancellationToken);
                 logger.LogWarning("Token refresh failed. Error: {Error}", error);
-                
                 throw new UnauthorizedAccessException("Invalid refresh token");
             }
 
             string json = await response.Content.ReadAsStringAsync(cancellationToken);
-            return JsonSerializer.Deserialize<TokenResponseDTO>(json)!;
+            KeycloakTokenResponse keycloakResponse = JsonSerializer.Deserialize<KeycloakTokenResponse>(json)!;
+
+            return mapper.Map<TokenResponseDTO>(keycloakResponse);
         }
 
         public async Task LogoutAsync(string refreshToken, CancellationToken cancellationToken = default)
@@ -200,7 +212,7 @@ namespace Clothy.AuthService.BLL.Services
             logger.LogInformation("Password reset requested for email: {Email}", forgotPasswordDTO.Email);
 
             string adminToken = await GetAdminTokenAsync(cancellationToken);
-            string userId = await GetUserIdByEmailAsync(forgotPasswordDTO.Email, adminToken, cancellationToken);
+            string userId = await keycloakUserHelper.GetUserIdByEmailAsync(forgotPasswordDTO.Email, adminToken, cancellationToken);
 
             if (string.IsNullOrEmpty(userId))
             {
@@ -242,7 +254,7 @@ namespace Clothy.AuthService.BLL.Services
             catch
             {
                 logger.LogWarning("Invalid current password for user: {UserId}", userId);
-                throw new UnauthorizedAccessException("Current password is incorrect");
+                throw new ValidationFailedException("Current password is incorrect");
             }
 
             string adminToken = await GetAdminTokenAsync(cancellationToken);
@@ -266,25 +278,24 @@ namespace Clothy.AuthService.BLL.Services
             {
                 string error = await response.Content.ReadAsStringAsync(cancellationToken);
                 logger.LogError("Failed to reset password: {Error}", error);
-                
                 throw new Exception($"Failed to reset password: {error}");
             }
 
             logger.LogInformation("Password changed successfully for user: {UserId}", userId);
         }
 
-        public async Task ResendVerificationEmailAsync(string email, CancellationToken cancellationToken = default)
+        public async Task ResendVerificationEmailAsync(ResendVerificationEmailDTO resendVerificationEmailDTO, CancellationToken cancellationToken = default)
         {
-            logger.LogInformation("Resending verification email to: {Email}", email);
+            logger.LogInformation("Resending verification email to: {Email}", resendVerificationEmailDTO.Email);
 
             string adminToken = await GetAdminTokenAsync(cancellationToken);
-            string userId = await GetUserIdByEmailAsync(email, adminToken, cancellationToken);
+            string userId = await keycloakUserHelper.GetUserIdByEmailAsync(resendVerificationEmailDTO.Email, adminToken, cancellationToken);
 
             if (string.IsNullOrEmpty(userId)) throw new NotFoundException("User not found");
-            
+
             await SendVerificationEmailAsync(userId, adminToken, cancellationToken);
 
-            logger.LogInformation("Verification email resent to: {Email}", email);
+            logger.LogInformation("Verification email resent to: {Email}", resendVerificationEmailDTO.Email);
         }
 
         private async Task<string> GetAdminTokenAsync(CancellationToken cancellationToken = default)
@@ -307,22 +318,6 @@ namespace Clothy.AuthService.BLL.Services
             string json = await response.Content.ReadAsStringAsync(cancellationToken);
             JsonElement tokenResponse = JsonSerializer.Deserialize<JsonElement>(json);
             return tokenResponse.GetProperty("access_token").GetString()!;
-        }
-
-        internal async Task<string> GetUserIdByEmailAsync(string email, string adminToken, CancellationToken cancellationToken = default)
-        {
-            string url = $"{keycloakSettings.Url}/admin/realms/{keycloakSettings.Realm}/users?email={email}&exact=true";
-
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
-            HttpResponseMessage response = await httpClient.GetAsync(url, cancellationToken);
-            response.EnsureSuccessStatusCode();
-
-            string json = await response.Content.ReadAsStringAsync(cancellationToken);
-            JsonElement[]? users = JsonSerializer.Deserialize<JsonElement[]>(json);
-
-            if (users == null || users.Length == 0) return string.Empty;
-
-            return users[0].GetProperty("id").GetString()!;
         }
 
         private async Task SendVerificationEmailAsync(string userId, string adminToken, CancellationToken cancellationToken = default)
@@ -348,7 +343,7 @@ namespace Clothy.AuthService.BLL.Services
             string assignUrl = $"{keycloakSettings.Url}/admin/realms/{keycloakSettings.Realm}/users/{userId}/role-mappings/realm";
 
             object[] roles = new[] { new { id = role.GetProperty("id").GetString(), name = roleName } };
-            
+
             string json = JsonSerializer.Serialize(roles);
             StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
 

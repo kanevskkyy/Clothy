@@ -1,4 +1,4 @@
-using Clothy.ServiceDefaults.Middleware;
+﻿using Clothy.ServiceDefaults.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.DependencyInjection;
@@ -59,9 +59,10 @@ public static class Extensions
             options.AddDefaultPolicy(policy =>
             {
                 policy
-                    .WithOrigins(Environment.GetEnvironmentVariable("FRONTEND_URL") ?? "http://localhost:3000")
+                    .WithOrigins(Environment.GetEnvironmentVariable("FRONTEND__URL") ?? "http://localhost:5173")
                     .AllowAnyHeader()
-                    .AllowAnyMethod();
+                    .AllowAnyMethod()
+                    .AllowCredentials();
             });
         });
 
@@ -116,6 +117,8 @@ public static class Extensions
         app.UseCorrelationId();
         app.UseServiceLogging();
         app.MapDefaultEndpoints();
+
+        app.MapControllers();
 
         return app;
     }

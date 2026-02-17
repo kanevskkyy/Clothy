@@ -5,11 +5,11 @@ import CheckoutForm from '../../features/checkout/checkoutForm/CheckoutForm.tsx'
 import styles from "./CheckoutPage.module.css";
 import type { CheckoutFormData } from '../../app/schemas/checkoutFormSchema';
 
-import { useState } from "react";
+import {useState} from "react";
 
 const CheckoutPage = () => {
-    // TODO: connect to API get basket, set totalPrice, totalItems
-    // TODO: if basket empty redirect to catalog
+    // TODO: connect to API get basketService, set totalPrice, totalItems
+    // TODO: if basketService empty redirect to catalog
 
     const [totalPrice] = useState(14500);
     const totalItems = 6;

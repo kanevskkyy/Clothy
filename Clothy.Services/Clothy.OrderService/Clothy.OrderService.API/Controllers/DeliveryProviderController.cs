@@ -24,6 +24,7 @@ namespace Clothy.OrderService.API.Controllers
         /// <param name="cancelletionToken">Cancellation token.</param>
         /// <returns>List of delivery providers.</returns>
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<List<DeliveryProviderReadDTO>>> GetAll(CancellationToken cancelletionToken)
         {
             logger.LogInformation("Fetching all delivery providers.");
@@ -39,6 +40,7 @@ namespace Clothy.OrderService.API.Controllers
         /// <param name="cancelletionToken">Cancellation token.</param>
         /// <returns>Delivery provider details.</returns>
         [HttpGet("{id:guid}")]
+        [AllowAnonymous]
         public async Task<ActionResult<DeliveryProviderReadDTO>> GetById(Guid id, CancellationToken cancelletionToken)
         {
             logger.LogInformation("Fetching delivery provider with ID: {Id}", id);

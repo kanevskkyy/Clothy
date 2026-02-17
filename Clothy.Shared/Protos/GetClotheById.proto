@@ -12,7 +12,7 @@ message BrandDetailGrpcResponse {
 	string id = 1;
 	string name = 2;
 	string slug = 3;
-	string photoUrl = 4;
+	string photoURL = 4;
 }
 
 message ClothingTypeGrpcResponse {

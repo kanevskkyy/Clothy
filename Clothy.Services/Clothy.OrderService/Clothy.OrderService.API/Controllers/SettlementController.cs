@@ -28,6 +28,7 @@ namespace Clothy.OrderService.API.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Paginated list of settlements.</returns>
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<PagedList<SettlementReadDTO>>> GetPagedAsync([FromQuery] SettlementFilterDTO settlementFilterDTO, CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching paged settlements. Page: {PageNumber}, PageSize: {PageSize}", settlementFilterDTO.PageNumber, settlementFilterDTO.PageSize);
@@ -44,6 +45,7 @@ namespace Clothy.OrderService.API.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Settlement details.</returns>
         [HttpGet("{id:guid}", Name = "GetSettlementById")]
+        [AllowAnonymous]
         public async Task<ActionResult<SettlementReadDTO>> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching settlement with ID: {Id}", id);

@@ -11,12 +11,12 @@ namespace Clothy.AuthService.BLL.Services.Interfaces
 {
     public interface IKeycloakAuthService
     {
-        Task<UserReadDTO> RegisterUserAsync(RegisterDTO registerDTO, CancellationToken cancellationToken = default);
-        Task<TokenResponseDTO> LoginAsync(LoginDTO loginDTO, CancellationToken cancellationToken = default);
+        Task<RegisterResponseDTO> RegisterUserAsync(RegisterDTO registerDTO, CancellationToken cancellationToken = default);
+        Task<LoginResponseDTO> LoginAsync(LoginDTO loginDTO, CancellationToken cancellationToken = default);
         Task<TokenResponseDTO> RefreshTokenAsync(RefreshTokenDTO refreshTokenDTO, CancellationToken cancellationToken = default);
         Task SendPasswordResetEmailAsync(ForgotPasswordDTO forgotPasswordDTO, CancellationToken cancellationToken = default);
         Task ResetPasswordAsync(ResetPasswordDTO resetPasswordDTO, ClaimsPrincipal user, CancellationToken cancellationToken = default);
-        Task ResendVerificationEmailAsync(string email, CancellationToken cancellationToken = default);
+        Task ResendVerificationEmailAsync(ResendVerificationEmailDTO resendVerificationEmailDTO, CancellationToken cancellationToken = default);
         Task LogoutAsync(string refreshToken, CancellationToken cancellationToken = default);
     }
 }

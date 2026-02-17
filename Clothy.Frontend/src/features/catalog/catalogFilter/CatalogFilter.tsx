@@ -1,12 +1,14 @@
 import { memo, useState, useEffect } from "react";
 import { ChevronDown, X, SlidersHorizontal } from "lucide-react";
 import styles from "./CatalogFilter.module.css";
-import type { IFiltersResponse } from "../../../entities/filters/IFiltersResponse.ts";
+import type { IFiltersResponse } from "../../../entities/catalogService/filters/IFiltersResponse.ts";
 import Checkbox from "../../../shared/Checkbox/Checkbox.tsx";
 import PriceSlider from "../priceSlider/PriceSlider.tsx";
+import { parsePrice } from "../../../shared/utils/parsePrice.ts";
 
 interface CatalogFilterProps {
     filters: IFiltersResponse;
+    initialFilters?: FilterState;
     onFilterChange: (filters: FilterState) => void;
 }
 
@@ -23,22 +25,24 @@ export interface FilterState {
     maxPrice: number;
 }
 
-const CatalogFilter = memo(({ filters, onFilterChange }: CatalogFilterProps) => {
+const CatalogFilter = memo(({ filters, initialFilters, onFilterChange }: CatalogFilterProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['price']));
 
-    const [selectedFilters, setSelectedFilters] = useState<FilterState>({
-        brands: [],
-        clothingTypes: [],
-        colors: [],
-        materials: [],
-        sizes: [],
-        tags: [],
-        collections: [],
-        gender: [],
-        minPrice: Number(filters.priceRange.minPrice),
-        maxPrice: Number(filters.priceRange.maxPrice),
-    });
+    const [selectedFilters, setSelectedFilters] = useState<FilterState>(
+        initialFilters || {
+            brands: [],
+            clothingTypes: [],
+            colors: [],
+            materials: [],
+            sizes: [],
+            tags: [],
+            collections: [],
+            gender: [],
+            minPrice: parsePrice(filters.priceRange.minPrice),
+            maxPrice: parsePrice(filters.priceRange.maxPrice),
+        }
+    );
 
     useEffect(() => {
         if (isOpen) {
@@ -109,8 +113,8 @@ const CatalogFilter = memo(({ filters, onFilterChange }: CatalogFilterProps) => 
             selectedFilters.tags.length > 0 ||
             selectedFilters.collections.length > 0 ||
             selectedFilters.gender.length > 0 ||
-            selectedFilters.minPrice !== Number(filters.priceRange.minPrice) ||
-            selectedFilters.maxPrice !== Number(filters.priceRange.maxPrice)
+            selectedFilters.minPrice !== parsePrice(filters.priceRange.minPrice) ||
+            selectedFilters.maxPrice !== parsePrice(filters.priceRange.maxPrice)
         );
     };
 
@@ -124,8 +128,8 @@ const CatalogFilter = memo(({ filters, onFilterChange }: CatalogFilterProps) => 
             tags: [],
             collections: [],
             gender: [],
-            minPrice: Number(filters.priceRange.minPrice),
-            maxPrice: Number(filters.priceRange.maxPrice),
+            minPrice: parsePrice(filters.priceRange.minPrice),
+            maxPrice: parsePrice(filters.priceRange.maxPrice),
         };
         setSelectedFilters(resetState);
         onFilterChange(resetState);
@@ -382,22 +386,22 @@ const CatalogFilter = memo(({ filters, onFilterChange }: CatalogFilterProps) => 
                                         id="gender-male"
                                         label="Male"
                                         count={filters.gender.maleCount}
-                                        checked={selectedFilters.gender.includes('male')}
-                                        onChange={(checked) => handleCheckboxChange('gender', 'male', checked)}
+                                        checked={selectedFilters.gender.includes('Male')}
+                                        onChange={(checked) => handleCheckboxChange('gender', 'Male', checked)}
                                     />
                                     <Checkbox
                                         id="gender-female"
                                         label="Female"
                                         count={filters.gender.femaleCount}
-                                        checked={selectedFilters.gender.includes('female')}
-                                        onChange={(checked) => handleCheckboxChange('gender', 'female', checked)}
+                                        checked={selectedFilters.gender.includes('Female')}
+                                        onChange={(checked) => handleCheckboxChange('gender', 'Female', checked)}
                                     />
                                     <Checkbox
                                         id="gender-unisex"
                                         label="Unisex"
                                         count={filters.gender.unisexCount}
-                                        checked={selectedFilters.gender.includes('unisex')}
-                                        onChange={(checked) => handleCheckboxChange('gender', 'unisex', checked)}
+                                        checked={selectedFilters.gender.includes('Unisex')}
+                                        onChange={(checked) => handleCheckboxChange('gender', 'Unisex', checked)}
                                     />
                                 </div>
                             </div>
@@ -415,8 +419,8 @@ const CatalogFilter = memo(({ filters, onFilterChange }: CatalogFilterProps) => 
                         {expandedSections.has('price') && (
                             <div className={styles.sectionContent}>
                                 <PriceSlider
-                                    min={Number(filters.priceRange.minPrice)}
-                                    max={Number(filters.priceRange.maxPrice)}
+                                    min={parsePrice(filters.priceRange.minPrice)}
+                                    max={parsePrice(filters.priceRange.maxPrice)}
                                     currentMin={selectedFilters.minPrice}
                                     currentMax={selectedFilters.maxPrice}
                                     onChange={handlePriceChange}

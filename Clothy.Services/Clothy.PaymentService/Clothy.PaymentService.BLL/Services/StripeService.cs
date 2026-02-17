@@ -58,7 +58,7 @@ namespace Clothy.PaymentService.BLL.Services
             if (orderInfoResponse.Status.ToLower() != "awaiting payment") throw new ValidationFailedException($"The order with OrderId: {request.OrderId} has already been paid for!");
 
             Guid userId = userClaimsExtractor.GetUserId(claimsPrincipal);
-            if (userId != Guid.Parse(orderInfoResponse.UserId)) throw new ValidationFailedException("You cannot pay for someone else's order!");
+            if (userId != Guid.Parse(orderInfoResponse.UserId)) throw new ForbiddenException("You cannot pay for someone else's order!");
 
             PaymentRecordEF paymentRecord = new PaymentRecordEF
             {
@@ -126,7 +126,7 @@ namespace Clothy.PaymentService.BLL.Services
             if (oldPayment == null) throw new NotFoundException($"Payment with ID {paymentId} not found!");
 
             Guid userId = userClaimsExtractor.GetUserId(claimsPrincipal);
-            if (userId != oldPayment.UserId) throw new ValidationFailedException("You cannot retry someone else's payment!");
+            if (userId != oldPayment.UserId) throw new ForbiddenException("You cannot retry someone else's payment!");
 
             if (oldPayment.Status == PaymentStatus.Paid) throw new ValidationFailedException("Cannot retry already paid payment!");
 

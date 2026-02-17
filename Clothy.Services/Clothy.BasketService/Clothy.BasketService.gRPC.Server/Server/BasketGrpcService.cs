@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Clothy.BasketService.DAL.Repositories.Interfaces;
 using Clothy.BaskteService.Domain.Entities;
+using Clothy.OrderService.gRPC.Client.Services.Interfaces;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 
@@ -14,10 +14,12 @@ namespace Clothy.BasketService.gRPC.Server.Server
     {
         private IBasketRepository basketRepository;
         private ILogger<BasketGrpcService> logger;
+        private IOrderItemValidatorGrpcClient orderItemValidatorGrpcClient;
 
-        public BasketGrpcService(IBasketRepository basketRepository, ILogger<BasketGrpcService> logger)
+        public BasketGrpcService(IBasketRepository basketRepository, IOrderItemValidatorGrpcClient orderItemValidatorGrpcClient, ILogger<BasketGrpcService> logger)
         {
             this.basketRepository = basketRepository;
+            this.orderItemValidatorGrpcClient = orderItemValidatorGrpcClient;
             this.logger = logger;
         }
 
@@ -25,14 +27,13 @@ namespace Clothy.BasketService.gRPC.Server.Server
         {
             try
             {
-                if (!Guid.TryParse(request.UserId, out var userId))
+                if (!Guid.TryParse(request.UserId, out Guid userId))
                 {
                     logger.LogWarning("Invalid userId format: {UserId}", request.UserId);
                     throw new RpcException(new Status(StatusCode.InvalidArgument, "Invalid userId format"));
                 }
 
                 BasketList? basket = await basketRepository.GetBasketAsync(userId);
-
                 if (basket == null || !basket.BasketItems.Any())
                 {
                     logger.LogInformation("Basket is empty for user: {UserId}", userId);
@@ -42,23 +43,48 @@ namespace Clothy.BasketService.gRPC.Server.Server
                     };
                 }
 
+                List<OrderItemToValidate> itemsToValidate = basket.BasketItems.Select(item => new OrderItemToValidate
+                {
+                    ClotheId = item.ClotheId.ToString(),
+                    SizeId = item.SizeId.ToString(),
+                    ColorId = item.ColorId.ToString(),
+                    Quantity = item.Quantity
+                }).ToList();
+
+                ValidateOrderItemsResponse validateResponse = await orderItemValidatorGrpcClient.ValidateOrderItemsAsync(itemsToValidate);
+
                 GetUserBasketResponse response = new GetUserBasketResponse
                 {
                     UserId = request.UserId
                 };
 
-                foreach (BasketItem item in basket.BasketItems)
+                int validItemsCount = 0;
+                int invalidItemsCount = 0;
+
+                for (int i = 0; i < basket.BasketItems.Count; i++)
                 {
-                    response.Items.Add(new BasketItemMessage
+                    BasketItem item = basket.BasketItems[i];
+                    ValidateOrderItemResponse validation = validateResponse.Results[i];
+
+                    if (validation != null && validation.IsValid)
                     {
-                        ClotheId = item.ClotheId.ToString(),
-                        SizeId = item.SizeId.ToString(),
-                        ColorId = item.ColorId.ToString(),
-                        Quantity = item.Quantity
-                    });
+                        response.Items.Add(new BasketItemMessage
+                        {
+                            ClotheId = item.ClotheId.ToString(),
+                            SizeId = item.SizeId.ToString(),
+                            ColorId = item.ColorId.ToString(),
+                            Quantity = item.Quantity
+                        });
+                        validItemsCount++;
+                    }
+                    else
+                    {
+                        invalidItemsCount++;
+                        logger.LogWarning("Invalid basket item for user {UserId}: ClotheId={ClotheId}, SizeId={SizeId}, ColorId={ColorId}. Reason: {Reason}", userId, item.ClotheId, item.SizeId, item.ColorId, validation?.ErrorMessage ?? "Unknown");
+                    }
                 }
 
-                logger.LogInformation("Retrieved basket for user: {UserId} with {ItemCount} items", userId, basket.BasketItems.Count);
+                logger.LogInformation("Retrieved basket for user: {UserId}. Valid items: {ValidCount}, Invalid items: {InvalidCount}", userId, validItemsCount, invalidItemsCount);
                 return response;
             }
             catch (RpcException)
@@ -76,14 +102,13 @@ namespace Clothy.BasketService.gRPC.Server.Server
         {
             try
             {
-                if (!Guid.TryParse(request.UserId, out var userId))
+                if (!Guid.TryParse(request.UserId, out Guid userId))
                 {
                     logger.LogWarning("Invalid userId format: {UserId}", request.UserId);
                     throw new RpcException(new Status(StatusCode.InvalidArgument, "Invalid userId format"));
                 }
 
                 await basketRepository.ClearBasketAsync(userId);
-
                 logger.LogInformation("Cleared basket for user: {UserId}", userId);
 
                 return new ClearUserBasketResponse

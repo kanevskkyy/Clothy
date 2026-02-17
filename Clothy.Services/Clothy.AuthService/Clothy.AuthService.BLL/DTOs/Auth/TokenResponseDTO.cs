@@ -9,26 +9,26 @@ namespace Clothy.AuthService.BLL.DTOs.Auth
 {
     public class TokenResponseDTO
     {
-        [JsonPropertyName("access_token")]
         public string AccessToken { get; set; } = string.Empty;
-
-        [JsonPropertyName("expires_in")]
         public int ExpiresIn { get; set; }
-
-        [JsonPropertyName("refresh_expires_in")]
         public int RefreshExpiresIn { get; set; }
-
-        [JsonPropertyName("refresh_token")]
         public string RefreshToken { get; set; } = string.Empty;
-
-        [JsonPropertyName("token_type")]
         public string TokenType { get; set; } = string.Empty;
-
-        [JsonPropertyName("session_state")]
         public string? SessionState { get; set; }
-
-        [JsonPropertyName("scope")]
         public string Scope { get; set; } = string.Empty;
-    }
 
+        public static TokenResponseDTO FromKeycloakResponse(KeycloakTokenResponse keycloakResponse)
+        {
+            return new TokenResponseDTO
+            {
+                AccessToken = keycloakResponse.AccessToken,
+                ExpiresIn = keycloakResponse.ExpiresIn,
+                RefreshExpiresIn = keycloakResponse.RefreshExpiresIn,
+                RefreshToken = keycloakResponse.RefreshToken,
+                TokenType = keycloakResponse.TokenType,
+                SessionState = keycloakResponse.SessionState,
+                Scope = keycloakResponse.Scope
+            };
+        }
+    }
 }

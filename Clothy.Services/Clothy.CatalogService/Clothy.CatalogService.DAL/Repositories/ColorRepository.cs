@@ -20,6 +20,7 @@ namespace Clothy.CatalogService.DAL.Repositories
         public async Task<Dictionary<Color, int>> GetColorsCountWithStockAsync(CancellationToken cancellationToken = default)
         {
             List<Color> colors = await dbSet
+                .AsNoTracking()
                 .Include(property => property.ClothesStocks)
                 .ToListAsync();
             Dictionary<Color, int> result = new Dictionary<Color, int>();

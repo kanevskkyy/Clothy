@@ -11,14 +11,9 @@ class TryOnRequest(BaseModel):
 
     @field_validator('clothe_image_url')
     def validate_clothe_image(cls, value: str) -> str:
-        if len(value) == 0:
+        if not value:
             raise ValueError('Clothe image url cannot be empty')
         return value
-
-    model_config = {
-        'alias_generator': to_camel,
-        'populate_by_name': True
-    }
 
 
 class TryOnResponse(BaseModel):

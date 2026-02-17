@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "./LoginForm.module.css";
 import { useState } from "react";
 import {loginSchema, type LoginFormData } from "../../../app/schemas/loginSchema.ts";
@@ -6,13 +6,20 @@ import FormField from "../../../shared/FormField/FormField.tsx";
 import Input from "../../../shared/Input/Input.tsx";
 import PasswordInput from "../passwordInput/PasswordInput.tsx";
 import Button from "../../../shared/Button/Button.tsx";
+import {authApi} from "../../../app/api/authApi.ts";
+import {toast} from "sonner";
+import {getErrorMessage} from "../../../shared/utils/errorHandler.ts";
 
 const LoginForm = () => {
+    const navigate = useNavigate();
+
     const [formData, setFormData] = useState<LoginFormData>({
         email: "",
         password: "",
     });
     const [errors, setErrors] = useState<Partial<Record<keyof LoginFormData, string>>>({});
+
+    const [isTryingLogin, setIsTryingLogin] = useState<boolean>(false);
 
     const handleChange = (field: keyof LoginFormData) => (
         e: React.ChangeEvent<HTMLInputElement>
@@ -23,9 +30,10 @@ const LoginForm = () => {
         }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = async (e: React.FormEvent) => {
+        setIsTryingLogin(true);
 
+        e.preventDefault();
         const result = loginSchema.safeParse(formData);
 
         if (!result.success) {
@@ -35,11 +43,21 @@ const LoginForm = () => {
                 fieldErrors[field] = issue.message;
             });
             setErrors(fieldErrors);
+            setIsTryingLogin(false);
             return;
         }
 
-        // TODO: Connect to API
-        console.log("Login successful:", result.data);
+        try
+        {
+            await authApi.loginAsync(formData);
+            toast.success("Successfully signed in. Welcome back!");
+            navigate("/account");
+        } catch (error) {
+            toast.error(getErrorMessage(error))
+        }
+        finally {
+            setIsTryingLogin(false);
+        }
     };
 
     return (
@@ -82,7 +100,12 @@ const LoginForm = () => {
             </div>
 
             <div className={styles.actions}>
-                <Button type="submit" variant="primary" size="lg" fullWidth>
+                <Button
+                    type="submit"
+                    variant="primary"
+                    size="lg"
+                    disabled={isTryingLogin}
+                    fullWidth>
                     Sign in
                 </Button>
                 <div className={styles.login}>

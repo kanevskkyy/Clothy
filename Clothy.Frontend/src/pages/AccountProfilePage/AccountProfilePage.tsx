@@ -1,12 +1,9 @@
 import { useState, useRef } from "react";
-import { useOutletContext } from "react-router-dom";
+import {Link, Navigate, useOutletContext} from "react-router-dom";
 import styles from "./AccountProfilePage.module.css";
 import { Upload } from "lucide-react";
-import type { IUserReadDTO } from "../../entities/users/IUserReadDTO";
-import {
-    type UserUpdateFormData,
-    userUpdateSchema,
-} from "../../app/schemas/userUpdateSchema.ts";
+import type { IUserReadDTO } from "../../entities/usersService/IUserReadDTO";
+import { type UserUpdateFormData, userUpdateSchema, } from "../../app/schemas/userUpdateSchema.ts";
 import Button from "../../shared/Button/Button.tsx";
 import FormField from "../../shared/FormField/FormField.tsx";
 import Input from "../../shared/Input/Input.tsx";
@@ -20,18 +17,19 @@ const AccountProfilePage = () => {
     const { user } = useOutletContext<OutletContext>();
 
     const [formData, setFormData] = useState({
-        firstName: user.firstName,
-        lastName: user.lastName,
-        phoneNumber: user.phoneNumber,
+        firstName: user?.firstName ?? "",
+        lastName: user?.lastName ?? "",
+        phoneNumber: user?.phoneNumber ?? "",
     });
 
     const [photoFile, setPhotoFile] = useState<File | undefined>(undefined);
-    const [photoPreview, setPhotoPreview] = useState<string>(user.photoUrl);
-    const [errors, setErrors] = useState<
-        Partial<Record<keyof UserUpdateFormData, string>>
-    >({});
-
+    const [photoPreview, setPhotoPreview] = useState<string>(user?.photoUrl ?? "");
+    const [errors, setErrors] = useState<Partial<Record<keyof UserUpdateFormData, string>>>({});
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    if (!user) {
+        return <Navigate to="/login" replace />;
+    }
 
     const handleChange =
         (field: keyof Omit<UserUpdateFormData, "photo">) =>
@@ -186,6 +184,13 @@ const AccountProfilePage = () => {
                 <Button type="submit" variant="primary" size="lg" fullWidth>
                     Save Changes
                 </Button>
+
+                <div className={styles.passwordSection}>
+                    <span>Want to change your password?</span>
+                    <Link to="/reset-password" className={styles.passwordLink}>
+                        Change password
+                    </Link>
+                </div>
             </form>
         </div>
     );

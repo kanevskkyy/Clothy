@@ -15,7 +15,7 @@ config:
   keycloak:password: admin
   keycloak:realm: master
   Clothy.Pulumi:sendGridApiKey:
-    secure: AAABADVxSgz1PWLzmPzunsHw6cKCpQalyZWht4oWmfCG2+r2wPlrXv06xjBmRxQwHcQFzJmGoTpGGGwNE2DyoQFuCcnPPV5o4sbgACtlPxuqL1+nilHGKzfOMs1YV8mINC6fHe8=
+    secure: AAABAJz3kcC4Xs35kqwK3hXbZDCdO9IjAVoVfcLyYxh8T6ItlHbNkD8u/0uWZ7lNizjWXJ/byTKjwK4UAY2qD9m1hPgkshQyucEVuj5yR3ST2jWUIV/06KgXanB+k55Chtp/yqQ=
   Clothy.Pulumi:smtpFrom: sashanoutbook@gmail.com
   Clothy.Pulumi:smtpReplyTo: oleksandrkanovkij@gmail.com
   Clothy.Pulumi:smtpEnvelopeFrom: oleksandrkanovkij@gmail.com

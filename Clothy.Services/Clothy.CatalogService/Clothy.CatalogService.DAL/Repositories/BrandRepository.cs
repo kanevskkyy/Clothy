@@ -25,6 +25,7 @@ namespace Clothy.CatalogService.DAL.Repositories
         public async Task<Dictionary<Brand, int>> GetBrandsWithStockCountAsync(CancellationToken cancellationToken = default)
         {
             List<Brand> brands = await dbSet
+                .AsNoTracking()
                 .Include(property => property.ClotheItems)
                 .ToListAsync();
             Dictionary<Brand, int> result = new Dictionary<Brand, int>();

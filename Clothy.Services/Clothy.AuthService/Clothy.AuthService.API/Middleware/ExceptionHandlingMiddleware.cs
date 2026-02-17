@@ -29,6 +29,7 @@ namespace Clothy.AuthService.API.Middleware
                 {
                     UnauthorizedAccessException => (int)HttpStatusCode.Unauthorized,
                     NotFoundException => (int)HttpStatusCode.NotFound,
+                    ValidationFailedException => (int)HttpStatusCode.BadRequest,
                     _ => (int)HttpStatusCode.InternalServerError
                 };
 

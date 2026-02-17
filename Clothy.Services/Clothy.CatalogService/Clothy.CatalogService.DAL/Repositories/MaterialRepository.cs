@@ -20,6 +20,7 @@ namespace Clothy.CatalogService.DAL.Repositories
         public async Task<Dictionary<Material, int>> GetMaterialsWithStockAsync(CancellationToken cancellationToken = default)
         {
             List<Material> materials = await dbSet
+                .AsNoTracking()
                 .Include(property => property.ClotheMaterials)
                 .ToListAsync();
 

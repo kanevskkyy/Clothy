@@ -1,15 +1,10 @@
+﻿using Clothy.ServiceDefaults;
 using Clothy.ServiceDefaults.Middleware.Routes;
 using Yarp.ReverseProxy.Transforms;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddServiceDefaults();
-
-builder.Services.ConfigureHttpClientDefaults(http =>
-{
-    http.AddStandardResilienceHandler();
-    http.AddServiceDiscovery();
-});
+builder.AddGatewayDefaults();
 
 builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"))
@@ -22,21 +17,13 @@ builder.Services.AddReverseProxy()
                 reqContext.ProxyRequest.Headers.Add("X-Correlation-Id", correlationId.ToString());
             }
         });
-    })
-    .ConfigureHttpClient((context, httpClient) =>
-    {
-        httpClient.ConnectTimeout = TimeSpan.FromSeconds(10); 
     });
-
-
-
-builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
-app.UseServiceDefaults();
-app.UseMiddleware<RouteMetadataMiddleware>();
+app.UseGatewayDefaults();
 
+app.UseMiddleware<RouteMetadataMiddleware>();
 app.MapDefaultEndpoints();
 app.MapReverseProxy();
 

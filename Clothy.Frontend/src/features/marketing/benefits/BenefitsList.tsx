@@ -1,4 +1,4 @@
-import {type LucideIcon, RefreshCw, Shield, Sparkles, Truck} from "lucide-react";
+import {BadgePercent, type LucideIcon, RefreshCw, Shield, Sparkles, Truck} from "lucide-react";
 import styles from "./BenefitsList.module.css";
 
 interface IBenefitItem {
@@ -27,6 +27,11 @@ const benefits: IBenefitItem[] = [
         icon: Sparkles,
         title: "Fast delivery",
         description: "1–3 days",
+    },
+    {
+        icon: BadgePercent,
+        title: "10% discount",
+        description: "on first order",
     },
 ];
 

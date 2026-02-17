@@ -24,10 +24,11 @@ namespace Clothy.CatalogService.API.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>List of all sizes.</returns>
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<SizeReadDTO>>> GetAll(CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching all sizes.");
-            var sizes = await sizeService.GetAllAsync(cancellationToken);
+            List<SizeReadDTO> sizes = await sizeService.GetAllAsync(cancellationToken);
             return Ok(sizes);
         }
 
@@ -38,6 +39,7 @@ namespace Clothy.CatalogService.API.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Size details.</returns>
         [HttpGet("{id:guid}")]
+        [AllowAnonymous]
         public async Task<ActionResult<SizeReadDTO>> GetById(Guid id, CancellationToken cancellationToken)
         {
             logger.LogInformation("Fetching size with ID: {Id}", id);

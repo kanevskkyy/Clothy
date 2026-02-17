@@ -1,17 +1,62 @@
 import styles from "./EmailVerificationBanner.module.css";
 import Button from "../../../shared/Button/Button.tsx";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, RefreshCw } from "lucide-react";
+import { useAuthStore } from "../../../app/api/stores/authStore.ts";
+import { toast } from "sonner";
+import { authApi, type IResendVerificationEmailRequest } from "../../../app/api/authApi.ts";
+import { getErrorMessage } from "../../../shared/utils/errorHandler.ts";
+import { useState } from "react";
 
 interface EmailVerificationBannerProps {
-    emailVerified: boolean;
+    emailVerified?: boolean;
 }
 
 const EmailVerificationBanner = ({ emailVerified }: EmailVerificationBannerProps) => {
-    const handleVerify = () => {
-        // TODO: Connect to API
-        // TODO: send request to API, and then redirect to email verification
+    const { user, setUser } = useAuthStore();
+    const [isSending, setIsSending] = useState(false);
+    const [isRefreshing, setIsRefreshing] = useState(false);
+    const [emailSent, setEmailSent] = useState(false);
 
-        console.log("Verify email clicked");
+    const handleSendEmail = async () => {
+        setIsSending(true);
+
+        try {
+            if (!user?.email) {
+                toast.error("Email not found in user profile");
+                return;
+            }
+
+            const body: IResendVerificationEmailRequest = {
+                email: user.email
+            };
+
+            await authApi.resendVerificationEmailAsync(body);
+            toast.success("Verification email sent! Please check your inbox.");
+            setEmailSent(true);
+        } catch (error) {
+            toast.error(getErrorMessage(error));
+        } finally {
+            setIsSending(false);
+        }
+    };
+
+    const handleRefreshUser = async () => {
+        setIsRefreshing(true);
+
+        try {
+            const updatedUser = await authApi.getInfoAboutMeAsync();
+            setUser(updatedUser);
+
+            if (updatedUser.emailVerified) {
+                toast.success("Email verified successfully!");
+            } else {
+                toast.info("Email not verified yet. Please check your inbox and click the verification link.");
+            }
+        } catch (error) {
+            toast.error(getErrorMessage(error));
+        } finally {
+            setIsRefreshing(false);
+        }
     };
 
     if (emailVerified) {
@@ -27,13 +72,33 @@ const EmailVerificationBanner = ({ emailVerified }: EmailVerificationBannerProps
                 <div className={styles.textWrapper}>
                     <p className={styles.title}>Confirm your email</p>
                     <p className={styles.message}>
-                        Your email has not been confirmed yet. Please confirm it to be able to place orders.
+                        {emailSent
+                            ? "We've sent you a verification email. Please check your inbox and click the link."
+                            : "Your email has not been confirmed yet. Please confirm it to be able to place orders."
+                        }
                     </p>
                 </div>
                 <div className={styles.actions}>
-                    <Button onClick={handleVerify} variant="primary" size="sm">
-                        Confirm your email
-                    </Button>
+                    {!emailSent ? (
+                        <Button
+                            onClick={handleSendEmail}
+                            variant="primary"
+                            size="sm"
+                            disabled={isSending}
+                        >
+                            {isSending ? "Sending..." : "Send verification email"}
+                        </Button>
+                    ) : (
+                        <Button
+                            onClick={handleRefreshUser}
+                            variant="primary"
+                            size="sm"
+                            disabled={isRefreshing}
+                            icon={<RefreshCw size={16} />}
+                        >
+                            {isRefreshing ? "Checking..." : "I verified my email"}
+                        </Button>
+                    )}
                 </div>
             </div>
         </div>

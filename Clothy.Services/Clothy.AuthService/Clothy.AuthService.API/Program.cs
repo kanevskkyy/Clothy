@@ -8,6 +8,7 @@ using FluentValidation;
 using Clothy.AuthService.BLL.FluentValidation.Auth;
 using Clothy.Shared.Events.UserEvents;
 using Clothy.Shared.Helpers.CloudinaryConfig;
+using Clothy.AuthService.BLL.Mapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,9 +27,15 @@ builder.Services.AddControllers();
 
 builder.Services.AddScoped<IKeycloakAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IKeycloakUserHelper, KeycloakUserHelper>();
 
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssembly(typeof(LoginDTOValidator).Assembly);
+
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.AddMaps(typeof(KeycloakMappingProfile).Assembly);
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

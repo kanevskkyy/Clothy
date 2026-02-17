@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Clothy.CatalogService.DAL.UOW;
 using Clothy.CatalogService.Domain.Entities.Catalog;
@@ -76,41 +75,63 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                         }
 
                         ClotheItem? clotheItem = await unitOfWork.ClotheItems.GetByIdWithDetailsAsync(clotheId, context.CancellationToken);
+                        Color? color = await unitOfWork.Colors.GetByIdAsync(colorId, context.CancellationToken);
+                        Size? size = await unitOfWork.Sizes.GetByIdAsync(sizeId, context.CancellationToken);
+                        ClothesStock? stock = await unitOfWork.ClothesStocks.GetByClotheColorSizeAsync(clotheId, colorId, sizeId, context.CancellationToken);
+
+                        if (clotheItem != null)
+                        {
+                            response.ClotheName = clotheItem.Name;
+                            response.ClotheSlug = clotheItem.Slug;
+                            response.Price = clotheItem.Price.ToString();
+
+                            if (color != null)
+                            {
+                                PhotoClothes? mainPhotoForColor = clotheItem.Photos.FirstOrDefault(p => p.ColorId == colorId && p.IsMain);
+                                response.MainPhotoUrl = mainPhotoForColor?.PhotoURL ?? "";
+                            }
+                        }
+
+                        if (color != null)
+                        {
+                            response.ColorHexCode = color.HexCode;
+                            response.ColorName = color.Name;
+                            response.ColorSlug = color.Slug;
+                        }
+
+                        if (size != null) response.SizeName = size.Name;
+
                         if (clotheItem == null)
                         {
                             response.IsValid = false;
-                            response.ErrorMessage = $"Clothe with Id {orderItemToValidate.ClotheId} not found";
+                            response.ErrorMessage = $"Product not found";
                             logger.LogWarning("Clothe item not found: {ClotheId}", orderItemToValidate.ClotheId);
                             results.Add(response);
                             continue;
                         }
 
-                        Color? color = await unitOfWork.Colors.GetByIdAsync(colorId, context.CancellationToken);
                         if (color == null)
                         {
                             response.IsValid = false;
-                            response.ErrorMessage = $"Color with Id {orderItemToValidate.ColorId} not found";
+                            response.ErrorMessage = $"Color not found";
                             logger.LogWarning("Color not found: {ColorId}", orderItemToValidate.ColorId);
                             results.Add(response);
                             continue;
                         }
 
-                        Size? size = await unitOfWork.Sizes.GetByIdAsync(sizeId, context.CancellationToken);
                         if (size == null)
                         {
                             response.IsValid = false;
-                            response.ErrorMessage = $"Size with Id {orderItemToValidate.SizeId} not found";
+                            response.ErrorMessage = $"Size not found";
                             logger.LogWarning("Size not found: {SizeId}", orderItemToValidate.SizeId);
                             results.Add(response);
                             continue;
                         }
 
-                        ClothesStock? stock = await unitOfWork.ClothesStocks.GetByClotheColorSizeAsync(clotheId, colorId, sizeId, context.CancellationToken);
-
                         if (stock == null)
                         {
                             response.IsValid = false;
-                            response.ErrorMessage = $"Combination of ClotheId: {orderItemToValidate.ClotheId}, ColorId: {orderItemToValidate.ColorId}, SizeId: {orderItemToValidate.SizeId} does not exist in stock";
+                            response.ErrorMessage = $"This color and size combination is not available";
                             logger.LogWarning("Stock combo not found: ClotheId={ClotheId}, ColorId={ColorId}, SizeId={SizeId}", clotheId, colorId, sizeId);
                             results.Add(response);
                             continue;
@@ -127,17 +148,6 @@ namespace Clothy.CatalogService.gRPC.Server.Services
 
                         response.IsValid = true;
                         response.ErrorMessage = string.Empty;
-                        response.ClotheName = clotheItem.Name;
-                        response.ClotheSlug = clotheItem.Slug;
-                        response.Price = clotheItem.Price.ToString();
-                        
-                        PhotoClothes? mainPhotoForColor = clotheItem.Photos.FirstOrDefault(p => p.ColorId == colorId && p.IsMain);
-                        response.MainPhotoUrl = mainPhotoForColor?.PhotoURL ?? "";
-
-                        response.ColorHexCode = color.HexCode;
-                        response.SizeName = size.Name;
-                        response.ColorName = color.Name;
-                        response.ColorSlug = color.Slug;
 
                         logger.LogInformation("Successfully validated item: ClotheId={ClotheId}, ColorId={ColorId}, SizeId={SizeId}", clotheId, colorId, sizeId);
                     }

@@ -11,14 +11,17 @@ namespace Clothy.BasketService.BLL.DTOs
         public Guid ClotheId { get; set; }
         public Guid SizeId { get; set; }
         public Guid ColorId { get; set; }
-        public string? ClotheName { get; set; }
-        public string? ClotheSlug { get; set; }
-        public decimal Price { get; set; }
-        public string? MainPhoto { get; set; }
-        public string? SizeName { get; set; }
-        public string? HexCode { get; set; }
-        public string? ColorName { get; set; }
-        public string? ColorSlug { get; set; }
         public int Quantity { get; set; }
+        public string ClotheName { get; set; } = string.Empty;
+        public string SizeName { get; set; } = string.Empty;
+        public string ColorName { get; set; } = string.Empty;
+        public string ColorSlug { get; set; } = string.Empty;
+        public string ClotheSlug { get; set; } = string.Empty;
+        public string HexCode { get; set; } = string.Empty;
+        public string MainPhoto { get; set; } = string.Empty;
+        public decimal Price { get; set; }
+
+        public bool IsAvailable { get; set; } = true;
+        public string? ValidationMessage { get; set; }
     }
 }

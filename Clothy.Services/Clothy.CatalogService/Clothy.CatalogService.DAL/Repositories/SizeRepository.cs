@@ -21,6 +21,7 @@ namespace Clothy.CatalogService.DAL.Repositories
         public async Task<Dictionary<Size, int>> GetSizesCountWithStockAsync(CancellationToken cancellationToken = default)
         {
             List<Size> sizes = await dbSet
+                .AsNoTracking()
                 .Include(s => s.ClothesStocks)
                 .ToListAsync(cancellationToken);
 
