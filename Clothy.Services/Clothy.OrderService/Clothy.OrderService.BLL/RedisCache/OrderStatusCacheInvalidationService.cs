@@ -7,17 +7,17 @@ using Clothy.OrderService.Domain.Entities;
 using Clothy.Shared.Cache.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace Clothy.OrderService.BLL.RedisCache.DeliveryProviderCache
+namespace Clothy.OrderService.BLL.RedisCache
 {
-    public class DeliveryProviderCacheInvalidationService : IEntityCacheInvalidationService<DeliveryProvider>
+    public class OrderStatusCacheInvalidationService : IEntityCacheInvalidationService<OrderStatus>
     {
         private IEntityCacheService cacheService;
-        private ILogger<DeliveryProviderCacheInvalidationService> logger;
+        private ILogger<OrderStatusCacheInvalidationService> logger;
 
-        private const string CACHE_KEY_PREFIX = "delivery-provider:";
-        private const string ALL_PATTERN = "delivery-provider:*";
+        private const string CACHE_KEY_PREFIX = "order-status:";
+        private const string ALL_PATTERN = "order-status:*";
 
-        public DeliveryProviderCacheInvalidationService(IEntityCacheService cacheService, ILogger<DeliveryProviderCacheInvalidationService> logger)
+        public OrderStatusCacheInvalidationService(IEntityCacheService cacheService, ILogger<OrderStatusCacheInvalidationService> logger)
         {
             this.cacheService = cacheService;
             this.logger = logger;
@@ -29,11 +29,13 @@ namespace Clothy.OrderService.BLL.RedisCache.DeliveryProviderCache
             {
                 string key = $"{CACHE_KEY_PREFIX}{entityId}";
                 await cacheService.RemoveAsync(key);
-                logger.LogInformation("Invalidated cache for DeliveryProvider {EntityId}", entityId);
+                await cacheService.RemoveByPatternAsync(ALL_PATTERN);
+
+                logger.LogInformation("Invalidated cache for OrderStatus {EntityId}", entityId);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to invalidate cache for DeliveryProvider {EntityId}", entityId);
+                logger.LogError(ex, "Failed to invalidate cache for OrderStatus {EntityId}", entityId);
                 throw;
             }
         }
@@ -43,13 +45,14 @@ namespace Clothy.OrderService.BLL.RedisCache.DeliveryProviderCache
             try
             {
                 await cacheService.RemoveByPatternAsync(ALL_PATTERN);
-                logger.LogInformation("Invalidated all DeliveryProvider caches");
+                logger.LogInformation("Invalidated all OrderStatus caches");
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to invalidate all DeliveryProvider caches");
+                logger.LogError(ex, "Failed to invalidate all OrderStatus caches");
                 throw;
             }
         }
     }
+
 }

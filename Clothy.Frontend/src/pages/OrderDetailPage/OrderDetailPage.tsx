@@ -4,105 +4,56 @@ import styles from "./OrderDetailPage.module.css";
 import type {IOrderDetailDTO} from "../../entities/ordersService/order/IOrderDetailDTO.ts";
 import {formatDate} from "../../shared/utils/formatDate.ts";
 import {useParams} from "react-router-dom";
+import {useEffect, useState} from "react";
+import {ordersApi} from "../../app/api/ordersApi.ts";
+import {toast} from "sonner";
+import {getErrorMessage} from "../../shared/utils/errorHandler.ts";
+import Loader from "../../shared/Loader/Loader.tsx";
 
 const OrderDetailPage = () => {
-    const mockOrderDetail: IOrderDetailDTO = {
-        id: "A1B2C3D4",
-        status: {
-            id: "status-1",
-            name: "Awaiting payment",
-            createdAt: "2026-02-27T10:00:00.000Z",
-            updatedAt: "2026-02-27T10:00:00.000Z"
-        },
-        userFirstName: "Олена",
-        userLastName: "Коваленко",
-        userEmail: "olena@example.com",
-        comment: "If possible, please contact me before shipping to confirm the details. Thank you!",
-        isFreeDelivery: true,
-        totalPrice: 1200,
-        items: [
-            {
-                id: "item-1",
-                clotheId: "clothe-1",
-                clotheName: "Off-White Hoodie",
-                price: 1299,
-                quantity: 1,
-                mainPhoto: "https://www.off---white.com/dw/image/v2/BGDG_PRD/on/demandware.static/-/Sites-51/default/dw6325cf8e/images/zoom/44MBB12MS26F007_001_0.jpg?sw=960&sh=1275",
-                colorId: "color-1",
-                hexCode: "#000000",
-                sizeId: "size-1",
-                sizeName: "M",
-                isClotheDeleted: false,
-                isClotheUpdated: false
-            }
-        ],
-        deliveryDetail: {
-            id: "delivery-1",
-            phoneNumber: "+380501234567",
-            firstName: "Elena",
-            lastName: "Kovalenko",
-            middleName: "Ivanovna",
-            email: "olena@example.com",
-            createdAt: "2026-02-27T10:00:00.000Z",
-            updatedAt: "2026-02-27T10:00:00.000Z",
-            pickupPoint: {
-                id: "pickup-1",
-                address: "First cargo compartment (Ruska 248)",
-                ref: "warehouse-ref-1",
-                isActive: true,
-                deliveryProviderId: "provider-1",
-                settlementId: "settlement-1",
-                createdAt: "2026-01-01T00:00:00.000Z",
-                updatedAt: "2026-01-01T00:00:00.000Z"
-            },
-            deliveryProvider: {
-                id: "provider-1",
-                name: "New Mail",
-                iconUrl: "https://example.com/nova-poshta-icon.png",
-                createdAt: "2026-01-01T00:00:00.000Z",
-                updatedAt: "2026-01-01T00:00:00.000Z"
-            },
-            settlement: {
-                id: "settlement-1",
-                name: "Kyiv",
-                ref: "kyiv-ref-1",
-                type: "місто",
-                regionId: "region-1",
-                createdAt: "2026-01-01T00:00:00.000Z",
-                updatedAt: "2026-01-01T00:00:00.000Z"
-            },
-            region: {
-                id: "region-1",
-                name: "Kyiv region",
-                ref: "kyiv-region-ref-1",
-                createdAt: "2026-01-01T00:00:00.000Z",
-                updatedAt: "2026-01-01T00:00:00.000Z"
-            }
-        },
-        createdAt: "2026-02-27T10:00:00.000Z",
-        updatedAt: "2026-02-27T10:00:00.000Z"
-    };
-
-    // TODO: Connect to api, get from url order id if 403 => redirect to account, else show
-
     const {orderId} = useParams<{ orderId: string; }>();
+    const [orderDetail, setOrderDetail] = useState<IOrderDetailDTO>();
+
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (!orderId) return;
+
+        const fetchOrderDetail = async () => {
+            try {
+                setIsLoading(true);
+                const response = await ordersApi.getOrderByIdAsync(orderId);
+                setOrderDetail(response);
+            } catch (error) {
+                toast.error(getErrorMessage(error));
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchOrderDetail();
+    }, [orderId]);
+
+    if (isLoading || !orderDetail) {
+        return <Loader marginTop="75px"/>;
+    }
 
     return (
         <PageWrapper>
             <div className={styles.container}>
                 <div className={styles.orderHeader}>
                     <div className={styles.orderHeaderInfo}>
-                        <h3 className={styles.orderHeaderTitle}>Order #{mockOrderDetail.id}</h3>
-                        <p className={styles.orderDate}>{formatDate(mockOrderDetail.createdAt)}</p>
+                        <h3 className={styles.orderHeaderTitle}>Order #{orderDetail?.id}</h3>
+                        <p className={styles.orderDate}>{formatDate(orderDetail!.createdAt)}</p>
                     </div>
-                    <div className={styles.orderStatus}>{mockOrderDetail.status.name}</div>
+                    <div className={styles.orderStatus}>{orderDetail?.status.name}</div>
                 </div>
 
                 <div className={styles.orderItemsList}>
                     <h4 className={styles.productTitle}>Products</h4>
                     <div className={styles.orderItems}>
 
-                        {mockOrderDetail.items.map((item) => (
+                        {orderDetail?.items.map((item) => (
                             <div key={item.id} className={styles.orderItem}>
                                 <img
                                     src={item.mainPhoto}
@@ -115,28 +66,28 @@ const OrderDetailPage = () => {
                             </div>
                         ))}
 
-                        {mockOrderDetail.comment && mockOrderDetail.comment.trim() !== "" && (
+                        {orderDetail?.comment && orderDetail?.comment.trim() !== "" && (
                             <div className={styles.commentSection}>
                                 <h5 className={styles.commentTitle}>Comment</h5>
-                                <p className={styles.commentText}>{mockOrderDetail.comment}</p>
+                                <p className={styles.commentText}>{orderDetail.comment}</p>
                             </div>
                         )}
 
                         <div className={styles.orderSummary}>
                             <div className={`${styles.summaryRow} ${styles.total}`}>
                                 <span>Total</span>
-                                <span className={styles.totalPrice}>{mockOrderDetail.totalPrice} ₴</span>
+                                <span className={styles.totalPrice}>{orderDetail?.totalPrice} ₴</span>
                             </div>
                             <div
                                 className={`${styles.freeDelivery} ${
-                                    mockOrderDetail.isFreeDelivery
+                                    orderDetail?.isFreeDelivery
                                         ? styles.free
                                         : styles.paid
                                 }`}
                             >
                                 <Truck size={24}/>
                                 <span>
-                                    {mockOrderDetail.isFreeDelivery
+                                    {orderDetail?.isFreeDelivery
                                         ? "Free delivery"
                                         : "Paid"}
                                 </span>
@@ -153,10 +104,10 @@ const OrderDetailPage = () => {
                             Delivery
                         </h4>
                         <div className={styles.sectionContent}>
-                            <p className={styles.deliveryMethod}>{mockOrderDetail.deliveryDetail.deliveryProvider.name}</p>
-                            <p className={styles.deliveryAddress}>{mockOrderDetail.deliveryDetail.region.name}</p>
-                            <p className={styles.deliveryAddress}>{mockOrderDetail.deliveryDetail.settlement.name}</p>
-                            <p className={styles.deliveryAddress}>{mockOrderDetail.deliveryDetail.pickupPoint.address}</p>
+                            <p className={styles.deliveryMethod}>Delivery provider: {orderDetail?.deliveryDetail.deliveryProvider.name}</p>
+                            <p className={styles.deliveryAddress}>Region: {orderDetail?.deliveryDetail.region.name}</p>
+                            <p className={styles.deliveryAddress}>Settlement: {orderDetail?.deliveryDetail.settlement.name}</p>
+                            <p className={styles.deliveryAddress}>Address: {orderDetail?.deliveryDetail.pickupPoint.address}</p>
                         </div>
                     </div>
 
@@ -166,9 +117,9 @@ const OrderDetailPage = () => {
                             Receiver
                         </h4>
                         <div className={styles.sectionContent}>
-                            <p className={styles.recipientName}>{mockOrderDetail.deliveryDetail.lastName} {mockOrderDetail.deliveryDetail.firstName} {mockOrderDetail.deliveryDetail.middleName}</p>
-                            <p className={styles.recipientPhone}>{mockOrderDetail.deliveryDetail.phoneNumber}</p>
-                            <p className={styles.recipientEmail}>{mockOrderDetail.deliveryDetail.email}</p>
+                            <p className={styles.recipientName}>{orderDetail?.deliveryDetail.lastName} {orderDetail?.deliveryDetail.firstName}</p>
+                            <p className={styles.recipientPhone}>{orderDetail?.deliveryDetail.phoneNumber}</p>
+                            <p className={styles.recipientEmail}>{orderDetail?.deliveryDetail.email}</p>
                         </div>
                     </div>
                 </div>

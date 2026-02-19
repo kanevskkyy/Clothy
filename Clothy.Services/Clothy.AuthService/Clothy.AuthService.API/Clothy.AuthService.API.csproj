@@ -9,10 +9,12 @@
 
   <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+	  <PackageReference Include="Aspire.StackExchange.Redis" Version="9.5.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Clothy.ServiceDefaults\Clothy.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\..\..\Clothy.Shared\Clothy.Shared.csproj" />
     <ProjectReference Include="..\Clothy.AuthService.BLL\Clothy.AuthService.BLL.csproj" />
   </ItemGroup>
 

@@ -1,17 +1,34 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from "../../../shared/Button/Button.tsx";
-import {Link} from "react-router-dom";
-import {type ForgotPasswordFormData, forgotPasswordSchema} from "../../../app/schemas/forgotPasswordSchema.ts";
+import { Link } from "react-router-dom";
+import { type ForgotPasswordFormData, forgotPasswordSchema } from "../../../app/schemas/forgotPasswordSchema.ts";
 import FormField from '../../../shared/FormField/FormField.tsx';
 import Input from '../../../shared/Input/Input.tsx';
 import styles from "./ForgotPasswordForm.module.css";
+import { authApi } from "../../../app/api/authApi.ts";
+import { toast } from "sonner";
+import { getErrorMessage } from "../../../shared/utils/errorHandler.ts";
+import {formatTime} from "../../../shared/utils/formatTime.ts";
 
 const ForgotPasswordForm = () => {
+    const [resendTimer, setResendTimer] = useState(0);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     const [formData, setFormData] = useState<ForgotPasswordFormData>({
         email: "",
     });
 
     const [errors, setErrors] = useState<Partial<Record<keyof ForgotPasswordFormData, string>>>({});
+
+    useEffect(() => {
+        if (resendTimer > 0) {
+            const interval = setInterval(() => {
+                setResendTimer((prev) => prev - 1);
+            }, 1000);
+
+            return () => clearInterval(interval);
+        }
+    }, [resendTimer]);
 
     const handleChange = (field: keyof ForgotPasswordFormData) => (
         e: React.ChangeEvent<HTMLInputElement>
@@ -22,7 +39,7 @@ const ForgotPasswordForm = () => {
         }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         const result = forgotPasswordSchema.safeParse(formData);
@@ -37,8 +54,16 @@ const ForgotPasswordForm = () => {
             return;
         }
 
-        // TODO: Connect to API
-        console.log("Send forgot password link:", result.data);
+        setIsSubmitting(true);
+        try {
+            await authApi.forgotPasswordAsync(formData);
+            toast.success("Instructions have been sent to your email");
+            setResendTimer(60);
+        } catch (error) {
+            toast.error(getErrorMessage(error));
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -60,8 +85,18 @@ const ForgotPasswordForm = () => {
             </FormField>
 
             <div className={styles.actions}>
-                <Button type="submit" variant="primary" size="lg" fullWidth>
-                    Send instructions
+                <Button
+                    type="submit"
+                    variant="primary"
+                    size="lg"
+                    fullWidth
+                    disabled={resendTimer > 0 || isSubmitting}
+                >
+                    {isSubmitting
+                        ? "Sending..."
+                        : resendTimer > 0
+                            ? `Resend in ${formatTime(resendTimer)}`
+                            : "Send instructions"}
                 </Button>
                 <div className={styles.login}>
                     <Link to="/login" className={styles.loginLink}>Return to login</Link>

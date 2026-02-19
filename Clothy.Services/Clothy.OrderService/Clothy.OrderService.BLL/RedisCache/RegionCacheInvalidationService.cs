@@ -7,17 +7,17 @@ using Clothy.OrderService.Domain.Entities;
 using Clothy.Shared.Cache.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace Clothy.OrderService.BLL.RedisCache.SettlementCache
+namespace Clothy.OrderService.BLL.RedisCache
 {
-    public class SettlementCacheInvalidationService : IEntityCacheInvalidationService<Settlement>
+    public class RegionCacheInvalidationService : IEntityCacheInvalidationService<Region>
     {
         private IEntityCacheService cacheService;
-        private ILogger<SettlementCacheInvalidationService> logger;
+        private ILogger<RegionCacheInvalidationService> logger;
 
-        private const string CACHE_KEY_PREFIX = "settlement:";
-        private const string ALL_PATTERN = "settlement:*";
+        private const string CACHE_KEY_PREFIX = "region:";
+        private const string ALL_PATTERN = "region:*";
 
-        public SettlementCacheInvalidationService(IEntityCacheService cacheService, ILogger<SettlementCacheInvalidationService> logger)
+        public RegionCacheInvalidationService(IEntityCacheService cacheService, ILogger<RegionCacheInvalidationService> logger)
         {
             this.cacheService = cacheService;
             this.logger = logger;
@@ -30,11 +30,11 @@ namespace Clothy.OrderService.BLL.RedisCache.SettlementCache
                 string key = $"{CACHE_KEY_PREFIX}{entityId}";
                 await cacheService.RemoveAsync(key);
                 await cacheService.RemoveByPatternAsync(ALL_PATTERN);
-                logger.LogInformation("Invalidated cache for Settlement {EntityId}", entityId);
+                logger.LogInformation("Invalidated cache for Region {EntityId}", entityId);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to invalidate cache for Settlement {EntityId}", entityId);
+                logger.LogError(ex, "Failed to invalidate cache for Region {EntityId}", entityId);
                 throw;
             }
         }
@@ -44,11 +44,11 @@ namespace Clothy.OrderService.BLL.RedisCache.SettlementCache
             try
             {
                 await cacheService.RemoveByPatternAsync(ALL_PATTERN);
-                logger.LogInformation("Invalidated all Settlement caches");
+                logger.LogInformation("Invalidated all Region caches");
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to invalidate all Settlement caches");
+                logger.LogError(ex, "Failed to invalidate all Region caches");
                 throw;
             }
         }

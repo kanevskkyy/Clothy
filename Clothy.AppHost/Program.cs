@@ -49,6 +49,7 @@ var keycloak = builder.AddKeycloak("keycloak", port: 8080, keycloakAdminUsername
 var authService = builder.AddProject<Clothy_AuthService_API>("auth")
     .WithReference(keycloak)
     .WithReference(rabbitmq)
+    .WithReference(redis)
     .WithEnvironment("CLOUDINARYSETTINGS__CLOUDNAME", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__CLOUDNAME"))
     .WithEnvironment("CLOUDINARYSETTINGS__APIKEY", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APIKEY"))
     .WithEnvironment("CLOUDINARYSETTINGS__APISECRET", Environment.GetEnvironmentVariable("CLOUDINARYSETTINGS__APISECRET"))
@@ -58,6 +59,7 @@ var authService = builder.AddProject<Clothy_AuthService_API>("auth")
     .WithEnvironment("KEYCLOAK__CLIENTSECRET", Environment.GetEnvironmentVariable("KEYCLOAK__CLIENTSECRET"))
     .WithEnvironment("FRONTEND__URL", Environment.GetEnvironmentVariable("FRONTEND__URL"))
     .WaitFor(rabbitmq)
+    .WaitFor(redis)
     .WaitFor(keycloak);
 
 // UNUSED

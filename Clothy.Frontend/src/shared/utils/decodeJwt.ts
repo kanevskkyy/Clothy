@@ -10,6 +10,7 @@ export interface IJwtPayload {
     photo_url?: string;
     preferred_username?: string;
     roles?: string[];
+    sub? : string;
 }
 
 export const decodeJwt = (accessToken: string): IJwtPayload => {

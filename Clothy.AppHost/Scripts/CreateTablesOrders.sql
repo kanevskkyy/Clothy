@@ -111,7 +111,6 @@ CREATE TABLE delivery_detail (
     phonenumber VARCHAR(20) NOT NULL,
     firstname VARCHAR(100) NOT NULL,
     lastname VARCHAR(100) NOT NULL,
-    middlename VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL CHECK (email LIKE '%@%'),
     createdat TIMESTAMP WITHOUT TIME ZONE DEFAULT (NOW() AT TIME ZONE 'utc'),
     updatedat TIMESTAMP WITHOUT TIME ZONE,

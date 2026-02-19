@@ -1,5 +1,6 @@
 import { memo, useEffect, useRef, useState } from "react";
 import styles from "./PriceSlider.module.css";
+import {formatMoney} from "../../../shared/utils/formatMoney.ts";
 
 interface PriceSliderProps {
     min: number;
@@ -19,10 +20,6 @@ const PriceSlider = memo(({ min, max, currentMin, currentMax, onChange }: PriceS
         setTempMin(currentMin);
         setTempMax(currentMax);
     }, [currentMin, currentMax]);
-
-    const formatPrice = (price: number) => {
-        return Math.round(price).toLocaleString('uk-UA').replace(/\s/g, '\u00A0') + '\u00A0₴';
-    };
 
     const handleMouseMove = (e: MouseEvent) => {
         if (!activeThumb || !sliderRef.current) return;
@@ -102,7 +99,7 @@ const PriceSlider = memo(({ min, max, currentMin, currentMax, onChange }: PriceS
                     <input
                         type="text"
                         className={styles.priceInput}
-                        value={formatPrice(tempMin)}
+                        value={formatMoney(tempMin)}
                         readOnly
                     />
                 </div>
@@ -112,7 +109,7 @@ const PriceSlider = memo(({ min, max, currentMin, currentMax, onChange }: PriceS
                     <input
                         type="text"
                         className={styles.priceInput}
-                        value={formatPrice(tempMax)}
+                        value={formatMoney(tempMax)}
                         readOnly
                     />
                 </div>
@@ -144,8 +141,8 @@ const PriceSlider = memo(({ min, max, currentMin, currentMax, onChange }: PriceS
             </div>
 
             <div className={styles.priceRangeLabels}>
-                <span>{formatPrice(min)}</span>
-                <span>{formatPrice(max)}</span>
+                <span>{formatMoney(min)}</span>
+                <span>{formatMoney(max)}</span>
             </div>
         </div>
     );

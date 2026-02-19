@@ -6,60 +6,47 @@ import { Helmet } from "react-helmet";
 import { useSearchParams } from "react-router-dom";
 import type { PagedList } from "../../shared/utils/pagedList.ts";
 import {getCurrentPage, handlePageChange} from "../../shared/utils/paginationUtils.ts";
+import {useEffect, useState} from "react";
+import {reviewApi} from "../../app/api/reviewApi.ts";
+import {decodeJwt} from "../../shared/utils/decodeJwt.ts";
+import {useAuthStore} from "../../app/api/stores/authStore.ts";
+import {toast} from "sonner";
+import {getErrorMessage} from "../../shared/utils/errorHandler.ts";
+import Loader from "../../shared/Loader/Loader.tsx";
 
 const AccountReviewsPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
-    const currentPage = getCurrentPage(searchParams);
 
-    // TODO: Connect to API and fetch paged reviews based on currentPage
-    const mockPagedReviews: PagedList<IReviewReadDTO> = {
-        currentPage: currentPage,
-        totalPages: 1,
-        pageSize: 10,
-        totalCount: 2,
-        hasPrevious: false,
-        hasNext: false,
-        items: [
-            {
-                id: "1",
-                clotheInfo: {
-                    clotheItemId: "c1",
-                    clotheName: "Classic White T-Shirt",
-                    clothePhotoURL: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400",
-                },
-                user: {
-                    id: "u1",
-                    firstName: "John",
-                    lastName: "Doe",
-                    photoUrl: "https://i.pravatar.cc/150?img=1",
-                },
-                rating: 5,
-                comment: "Great quality! Very comfortable and fits perfectly.",
-                status: "approved",
-                createdAt: "2024-02-10T10:30:00Z",
-                updatedAt: "2024-02-10T10:30:00Z",
-            },
-            {
-                id: "2",
-                clotheInfo: {
-                    clotheItemId: "c2",
-                    clotheName: "Blue Denim Jeans",
-                    clothePhotoURL: "https://images.unsplash.com/photo-1542272604-787c3835535d?w=400",
-                },
-                user: {
-                    id: "u1",
-                    firstName: "John",
-                    lastName: "Doe",
-                    photoUrl: "https://i.pravatar.cc/150?img=1",
-                },
-                rating: 4,
-                comment: "Nice jeans, but the sizing runs a bit small.",
-                status: "approved",
-                createdAt: "2024-02-08T14:20:00Z",
-                updatedAt: "2024-02-08T14:20:00Z",
-            },
-        ],
-    };
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    const currentPage = getCurrentPage(searchParams);
+    const [reviews, setReviews] = useState<PagedList<IReviewReadDTO>>();
+    const accessToken = useAuthStore.getState().accessToken;
+
+    useEffect(() => {
+        const fetchUsersReviews = async () => {
+            try{
+                setIsLoading(true);
+                const decodeJwtData = decodeJwt(accessToken!);
+                const userId = decodeJwtData.sub;
+
+                const data = await reviewApi.getReviewsAsync({ pageNumber: currentPage, userId: userId });
+                setReviews(data);
+            }
+            catch(error){
+                toast.error(getErrorMessage(error));
+            }
+            finally {
+                setIsLoading(false);
+            }
+        }
+
+        fetchUsersReviews();
+    }, [currentPage]);
+
+    if (isLoading) {
+        return <Loader />;
+    }
 
     const onPageChange = (page: number) => {
         handlePageChange(page, searchParams, setSearchParams);
@@ -77,19 +64,19 @@ const AccountReviewsPage = () => {
 
             <h1 className={styles.title}>My Reviews</h1>
 
-            {mockPagedReviews.items.length === 0 ? (
+            {!reviews || reviews.items.length === 0 ? (
                 <p className={styles.empty}>You haven't written any reviews yet.</p>
             ) : (
                 <>
                     <div className={styles.reviewsList}>
-                        {mockPagedReviews.items.map((review) => (
+                        {reviews.items.map((review) => (
                             <ReviewCard key={review.id} review={review} />
                         ))}
                     </div>
 
                     <Pagination
-                        currentPage={mockPagedReviews.currentPage}
-                        totalPages={mockPagedReviews.totalPages}
+                        currentPage={reviews.currentPage}
+                        totalPages={reviews.totalPages}
                         onPageChange={onPageChange}
                     />
                 </>

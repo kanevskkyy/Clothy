@@ -3,8 +3,16 @@ import styles from "./PaymentCancelledPage.module.css";
 import {Helmet} from "react-helmet";
 import AuthLayout from "../../features/forms/authLayout/AuthLayout.tsx";
 import PaymentCancelled from "../../features/checkout/paymentCancelled/PaymentCancelled.tsx";
+import {Navigate, useSearchParams} from "react-router-dom";
 
 const PaymentCancelledPage = () => {
+    const [searchParams] = useSearchParams();
+    const paymentId = searchParams.get("paymentId");
+
+    if (!paymentId) {
+        return <Navigate to="/not-found" replace />;
+    }
+
     return (
         <PageWrapper>
             <div className={styles.page}>
@@ -17,7 +25,7 @@ const PaymentCancelledPage = () => {
                     title="Payment canceled!"
                     subtitle="Unfortunately, your payment was not completed. This may have been due to a canceled transaction or technical issues. Your items are still in your cart."
                 >
-                    <PaymentCancelled />
+                    <PaymentCancelled paymentId={paymentId}/>
                 </AuthLayout>
             </div>
         </PageWrapper>

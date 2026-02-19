@@ -13,7 +13,6 @@ namespace Clothy.CatalogService.DAL.Specification
     {
         public ClotheItemSpecification(ClotheItemSpecificationParameters parameters)
         {
-            Query.AsNoTracking();
             Query.Include(property => property.Stocks)
                 .ThenInclude(property => property.Color);
             Query.Include(property => property.ClotheTags);

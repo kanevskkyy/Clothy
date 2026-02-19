@@ -1,6 +1,5 @@
 import { useState } from "react";
 import type { PagedList } from "../../../../shared/utils/pagedList.ts";
-import type { IReviewAggregatedReadDTO } from "../IReviewAggregatedReadDTO.ts";
 import type { IReviewStatistic } from "../IReviewStatistic.ts";
 import type { IQuestionAggregatedReadDTO } from "../../questions/IQuestionAggregatedReadDTO.ts";
 import styles from "./ReviewsSection.module.css";
@@ -10,10 +9,11 @@ import Pagination from "../../../../shared/Pagination/Pagination.tsx";
 import { reviewApi } from "../../../../app/api/reviewApi.ts";
 import { questionApi } from "../../../../app/api/questionApi.ts";
 import Loader from "../../../../shared/Loader/Loader.tsx";
+import type {IReviewReadDTO} from "../IReviewReadDTO.ts";
 
 interface ReviewsSectionProps {
     clotheId: string;
-    initialReviews: PagedList<IReviewAggregatedReadDTO>;
+    initialReviews: PagedList<IReviewReadDTO>;
     statistics: IReviewStatistic;
     initialQuestions: PagedList<IQuestionAggregatedReadDTO>;
 }
@@ -33,11 +33,11 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ clotheId, initialReview
     const handleReviewPageChange = async (page: number) => {
         setReviewsLoading(true);
         try {
-            const newReviewsItems = await reviewApi.getReviewsAsync(page, clotheId);
+            const newReviews = await reviewApi.getReviewsAsync({ pageNumber: page, clotheItemId: clotheId });
             setReviews(prev => ({
                 ...prev,
-                currentPage: page,
-                items: newReviewsItems
+                currentPage: newReviews.currentPage,
+                items: newReviews.items,
             }));
         } catch (error) {
             console.error('Error fetching reviews:', error);

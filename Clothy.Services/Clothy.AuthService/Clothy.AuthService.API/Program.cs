@@ -32,6 +32,8 @@ builder.Services.AddScoped<IKeycloakUserHelper, KeycloakUserHelper>();
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssembly(typeof(LoginDTOValidator).Assembly);
 
+builder.AddRedisClient("clothy-redis");
+
 builder.Services.AddAutoMapper(cfg =>
 {
     cfg.AddMaps(typeof(KeycloakMappingProfile).Assembly);

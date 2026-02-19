@@ -83,7 +83,7 @@ namespace Clothy.Shared.Cache
 
             try
             {
-                var redisValue = await redisDb.StringGetAsync(key);
+                RedisValue redisValue = await redisDb.StringGetAsync(key);
                 if (redisValue.HasValue)
                 {
                     T redisData = JsonSerializer.Deserialize<T>(redisValue, JsonOptions)!;
@@ -149,8 +149,8 @@ namespace Clothy.Shared.Cache
 
         public async Task RemoveByPatternAsync(string pattern)
         {
-            var server = redisDb.Multiplexer.GetServer(redisDb.Multiplexer.GetEndPoints()[0]);
-            foreach (var key in server.Keys(pattern: pattern + "*"))
+            IServer server = redisDb.Multiplexer.GetServer(redisDb.Multiplexer.GetEndPoints()[0]);
+            foreach (RedisKey key in server.Keys(pattern: pattern + "*"))
             {
                 await redisDb.KeyDeleteAsync(key);
             }

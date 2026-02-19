@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import {useState, useRef, useEffect} from "react";
 import {Link, Navigate, useOutletContext} from "react-router-dom";
 import styles from "./AccountProfilePage.module.css";
 import { Upload } from "lucide-react";
@@ -8,13 +8,33 @@ import Button from "../../shared/Button/Button.tsx";
 import FormField from "../../shared/FormField/FormField.tsx";
 import Input from "../../shared/Input/Input.tsx";
 import { Helmet } from "react-helmet";
+import {authApi} from "../../app/api/authApi.ts";
+import {toast} from "sonner";
+import {getErrorMessage} from "../../shared/utils/errorHandler.ts";
+import {useAuthStore} from "../../app/api/stores/authStore.ts";
 
 interface OutletContext {
     user: IUserReadDTO;
 }
 
 const AccountProfilePage = () => {
+    const [isLoading, setIsLoading] = useState(false);
+
     const { user } = useOutletContext<OutletContext>();
+    const { setUser } = useAuthStore();
+
+    useEffect(() => {
+        const refreshUser = async () => {
+            try {
+                const updatedUser = await authApi.getInfoAboutMeAsync();
+                setUser(updatedUser);
+            } catch (error) {
+                console.error(getErrorMessage(error));
+            }
+        };
+
+        refreshUser();
+    }, []);
 
     const [formData, setFormData] = useState({
         firstName: user?.firstName ?? "",
@@ -62,7 +82,7 @@ const AccountProfilePage = () => {
         fileInputRef.current?.click();
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         const dataToValidate = {
@@ -73,21 +93,25 @@ const AccountProfilePage = () => {
         const result = userUpdateSchema.safeParse(dataToValidate);
 
         if (!result.success) {
-            const fieldErrors: Partial<
-                Record<keyof UserUpdateFormData, string>
-            > = {};
-
+            const fieldErrors: Partial<Record<keyof UserUpdateFormData, string>> = {};
             result.error.issues.forEach((issue) => {
                 const field = issue.path[0] as keyof UserUpdateFormData;
                 fieldErrors[field] = issue.message;
             });
-
             setErrors(fieldErrors);
             return;
         }
 
-        // TODO: Connect API
-        console.log("Profile update successful:", result.data);
+        try {
+            setIsLoading(true);
+            const updatedUser = await authApi.updateMyAccountAsync(result.data);
+            setUser(updatedUser);
+            toast.success("Successfully updated your account");
+        } catch (error) {
+            toast.error(getErrorMessage(error))
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -181,8 +205,8 @@ const AccountProfilePage = () => {
                     />
                 </FormField>
 
-                <Button type="submit" variant="primary" size="lg" fullWidth>
-                    Save Changes
+                <Button type="submit" variant="primary" size="lg" fullWidth disabled={isLoading}>
+                    {isLoading ? "Saving..." : "Save Changes"}
                 </Button>
 
                 <div className={styles.passwordSection}>

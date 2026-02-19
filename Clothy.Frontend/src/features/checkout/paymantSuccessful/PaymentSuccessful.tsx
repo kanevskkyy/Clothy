@@ -39,7 +39,7 @@ const PaymentSuccessful = () => {
                 </Button>
 
                 <Button
-                    to="/account"
+                    to="/account/orders"
                     variant="primary"
                     icon={<ArrowRight size={20} />}
                     fullWidth

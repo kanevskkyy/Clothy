@@ -36,7 +36,6 @@ namespace Clothy.OrderService.SeedData.Seeders
                     FirstName = faker.Name.FirstName(),
                     LastName = faker.Name.LastName(),
                     PickupPointId = faker.PickRandom(pickupPoints).Id,
-                    MiddleName = faker.Name.LastName(),
                     Email = faker.Internet.Email(),
                     CreatedAt = faker.Date.Past(2).ToUniversalTime(),
                     UpdatedAt = faker.Date.Recent(30).ToUniversalTime()

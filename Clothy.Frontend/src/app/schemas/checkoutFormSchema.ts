@@ -9,10 +9,6 @@ export const checkoutFormSchema = z.object({
         .min(1, "LastName is required")
         .max(100, "LastName cannot exceed 100 characters"),
 
-    middleName: z.string()
-        .min(1, "MiddleName is required")
-        .max(100, "MiddleName cannot exceed 100 characters"),
-
     email: z.string()
         .min(1, "Email is required")
         .email("Email should be valid!")
@@ -24,20 +20,20 @@ export const checkoutFormSchema = z.object({
         .regex(/^(\+380|0)\d{9}$/, "PhoneNumber must be a valid Ukrainian number"),
 
     pickupPointId: z.string()
-        .min(1, "PickupPointId is required"),
+        .min(1, "Select a pickup point"),
 
     comment: z.string()
         .max(80, "Comment cannot exceed 80 characters")
         .optional(),
 
     deliveryProviderId: z.string()
-        .min(1, "DeliveryProviderId is required"),
+        .min(1, "Select a delivery provider"),
 
     regionId: z.string()
-        .min(1, "RegionId is required"),
+        .min(1, "Select a region"),
 
     settlementId: z.string()
-        .min(1, "SettlementId is required"),
+        .min(1, "Select a settlement"),
 
     paymentMethod: z.enum(["Card", "Crypto"])
 });

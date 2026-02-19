@@ -27,6 +27,9 @@ namespace Clothy.AuthService.BLL.Services
         private IUserClaimsExtractor userClaimsExtractor;
         private KeycloakSettings keycloakSettings;
         private IKeycloakUserHelper keycloakUserHelper;
+
+        private const string DEFAULT_PHOTO_URL = "https://res.cloudinary.com/dkdljnfja/image/upload/v1763818143/Profile_Avatar_cfazhc.png";
+
         public UserService(
             IUserClaimsExtractor userClaimsExtractor,
             HttpClient httpClient,
@@ -74,12 +77,14 @@ namespace Clothy.AuthService.BLL.Services
             Dictionary<string, object> updateData = new Dictionary<string, object>
             {
                 ["firstName"] = userUpdateDTO.FirstName!,
-                ["lastName"] = userUpdateDTO.LastName!
+                ["lastName"] = userUpdateDTO.LastName!,
+                ["email"] = currentUser.Email!
             };
 
             Dictionary<string, string[]> attributes = new Dictionary<string, string[]>
             {
-                ["phoneNumber"] = new[] { userUpdateDTO.PhoneNumber! }
+                ["phoneNumber"] = new[] { userUpdateDTO.PhoneNumber! },
+                ["photoURL"] = new[] { newPhotoUrl ?? currentUser.PhotoUrl ?? DEFAULT_PHOTO_URL }
             };
 
             if (newPhotoUrl != null) attributes["photoURL"] = new[] { newPhotoUrl };

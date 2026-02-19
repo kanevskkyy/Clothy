@@ -14,7 +14,7 @@ interface SortSelectProps {
     label?: string;
 }
 
-const SortSelect = memo(({ value, options = [], onChange, label = "Сортування:" }: SortSelectProps) => {
+const SortSelect = memo(({ value, options = [], onChange, label = "Sort by:" }: SortSelectProps) => {
     if (!options || options.length === 0) {
         return null;
     }

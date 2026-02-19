@@ -24,12 +24,19 @@ namespace Clothy.BasketService.DAL.Repositories
             BasketList? basket = await GetBasketAsync(userId);
             if (basket == null) return;
 
-            BasketItem? item = basket.BasketItems.FirstOrDefault(basketItem => basketItem.ClotheId == clotheId && basketItem.SizeId == sizeId && basketItem.ColorId == colorId);
+            BasketItem? item = basket.BasketItems.FirstOrDefault(
+                basketItem => basketItem.ClotheId == clotheId
+                           && basketItem.SizeId == sizeId
+                           && basketItem.ColorId == colorId
+            );
+
             if (item == null) return;
 
             item.Quantity = quantity;
-            await AddOrUpdateItemAsync(userId, item);
-        }
+
+            string serialized = JsonSerializer.Serialize(basket);
+            await database.StringSetAsync(userId.ToString(), serialized);
+        }   
 
         public async Task AddOrUpdateItemAsync(Guid userId, BasketItem item)
         {
@@ -54,10 +61,10 @@ namespace Clothy.BasketService.DAL.Repositories
 
         public async Task<BasketList?> GetBasketAsync(Guid userId)
         {
-            var data = await database.StringGetAsync(userId.ToString());
+            RedisValue data = await database.StringGetAsync(userId.ToString());
             if (data.IsNullOrEmpty) return null;
             
-            return JsonSerializer.Deserialize<BasketList>(data)!;   
+            return JsonSerializer.Deserialize<BasketList>(data);   
         }
 
         public async Task RemoveItemAsync(Guid userId, Guid clotheId, Guid sizeId, Guid colorId)
@@ -67,7 +74,7 @@ namespace Clothy.BasketService.DAL.Repositories
 
             basketList.BasketItems.RemoveAll(p => p.ColorId == colorId && p.SizeId == sizeId && p.ClotheId == clotheId);
 
-            var serialized = JsonSerializer.Serialize(basketList);
+            string serialized = JsonSerializer.Serialize(basketList);
             await database.StringSetAsync(userId.ToString(), serialized);
         }
     }

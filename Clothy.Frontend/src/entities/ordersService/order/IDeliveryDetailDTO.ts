@@ -8,7 +8,6 @@ export interface IDeliveryDetailDTO {
     phoneNumber: string;
     firstName: string;
     lastName: string;
-    middleName: string;
     email: string;
     createdAt: string;
     updatedAt: string;

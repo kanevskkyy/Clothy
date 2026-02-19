@@ -2,8 +2,18 @@ import StepList, {type Step} from "../../onboarding/stepList/StepList.tsx";
 import { Home, Info, RotateCcw } from "lucide-react";
 import styles from "./PaymentCancelled.module.css";
 import Button from "../../../shared/Button/Button.tsx";
+import {paymentApi} from "../../../app/api/paymentApi.ts";
+import {getErrorMessage} from "../../../shared/utils/errorHandler.ts";
+import {toast} from "sonner";
+import {useState} from "react";
 
-const PaymentCancelled = () => {
+interface PaymentProps {
+    paymentId: string;
+}
+
+const PaymentCancelled: React.FC<PaymentProps> = ( { paymentId } ) => {
+    const [isRetrying, setIsRetrying] = useState(false);
+
     const paymentFailureSteps: Step[] = [
         {
             stepNumber: 1,
@@ -23,11 +33,18 @@ const PaymentCancelled = () => {
         },
     ];
 
-    const handleRetryButtonClick = () => {
-        // #TODO: Conect to API
-        // find paid id from query
-
-        console.log('Retrying...');
+    const handleRetryButtonClick = async () => {
+        try{
+            setIsRetrying(true)
+            const paymentResponse = await paymentApi.retryPaymentAsync(paymentId);
+            window.location.href = paymentResponse.paymentUrl;
+        }
+        catch (error) {
+            toast.error(getErrorMessage(error));
+        }
+        finally {
+            setIsRetrying(false);
+        }
     };
 
     return (
@@ -54,8 +71,11 @@ const PaymentCancelled = () => {
                     icon={<RotateCcw  size={20} />}
                     onClick={handleRetryButtonClick}
                     fullWidth
+                    disabled={isRetrying}
                 >
-                    Try again
+                    {isRetrying ? (
+                        "Retrying..."
+                    ) : "Try again"}
                 </Button>
             </div>
         </div>

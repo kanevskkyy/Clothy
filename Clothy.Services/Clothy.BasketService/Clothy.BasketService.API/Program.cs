@@ -6,7 +6,6 @@ using Clothy.OrderService.gRPC.Client.Services.Interfaces;
 using Clothy.OrderService.gRPC.Client.Services;
 using Clothy.BasketService.API.Middleware;
 using Clothy.BasketService.BLL.Mapper;
-using Clothy.BasketService.BLL.DTOs;
 using Clothy.BasketService.BLL.Validation;
 using FluentValidation.AspNetCore;
 using FluentValidation;

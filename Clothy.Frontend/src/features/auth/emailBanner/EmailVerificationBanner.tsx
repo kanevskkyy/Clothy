@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { authApi, type IResendVerificationEmailRequest } from "../../../app/api/authApi.ts";
 import { getErrorMessage } from "../../../shared/utils/errorHandler.ts";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface EmailVerificationBannerProps {
     emailVerified?: boolean;
@@ -13,6 +14,7 @@ interface EmailVerificationBannerProps {
 
 const EmailVerificationBanner = ({ emailVerified }: EmailVerificationBannerProps) => {
     const { user, setUser } = useAuthStore();
+    const navigate = useNavigate();
     const [isSending, setIsSending] = useState(false);
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [emailSent, setEmailSent] = useState(false);
@@ -27,12 +29,13 @@ const EmailVerificationBanner = ({ emailVerified }: EmailVerificationBannerProps
             }
 
             const body: IResendVerificationEmailRequest = {
-                email: user.email
+                email: user.email,
             };
 
             await authApi.resendVerificationEmailAsync(body);
             toast.success("Verification email sent! Please check your inbox.");
             setEmailSent(true);
+            navigate("/email-verification", { state: { fromBanner: true } });
         } catch (error) {
             toast.error(getErrorMessage(error));
         } finally {
@@ -74,8 +77,7 @@ const EmailVerificationBanner = ({ emailVerified }: EmailVerificationBannerProps
                     <p className={styles.message}>
                         {emailSent
                             ? "We've sent you a verification email. Please check your inbox and click the link."
-                            : "Your email has not been confirmed yet. Please confirm it to be able to place orders."
-                        }
+                            : "Your email has not been confirmed yet. Please confirm it to be able to place orders."}
                     </p>
                 </div>
                 <div className={styles.actions}>

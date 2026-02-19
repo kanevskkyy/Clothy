@@ -7,7 +7,7 @@ using Clothy.OrderService.Domain.Entities;
 using Clothy.Shared.Cache.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace Clothy.OrderService.BLL.RedisCache.OrdersCache
+namespace Clothy.OrderService.BLL.RedisCache
 {
     public class OrderCacheInvalidationService : IEntityCacheInvalidationService<Order>
     {

@@ -2,16 +2,23 @@ import styles from "./ConfirmEmail.module.css";
 import { ArrowRight } from "lucide-react";
 import Button from "../../../shared/Button/Button.tsx";
 import { useState, useEffect } from "react";
-import StepList, {type Step} from "../../onboarding/stepList/StepList.tsx";
-import {useAuthStore} from "../../../app/api/stores/authStore.ts";
-import {authApi, type IResendVerificationEmailRequest} from "../../../app/api/authApi.ts";
+import StepList, { type Step } from "../../onboarding/stepList/StepList.tsx";
+import { useAuthStore } from "../../../app/api/stores/authStore.ts";
+import { authApi, type IResendVerificationEmailRequest } from "../../../app/api/authApi.ts";
 import { toast } from "sonner";
-import {getErrorMessage} from "../../../shared/utils/errorHandler.ts";
+import { getErrorMessage } from "../../../shared/utils/errorHandler.ts";
+import { useNavigate } from "react-router-dom";
+import {formatTime} from "../../../shared/utils/formatTime.ts";
 
-const ConfirmEmail = () => {
+interface ConfirmEmailProps {
+    fromBanner?: boolean;
+}
+
+const ConfirmEmail = ({ fromBanner = false }: ConfirmEmailProps) => {
     const [resendTimer, setResendTimer] = useState(0);
     const [isResending, setIsResending] = useState(false);
-    const user = useAuthStore(state => state.user);
+    const user = useAuthStore((state) => state.user);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (resendTimer > 0) {
@@ -33,8 +40,8 @@ const ConfirmEmail = () => {
             }
 
             const body: IResendVerificationEmailRequest = {
-                email: user.email
-            }
+                email: user.email,
+            };
 
             await authApi.resendVerificationEmailAsync(body);
             toast.success("We have successfully sent you a confirmation email");
@@ -44,6 +51,10 @@ const ConfirmEmail = () => {
         } finally {
             setIsResending(false);
         }
+    };
+
+    const handleSkip = () => {
+        navigate(fromBanner ? "/account" : "/");
     };
 
     const confirmEmailSteps: Step[] = [
@@ -60,12 +71,6 @@ const ConfirmEmail = () => {
             stepInstruction: "All done! You can now use your account",
         },
     ];
-
-    const formatTime = (seconds: number) => {
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return `${mins}:${secs.toString().padStart(2, '0')}`;
-    };
 
     return (
         <div className={styles.wrapper}>
@@ -90,12 +95,12 @@ const ConfirmEmail = () => {
                 </Button>
 
                 <Button
-                    to="/account"
                     variant="primary"
                     icon={<ArrowRight size={20} />}
                     fullWidth
+                    onClick={handleSkip}
                 >
-                    Skip and continue
+                    {fromBanner ? "Back to account" : "Skip and continue"}
                 </Button>
             </div>
         </div>

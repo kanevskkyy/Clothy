@@ -25,10 +25,6 @@ namespace Clothy.OrderService.BLL.FluentValidation.OrderValidation
                 .NotEmpty().WithMessage("LastName is required")
                 .MaximumLength(100).WithMessage("LastName cannot exceed 100 characters");
 
-            RuleFor(x => x.MiddleName)
-                .NotEmpty().WithMessage("MiddleName is required")
-                .MaximumLength(100).WithMessage("MiddleName cannot exceed 100 characters");
-
             RuleFor(x => x.Email)
                 .NotEmpty().WithMessage("Email is required")
                 .EmailAddress().WithMessage("Email should be valid!");

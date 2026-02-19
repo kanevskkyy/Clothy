@@ -1,9 +1,9 @@
 import {Home, ShieldAlert, ShoppingBasket} from 'lucide-react';
-import ErrorPage from '../ErrorPage/ErrorPage';
+import ErrorPage from "../ErrorPage/ErrorPage.tsx";
 
 const ForbiddenPage = () => {
     return (
-        <ErrorPqage
+        <ErrorPage
             title="Access Denied"
             message="You don't have permission to view this page. Please contact support if you believe this is an error."
             icon={ShieldAlert}

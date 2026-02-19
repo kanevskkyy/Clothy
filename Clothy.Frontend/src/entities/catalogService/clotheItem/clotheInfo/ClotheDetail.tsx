@@ -10,7 +10,7 @@ import Loader from "../../../../shared/Loader/Loader.tsx";
 import { tryOnService } from "../../../../app/api/tryOnApi.ts";
 import { catalogApi } from "../../../../app/api/catalogApi.ts";
 import {getErrorMessage} from "../../../../shared/utils/errorHandler.ts";
-import {basketApi, type IBasketItemCreateDTO} from "../../../../app/api/basketApi.ts"; // ✅ Додай імпорт
+import {basketApi, type IBasketItemCreateDTO} from "../../../../app/api/basketApi.ts";
 
 interface ProductInfoProps {
     clotheDetail: IClotheDetailDTO;

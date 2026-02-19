@@ -336,20 +336,20 @@ namespace Clothy.OrderService.BLL.Services
                     OrderWithDetailsData? orderData = await unitOfWork.Orders.GetByIdWithDetailsAsync(id, cancellationToken);
                     if (orderData == null) throw new NotFoundException($"Order not found with ID: {id}");
 
-                    if (claimsPrincipal != null)
-                    {
-                        bool isAdmin = userClaimsExtractor.IsInRole(claimsPrincipal, "Admin");
-                        bool isManager = userClaimsExtractor.IsInRole(claimsPrincipal, "Manager");
-                        Guid userId = userClaimsExtractor.GetUserId(claimsPrincipal);
-
-                        if (!isAdmin && !isManager && orderData.UserId != userId) throw new ForbiddenException("You do not have access to this order.");
-                    }
-
                     return mapper.Map<OrderDetailDTO>(orderData);
                 },
                 MEMORY_TTL_ORDER_DETAIL,
                 REDIS_TTL_ORDER_DETAIL
             );
+
+            if (claimsPrincipal != null)
+            {
+                bool isAdmin = userClaimsExtractor.IsInRole(claimsPrincipal, "Admin");
+                bool isManager = userClaimsExtractor.IsInRole(claimsPrincipal, "Manager");
+                Guid userId = userClaimsExtractor.GetUserId(claimsPrincipal);
+
+                if (!isAdmin && !isManager && cached.UserId != userId) throw new ForbiddenException("You do not have access to this order.");
+            }
 
             return cached!;
         }

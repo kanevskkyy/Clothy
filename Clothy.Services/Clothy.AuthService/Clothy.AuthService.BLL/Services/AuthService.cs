@@ -26,6 +26,8 @@ namespace Clothy.AuthService.BLL.Services
         private KeycloakSettings keycloakSettings;
         private IMapper mapper;
         private IKeycloakUserHelper keycloakUserHelper;
+        private IEntityCacheService cacheService;
+        private const string ADMIN_TOKEN_CACHE_KEY = "kc_admin_token";
 
         private const string DEFAULT_PHOTO_URL = "https://res.cloudinary.com/dkdljnfja/image/upload/v1763818143/Profile_Avatar_cfazhc.png";
 
@@ -35,11 +37,13 @@ namespace Clothy.AuthService.BLL.Services
             IOptions<KeycloakSettings> keycloakOptions,
             IUserClaimsExtractor userClaimsExtractor,
             IMapper mapper,
-            IKeycloakUserHelper keycloakUserHelper)
+            IKeycloakUserHelper keycloakUserHelper,
+            IEntityCacheService entityCacheService)
         {
             this.userClaimsExtractor = userClaimsExtractor;
             this.httpClient = httpClient;
             this.logger = logger;
+            this.cacheService = entityCacheService;
             this.mapper = mapper;
             keycloakSettings = keycloakOptions.Value;
             this.keycloakUserHelper = keycloakUserHelper;
@@ -298,26 +302,35 @@ namespace Clothy.AuthService.BLL.Services
             logger.LogInformation("Verification email resent to: {Email}", resendVerificationEmailDTO.Email);
         }
 
-        private async Task<string> GetAdminTokenAsync(CancellationToken cancellationToken = default)
+        private async Task<string?> GetAdminTokenAsync(CancellationToken cancellationToken = default)
         {
-            string tokenUrl = $"{keycloakSettings.Url}/realms/{keycloakSettings.Realm}/protocol/openid-connect/token";
+            return await cacheService.GetOrSetAsync<string>(
+                ADMIN_TOKEN_CACHE_KEY,
+                async () =>
+                {
+                    string tokenUrl = $"{keycloakSettings.Url}/realms/{keycloakSettings.Realm}/protocol/openid-connect/token";
 
-            httpClient.DefaultRequestHeaders.Authorization = null;
+                    httpClient.DefaultRequestHeaders.Authorization = null;
 
-            Dictionary<string, string> formData = new Dictionary<string, string>
-            {
-                ["grant_type"] = "client_credentials",
-                ["client_id"] = keycloakSettings.ClientId,
-                ["client_secret"] = keycloakSettings.ClientSecret
-            };
+                    Dictionary<string, string> formData = new Dictionary<string, string>
+                    {
+                        ["grant_type"] = "client_credentials",
+                        ["client_id"] = keycloakSettings.ClientId!,
+                        ["client_secret"] = keycloakSettings.ClientSecret!
+                    };
 
-            FormUrlEncodedContent content = new FormUrlEncodedContent(formData);
-            HttpResponseMessage response = await httpClient.PostAsync(tokenUrl, content, cancellationToken);
-            response.EnsureSuccessStatusCode();
+                    FormUrlEncodedContent content = new FormUrlEncodedContent(formData);
+                    HttpResponseMessage response = await httpClient.PostAsync(tokenUrl, content, cancellationToken);
+                    response.EnsureSuccessStatusCode();
 
-            string json = await response.Content.ReadAsStringAsync(cancellationToken);
-            JsonElement tokenResponse = JsonSerializer.Deserialize<JsonElement>(json);
-            return tokenResponse.GetProperty("access_token").GetString()!;
+                    string json = await response.Content.ReadAsStringAsync(cancellationToken);
+                    JsonElement tokenResponse = JsonSerializer.Deserialize<JsonElement>(json);
+
+                    return tokenResponse.GetProperty("access_token").GetString();
+                },
+                memoryExpiration: TimeSpan.FromSeconds(55),
+                redisExpiration: TimeSpan.FromSeconds(55)
+            );
         }
 
         private async Task SendVerificationEmailAsync(string userId, string adminToken, CancellationToken cancellationToken = default)
