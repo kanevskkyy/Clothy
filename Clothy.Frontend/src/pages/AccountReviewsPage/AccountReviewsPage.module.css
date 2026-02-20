@@ -2,13 +2,6 @@
     padding: 20px;
 }
 
-.title {
-    font-size: 28px;
-    font-weight: 600;
-    margin-bottom: 24px;
-    color: #1a1a1a;
-}
-
 .reviewsList {
     display: flex;
     flex-direction: column;

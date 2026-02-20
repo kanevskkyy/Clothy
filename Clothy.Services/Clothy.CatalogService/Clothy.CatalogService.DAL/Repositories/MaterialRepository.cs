@@ -21,18 +21,13 @@ namespace Clothy.CatalogService.DAL.Repositories
         {
             List<Material> materials = await dbSet
                 .AsNoTracking()
-                .Include(property => property.ClotheMaterials)
-                .ToListAsync();
+                .Include(m => m.ClotheMaterials)
+                .ToListAsync(cancellationToken);
 
-            Dictionary<Material, int> result = new Dictionary<Material, int>();
-            
-            foreach (Material material in materials)
-            {
-                int materialCount = material.ClotheMaterials.Count;
-                result.Add(material, materialCount);
-            }
-            
-            return result;
+            return materials.ToDictionary(
+                material => material,
+                material => material.ClotheMaterials.DistinctBy(cm => cm.ClotheId).Count()
+            );
         }
 
         public async Task<bool> IsNameAlreadyExistsAsync(string name, Guid? id = null, CancellationToken cancellationToken = default)

@@ -1,36 +1,23 @@
-import {useEffect, useState} from 'react';
+import {useEffect} from 'react';
 import styles from "./PopularProductsSection.module.css";
-import type { IClotheSummaryDTO } from '../../../entities/catalogService/clotheItem/IClotheSummaryDTO';
 import {catalogApi} from "../../../app/api/catalogApi.ts";
 import ProductList from '../../catalog/productList/ProductList.tsx';
 import Loader from '../../../shared/Loader/Loader.tsx';
 import {toast} from "sonner";
 import {getErrorMessage} from "../../../shared/utils/errorHandler.ts";
+import {useQuery} from "@tanstack/react-query";
 
 const PopularProductsSection = () => {
-    const [loading, setLoading] = useState(true);
-    const [clotheItems, setClotheItems] = useState<IClotheSummaryDTO[]>([]);
+   const { data: clotheItems = [], isLoading, error } = useQuery({
+       queryKey: ["clothe-top8"],
+       queryFn: () => catalogApi.getTop8MostSaleAsync(),
+   });
 
     useEffect(() => {
-        const fetchTop8MostPopularClothes = async () => {
-            try {
-                const response = await catalogApi.getTop8MostSaleAsync();
-                setClotheItems(response);
-            }
-            catch (error) {
-                toast.error(getErrorMessage(error));
-            }
-            finally {
-                setLoading(false);
-            }
-        }
+        if (error) toast.error(getErrorMessage(error));
+    }, [error]);
 
-        fetchTop8MostPopularClothes();
-    }, [])
-
-    if(loading){
-        return <Loader />;
-    }
+    if (isLoading) return <Loader />;
 
     return (
         <section className={styles.productsSection}>

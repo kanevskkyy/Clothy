@@ -32,6 +32,7 @@ builder.Services.AddMassTransit(x =>
     x.AddConsumer<OrderCreatedEmailConsumer>();
     x.AddConsumer<OrderDeliveredEmailConsumer>();
     x.AddConsumer<ClotheStockUpdatedConsumer>();
+    x.AddConsumer<OrderShippedEmailConsumer>();
 
     x.UsingRabbitMq((context, cfg) =>
     {
@@ -54,6 +55,12 @@ builder.Services.AddMassTransit(x =>
         {
             e.ConfigureConsumer<OrderDeliveredEmailConsumer>(context);
             e.Bind("send-notification-order-delivered");
+        });
+
+        cfg.ReceiveEndpoint("notification-order-shipped-queue", e =>
+        {
+            e.ConfigureConsumer<OrderShippedEmailConsumer>(context);
+            e.Bind("send-notification-order-shipped");
         });
     });
 });

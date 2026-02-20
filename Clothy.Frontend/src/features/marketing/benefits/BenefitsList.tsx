@@ -1,4 +1,4 @@
-import {BadgePercent, type LucideIcon, RefreshCw, Shield, Sparkles, Truck} from "lucide-react";
+import {BadgePercent, type LucideIcon, Shield, Sparkles, Truck} from "lucide-react";
 import styles from "./BenefitsList.module.css";
 
 interface IBenefitItem {
@@ -12,11 +12,6 @@ const benefits: IBenefitItem[] = [
         icon: Truck,
         title: "Free shipping",
         description: "from ₴1500",
-    },
-    {
-        icon: RefreshCw,
-        title: "Returns",
-        description: "14 days",
     },
     {
         icon: Shield,

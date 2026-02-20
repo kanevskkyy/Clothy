@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { CreditCard, Bitcoin } from 'lucide-react';
 import styles from './CheckoutForm.module.css';
-import type { IDeliveryProviderReadDTO } from '../../../entities/ordersService/deliveryProviders/IDeliveryProviderReadDTO.ts';
 import type { IRegionReadDTO } from '../../../entities/ordersService/regions/IRegionReadDTO.ts';
 import type { ISettlementReadDTO } from '../../../entities/ordersService/settlement/ISettlementReadDTO.ts';
 import type { IPickupPointReadDTO } from '../../../entities/ordersService/pickupPoints/IPickupPointReadDTO.ts';
@@ -17,6 +16,8 @@ import { ordersApi } from '../../../app/api/ordersApi.ts';
 import { toast } from 'sonner';
 import { getErrorMessage } from '../../../shared/utils/errorHandler.ts';
 import { useAuthStore } from '../../../app/api/stores/authStore.ts';
+import { getZodFieldErrors } from '../../../shared/utils/getZodFieldErrors.ts';
+import { useQuery } from '@tanstack/react-query';
 
 interface CheckoutFormProps {
     onValidSubmit: (data: CheckoutFormData) => void;
@@ -46,9 +47,27 @@ const defaultPagedList = <T,>(): PagedList<T> => ({
 const CheckoutForm = ({ onValidSubmit }: CheckoutFormProps) => {
     const user = useAuthStore(state => state.user);
 
-    const [isInitialLoading, setIsInitialLoading] = useState(true);
-    const [deliveryProviders, setDeliveryProviders] = useState<IDeliveryProviderReadDTO[]>([]);
-    const [regions, setRegions] = useState<IRegionReadDTO[]>([]);
+    const { data: deliveryProviders = [], isLoading: providersLoading } = useQuery({
+        queryKey: ["delivery-providers"],
+        queryFn: () => ordersApi.getDeliveryProvidersAsync(),
+        staleTime: Infinity,
+        throwOnError: (error) => {
+            toast.error(getErrorMessage(error));
+            return false;
+        }
+    });
+
+    const { data: regions = [], isLoading: regionsLoading } = useQuery({
+        queryKey: ["regions"],
+        queryFn: () => ordersApi.getAllRegionsAsync(),
+        staleTime: Infinity,
+        throwOnError: (error) => {
+            toast.error(getErrorMessage(error));
+            return false;
+        }
+    });
+
+    const isInitialLoading = providersLoading || regionsLoading;
 
     const [settlements, setSettlements] = useState<PagedList<ISettlementReadDTO>>(defaultPagedList());
     const [pickupPoints, setPickupPoints] = useState<PagedList<IPickupPointReadDTO>>(defaultPagedList());
@@ -78,30 +97,14 @@ const CheckoutForm = ({ onValidSubmit }: CheckoutFormProps) => {
         paymentMethod: 'Card',
     });
 
-    const [errors, setErrors] = useState<Partial<Record<keyof CheckoutFormData, string>>>({});
-
     useEffect(() => {
-        const init = async () => {
-            try {
-                setIsInitialLoading(true);
-                const [providers, regs] = await Promise.all([
-                    ordersApi.getDeliveryProvidersAsync(),
-                    ordersApi.getAllRegionsAsync(),
-                ]);
-                setDeliveryProviders(providers);
-                setRegions(regs);
-                if (providers.length > 0) {
-                    deliveryProviderIdRef.current = providers[0].id;
-                    setFormData(prev => ({ ...prev, deliveryProviderId: providers[0].id }));
-                }
-            } catch (error) {
-                toast.error(getErrorMessage(error));
-            } finally {
-                setIsInitialLoading(false);
-            }
-        };
-        init();
-    }, []);
+        if (deliveryProviders.length > 0 && !formData.deliveryProviderId) {
+            deliveryProviderIdRef.current = deliveryProviders[0].id;
+            setFormData(prev => ({ ...prev, deliveryProviderId: deliveryProviders[0].id }));
+        }
+    }, [deliveryProviders]);
+
+    const [errors, setErrors] = useState<Partial<Record<keyof CheckoutFormData, string>>>({});
 
     const fetchSettlements = useCallback(async (
         regionId: string,
@@ -192,9 +195,7 @@ const CheckoutForm = ({ onValidSubmit }: CheckoutFormProps) => {
         setSettlements(defaultPagedList());
         setPickupPoints(defaultPagedList());
         if (errors.regionId) setErrors(prev => ({ ...prev, regionId: undefined }));
-        if (value) {
-            fetchSettlements(value, '', 1, false);
-        }
+        if (value) fetchSettlements(value, '', 1, false);
     };
 
     const handleSettlementChange = (value: string) => {
@@ -223,12 +224,7 @@ const CheckoutForm = ({ onValidSubmit }: CheckoutFormProps) => {
         e.preventDefault();
         const result = checkoutFormSchema.safeParse(formData);
         if (!result.success) {
-            const fieldErrors: Partial<Record<keyof CheckoutFormData, string>> = {};
-            result.error.issues.forEach(issue => {
-                const field = issue.path[0] as keyof CheckoutFormData;
-                fieldErrors[field] = issue.message;
-            });
-            setErrors(fieldErrors);
+            setErrors(getZodFieldErrors(result.error));
             return;
         }
         onValidSubmit(result.data);
@@ -236,13 +232,11 @@ const CheckoutForm = ({ onValidSubmit }: CheckoutFormProps) => {
 
     if (!user) return null;
 
-    const regionOptions: SelectOption[] = regions.map(r => ({ value: r.id, label: r.name }));
-    const settlementOptions: SelectOption[] = settlements.items.map(s => ({ value: s.id, label: s.name }));
-    const pickupPointOptions: SelectOption[] = pickupPoints.items.map(p => ({ value: p.id, label: p.address }));
+    const regionOptions: SelectOption[] = regions.map((r: IRegionReadDTO) => ({ value: r.id, label: r.name }));
+    const settlementOptions: SelectOption[] = settlements.items.map((s: ISettlementReadDTO) => ({ value: s.id, label: s.name }));
+    const pickupPointOptions: SelectOption[] = pickupPoints.items.map((p: IPickupPointReadDTO) => ({ value: p.id, label: p.address }));
 
-    if (isInitialLoading) {
-        return <Loader marginTop="75px" />;
-    }
+    if (isInitialLoading) return <Loader />;
 
     return (
         <form className={styles.form} onSubmit={handleSubmit} id="checkout-form">

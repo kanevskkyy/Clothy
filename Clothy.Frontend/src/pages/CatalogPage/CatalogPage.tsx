@@ -5,7 +5,6 @@ import CatalogFilter, {type FilterState} from "../../features/catalog/catalogFil
 import SortSelect, {type SortOption} from "../../features/catalog/sortSelect/SortSelect";
 import Pagination from "../../shared/Pagination/Pagination.tsx";
 import ProductList from "../../features/catalog/productList/ProductList.tsx";
-import type {IFiltersResponse} from "../../entities/catalogService/filters/IFiltersResponse.ts";
 import type {IClotheSummaryDTO} from "../../entities/catalogService/clotheItem/IClotheSummaryDTO.ts";
 import styles from "./CatalogPage.module.css";
 import type {PagedList} from "../../shared/utils/pagedList.ts";
@@ -16,15 +15,27 @@ import Loader from "../../shared/Loader/Loader.tsx";
 import {parsePrice} from "../../shared/utils/parsePrice.ts";
 import {toast} from "sonner";
 import {getErrorMessage} from "../../shared/utils/errorHandler.ts";
+import EmptyState from "../../shared/EmptyState/EmptyState.tsx";
+import {PackageSearch} from "lucide-react";
+import {useQuery} from "@tanstack/react-query";
 
 const CatalogPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [sortBy, setSortBy] = useState(searchParams.get("sort") || "newest");
     const currentPage = getCurrentPage(searchParams);
 
-    const [filters, setFilters] = useState<IFiltersResponse | null>(null);
     const [pagedClothes, setPagedClothes] = useState<PagedList<IClotheSummaryDTO> | null>(null);
     const [loading, setLoading] = useState(true);
+
+    const { data: filters } = useQuery({
+        queryKey: ["catalog-filters"],
+        queryFn: () => catalogApi.getFiltersAsync(),
+        staleTime: 1000 * 60 * 15,
+        throwOnError: (error) => {
+            toast.error(getErrorMessage(error));
+            return false;
+        }
+    });
 
     const sortOptions: SortOption[] = [
         {value: "newest", label: 'Creation Date: Newest First'},
@@ -95,11 +106,9 @@ const CatalogPage = () => {
             else if (sortBy === 'price-desc') {
                 sortByParam = 'price';
                 sortDescending = true;
-            }
-            else if (sortBy === 'name-asc') {
+            } else if (sortBy === 'name-asc') {
                 sortByParam = 'name';
-            }
-            else if (sortBy === 'name-desc') {
+            } else if (sortBy === 'name-desc') {
                 sortByParam = 'name';
                 sortDescending = true;
             }
@@ -131,19 +140,6 @@ const CatalogPage = () => {
             setLoading(false);
         }
     };
-
-    useEffect(() => {
-        const loadFilters = async () => {
-            try {
-                const data = await catalogApi.getFiltersAsync();
-                setFilters(data);
-            } catch (error) {
-                toast.error(getErrorMessage(error));
-            }
-        };
-
-        loadFilters();
-    }, []);
 
     useEffect(() => {
         if (filters) {
@@ -200,7 +196,7 @@ const CatalogPage = () => {
     };
 
     if (!filters || !pagedClothes) {
-        return <Loader marginTop="75px"/>;
+        return <Loader />;
     }
 
     return (
@@ -256,18 +252,36 @@ const CatalogPage = () => {
                     </div>
 
                     {loading ? (
-                        <Loader/>
+                        <Loader />
+                    ) : pagedClothes.items.length === 0 ? (
+                        <EmptyState
+                            icon={<PackageSearch size={28} color="#6B6B6B" />}
+                            title="No items found"
+                            description="Try adjusting your filters or sorting options."
+                            buttons={[
+                                {
+                                    label: "Reset Filters",
+                                    onClick: () => {
+                                        setSearchParams(new URLSearchParams());
+                                    },
+                                    variant: "primary",
+                                    size: "md"
+                                }
+                            ]}
+                        />
                     ) : (
                         <>
                             <div className={styles.productWrapper}>
-                                <ProductList products={pagedClothes.items}/>
+                                <ProductList products={pagedClothes.items} />
                             </div>
 
-                            <Pagination
-                                currentPage={currentPage}
-                                totalPages={pagedClothes.totalPages}
-                                onPageChange={handlePageChange}
-                            />
+                            {pagedClothes.totalPages > 1 && (
+                                <Pagination
+                                    currentPage={currentPage}
+                                    totalPages={pagedClothes.totalPages}
+                                    onPageChange={handlePageChange}
+                                />
+                            )}
                         </>
                     )}
                 </main>

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Clothy.OrderService.BLL.DTOs.DeliveryDetailDTOs;
 using Clothy.OrderService.BLL.DTOs.OrderItemDTOs;
-using Clothy.OrderService.BLL.DTOs.OrderStatusDTOs;
+using Clothy.OrderService.Domain.Entities;
 using Clothy.OrderService.Domain.Entities.AdditionalEntities;
 
 namespace Clothy.OrderService.BLL.DTOs.OrderDTOs
@@ -13,7 +13,7 @@ namespace Clothy.OrderService.BLL.DTOs.OrderDTOs
     public class OrderDetailDTO
     {
         public Guid Id { get; set; }
-        public OrderStatusReadDTO? Status { get; set; }
+        public OrderStatus Status { get; set; }
         public Guid UserId { get; set; }
         public string? UserFirstName { get; set; }
         public string? UserLastName { get; set; }

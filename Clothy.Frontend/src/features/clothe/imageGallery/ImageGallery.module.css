@@ -1,15 +1,14 @@
 .imageContainer {
     display: flex;
-    flex-direction: column;
+    flex-direction: row-reverse;
     gap: 12px;
-    margin-top: 55px;
     width: 100%;
-    max-width: 450px;
+    max-width: 500px;
 }
 
 .mainImageContainer {
     position: relative;
-    width: 100%;
+    flex: 1;
     aspect-ratio: 4 / 5;
     background: #fafafa;
     border-radius: 12px;
@@ -59,11 +58,17 @@
 }
 
 .additionalImages {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    display: flex;
+    flex-direction: column;
     gap: 8px;
-    width: 100%;
-    margin-top: 8px;
+    width: 64px;
+    flex-shrink: 0;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+.additionalImages::-webkit-scrollbar {
+    display: none;
 }
 
 .additionalImage {
@@ -74,6 +79,7 @@
     opacity: 0.6;
     border: 2px solid #D9D9D9;
     border-radius: 8px;
+    flex-shrink: 0;
     transition: opacity 0.2s ease, border 0.2s ease, transform 0.15s ease;
 }
 
@@ -85,30 +91,35 @@
 .additionalImage.active {
     opacity: 1;
     border: 2px solid #000;
-    transform: scale(1.05);
 }
 
 @media (max-width: 900px) {
     .imageContainer {
         max-width: 100%;
-        margin-top: 40px;
-    }
-
-    .additionalImages {
-        grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
-        gap: 6px;
-        margin-top: 10px;
     }
 }
 
 @media (max-width: 600px) {
     .imageContainer {
+        flex-direction: column;
         gap: 10px;
-        margin-top: 30px;
     }
 
     .mainImageContainer {
         border-radius: 10px;
+    }
+
+    .additionalImages {
+        flex-direction: row;
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        max-height: none;
+    }
+
+    .additionalImage {
+        width: 56px;
+        flex-shrink: 0;
     }
 
     .arrowButton {
@@ -128,27 +139,29 @@
     .arrowRight {
         right: 8px;
     }
-
-    .additionalImages {
-        grid-template-columns: repeat(5, 1fr);
-        gap: 6px;
-        margin-top: 12px;
-    }
-
-    .additionalImage {
-        border-radius: 6px;
-        border-width: 1.5px;
-    }
 }
 
 @media (max-width: 420px) {
     .imageContainer {
         gap: 8px;
-        margin-top: 20px;
     }
 
     .mainImageContainer {
         border-radius: 8px;
+    }
+
+    .additionalImage {
+        width: 48px;
+        border-radius: 5px;
+        border-width: 1.5px;
+    }
+
+    .additionalImage:hover {
+        transform: scale(1.02);
+    }
+
+    .additionalImage.active {
+        transform: scale(1.03);
     }
 
     .arrowButton {
@@ -167,52 +180,5 @@
 
     .arrowRight {
         right: 6px;
-    }
-
-    .additionalImages {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 5px;
-        margin-top: 10px;
-    }
-
-    .additionalImage {
-        border-radius: 5px;
-        border-width: 1.5px;
-    }
-
-    .additionalImage:hover {
-        transform: scale(1.02);
-    }
-
-    .additionalImage.active {
-        transform: scale(1.03);
-    }
-}
-
-@media (max-width: 360px) {
-    .additionalImages {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 4px;
-    }
-}
-@media (max-width: 600px) {
-    .mainImageContainer{
-        margin-top: 40px;
-    }
-
-    .additionalImages {
-        grid-template-columns: repeat(6, 1fr);
-    }
-}
-
-@media (max-width: 420px) {
-    .additionalImages {
-        grid-template-columns: repeat(5, 1fr);
-    }
-}
-
-@media (max-width: 360px) {
-    .additionalImages {
-        grid-template-columns: repeat(4, 1fr);
     }
 }

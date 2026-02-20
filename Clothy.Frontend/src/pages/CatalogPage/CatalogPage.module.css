@@ -1,6 +1,6 @@
 .catalogContainer {
     display: grid;
-    margin: 50px auto 0;
+    margin: 0 auto 0;
     max-width: 1440px;
     grid-template-columns: 240px 1fr;
     gap: 40px;
@@ -53,7 +53,6 @@
     .catalogContainer {
         grid-template-columns: 1fr;
         gap: 0;
-        margin-top: 20px;
     }
 
     .filterSidebar {
@@ -68,7 +67,6 @@
     }
 
     .resultsCount {
-        margin-top: 40px;
         margin-bottom: 0;
         width: 100%;
     }

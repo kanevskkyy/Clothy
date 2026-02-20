@@ -10,6 +10,8 @@ import { ordersApi } from "../../app/api/ordersApi.ts";
 import { toast } from "sonner";
 import { getErrorMessage } from "../../shared/utils/errorHandler.ts";
 import Loader from "../../shared/Loader/Loader.tsx";
+import EmptyState from "../../shared/EmptyState/EmptyState.tsx";
+import {Package} from "lucide-react";
 
 const AccountOrderPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -42,8 +44,23 @@ const AccountOrderPage = () => {
         return <Loader />;
     }
 
-    if (!myOrders) {
-        return null;
+    if (!myOrders || myOrders.items.length === 0) {
+        return (
+            <EmptyState
+                icon={<Package size={28} color="#6B6B6B" />}
+                title="No orders yet"
+                description="Once you place an order, it will appear here. Browse our catalog and find something special for yourself."
+                buttons={[
+                    {
+                        label: "Go to catalog",
+                        to: "/catalog",
+                        variant: "primary",
+                        size: "md",
+                        fullWidth: false
+                    }
+                ]}
+            />
+        );
     }
 
     return (

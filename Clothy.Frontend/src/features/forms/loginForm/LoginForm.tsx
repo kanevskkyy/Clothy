@@ -1,14 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./LoginForm.module.css";
 import { useState } from "react";
-import {loginSchema, type LoginFormData } from "../../../app/schemas/loginSchema.ts";
+import { loginSchema, type LoginFormData } from "../../../app/schemas/loginSchema.ts";
 import FormField from "../../../shared/FormField/FormField.tsx";
 import Input from "../../../shared/Input/Input.tsx";
-import PasswordInput from "../passwordInput/PasswordInput.tsx";
 import Button from "../../../shared/Button/Button.tsx";
-import {authApi} from "../../../app/api/authApi.ts";
-import {toast} from "sonner";
-import {getErrorMessage} from "../../../shared/utils/errorHandler.ts";
+import { authApi } from "../../../app/api/authApi.ts";
+import { toast } from "sonner";
+import { getErrorMessage } from "../../../shared/utils/errorHandler.ts";
+import { getZodFieldErrors } from "../../../shared/utils/getZodFieldErrors.ts";
+import PasswordInput from "../../../shared/PasswordInput/PasswordInput.tsx";
 
 const LoginForm = () => {
     const navigate = useNavigate();
@@ -18,56 +19,41 @@ const LoginForm = () => {
         password: "",
     });
     const [errors, setErrors] = useState<Partial<Record<keyof LoginFormData, string>>>({});
-
-    const [isTryingLogin, setIsTryingLogin] = useState<boolean>(false);
+    const [isTryingLogin, setIsTryingLogin] = useState(false);
 
     const handleChange = (field: keyof LoginFormData) => (
         e: React.ChangeEvent<HTMLInputElement>
     ) => {
         setFormData((prev) => ({ ...prev, [field]: e.target.value }));
-        if (errors[field]) {
-            setErrors((prev) => ({ ...prev, [field]: undefined }));
-        }
+        if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
         setIsTryingLogin(true);
 
-        e.preventDefault();
         const result = loginSchema.safeParse(formData);
 
         if (!result.success) {
-            const fieldErrors: Partial<Record<keyof LoginFormData, string>> = {};
-            result.error.issues.forEach((issue) => {
-                const field = issue.path[0] as keyof LoginFormData;
-                fieldErrors[field] = issue.message;
-            });
-            setErrors(fieldErrors);
+            setErrors(getZodFieldErrors(result.error));
             setIsTryingLogin(false);
             return;
         }
 
-        try
-        {
+        try {
             await authApi.loginAsync(formData);
             toast.success("Successfully signed in. Welcome back!");
             navigate("/account");
         } catch (error) {
-            toast.error(getErrorMessage(error))
-        }
-        finally {
+            toast.error(getErrorMessage(error));
+        } finally {
             setIsTryingLogin(false);
         }
     };
 
     return (
         <form className={styles.form} onSubmit={handleSubmit}>
-            <FormField
-                label="Email"
-                htmlFor="email"
-                required
-                error={errors.email}
-            >
+            <FormField label="Email" htmlFor="email" required error={errors.email}>
                 <Input
                     type="email"
                     id="email"
@@ -78,12 +64,7 @@ const LoginForm = () => {
                 />
             </FormField>
 
-            <FormField
-                label="Password"
-                htmlFor="password"
-                required
-                error={errors.password}
-            >
+            <FormField label="Password" htmlFor="password" required error={errors.password}>
                 <PasswordInput
                     id="password"
                     placeholder="enter your password"
@@ -100,12 +81,7 @@ const LoginForm = () => {
             </div>
 
             <div className={styles.actions}>
-                <Button
-                    type="submit"
-                    variant="primary"
-                    size="lg"
-                    disabled={isTryingLogin}
-                    fullWidth>
+                <Button type="submit" variant="primary" size="lg" disabled={isTryingLogin} fullWidth>
                     Sign in
                 </Button>
                 <div className={styles.login}>

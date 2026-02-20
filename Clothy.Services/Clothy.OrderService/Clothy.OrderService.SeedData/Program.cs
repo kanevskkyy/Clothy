@@ -29,7 +29,6 @@ class Program
         services.AddSingleton<IConnectionFactory>(provider => new ConnectionFactory(connectionString!));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IOrderRepository, OrderRepository>();
-        services.AddScoped<IOrderStatusRepository, OrderStatusRepository>();
         services.AddScoped<IDeliveryProviderRepository, DeliveryProviderRepository>();
         services.AddScoped<IOrderItemRepository, OrderItemRepository>();
         services.AddScoped<IRegionRepository, RegionRepository>();
@@ -49,7 +48,6 @@ class Program
 
         services.AddScoped<IDeliveryAPIClient, NovaPoshtaAPIClient>();
 
-        services.AddScoped<ISeeder, OrderStatusSeeder>();
         services.AddScoped<ISeeder, DeliveryProviderSeeder>();
         services.AddScoped<ISeeder, OrderSeeder>();
         services.AddScoped<ISeeder, OrderItemSeeder>();

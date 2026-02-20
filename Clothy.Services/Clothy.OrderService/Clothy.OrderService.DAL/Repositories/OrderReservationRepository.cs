@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Clothy.OrderService.DAL.Repositories
@@ -22,16 +22,19 @@ namespace Clothy.OrderService.DAL.Repositories
         {
             using IDbConnection connection = await GetOpenConnectionAsync();
             string sql = @"
-                SELECT r.* 
+                SELECT r.*
                 FROM orders_reservations r
                 INNER JOIN orders o ON r.orderid = o.id
-                INNER JOIN order_status s ON o.statusid = s.id
                 WHERE r.expiresat < (NOW() AT TIME ZONE 'utc')
                   AND r.isactive = true
-                  AND s.name = 'Awaiting payment'
+                  AND o.status = @Status
             ";
-            
-            IEnumerable<OrderReservation> result = await connection.QueryAsync<OrderReservation>(new CommandDefinition(sql, cancellationToken: cancellationToken));
+
+            IEnumerable<OrderReservation> result = await connection.QueryAsync<OrderReservation>(
+                new CommandDefinition(sql, new { 
+                    Status = (int)OrderStatus.AwaitingPayment 
+                }, cancellationToken: cancellationToken)
+            );
             return result.AsList();
         }
 
@@ -39,12 +42,16 @@ namespace Clothy.OrderService.DAL.Repositories
         {
             using IDbConnection connection = await GetOpenConnectionAsync();
             string sql = @"
-                            SELECT * 
-                            FROM orders_reservations
-                            WHERE orderid = @OrderId
+                SELECT *
+                FROM orders_reservations
+                WHERE orderid = @OrderId
             ";
 
-            IEnumerable<OrderReservation> result = await connection.QueryAsync<OrderReservation>(sql, new { OrderId = orderId });
+            IEnumerable<OrderReservation> result = await connection.QueryAsync<OrderReservation>(
+                new CommandDefinition(sql, new {
+                    OrderId = orderId 
+                }, cancellationToken: cancellationToken)
+            );
             return result.AsList();
         }
 
@@ -52,7 +59,7 @@ namespace Clothy.OrderService.DAL.Repositories
         {
             using IDbConnection connection = await GetOpenConnectionAsync();
             string sql = @"
-                SELECT COALESCE(SUM(quantity), 0) 
+                SELECT COALESCE(SUM(quantity), 0)
                 FROM orders_reservations
                 WHERE clotheid = @ClotheId
                   AND sizeid = @SizeId
@@ -60,7 +67,13 @@ namespace Clothy.OrderService.DAL.Repositories
                   AND isactive = true
             ";
 
-            int reservedQuantity = await connection.ExecuteScalarAsync<int>(new CommandDefinition(sql, new { ClotheId = clotheId, SizeId = sizeId, ColorId = colorId }, cancellationToken: cancellationToken));
+            int reservedQuantity = await connection.ExecuteScalarAsync<int>(
+                new CommandDefinition(sql, new { 
+                    ClotheId = clotheId, 
+                    SizeId = sizeId, 
+                    ColorId = colorId 
+                }, cancellationToken: cancellationToken)
+            );
             return reservedQuantity;
         }
     }

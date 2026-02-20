@@ -16,7 +16,6 @@ const HomePage = () => {
             <Container>
                 <BenefitsList />
                 <BrandsCarousel />
-
                 <PopularProductsSection />
                 <SaleBanner />
             </Container>

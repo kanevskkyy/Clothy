@@ -7,8 +7,7 @@ using Clothy.OrderService.Domain.Entities;
 using Clothy.OrderService.Domain.Entities.AdditionalEntities;
 using Clothy.OrderService.gRPC.Client.Services.Interfaces;
 using Clothy.Shared.Cache.Interfaces;
-using Clothy.Shared.Events.EmailEvents.OrderCreated;
-using Clothy.Shared.Events.EmailEvents.OrderDelivered;
+using Clothy.Shared.Events.EmailEvents;
 using Clothy.Shared.Events.OrderEvents;
 using Clothy.Shared.Events.PaymentEvents;
 using Clothy.Shared.Helpers;
@@ -139,9 +138,6 @@ namespace Clothy.OrderService.BLL.Services
 
                 logger.LogInformation("All items validated successfully");
 
-                OrderStatus? awaitingPaymentStatus = await unitOfWork.OrderStatuses.GetByNameAsync("Awaiting payment", cancellationToken);
-                if (awaitingPaymentStatus == null) throw new NotFoundException("Awaiting payment status not found");
-
                 bool hasOrdered = await unitOfWork.Orders.HasUserAlreadyOrderedAsync(userId, cancellationToken);
                 decimal finalDiscount = hasOrdered ? 1.0m : 0.9m;
                 if (!hasOrdered) logger.LogInformation("Applied 10% discount for first order of user {UserId}", userId);
@@ -153,7 +149,7 @@ namespace Clothy.OrderService.BLL.Services
                     UserLastName = userClaimsExtractor.GetLastName(claimsPrincipal),
                     UserEmail = userClaimsExtractor.GetEmail(claimsPrincipal),
                     CreatedAt = DateTime.UtcNow.ToUniversalTime(),
-                    StatusId = awaitingPaymentStatus.Id
+                    Status = OrderStatus.AwaitingPayment
                 };
 
                 await unitOfWork.Orders.AddAsync(order, cancellationToken);
@@ -209,7 +205,7 @@ namespace Clothy.OrderService.BLL.Services
                 logger.LogInformation("Order created successfully: {OrderId}", order.Id);
 
                 ordersCreated.Add(1,
-                    new KeyValuePair<string, object?>("status", "Pending"),
+                    new KeyValuePair<string, object?>("status", OrderStatus.AwaitingPayment.ToString()),
                     new KeyValuePair<string, object?>("pickupPointAddress", pickupPoints.Address));
 
                 await orderInvalidationService.InvalidateAllAsync();
@@ -273,13 +269,11 @@ namespace Clothy.OrderService.BLL.Services
 
         public async Task HandleOrderPaidEventAsync(OrderPaidEvent orderPaidEvent, CancellationToken cancellationToken = default)
         {
-            OrderStatus? pendingStatus = await unitOfWork.OrderStatuses.GetByNameAsync("Pending", cancellationToken);
-            if (pendingStatus == null) throw new NotFoundException("Pending status not found!");
-
             OrderUpdateStatusDTO orderUpdateStatusDTO = new OrderUpdateStatusDTO
             {
-                StatusId = pendingStatus.Id
+                Status = OrderStatus.Processing
             };
+
             OrderDetailDTO orderDetailDTO = await UpdateStatusAsync(orderPaidEvent.OrderId, orderUpdateStatusDTO, cancellationToken);
 
             OrderCreatedEvent orderCreatedEvent = new OrderCreatedEvent
@@ -320,6 +314,7 @@ namespace Clothy.OrderService.BLL.Services
                 reservation.IsActive = false;
                 await unitOfWork.OrderReservation.UpdateAsync(reservation, cancellationToken);
             }
+
             await unitOfWork.CommitAsync();
             await orderInvalidationService.InvalidateAllAsync();
             await orderInvalidationService.InvalidateByIdAsync(orderPaidEvent.OrderId);
@@ -356,10 +351,8 @@ namespace Clothy.OrderService.BLL.Services
 
         public async Task<PagedList<OrderReadDTO>?> GetPagedAsync(OrderFilterDTO filter, ClaimsPrincipal? user, CancellationToken cancellationToken = default)
         {
-            if (user != null && !user.IsInRole("Admin") && !user.IsInRole("Manager"))
-                filter.UserId = userClaimsExtractor.GetUserId(user);
-
-            bool usePageCache = filter.StatusId.HasValue && filter.PageNumber <= MAX_CASHED_PAGES;
+            if (user != null && !user.IsInRole("Admin") && !user.IsInRole("Manager")) filter.UserId = userClaimsExtractor.GetUserId(user);
+            bool usePageCache = filter.Status.HasValue && filter.PageNumber <= MAX_CASHED_PAGES;
 
             if (usePageCache)
             {
@@ -376,34 +369,40 @@ namespace Clothy.OrderService.BLL.Services
 
         private async Task<PagedList<OrderReadDTO>> FetchOrdersAsync(OrderFilterDTO filter, CancellationToken cancellationToken)
         {
-            var (orders, totalCount) = await unitOfWork.Orders.GetPagedAsync(filter, cancellationToken);
-            
+            (IEnumerable<OrderSummaryData> orders, int totalCount) = await unitOfWork.Orders.GetPagedAsync(filter, cancellationToken);
             List<OrderReadDTO> ordersDTO = mapper.Map<List<OrderReadDTO>>(orders);
             return new PagedList<OrderReadDTO>(ordersDTO, totalCount, filter.PageNumber, filter.PageSize);
         }
-
 
         public async Task<OrderDetailDTO> UpdateStatusAsync(Guid id, OrderUpdateStatusDTO orderUpdateStatusDTO, CancellationToken cancellationToken = default)
         {
             Order? order = await unitOfWork.Orders.GetByIdAsync(id, cancellationToken);
             if (order == null) throw new NotFoundException($"Order not found with ID: {id}");
 
-            OrderStatus? status = await unitOfWork.OrderStatuses.GetByIdAsync(orderUpdateStatusDTO.StatusId, cancellationToken);
-            if (status == null) throw new NotFoundException($"Order status not found with ID: {orderUpdateStatusDTO.StatusId}");
+            order.Status = orderUpdateStatusDTO.Status;
+            order.UpdatedAt = DateTime.UtcNow.ToUniversalTime();
 
-            order.StatusId = status.Id;
-
-            Order? updatedOrder = await unitOfWork.Orders.UpdateAsync(order, cancellationToken);
+            await unitOfWork.Orders.UpdateAsync(order, cancellationToken);
             await unitOfWork.CommitAsync();
 
             await orderInvalidationService.InvalidateAllAsync();
-            await orderInvalidationService.InvalidateByIdAsync(updatedOrder.Id);
+            await orderInvalidationService.InvalidateByIdAsync(order.Id);
 
-            OrderDetailDTO orderDetailDTO = await GetByIdAsync(updatedOrder.Id, cancellationToken: cancellationToken);
+            OrderDetailDTO orderDetailDTO = await GetByIdAsync(order.Id, cancellationToken: cancellationToken);
 
-            if (orderDetailDTO?.Status?.Name?.ToLower() == "completed" || orderDetailDTO?.Status?.Name?.ToLower() == "delivered" || orderDetailDTO?.Status?.Name?.ToLower() == "shipped")
+            if (orderDetailDTO.Status == OrderStatus.Delivered)
             {
                 OrderDeliveredEmailEvent orderDeliveredEmailEvent = new OrderDeliveredEmailEvent()
+                {
+                    OrderId = orderDetailDTO.Id,
+                    Email = orderDetailDTO?.DeliveryDetail?.Email
+                };
+                await publishEndpoint.Publish(orderDeliveredEmailEvent, cancellationToken);
+            }
+
+            if (orderDetailDTO.Status == OrderStatus.Shipped)
+            {
+                OrderShippedEmailEvent orderDeliveredEmailEvent = new OrderShippedEmailEvent()
                 {
                     OrderId = orderDetailDTO.Id,
                     Email = orderDetailDTO?.DeliveryDetail?.Email

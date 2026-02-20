@@ -1,10 +1,9 @@
-import type {IOrderStatusReadDTO} from "../orderStatus/IOrderStatusReadDTO.ts";
 import type {IOrderItemDTO} from "./IOrderItemDTO.ts";
 import type {IDeliveryDetailDTO} from "./IDeliveryDetailDTO.ts";
 
 export interface IOrderDetailDTO {
     id: string;
-    status: IOrderStatusReadDTO;
+    status: string;
     userFirstName: string;
     userLastName: string;
     userEmail: string;

@@ -25,11 +25,11 @@
 
 @media (max-width: 768px) {
     h2{
-        margin-top: 0px;
+        margin-top: 0;
     }
 
     .container {
-        padding: 0px;
+        padding: 0;
         gap: 30px;
     }
 }

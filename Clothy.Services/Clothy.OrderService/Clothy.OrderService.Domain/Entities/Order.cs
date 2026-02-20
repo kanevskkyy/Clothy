@@ -8,9 +8,7 @@ namespace Clothy.OrderService.Domain.Entities
 {
     public class Order : BaseEntity
     {
-        public Guid StatusId { get; set; }
-        public OrderStatus? Status { get; set; }
-
+        public OrderStatus? Status { get; set; }    
         public Guid UserId { get; set; }
         public string? UserFirstName { get; set; }
         public string? UserLastName { get; set; }

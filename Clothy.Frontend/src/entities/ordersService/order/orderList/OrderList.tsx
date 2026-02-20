@@ -4,6 +4,7 @@ import styles from "./OrderList.module.css";
 import { formatDate } from "../../../../shared/utils/formatDate.ts";
 import { Package } from "lucide-react";
 import { Link } from "react-router-dom";
+import OrderStatus from "../orderStatus/OrderStatus.tsx";
 
 interface OrderListItemProps {
     orders: IOrderReadDTO[];
@@ -37,9 +38,7 @@ const OrderList: React.FC<OrderListItemProps> = ({ orders }) => {
                     </div>
 
                     <div className={styles.orderInfoAdditional}>
-                        <div className={styles.orderStatus}>
-                            {order.status.name}
-                        </div>
+                        <OrderStatus name={order.status}/>
 
                         <p className={styles.orderPrice}>
                             {order.totalPrice} $

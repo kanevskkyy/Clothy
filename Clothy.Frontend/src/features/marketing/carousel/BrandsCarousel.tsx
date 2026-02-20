@@ -2,38 +2,24 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, FreeMode } from "swiper/modules";
 import "swiper/swiper.css";
 import styles from './BrandsCarousel.module.css';
-import type {IBrandReadDTO} from "../../../entities/catalogService/brand/IBrandReadDTO.ts";
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
 import {catalogApi} from "../../../app/api/catalogApi.ts";
 import Loader from "../../../shared/Loader/Loader.tsx";
 import { toast } from "sonner";
 import {getErrorMessage} from "../../../shared/utils/errorHandler.ts";
+import {useQuery} from "@tanstack/react-query";
 
 const BrandsCarousel = () => {
-    const [loading, setLoading] = useState(true);
-    const [brands, setBrands] = useState<IBrandReadDTO[]>([]);
+    const { data: brands = [], isLoading, error } = useQuery({
+        queryKey: ["brands"],
+        queryFn: () => catalogApi.getAllBrandsAsync(),
+    });
 
     useEffect(() => {
-        const fetchBrands = async () => {
-            try {
-                const response = await catalogApi.getAllBrandsAsync();
-                setBrands(response);
-            }
-            catch (error) {
-                toast.error(getErrorMessage(error));
-            }
-            finally {
-                setLoading(false);
-            }
-        }
+        if (error) toast.error(getErrorMessage(error));
+    }, [error]);
 
-        fetchBrands();
-    }, []);
-
-    if(loading) {
-        return <Loader />
-    }
-
+    if (isLoading) return <Loader />;
 
     const duplicatedBrands = [...brands, ...brands];
 

@@ -21,17 +21,13 @@ namespace Clothy.CatalogService.DAL.Repositories
         {
             List<Color> colors = await dbSet
                 .AsNoTracking()
-                .Include(property => property.ClothesStocks)
-                .ToListAsync();
-            Dictionary<Color, int> result = new Dictionary<Color, int>();
+                .Include(c => c.ClothesStocks)
+                .ToListAsync(cancellationToken);
 
-            foreach (Color color in colors)
-            {
-                int colorsQuantity = color.ClothesStocks.Count;
-                result.Add(color, colorsQuantity);
-            }
-
-            return result;
+            return colors.ToDictionary(
+                color => color,
+                color => color.ClothesStocks.DistinctBy(s => s.ClotheId).Count()
+            );
         }
 
         public async Task<bool> IsHexAlreadyExistsAsync(string hex, Guid? id = null, CancellationToken cancellationToken = default)

@@ -2,7 +2,7 @@
     padding: 20px;
     max-width: 736px;
     display: flex;
-    margin: 72px auto;
+    margin: 10px auto 10px;
     align-items: stretch;
     justify-content: center;
     gap: 24px;
@@ -14,19 +14,6 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-}
-
-.orderStatus {
-    display: flex;
-    justify-content: center;
-    padding: 5px 10px;
-    border: 2px solid #FCE2B7;
-    color: #F6A821;
-    background: #FEF1DB;
-    border-radius: 30px;
-    font-size: 14px;
-    line-height: 20px;
-    white-space: nowrap;
 }
 
 .orderHeaderTitle {

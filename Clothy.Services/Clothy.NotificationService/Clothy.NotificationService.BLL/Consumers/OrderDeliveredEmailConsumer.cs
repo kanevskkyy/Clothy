@@ -1,6 +1,6 @@
 ﻿using Clothy.NotificationService.BLL.DTOs;
 using Clothy.NotificationService.BLL.Services.Interfaces;
-using Clothy.Shared.Events.EmailEvents.OrderDelivered;
+using Clothy.Shared.Events.EmailEvents;
 using DnsClient.Internal;
 using MassTransit;
 using Microsoft.Extensions.Logging;

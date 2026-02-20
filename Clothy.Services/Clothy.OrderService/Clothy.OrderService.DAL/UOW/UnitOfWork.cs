@@ -15,7 +15,6 @@ namespace Clothy.OrderService.DAL.UOW
         private IDbConnection? connection;
         private IDbTransaction? transaction;
 
-        public IOrderStatusRepository OrderStatuses { get; }
         public IDeliveryProviderRepository DeliveryProviders { get; }
         public IOrderRepository Orders { get; }
         public IOrderItemRepository OrderItems { get; }
@@ -31,7 +30,6 @@ namespace Clothy.OrderService.DAL.UOW
 
         public UnitOfWork(
             IConnectionFactory connectionFactory,
-            IOrderStatusRepository orderStatuses,
             IDeliveryProviderRepository deliveryProviders,
             IOrderRepository orders,
             IOrderItemRepository orderItems,
@@ -42,7 +40,6 @@ namespace Clothy.OrderService.DAL.UOW
             IOrderReservationRepository orderReservation)
         {
             this.connectionFactory = connectionFactory;
-            OrderStatuses = orderStatuses;
             DeliveryProviders = deliveryProviders;
             Orders = orders;
             OrderItems = orderItems;

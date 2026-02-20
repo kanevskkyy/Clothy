@@ -1,17 +1,19 @@
-import React, {useState} from 'react';
-import {type RegisterFormData, registerSchema} from "../../../app/schemas/registerSchema.ts";
+import React, { useState } from 'react';
+import { type RegisterFormData, registerSchema } from "../../../app/schemas/registerSchema.ts";
 import FormField from "../../../shared/FormField/FormField.tsx";
 import styles from "./RegisterForm.module.css";
 import Input from "../../../shared/Input/Input.tsx";
-import PasswordInput from "../passwordInput/PasswordInput.tsx";
-import {Link, useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "../../../shared/Button/Button.tsx";
-import {authApi} from "../../../app/api/authApi.ts";
-import {toast} from "sonner";
-import {getErrorMessage} from "../../../shared/utils/errorHandler.ts";
+import { authApi } from "../../../app/api/authApi.ts";
+import { toast } from "sonner";
+import { getErrorMessage } from "../../../shared/utils/errorHandler.ts";
+import { getZodFieldErrors } from "../../../shared/utils/getZodFieldErrors.ts";
+import PasswordInput from "../../../shared/PasswordInput/PasswordInput.tsx";
 
 const RegisterForm = () => {
     const navigate = useNavigate();
+
     const [formData, setFormData] = useState<RegisterFormData>({
         email: "",
         password: "",
@@ -19,18 +21,14 @@ const RegisterForm = () => {
         lastName: "",
         phoneNumber: "",
     });
-
     const [errors, setErrors] = useState<Partial<Record<keyof RegisterFormData, string>>>({});
-
     const [isTryingRegister, setIsTryingRegister] = useState(false);
 
     const handleChange = (field: keyof RegisterFormData) => (
         e: React.ChangeEvent<HTMLInputElement>
     ) => {
         setFormData((prev) => ({ ...prev, [field]: e.target.value }));
-        if (errors[field]) {
-            setErrors((prev) => ({ ...prev, [field]: undefined }));
-        }
+        if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -40,23 +38,17 @@ const RegisterForm = () => {
         const result = registerSchema.safeParse(formData);
 
         if (!result.success) {
-            const fieldErrors: Partial<Record<keyof RegisterFormData, string>> = {};
-            result.error.issues.forEach((issue) => {
-                const field = issue.path[0] as keyof RegisterFormData;
-                fieldErrors[field] = issue.message;
-            });
-            setErrors(fieldErrors);
+            setErrors(getZodFieldErrors(result.error));
             setIsTryingRegister(false);
             return;
         }
 
         try {
             await authApi.registerAsync(formData);
-            toast.success("Registration successful!")
+            toast.success("Registration successful!");
             navigate("/email-verification");
         } catch (error) {
             const msg = getErrorMessage(error);
-
             if (msg?.includes("User exists")) {
                 toast.error("An account with this email already exists.");
             } else {
@@ -70,12 +62,7 @@ const RegisterForm = () => {
     return (
         <form className={styles.form} onSubmit={handleSubmit}>
             <div className={styles.formGroupWrapper}>
-                <FormField
-                    label="First name"
-                    htmlFor="firstName"
-                    required
-                    error={errors.firstName}
-                >
+                <FormField label="First name" htmlFor="firstName" required error={errors.firstName}>
                     <Input
                         type="text"
                         id="firstName"
@@ -86,12 +73,7 @@ const RegisterForm = () => {
                     />
                 </FormField>
 
-                <FormField
-                    label="Last name"
-                    htmlFor="lastName"
-                    required
-                    error={errors.lastName}
-                >
+                <FormField label="Last name" htmlFor="lastName" required error={errors.lastName}>
                     <Input
                         type="text"
                         id="lastName"
@@ -103,12 +85,7 @@ const RegisterForm = () => {
                 </FormField>
             </div>
 
-            <FormField
-                label="Email"
-                htmlFor="email"
-                required
-                error={errors.email}
-            >
+            <FormField label="Email" htmlFor="email" required error={errors.email}>
                 <Input
                     type="email"
                     id="email"
@@ -119,12 +96,7 @@ const RegisterForm = () => {
                 />
             </FormField>
 
-            <FormField
-                label="Phone number"
-                htmlFor="phoneNumber"
-                required
-                error={errors.phoneNumber}
-            >
+            <FormField label="Phone number" htmlFor="phoneNumber" required error={errors.phoneNumber}>
                 <Input
                     type="tel"
                     id="phoneNumber"
@@ -135,12 +107,7 @@ const RegisterForm = () => {
                 />
             </FormField>
 
-            <FormField
-                label="Password"
-                htmlFor="password"
-                required
-                error={errors.password}
-            >
+            <FormField label="Password" htmlFor="password" required error={errors.password}>
                 <PasswordInput
                     id="password"
                     placeholder="enter your password"
@@ -151,12 +118,7 @@ const RegisterForm = () => {
             </FormField>
 
             <div className={styles.actions}>
-                <Button
-                    type="submit"
-                    variant="primary"
-                    disabled={isTryingRegister}
-                    size="lg"
-                    fullWidth>
+                <Button type="submit" variant="primary" disabled={isTryingRegister} size="lg" fullWidth>
                     Register
                 </Button>
                 <div className={styles.login}>

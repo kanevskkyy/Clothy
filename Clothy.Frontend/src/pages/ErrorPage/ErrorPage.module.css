@@ -1,19 +1,22 @@
 .wrapper {
-    min-height: 80vh;
+    min-height: calc(80vh - 72px);
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 0 16px;
+    box-sizing: border-box;
+    flex-direction: column;
 }
 
 .container {
     max-width: 440px;
     margin: 0 auto;
-    padding: 40px 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: normal;
     flex-direction: column;
+    text-align: center;
 }
 
 .mainIcon {
@@ -36,7 +39,6 @@
 .container p {
     margin-top: 5px;
     color: #6B6B6B;
-    text-align: center;
 }
 
 .actions {
@@ -78,7 +80,8 @@
 
 @media (max-width: 768px) {
     .wrapper {
-        padding-top: 64px;
+        min-height: calc(80vh - 64px);
+        padding: 0 12px;
     }
 
     .container {
@@ -88,18 +91,17 @@
 
     .container h1 {
         font-size: 22px;
-        text-align: center;
     }
 
     .container p {
-        text-align: center;
         font-size: 14px;
     }
 }
 
 @media (max-width: 480px) {
     .wrapper {
-        padding: 64px 0 40px;
+        min-height: calc(70vh - 64px);
+        padding: 0 12px;
     }
 
     .container {

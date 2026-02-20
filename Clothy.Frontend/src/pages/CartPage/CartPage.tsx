@@ -4,7 +4,6 @@ import styles from './CartPage.module.css';
 import CartItem from "../../entities/basketService/cartItem/CartItem.tsx";
 import { Helmet } from 'react-helmet';
 import PageWrapper from "../../shared/PageWrapper/PageWrapper.tsx";
-import EmptyCart from '../../features/cart/emptyCart/EmptyCart.tsx';
 import Button from "../../shared/Button/Button.tsx";
 import OrderSummary from "../../features/checkout/orderSummary/OrderSummary.tsx";
 import { useEffect, useState } from "react";
@@ -12,6 +11,8 @@ import { basketApi } from "../../app/api/basketApi.ts";
 import { getErrorMessage } from "../../shared/utils/errorHandler.ts";
 import { toast } from 'sonner';
 import Loader from "../../shared/Loader/Loader.tsx";
+import EmptyState from "../../shared/EmptyState/EmptyState.tsx";
+import {ShoppingCart} from "lucide-react";
 
 const CartPage = () => {
     const navigate = useNavigate();
@@ -37,7 +38,7 @@ const CartPage = () => {
     const handleClearCart = async () => {
         try {
             await basketApi.clearCartAsync();
-            setCartItems({ userId: "", items: [], totalPrice: 0 });
+            setCartItems({ userId: "", items: [], totalPrice: 0, totalItems: 0, unAvailableItemsCount: 0 });
         } catch (error) {
             toast.error(getErrorMessage(error));
         }
@@ -48,11 +49,10 @@ const CartPage = () => {
     };
 
     if (isInitialLoading) {
-        return <Loader marginTop="75px" />;
+        return <Loader />;
     }
 
     const items = cartItems?.items ?? [];
-    const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
     if (items.length === 0) {
         return (
@@ -61,7 +61,18 @@ const CartPage = () => {
                     <title>Clothy — your cart is empty</title>
                     <meta name="description" content="Your cart is empty. Start shopping in the Clothy catalog." />
                 </Helmet>
-                <EmptyCart />
+                <EmptyState
+                    icon={<ShoppingCart size={24} color="#6B6B6B" />}
+                    title="Your cart is empty"
+                    description="Start shopping and find something special for yourself"
+                    buttons={[
+                        {
+                            label: "Go to catalog",
+                            to: "/catalog",
+                            variant: "primary"
+                        }
+                    ]}
+                />
             </PageWrapper>
         );
     }
@@ -70,7 +81,7 @@ const CartPage = () => {
         <PageWrapper>
             <div className={styles.container}>
                 <Helmet>
-                    <title>{`Clothy — your cart (${totalItems} items)`}</title>
+                    <title>{`Clothy — your cart (${cartItems?.totalItems} items)`}</title>
                     <meta
                         name="description"
                         content="View the items in your cart and complete your order quickly and conveniently."
@@ -88,9 +99,10 @@ const CartPage = () => {
                 </div>
 
                 <OrderSummary
+                    unAvailableItemsCount={cartItems?.unAvailableItemsCount ?? 0}
                     title="Your Order"
                     priceRows={[
-                        { label: `Items (${totalItems})`, value: `${cartItems!.totalPrice} ₴` },
+                        { label: `Items (${cartItems?.totalItems})`, value: `${cartItems!.totalPrice} ₴` },
                         { label: 'Delivery', value: cartItems!.totalPrice > 1500 ? 'Free' : 'Paid' }
                     ]}
                     totalPrice={cartItems!.totalPrice}

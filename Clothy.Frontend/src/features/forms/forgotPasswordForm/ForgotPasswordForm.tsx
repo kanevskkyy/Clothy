@@ -8,35 +8,26 @@ import styles from "./ForgotPasswordForm.module.css";
 import { authApi } from "../../../app/api/authApi.ts";
 import { toast } from "sonner";
 import { getErrorMessage } from "../../../shared/utils/errorHandler.ts";
-import {formatTime} from "../../../shared/utils/formatTime.ts";
+import { formatTime } from "../../../shared/utils/formatTime.ts";
+import { getZodFieldErrors } from "../../../shared/utils/getZodFieldErrors.ts";
 
 const ForgotPasswordForm = () => {
     const [resendTimer, setResendTimer] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const [formData, setFormData] = useState<ForgotPasswordFormData>({
-        email: "",
-    });
-
+    const [formData, setFormData] = useState<ForgotPasswordFormData>({ email: "" });
     const [errors, setErrors] = useState<Partial<Record<keyof ForgotPasswordFormData, string>>>({});
 
     useEffect(() => {
-        if (resendTimer > 0) {
-            const interval = setInterval(() => {
-                setResendTimer((prev) => prev - 1);
-            }, 1000);
-
-            return () => clearInterval(interval);
-        }
+        if (resendTimer <= 0) return;
+        const interval = setInterval(() => setResendTimer((prev) => prev - 1), 1000);
+        return () => clearInterval(interval);
     }, [resendTimer]);
 
     const handleChange = (field: keyof ForgotPasswordFormData) => (
         e: React.ChangeEvent<HTMLInputElement>
     ) => {
         setFormData((prev) => ({ ...prev, [field]: e.target.value }));
-        if (errors[field]) {
-            setErrors((prev) => ({ ...prev, [field]: undefined }));
-        }
+        if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -45,12 +36,7 @@ const ForgotPasswordForm = () => {
         const result = forgotPasswordSchema.safeParse(formData);
 
         if (!result.success) {
-            const fieldErrors: Partial<Record<keyof ForgotPasswordFormData, string>> = {};
-            result.error.issues.forEach((issue) => {
-                const field = issue.path[0] as keyof ForgotPasswordFormData;
-                fieldErrors[field] = issue.message;
-            });
-            setErrors(fieldErrors);
+            setErrors(getZodFieldErrors(result.error));
             return;
         }
 
@@ -68,12 +54,7 @@ const ForgotPasswordForm = () => {
 
     return (
         <form className={styles.form} onSubmit={handleSubmit}>
-            <FormField
-                label="Email"
-                htmlFor="email"
-                required
-                error={errors.email}
-            >
+            <FormField label="Email" htmlFor="email" required error={errors.email}>
                 <Input
                     type="email"
                     id="email"

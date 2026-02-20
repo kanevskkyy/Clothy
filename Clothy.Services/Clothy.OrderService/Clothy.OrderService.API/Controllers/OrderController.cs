@@ -97,7 +97,7 @@ namespace Clothy.OrderService.API.Controllers
         [Authorize(Policy = "ManagerOrAdmin")]
         public async Task<ActionResult<OrderDetailDTO>> UpdateStatus(Guid id, [FromBody] OrderUpdateStatusDTO dto, CancellationToken cancelletionToken)
         {
-            logger.LogInformation("Updating status of order ID: {Id} to StatusId: {StatusId}", id, dto.StatusId);
+            logger.LogInformation("Updating status of order ID: {Id} to StatusId: {StatusId}", id, dto.Status);
             OrderDetailDTO? updated = await orderService.UpdateStatusAsync(id, dto, cancelletionToken);
 
             logger.LogInformation("Order ID {Id} status updated.", id);

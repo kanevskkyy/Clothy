@@ -4,11 +4,18 @@ message GetOrderInfoRequest {
 	string orderId = 1;
 }
 
+enum OrderStatusGrpc {
+	AWAITING_PAYMENT = 0;
+	PROCESSING = 1;
+	SHIPPED = 2;
+	DELIVERED = 3;
+}
+
 message GetOrderInfoResponse {
 	string orderId = 1;
 	string price = 2;
 	string userId = 3;
-	string status = 4;
+	OrderStatusGrpc status = 4;
 }
 
 service OrderServiceGrpc {

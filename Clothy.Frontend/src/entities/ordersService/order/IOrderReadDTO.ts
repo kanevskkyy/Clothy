@@ -1,8 +1,6 @@
-import type {IOrderStatusReadDTO} from "../orderStatus/IOrderStatusReadDTO.ts";
-
 export interface IOrderReadDTO {
     id: string;
-    status: IOrderStatusReadDTO;
+    status: string;
     userId: string;
     userFirstName: string;
     userLastName: string;

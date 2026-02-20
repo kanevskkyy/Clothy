@@ -1,6 +1,6 @@
 ﻿using Clothy.NotificationService.BLL.DTOs;
 using Clothy.NotificationService.BLL.Services.Interfaces;
-using Clothy.Shared.Events.EmailEvents.OrderCreated;
+using Clothy.Shared.Events.EmailEvents;
 using MassTransit;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Logging;

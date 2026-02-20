@@ -40,7 +40,7 @@ namespace Clothy.OrderService.gRPC.Server.Services
                     OrderId = orderId.ToString(),
                     Price = order.Items.Sum(orderItem => orderItem.Price).ToString(),
                     UserId = order.UserId.ToString(),
-                    Status = order?.Status?.Name
+                    Status = (OrderStatusGrpc)order.Status
                 };
 
                 return response;

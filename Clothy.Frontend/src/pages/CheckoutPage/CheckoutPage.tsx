@@ -12,8 +12,10 @@ import {toast} from "sonner";
 import {ordersApi} from "../../app/api/ordersApi.ts";
 import {getErrorMessage} from "../../shared/utils/errorHandler.ts";
 import {paymentApi} from "../../app/api/paymentApi.ts";
+import {useQueryClient} from "@tanstack/react-query";
 
 const CheckoutPage = () => {
+    const queryClient = useQueryClient();
     const [totalPrice, setTotalPrice] = useState<number>();
     const [totalItems, setTotalItems] = useState<number>();
 
@@ -43,10 +45,11 @@ const CheckoutPage = () => {
 
             console.groupEnd();
 
+            await queryClient.invalidateQueries({ queryKey: ["clothe-top8"] });
             const paymentData = await paymentApi.payForOrderAsync(orderData.id, formData.paymentMethod);
             window.location.href = paymentData.paymentUrl;
         }
-        catch (error: any) {
+        catch (error) {
             toast.error(getErrorMessage(error));
         }
         finally {
@@ -86,6 +89,7 @@ const CheckoutPage = () => {
                 </div>
 
                 <OrderSummary
+                    unAvailableItemsCount={0}
                     title="Your order"
                     priceRows={[
                         { label: `Items (${totalItems})`, value: `${totalPrice} ₴` },

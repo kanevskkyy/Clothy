@@ -1,7 +1,7 @@
 ﻿using Clothy.OrderService.API.Middleware;
 using Clothy.OrderService.BLL.Config;
 using Clothy.OrderService.BLL.Consumers;
-using Clothy.OrderService.BLL.FluentValidation.OrderStatusValidation;
+using Clothy.OrderService.BLL.FluentValidation.OrderValidation;
 using Clothy.OrderService.BLL.Interfaces;
 using Clothy.OrderService.BLL.Mapper;
 using Clothy.OrderService.BLL.RedisCache;
@@ -21,8 +21,7 @@ using Clothy.ServiceDefaults.Middleware.Grpc;
 using Clothy.ServiceDefaults.Middleware.OpenTelemetry;
 using Clothy.Shared.Cache.Interfaces;
 using Clothy.Shared.Events;
-using Clothy.Shared.Events.EmailEvents.OrderCreated;
-using Clothy.Shared.Events.EmailEvents.OrderDelivered;
+using Clothy.Shared.Events.EmailEvents;
 using Clothy.Shared.Events.OrderEvents;
 using Clothy.Shared.Helpers.CloudinaryConfig;
 using DotNetEnv;
@@ -66,7 +65,6 @@ builder.Services.PostConfigure<NovaPoshtaConfig>(options =>
     options.APIKey = Environment.GetEnvironmentVariable("NOVAPOSHTA__API_KEY");
 });
 
-builder.Services.AddScoped<IOrderStatusRepository, OrderStatusRepository>();
 builder.Services.AddScoped<IDeliveryProviderRepository, DeliveryProviderRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
@@ -96,7 +94,6 @@ builder.Services.AddGrpc();
 builder.Services.AddAutoMapper(typeof(OrderProfile).Assembly);
 
 builder.Services.AddScoped<IDeliveryProviderService, DeliveryProviderService>();
-builder.Services.AddScoped<IOrderStatusService, OrderStatusService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IRegionService, RegionService>();
 builder.Services.AddScoped<ISettlementService, SettlementService>();
@@ -137,6 +134,7 @@ builder.Services.AddMassTransit(x =>
         cfg.Message<OrderCreatedEvent>(e => e.SetEntityName("order-created"));
         cfg.Message<OrderDeliveredEmailEvent>(e => e.SetEntityName("send-notification-order-delivered"));
         cfg.Message<OrderCreatedEmailEvent>(e => e.SetEntityName("send-notification-order-created"));
+        cfg.Message<OrderShippedEmailEvent>(e => e.SetEntityName("send-notification-order-shipped"));
     });
 });
 
@@ -150,7 +148,7 @@ builder.Services.AddTransient<IEntityCacheInvalidationService<PickupPoints>, Pic
 builder.Services.AddTransient<IEntityCacheInvalidationService<Settlement>, SettlementCacheInvalidationService>();
 
 builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddValidatorsFromAssembly(typeof(OrderStatusCreateDTOValidator).Assembly);
+builder.Services.AddValidatorsFromAssembly(typeof(OrderCreateDTOValidator).Assembly);
 
 builder.Services.AddEndpointsApiExplorer();
 

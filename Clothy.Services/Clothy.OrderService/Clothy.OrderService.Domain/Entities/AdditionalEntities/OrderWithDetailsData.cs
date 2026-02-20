@@ -9,7 +9,7 @@ namespace Clothy.OrderService.Domain.Entities.AdditionalEntities
     public class OrderWithDetailsData
     {
         public Guid Id { get; set; }
-        public OrderStatus? Status { get; set; } 
+        public OrderStatus Status { get; set; }
         public Guid UserId { get; set; }
         public string? UserFirstName { get; set; }
         public string? UserLastName { get; set; }
@@ -21,5 +21,4 @@ namespace Clothy.OrderService.Domain.Entities.AdditionalEntities
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
     }
-
 }

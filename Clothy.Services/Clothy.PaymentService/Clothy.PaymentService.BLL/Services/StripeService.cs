@@ -55,7 +55,7 @@ namespace Clothy.PaymentService.BLL.Services
 
             GetOrderInfoResponse orderInfoResponse = await orderInfoClient.GetOrderInfoAsync(request.OrderId, cancellationToken);
 
-            if (orderInfoResponse.Status.ToLower() != "awaiting payment") throw new ValidationFailedException($"The order with OrderId: {request.OrderId} has already been paid for!");
+            if (orderInfoResponse.Status != OrderStatusGrpc.AwaitingPayment) throw new ValidationFailedException($"The order with OrderId: {request.OrderId} has already been paid for!");
 
             Guid userId = userClaimsExtractor.GetUserId(claimsPrincipal);
             if (userId != Guid.Parse(orderInfoResponse.UserId)) throw new ForbiddenException("You cannot pay for someone else's order!");
@@ -132,7 +132,7 @@ namespace Clothy.PaymentService.BLL.Services
 
             GetOrderInfoResponse orderInfoResponse = await orderInfoClient.GetOrderInfoAsync(oldPayment.OrderId, cancellationToken);
 
-            if (orderInfoResponse.Status.ToLower() != "awaiting payment") throw new ValidationFailedException($"The order {oldPayment.OrderId} is no longer available for payment!");
+            if (orderInfoResponse.Status != OrderStatusGrpc.AwaitingPayment) throw new ValidationFailedException($"The order {oldPayment.OrderId} is no longer available for payment!");
 
             PaymentRecordEF newPaymentRecord = new PaymentRecordEF
             {

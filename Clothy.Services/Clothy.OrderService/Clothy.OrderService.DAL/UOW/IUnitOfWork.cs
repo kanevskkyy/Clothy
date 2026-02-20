@@ -10,7 +10,6 @@ namespace Clothy.OrderService.DAL.UOW
 {
     public interface IUnitOfWork : IDisposable
     {
-        IOrderStatusRepository OrderStatuses { get; }
         IDeliveryProviderRepository DeliveryProviders { get; }
         IOrderRepository Orders { get; }
         IOrderItemRepository OrderItems { get; }

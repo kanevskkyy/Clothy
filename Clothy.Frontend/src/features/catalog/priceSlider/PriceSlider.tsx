@@ -31,10 +31,10 @@ const PriceSlider = memo(({ min, max, currentMin, currentMax, onChange }: PriceS
         const value = min + (percent / 100) * (max - min);
 
         if (activeThumb === 'min') {
-            const newMin = Math.min(value, tempMax - 100);
+            const newMin = Math.min(value, tempMax - 10);
             setTempMin(newMin);
         } else {
-            const newMax = Math.max(value, tempMin + 100);
+            const newMax = Math.max(value, tempMin + 10);
             setTempMax(newMax);
         }
     };
@@ -57,10 +57,10 @@ const PriceSlider = memo(({ min, max, currentMin, currentMax, onChange }: PriceS
         const value = min + (percent / 100) * (max - min);
 
         if (activeThumb === 'min') {
-            const newMin = Math.min(value, tempMax - 100);
+            const newMin = Math.min(value, tempMax - 10);
             setTempMin(newMin);
         } else {
-            const newMax = Math.max(value, tempMin + 100);
+            const newMax = Math.max(value, tempMin + 10);
             setTempMax(newMax);
         }
     };

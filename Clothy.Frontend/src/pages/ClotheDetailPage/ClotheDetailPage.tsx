@@ -1,45 +1,36 @@
-import type { IClotheAggregatedDetailDTO } from '../../entities/catalogService/clotheItem/IClotheAggregatedDetailDTO.ts';
 import styles from "./ClotheDetailPage.module.css";
 import ImageGallery from "../../features/clothe/imageGallery/ImageGallery.tsx";
 import ClotheDetail from '../../entities/catalogService/clotheItem/clotheInfo/ClotheDetail.tsx';
 import ReviewsSection from "../../entities/reviewsService/reviews/reviewSection/ReviewsSection.tsx";
-import {useEffect, useMemo, useState} from "react";
-import {useNavigate, useParams} from "react-router-dom";
+import { useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Helmet } from 'react-helmet';
 import PageWrapper from "../../shared/PageWrapper/PageWrapper.tsx";
-import {catalogApi} from "../../app/api/catalogApi.ts";
-import Loader from "../../shared/Loader/Loader.tsx";
-import {toast} from "sonner";
-import {getErrorMessage} from "../../shared/utils/errorHandler.ts";
+import { catalogApi } from "../../app/api/catalogApi.ts";
+import { toast } from "sonner";
+import { getErrorMessage } from "../../shared/utils/errorHandler.ts";
+import ClotheDetailSkeleton from './skeleton/ClotheDetailSkeleton.tsx';
+import { useQuery } from '@tanstack/react-query';
+import type {IColorReadDTO} from "../../entities/catalogService/colors/IColorReadDTO.ts";
+
 
 const ClotheDetailPage = () => {
     const { slug, colorSlug } = useParams<{ slug: string; colorSlug: string }>();
     const navigate = useNavigate();
 
-    const [clotheItem, setClotheItem] = useState<IClotheAggregatedDetailDTO | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
-
-    useEffect(() => {
-        const fetchClotheDetails = async () => {
-            try{
-                const response = await catalogApi.getClotheBySlugAsync(slug ?? "");
-                setClotheItem(response);
-            }
-            catch (error) {
-                toast.error(getErrorMessage(error));
-            }
-            finally {
-                setLoading(false);
-            }
+    const { data: clotheItem, isLoading } = useQuery({
+        queryKey: ["clothe", slug],
+        queryFn: () => catalogApi.getClotheBySlugAsync(slug ?? ""),
+        throwOnError: (error) => {
+            toast.error(getErrorMessage(error));
+            return false;
         }
-
-        fetchClotheDetails();
-    }, [slug]);
+    });
 
     const uniqueColors = useMemo(() => {
         if (!clotheItem) return [];
-        const colorMap = new Map();
-        clotheItem.clotheDetailDTO.stocks.forEach(stock => {
+        const colorMap = new Map<string, IColorReadDTO>();
+        clotheItem.clotheDetailDTO.stocks.forEach((stock: { color: IColorReadDTO }) => {
             if (!colorMap.has(stock.color.id)) {
                 colorMap.set(stock.color.id, stock.color);
             }
@@ -48,35 +39,35 @@ const ClotheDetailPage = () => {
     }, [clotheItem]);
 
     const initialColor = useMemo(() => {
-        if (uniqueColors.length === 0) return null;
-        const colorFromUrl = uniqueColors.find(c => c.slug === colorSlug);
-        return colorFromUrl || uniqueColors[0];
+        if (!uniqueColors.length) return null;
+        return uniqueColors.find(c => c.slug === colorSlug) ?? uniqueColors[0];
     }, [uniqueColors, colorSlug]);
 
-    const [selectedColor, setSelectedColor] = useState(initialColor);
+    const [selectedColor, setSelectedColor] = useState<IColorReadDTO | null>(null);
 
-    useEffect(() => {
-        if (initialColor) {
-            setSelectedColor(initialColor);
+    const activeColor = useMemo(() => {
+        if (selectedColor && uniqueColors.find(c => c.id === selectedColor.id)) {
+            return selectedColor;
         }
-    }, [initialColor]);
+        return initialColor;
+    }, [selectedColor, initialColor, uniqueColors]);
 
-    useEffect(() => {
-        if (!initialColor) return;
-        const colorFromUrl = uniqueColors.find(c => c.slug === colorSlug);
-        if (colorFromUrl && selectedColor && colorFromUrl.id !== selectedColor.id) {
-            setSelectedColor(colorFromUrl);
-        }
-    }, [colorSlug, uniqueColors, initialColor, selectedColor]);
-
-    if (loading || !clotheItem || !selectedColor) {
-        return <Loader marginTop="75px" />
-    }
-
-    const handleColorChange = (color: typeof selectedColor) => {
+    const handleColorChange = (color: IColorReadDTO) => {
         setSelectedColor(color);
         navigate(`/clothe/${slug}/${color.slug}`, { replace: true });
     };
+
+    if (isLoading) {
+        return (
+            <PageWrapper>
+                <div className={styles.pageWrapper}>
+                    <ClotheDetailSkeleton />
+                </div>
+            </PageWrapper>
+        );
+    }
+
+    if (!clotheItem || !activeColor) return null;
 
     const pageTitle = `${clotheItem.clotheDetailDTO.name} — Clothy`;
     const pageDescription = clotheItem.clotheDetailDTO.description;
@@ -92,11 +83,11 @@ const ClotheDetailPage = () => {
                 <div className={styles.container}>
                     <ImageGallery
                         additionalPhotos={clotheItem.clotheDetailDTO.additionalPhotos}
-                        selectedColor={selectedColor}
+                        selectedColor={activeColor}
                     />
                     <ClotheDetail
                         clotheDetail={clotheItem.clotheDetailDTO}
-                        selectedColor={selectedColor}
+                        selectedColor={activeColor}
                         onColorChange={handleColorChange}
                     />
                 </div>

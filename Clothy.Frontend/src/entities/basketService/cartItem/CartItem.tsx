@@ -1,7 +1,7 @@
 import type { IBasketItemCart } from "../IBasketItemCart.ts";
 import styles from "./CartItem.module.css";
 import { Link } from "react-router-dom";
-import { X } from "lucide-react";
+import { X, AlertTriangle } from "lucide-react";
 import { basketApi } from "../../../app/api/basketApi.ts";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -87,11 +87,8 @@ const CartItem: React.FC<CartItemProps> = ({ item, onUpdate }) => {
     const itemTotal = item.price * optimisticQuantity;
 
     return (
-        <div className={`${styles.basketCard} ${isRemoving ? styles.removing : ""}`}>
-            <Link
-                to={`/clothe/${item.clotheSlug}/${item.colorSlug}/`}
-                className={styles.clotheItem}
-            >
+        <div className={`${styles.basketCard} ${isRemoving ? styles.removing : ""} ${!item.isAvailable ? styles.unavailable : ""}`}>
+            <Link to={`/clothe/${item.clotheSlug}/${item.colorSlug}/`} className={styles.clotheItem}>
                 <img
                     src={item.mainPhoto}
                     alt={item.clotheName}
@@ -105,12 +102,15 @@ const CartItem: React.FC<CartItemProps> = ({ item, onUpdate }) => {
                 <div className={styles.clotheName}>
                     <span>{item.clotheName}</span>
                     <div className={styles.clotheAdditionalInfo}>
-                        <div
-                            className={styles.clotheColor}
-                            style={{ backgroundColor: item.hexCode }}
-                        />
-                        <span className={styles.clotheSize}>Розмір: {item.sizeName}</span>
+                        <div className={styles.clotheColor} style={{ backgroundColor: item.hexCode }} />
+                        <span className={styles.clotheSize}>Size: {item.sizeName}</span>
                     </div>
+                    {!item.isAvailable && item.validationMessage && (
+                        <span className={styles.validationMessage}>
+                            <AlertTriangle size={14} />
+                            {item.validationMessage}
+                        </span>
+                    )}
                 </div>
 
                 <div className={styles.priceSection}>
@@ -123,26 +123,31 @@ const CartItem: React.FC<CartItemProps> = ({ item, onUpdate }) => {
                         <X size={20} />
                     </button>
 
-                    <div className={styles.quantityControls}>
-                        <button
-                            className={styles.minus}
-                            type="button"
-                            onClick={handleDecrease}
-                            disabled={optimisticQuantity <= 1}
-                        >
-                            −
-                        </button>
-                        <div className={styles.quantity}>{optimisticQuantity}</div>
-                        <button
-                            className={styles.plus}
-                            type="button"
-                            onClick={handleIncrease}
-                        >
-                            +
-                        </button>
-                    </div>
-
-                    <p className={styles.price}>{formatMoney(itemTotal)} ₴</p>
+                    {item.isAvailable ? (
+                        <>
+                            <div className={styles.quantityControls}>
+                                <button
+                                    className={styles.minus}
+                                    type="button"
+                                    onClick={handleDecrease}
+                                    disabled={optimisticQuantity <= 1}
+                                >
+                                    −
+                                </button>
+                                <div className={styles.quantity}>{optimisticQuantity}</div>
+                                <button
+                                    className={styles.plus}
+                                    type="button"
+                                    onClick={handleIncrease}
+                                >
+                                    +
+                                </button>
+                            </div>
+                            <p className={styles.price}>{formatMoney(itemTotal)} ₴</p>
+                        </>
+                    ) : (
+                        <p className={styles.unavailablePrice}>{formatMoney(itemTotal)} ₴</p>
+                    )}
                 </div>
             </div>
         </div>

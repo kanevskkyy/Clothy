@@ -9,6 +9,7 @@ import {ordersApi} from "../../app/api/ordersApi.ts";
 import {toast} from "sonner";
 import {getErrorMessage} from "../../shared/utils/errorHandler.ts";
 import Loader from "../../shared/Loader/Loader.tsx";
+import OrderStatus from "../../entities/ordersService/order/orderStatus/OrderStatus.tsx";
 
 const OrderDetailPage = () => {
     const {orderId} = useParams<{ orderId: string; }>();
@@ -35,7 +36,7 @@ const OrderDetailPage = () => {
     }, [orderId]);
 
     if (isLoading || !orderDetail) {
-        return <Loader marginTop="75px"/>;
+        return <Loader />;
     }
 
     return (
@@ -46,7 +47,7 @@ const OrderDetailPage = () => {
                         <h3 className={styles.orderHeaderTitle}>Order #{orderDetail?.id}</h3>
                         <p className={styles.orderDate}>{formatDate(orderDetail!.createdAt)}</p>
                     </div>
-                    <div className={styles.orderStatus}>{orderDetail?.status.name}</div>
+                    <OrderStatus name={orderDetail.status} />
                 </div>
 
                 <div className={styles.orderItemsList}>

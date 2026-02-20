@@ -1,0 +1,110 @@
+@keyframes shimmer {
+    0% { background-position: -600px 0; }
+    100% { background-position: 600px 0; }
+}
+
+.bone {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 600px 100%;
+    animation: shimmer 1.4s infinite linear;
+    border-radius: 6px;
+}
+
+.container {
+    display: flex;
+    gap: 40px;
+    padding: 32px 0;
+}
+
+.gallery {
+    display: flex;
+    gap: 12px;
+    flex-direction: column;
+    flex: 1;
+}
+
+.thumbnails {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.thumbnail {
+    composes: bone;
+    width: 72px;
+    height: 72px;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.mainImage {
+    composes: bone;
+    flex: 1;
+    min-height: 500px;
+    border-radius: 12px;
+}
+
+.detail {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.titleLarge {
+    composes: bone;
+    height: 32px;
+    width: 70%;
+}
+
+.titleSmall {
+    composes: bone;
+    height: 18px;
+    width: 40%;
+}
+
+.line {
+    composes: bone;
+    height: 16px;
+    width: 55%;
+}
+
+.colorRow {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.colorDot {
+    composes: bone;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.sizeRow {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.sizeBox {
+    composes: bone;
+    width: 52px;
+    height: 38px;
+    border-radius: 6px;
+}
+
+.price {
+    composes: bone;
+    height: 28px;
+    width: 25%;
+    margin-top: 8px;
+}
+
+.button {
+    composes: bone;
+    height: 48px;
+    border-radius: 8px;
+    margin-top: 8px;
+}

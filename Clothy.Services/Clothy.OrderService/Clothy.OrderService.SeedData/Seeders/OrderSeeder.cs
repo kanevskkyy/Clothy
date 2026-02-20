@@ -16,17 +16,14 @@ namespace Clothy.OrderService.SeedData.Seeders
         {
             IEnumerable<Order> existingOrders = await uow.Orders.GetAllAsync();
             if (existingOrders.Any()) return;
-            
-            IEnumerable<OrderStatus> statuses = await uow.OrderStatuses.GetAllAsync();
-            if (!statuses.Any()) throw new SeederDependencyException("OrderStatus table must be seeded before seeding Orders.");
-            
+                        
             Faker faker = new Faker();
 
             for (int i = 0; i < 10; i++)
             {
                 Order order = new Order
                 {
-                    StatusId = faker.PickRandom(statuses).Id,
+                    Status = faker.PickRandomParam(OrderStatus.AwaitingPayment, OrderStatus.Processing, OrderStatus.Shipped, OrderStatus.Delivered),
                     UserId = Guid.NewGuid(),
                     UserFirstName = faker.Name.FirstName(),
                     UserLastName = faker.Name.LastName(),

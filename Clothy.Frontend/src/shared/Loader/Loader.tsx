@@ -1,14 +1,9 @@
 import styles from "./Loader.module.css";
 
-interface LoaderProps {
-    marginTop?: React.CSSProperties['marginTop'];
-}
-
-const Loader = ({ marginTop, }: LoaderProps) => {
+const Loader = () => {
     return (
         <div
             className={styles.container}
-            style={{ marginTop }}
             role="status"
             aria-live="polite"
         >

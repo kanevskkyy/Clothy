@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace Clothy.OrderService.Domain.Entities
 {
-    public class OrderStatus : BaseEntity
+    public enum OrderStatus
     {
-        public string? Name { get; set; }
-        public ICollection<Order> Orders { get; set; } = new List<Order>();
+        AwaitingPayment = 0,
+        Processing = 1,
+        Shipped = 2,
+        Delivered = 3
     }
 }

@@ -18,6 +18,22 @@
     letter-spacing: 0;
 }
 
+.warningBox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #EF4444;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.warningBox svg {
+    flex-shrink: 0;
+    color: #EF4444;
+}
+
 .orderPriceInfo {
     display: flex;
     flex-direction: column;
@@ -42,7 +58,7 @@
 .divider {
     height: 2px;
     background: #D9D9D9;
-    margin: 12px 0;
+    margin: 0 0 0;
 }
 
 .totalRow {

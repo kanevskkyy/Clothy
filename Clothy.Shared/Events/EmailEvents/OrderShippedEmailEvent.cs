@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Clothy.Shared.Events.EmailEvents.OrderDelivered
+namespace Clothy.Shared.Events.EmailEvents
 {
-    public record OrderDeliveredEmailEvent : BaseEvent
+    public record OrderShippedEmailEvent : BaseEvent
     {
         public Guid OrderId { get; init; }
         public string? Email { get; init; }

@@ -27,17 +27,13 @@ namespace Clothy.CatalogService.DAL.Repositories
         {
             List<Collection> collections = await dbSet
                 .AsNoTracking()
-                .Include(property => property.ClotheItems)
-                .ToListAsync();
-            Dictionary<Collection, int> result = new Dictionary<Collection, int>();
+                .Include(c => c.ClotheItems)
+                .ToListAsync(cancellationToken);
 
-            foreach (Collection collection in collections)
-            {
-                int clotheItemCount = collection.ClotheItems.Count;
-                result.Add(collection, clotheItemCount);
-            }
-
-            return result;
+            return collections.ToDictionary(
+                collection => collection,
+                collection => collection.ClotheItems.Count
+            );
         }
 
         public async Task<bool> IsNameAlreadyExistsAsync(string name, Guid? id = null, CancellationToken cancellationToken = default)

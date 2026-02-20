@@ -1,4 +1,3 @@
-import Container from '../../shared/Container/Container';
 import styles from './AboutUsPage.module.css';
 import { Helmet } from "react-helmet";
 import PageWrapper from "../../shared/PageWrapper/PageWrapper.tsx";
@@ -15,7 +14,6 @@ const AboutUsPage = () => {
                     />
                 </Helmet>
 
-                <Container>
                     <section className={styles.storySection}>
                         <h2 className={styles.sectionTitle}>Our Story</h2>
                         <p>
@@ -56,7 +54,6 @@ const AboutUsPage = () => {
                             </div>
                         </div>
                     </section>
-                </Container>
             </div>
         </PageWrapper>
     );

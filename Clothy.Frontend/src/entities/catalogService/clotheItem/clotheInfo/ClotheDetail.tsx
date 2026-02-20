@@ -14,16 +14,8 @@ import {basketApi, type IBasketItemCreateDTO} from "../../../../app/api/basketAp
 
 interface ProductInfoProps {
     clotheDetail: IClotheDetailDTO;
-    selectedColor: {
-        id: string;
-        name: string;
-        hexCode: string;
-    };
-    onColorChange: (color: {
-        id: string;
-        name: string;
-        hexCode: string;
-    }) => void;
+    selectedColor: IColorReadDTO;
+    onColorChange: (color: IColorReadDTO) => void;
 }
 
 const ClotheDetail: React.FC<ProductInfoProps> = ({

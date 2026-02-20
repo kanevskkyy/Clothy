@@ -12,7 +12,7 @@ namespace Clothy.OrderService.BLL.FluentValidation.OrderValidation
     {
         public OrderUpdateStatusDTOValidator()
         {
-            RuleFor(x => x.StatusId).NotEmpty().WithMessage("StatusId is required.");
+            RuleFor(x => x.Status).NotEmpty().WithMessage("Status is required.");
         }
     }
 }

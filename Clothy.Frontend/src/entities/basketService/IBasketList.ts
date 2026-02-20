@@ -4,4 +4,6 @@ export interface IBasketList {
     userId: string;
     items: IBasketItemCart[];
     totalPrice: number;
+    totalItems: number;
+    unAvailableItemsCount: number;
 }

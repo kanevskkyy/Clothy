@@ -3,15 +3,7 @@ WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'ClothyOrder')\gexec
 
 \c ClothyOrder
 
-
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
-CREATE TABLE order_status (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name VARCHAR(100) NOT NULL UNIQUE,
-    createdat TIMESTAMP WITHOUT TIME ZONE DEFAULT (NOW() AT TIME ZONE 'utc'),
-    updatedat TIMESTAMP WITHOUT TIME ZONE
-);
 
 CREATE TABLE delivery_provider (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -23,18 +15,14 @@ CREATE TABLE delivery_provider (
 
 CREATE TABLE orders (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    statusid UUID NOT NULL,
+    status SMALLINT NOT NULL DEFAULT 0,
     userid UUID NOT NULL,
     userfirstname VARCHAR(100) NOT NULL,
     userlastname VARCHAR(100) NOT NULL,
     comment VARCHAR(80),
     useremail VARCHAR(100) NOT NULL CHECK (useremail LIKE '%@%'),
     createdat TIMESTAMP WITHOUT TIME ZONE DEFAULT (NOW() AT TIME ZONE 'utc'),
-    updatedat TIMESTAMP WITHOUT TIME ZONE,
-    CONSTRAINT fk_order_status FOREIGN KEY (statusid)
-        REFERENCES order_status(id)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE
+    updatedat TIMESTAMP WITHOUT TIME ZONE
 );
 
 CREATE TABLE order_item (
@@ -90,7 +78,7 @@ CREATE TABLE pickup_points (
     settlementid UUID NOT NULL,
     createdat TIMESTAMP WITHOUT TIME ZONE DEFAULT (NOW() AT TIME ZONE 'utc'),
     updatedat TIMESTAMP WITHOUT TIME ZONE,
-    isactive bool DEFAULT TRUE,
+    isactive BOOLEAN DEFAULT TRUE,
     FOREIGN KEY (deliveryproviderid) REFERENCES delivery_provider(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
@@ -99,7 +87,7 @@ CREATE TABLE pickup_points (
         ON DELETE CASCADE
 );
 
-CREATE TABLE processed_events(
+CREATE TABLE processed_events (
     eventid UUID PRIMARY KEY,
     processedat TIMESTAMP WITHOUT TIME ZONE DEFAULT (NOW() AT TIME ZONE 'utc')
 );
@@ -124,29 +112,29 @@ CREATE TABLE delivery_detail (
         ON DELETE CASCADE
 );
 
-CREATE TABLE orders_reservations(
-    id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-    orderid uuid NOT NULL,
-    clotheid uuid NOT NULL,
-    colorid uuid NOT NULL,
-    sizeid uuid NOT NULL,
+CREATE TABLE orders_reservations (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    orderid UUID NOT NULL,
+    clotheid UUID NOT NULL,
+    colorid UUID NOT NULL,
+    sizeid UUID NOT NULL,
     quantity INTEGER NOT NULL,
     reservedat TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT (NOW() AT TIME ZONE 'utc'),
     expiresat TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-    isactive bool DEFAULT true,
+    isactive BOOLEAN DEFAULT true,
     CONSTRAINT fk_orderid_order FOREIGN KEY (orderid)
         REFERENCES orders(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
 
-CREATE INDEX idx_order_statusid ON orders(statusid);
-CREATE INDEX idx_regions_ref ON regions(ref);
-CREATE INDEX idx_settlements_ref ON settlements(ref);
-CREATE INDEX idx_pickup_points_ref ON pickup_points(ref);
+CREATE INDEX idx_order_status ON orders(status);
 CREATE INDEX idx_order_userid ON orders(userid);
 CREATE INDEX idx_orderitem_orderid ON order_item(orderid);
+CREATE INDEX idx_regions_ref ON regions(ref);
+CREATE INDEX idx_settlements_ref ON settlements(ref);
 CREATE INDEX idx_settlements_regionid ON settlements(regionid);
+CREATE INDEX idx_pickup_points_ref ON pickup_points(ref);
 CREATE INDEX idx_pickup_points_providerid ON pickup_points(deliveryproviderid);
 CREATE INDEX idx_deliverydetail_orderid ON delivery_detail(orderid);
 CREATE INDEX idx_deliverydetail_pickuppointsid ON delivery_detail(pickuppointid);

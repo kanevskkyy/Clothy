@@ -11,4 +11,6 @@ export interface IBasketItemCart {
     colorName: string;
     colorSlug: string;
     quantity: number;
+    isAvailable: boolean;
+    validationMessage: string;
 }

@@ -11,7 +11,7 @@ namespace Clothy.CatalogService.BLL.FluentValidation.ClotheValidation
 {
     public class ClothePhotoCreateDTOValidator : AbstractValidator<ClothePhotoCreateDTO>
     {
-        private string[] permittedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".svg" };
+        private readonly string[] permittedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".svg", ".webp" };
 
         public ClothePhotoCreateDTOValidator()
         {

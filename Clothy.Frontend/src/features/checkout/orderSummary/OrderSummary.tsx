@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import styles from "./OrderSummary.module.css";
+import {AlertTriangle} from "lucide-react";
 
 interface PriceRow {
     label: string;
@@ -13,12 +14,14 @@ interface OrderSummaryProps {
     currency?: string;
     children?: ReactNode;
     buttons?: ReactNode;
+    unAvailableItemsCount: number;
 }
 
 const OrderSummary = ({
                           title = "Your Order",
                           priceRows = [],
                           totalPrice,
+                          unAvailableItemsCount,
                           currency = "₴",
                           children,
                           buttons
@@ -36,6 +39,13 @@ const OrderSummary = ({
                 ))}
 
                 {priceRows.length > 0 && <div className={styles.divider}></div>}
+
+                {unAvailableItemsCount > 0 && (
+                    <div className={styles.warningBox}>
+                        <AlertTriangle  size={18} />
+                        <span>Unavailable items are not included in the total</span>
+                    </div>
+                )}
 
                 <div className={styles.totalRow}>
                     <span>Total</span>

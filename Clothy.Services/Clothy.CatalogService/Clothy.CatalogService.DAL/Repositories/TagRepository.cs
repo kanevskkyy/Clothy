@@ -21,19 +21,14 @@ namespace Clothy.CatalogService.DAL.Repositories
         public async Task<Dictionary<Tag, int>> GetTagsWithStockCountAsync(CancellationToken cancellationToken = default)
         {
             List<Tag> tags = await dbSet
-                .Include(property => property.ClotheTags)
                 .AsNoTracking()
+                .Include(t => t.ClotheTags)
                 .ToListAsync(cancellationToken);
 
-            Dictionary<Tag, int> result = new Dictionary<Tag, int>();
-
-            foreach (Tag tag in tags)
-            {
-                int quantityCount = tag.ClotheTags.Count;
-                result.Add(tag, quantityCount);
-            }
-
-            return result;
+            return tags.ToDictionary(
+                tag => tag,
+                tag => tag.ClotheTags.DistinctBy(ct => ct.ClotheId).Count()
+            );
         }
 
         public async Task<bool> AreAllExistAsync(IEnumerable<Guid> tagIds, CancellationToken cancellationToken = default)

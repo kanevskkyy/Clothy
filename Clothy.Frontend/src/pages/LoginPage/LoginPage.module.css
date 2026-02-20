@@ -2,6 +2,23 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
-    padding: 20px;
+    min-height: calc(100vh - 72px);
+    padding: 0 24px;
+    box-sizing: border-box;
+    background: #FAFAFA;
+    flex-direction: column;
+}
+
+@media (max-width: 768px) {
+    .page {
+        min-height: calc(80vh - 64px);
+        padding: 0 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page {
+        min-height: calc(75vh - 64px);
+        padding: 0 12px;
+    }
 }

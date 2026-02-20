@@ -15,7 +15,7 @@ namespace Clothy.CatalogService.BLL.RedisCache
         private ILogger<ClotheItemCacheInvalidationService> logger;
 
         private const string CACHE_KEY_PREFIX = "clothe:";
-        private const string LIST_PATTERN = "clothes:page:*";
+        private const string LIST_PATTERN = "clothes:*";
         private const string ALL_PATTERN = "clothe:*";
 
         public ClotheItemCacheInvalidationService(IEntityCacheService cacheService, ILogger<ClotheItemCacheInvalidationService> logger)

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import styles from "./PasswordInput.module.css";
-import Input from "../../../shared/Input/Input.tsx";
+import Input from "../Input/Input.tsx";
 
 interface PasswordInputProps {
     id: string;
