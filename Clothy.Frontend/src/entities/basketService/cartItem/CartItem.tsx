@@ -5,8 +5,8 @@ import { X, AlertTriangle } from "lucide-react";
 import { basketApi } from "../../../app/api/basketApi.ts";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { getErrorMessage } from "../../../shared/utils/errorHandler.ts";
-import { formatMoney } from "../../../shared/utils/formatMoney.ts";
+import { getErrorMessage } from "../../../shared/lib/errorHandler.ts";
+import { formatMoney } from "../../../shared/lib/formatMoney.ts";
 
 interface CartItemProps {
     item: IBasketItemCart;

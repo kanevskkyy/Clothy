@@ -1,11 +1,11 @@
 import { LogOut } from "lucide-react";
 import styles from "./AccountHeader.module.css";
-import Button from "../../../shared/Button/Button.tsx";
+import Button from "../../../shared/ui/Button/Button.tsx";
 import type { IUserReadDTO } from "../../../entities/usersService/IUserReadDTO.ts";
 import { authApi } from "../../../app/api/authApi.ts";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { getErrorMessage } from "../../../shared/utils/errorHandler.ts";
+import { getErrorMessage } from "../../../shared/lib/errorHandler.ts";
 
 interface AccountHeaderProps {
     user: IUserReadDTO;

@@ -1,6 +1,6 @@
 import { memo, useEffect, useRef, useState } from "react";
 import styles from "./PriceSlider.module.css";
-import {formatMoney} from "../../../shared/utils/formatMoney.ts";
+import {formatMoney} from "../../../shared/lib/formatMoney.ts";
 
 interface PriceSliderProps {
     min: number;

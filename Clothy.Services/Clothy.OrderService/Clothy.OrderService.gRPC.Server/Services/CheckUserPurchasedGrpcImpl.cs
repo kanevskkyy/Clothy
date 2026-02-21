@@ -33,8 +33,8 @@ namespace Clothy.OrderService.gRPC.Server.Services
 
                 CheckUserPurchasedResponse response = new CheckUserPurchasedResponse();
                 response.Purchased = result.hasPurchased;
-                response.ClotheName = response.ClotheName;
-                response.ClothePhotoURL = response.ClothePhotoURL;
+                response.ClotheName = result.clotheName;
+                response.ClothePhotoURL = result.clothePhotoUrl;
 
                 return response;
             }

@@ -6,7 +6,7 @@ interface ReviewCardProps {
     review: IReviewReadDTO;
 }
 
-const ReviewCard: React.FC<ReviewCardProps> = ({ review, }) => {
+const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
 
     const aggregatedReview: IReviewReadDTO = {
         id: review.id,

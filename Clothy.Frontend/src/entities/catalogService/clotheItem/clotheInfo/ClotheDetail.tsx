@@ -4,12 +4,12 @@ import { useEffect, useMemo, useState, useRef } from "react";
 import styles from "./ClotheDetail.module.css";
 import type { IColorReadDTO } from "../../colors/IColorReadDTO.ts";
 import type { ISizeReadDTO } from "../../sizes/ISizeReadDTO.ts";
-import Button from "../../../../shared/Button/Button.tsx";
+import Button from "../../../../shared/ui/Button/Button.tsx";
 import { toast } from "sonner";
-import Loader from "../../../../shared/Loader/Loader.tsx";
+import Loader from "../../../../shared/ui/Loader/Loader.tsx";
 import { tryOnService } from "../../../../app/api/tryOnApi.ts";
 import { catalogApi } from "../../../../app/api/catalogApi.ts";
-import {getErrorMessage} from "../../../../shared/utils/errorHandler.ts";
+import {getErrorMessage} from "../../../../shared/lib/errorHandler.ts";
 import {basketApi, type IBasketItemCreateDTO} from "../../../../app/api/basketApi.ts";
 
 interface ProductInfoProps {

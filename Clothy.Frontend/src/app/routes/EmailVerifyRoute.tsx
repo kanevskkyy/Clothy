@@ -1,6 +1,6 @@
 import {Navigate, Outlet} from "react-router-dom";
 import {useAuthStore} from "../api/stores/authStore.ts";
-import {decodeJwt} from "../../shared/utils/decodeJwt.ts";
+import {decodeJwt} from "../../shared/lib/decodeJwt.ts";
 
 const EmailVerifyRoute = () => {
     const accessToken = useAuthStore(store => store.accessToken);

@@ -26,20 +26,6 @@
     margin-bottom: 5px;
 }
 
-.reviewStars {
-    display: flex;
-    gap: 2px;
-}
-
-.reviewStars .star {
-    font-size: 16px;
-    color: #ddd;
-}
-
-.reviewStars .filled {
-    color: #FFA500;
-}
-
 .reviewDate {
     color: #999;
     font-size: 14px;

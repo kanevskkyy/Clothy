@@ -52,7 +52,7 @@ namespace Clothy.ReviewService.Application.Features.Reviews.Commands.CreateRevie
                 ClotheId = request.ClotheItemId.ToString()
             };
             CheckUserPurchasedResponse userPurchasedResponse = await checkUserPurchasedClotheGrpcClient.CheckUserPurchasedAsync(purchasedRequest);
-            if (!userPurchasedResponse.Purchased) throw new ForbiddenException($"You cannot rate clothes that you did not order!");
+            if (!userPurchasedResponse.Purchased) throw new ValidationFailedException($"You cannot rate clothes that you did not order!");
 
             Review review = new Review(new ClotheInfo(request.ClotheItemId, userPurchasedResponse.ClotheName, userPurchasedResponse.ClothePhotoURL), userInfo, request.Rating, request.Comment);
 

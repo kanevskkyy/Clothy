@@ -10,16 +10,11 @@ using OpenTelemetry.Trace;
 using Serilog;
 using Serilog.Events;
 using OpenTelemetry.Resources;
-using Clothy.Shared.Cache;
-using Clothy.Shared.Cache.Interfaces;
-using StackExchange.Redis;
 using System.Text.Json;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
 using Clothy.Shared.Helpers.JWT;
-using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Clothy.ServiceDefaults.Middleware.CorrelationId;
 using Clothy.ServiceDefaults.Middleware.Keycloak;
@@ -37,10 +32,9 @@ public static class Extensions
 
         builder.Services.AddControllers().AddJsonOptions(options =>
         {
-            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumMemberConverter());
             options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
             options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         });
 
         builder.Services.AddSerilog((ctx, lc) => lc

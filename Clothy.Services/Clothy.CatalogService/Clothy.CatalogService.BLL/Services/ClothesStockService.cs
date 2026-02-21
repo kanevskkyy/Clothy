@@ -140,20 +140,16 @@ namespace Clothy.CatalogService.BLL.Services
             unitOfWork.ClothesStocks.Update(stock);
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
-            if (startQuantity == 0 && stock.Quantity > 0)
-            {
-                await stockNotificationService.NotifySubscribersAsync(id, cancellationToken);
-            }
+            if (startQuantity == 0 && stock.Quantity > 0) await stockNotificationService.NotifySubscribersAsync(id, cancellationToken);
 
             stockUpdatedCounter.Add(1, new KeyValuePair<string, object?>("operation", "update"));
 
             await cacheInvalidationService.InvalidateAllAsync();
             await cacheInvalidationService.InvalidateByIdAsync(id);
-
             await cacheService.RemoveAsync($"clothe:{stock.Clothe.Slug}");
             await filterCacheInvalidationService.InvalidateAsync();
 
-            return await GetByIdWithDetailsAsync(stock.Id, cancellationToken);
+            return mapper.Map<ClothesStockReadDTO>(stock);
         }
 
         public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)

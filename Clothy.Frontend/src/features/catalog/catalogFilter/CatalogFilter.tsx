@@ -2,9 +2,9 @@ import { memo, useState, useEffect } from "react";
 import { ChevronDown, X, SlidersHorizontal } from "lucide-react";
 import styles from "./CatalogFilter.module.css";
 import type { IFiltersResponse } from "../../../entities/catalogService/filters/IFiltersResponse.ts";
-import Checkbox from "../../../shared/Checkbox/Checkbox.tsx";
+import Checkbox from "../../../shared/ui/Checkbox/Checkbox.tsx";
 import PriceSlider from "../priceSlider/PriceSlider.tsx";
-import { parsePrice } from "../../../shared/utils/parsePrice.ts";
+import { parsePrice } from "../../../shared/lib/parsePrice.ts";
 
 interface CatalogFilterProps {
     filters: IFiltersResponse;

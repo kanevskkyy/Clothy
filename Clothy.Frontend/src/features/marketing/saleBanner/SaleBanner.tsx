@@ -1,6 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import styles from "./SaleBanner.module.css";
-import Button from "../../../shared/Button/Button.tsx";
+import Button from "../../../shared/ui/Button/Button.tsx";
 
 const SaleBanner = () => {
     return (

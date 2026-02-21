@@ -1,14 +1,14 @@
 import styles from "./ConfirmEmail.module.css";
 import { ArrowRight } from "lucide-react";
-import Button from "../../../shared/Button/Button.tsx";
+import Button from "../../../shared/ui/Button/Button.tsx";
 import { useState, useEffect } from "react";
 import StepList, { type Step } from "../../onboarding/stepList/StepList.tsx";
 import { useAuthStore } from "../../../app/api/stores/authStore.ts";
 import { authApi, type IResendVerificationEmailRequest } from "../../../app/api/authApi.ts";
 import { toast } from "sonner";
-import { getErrorMessage } from "../../../shared/utils/errorHandler.ts";
+import { getErrorMessage } from "../../../shared/lib/errorHandler.ts";
 import { useNavigate } from "react-router-dom";
-import {formatTime} from "../../../shared/utils/formatTime.ts";
+import {formatTime} from "../../../shared/lib/formatTime.ts";
 
 interface ConfirmEmailProps {
     fromBanner?: boolean;

@@ -1,4 +1,4 @@
-import type { PagedList } from "../../shared/utils/pagedList.ts";
+import type { PagedList } from "../../shared/lib/pagedList.ts";
 import type { IOrderReadDTO } from "../../entities/ordersService/order/IOrderReadDTO.ts";
 import apiClient from "./client.ts";
 import type { IOrderDetailDTO } from "../../entities/ordersService/order/IOrderDetailDTO.ts";

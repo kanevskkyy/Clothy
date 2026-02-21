@@ -1,6 +1,6 @@
 import styles from "./PaymentSuccessful.module.css";
 import { Home, ArrowRight, Package } from "lucide-react";
-import Button from "../../../shared/Button/Button.tsx";
+import Button from "../../../shared/ui/Button/Button.tsx";
 import StepList, {type Step} from "../../onboarding/stepList/StepList.tsx";
 
 const PaymentSuccessful = () => {

@@ -25,7 +25,9 @@ namespace Clothy.ReviewService.Application.Features.Questions.Commands.AddAnswer
         {
             Question? question = await questionRepository.GetByIdAsync(request.QuestionId, cancellationToken);
             if (question == null) throw new NotFoundException($"Question with ID {request.QuestionId} not found!");
-            
+
+            if (question.User.UserId == request.UserId) throw new ValidationFailedException("You cannot answer your own question");
+
             UserInfo userInfo = new UserInfo(request.UserId, request.FirstName, request.LastName, request.PhotoUrl);
             Answer answer = new Answer(userInfo, request.AnswerText);
 

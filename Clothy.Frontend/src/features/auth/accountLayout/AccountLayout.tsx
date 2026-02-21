@@ -3,7 +3,7 @@ import styles from "./AccountLayout.module.css";
 import AccountHeader from "../accountHeader/AccountHeader.tsx";
 import EmailVerificationBanner from "../emailBanner/EmailVerificationBanner.tsx";
 import AccountSidebar from "../accountSidebar/AccountSidebar.tsx";
-import PageWrapper from "../../../shared/PageWrapper/PageWrapper.tsx";
+import PageWrapper from "../../../shared/layout/PageWrapper/PageWrapper.tsx";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../../../app/api/stores/authStore.ts";
 import {Loader} from "lucide-react";

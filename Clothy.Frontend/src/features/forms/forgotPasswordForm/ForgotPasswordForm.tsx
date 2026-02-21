@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import Button from "../../../shared/Button/Button.tsx";
+import Button from "../../../shared/ui/Button/Button.tsx";
 import { Link } from "react-router-dom";
 import { type ForgotPasswordFormData, forgotPasswordSchema } from "../../../app/schemas/forgotPasswordSchema.ts";
-import FormField from '../../../shared/FormField/FormField.tsx';
-import Input from '../../../shared/Input/Input.tsx';
+import FormField from '../../../shared/form/FormField/FormField.tsx';
+import Input from '../../../shared/ui/Input/Input.tsx';
 import styles from "./ForgotPasswordForm.module.css";
 import { authApi } from "../../../app/api/authApi.ts";
 import { toast } from "sonner";
-import { getErrorMessage } from "../../../shared/utils/errorHandler.ts";
-import { formatTime } from "../../../shared/utils/formatTime.ts";
-import { getZodFieldErrors } from "../../../shared/utils/getZodFieldErrors.ts";
+import { getErrorMessage } from "../../../shared/lib/errorHandler.ts";
+import { formatTime } from "../../../shared/lib/formatTime.ts";
+import { getZodFieldErrors } from "../../../shared/lib/getZodFieldErrors.ts";
 
 const ForgotPasswordForm = () => {
     const [resendTimer, setResendTimer] = useState(0);

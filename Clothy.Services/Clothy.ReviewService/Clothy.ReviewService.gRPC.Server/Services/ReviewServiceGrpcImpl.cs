@@ -63,7 +63,7 @@ namespace Clothy.ReviewService.gRPC.Server.Services
                     },
                     Rating = review.Rating,
                     Comment = review.Comment,
-                    CreatedAt = review.CreatedAt.ToString()
+                    CreatedAt = review.CreatedAt.ToString("O")
                 }));
 
                 return response;
@@ -110,7 +110,7 @@ namespace Clothy.ReviewService.gRPC.Server.Services
                         PhotoUrl = question.User.PhotoUrl
                     },
                     QuestionText = question.QuestionText,
-                    CreatedAt = question.CreatedAt.ToString(),
+                    CreatedAt = question.CreatedAt.ToString("O"),
                     Answers =
                     { 
                         question.Answers.Select(answer => new AnswerGrpcResponse
@@ -124,7 +124,7 @@ namespace Clothy.ReviewService.gRPC.Server.Services
                                 PhotoUrl = answer.User.PhotoUrl
                             },
                             AnswerText = answer.AnswerText,
-                            CreatedAt = answer.CreatedAt.ToString()
+                            CreatedAt = answer.CreatedAt.ToString("O")
                         })
                     }
                 }));

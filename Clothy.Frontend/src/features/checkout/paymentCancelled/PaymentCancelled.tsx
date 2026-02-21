@@ -1,9 +1,9 @@
 import StepList, {type Step} from "../../onboarding/stepList/StepList.tsx";
 import { Home, Info, RotateCcw } from "lucide-react";
 import styles from "./PaymentCancelled.module.css";
-import Button from "../../../shared/Button/Button.tsx";
+import Button from "../../../shared/ui/Button/Button.tsx";
 import {paymentApi} from "../../../app/api/paymentApi.ts";
-import {getErrorMessage} from "../../../shared/utils/errorHandler.ts";
+import {getErrorMessage} from "../../../shared/lib/errorHandler.ts";
 import {toast} from "sonner";
 import {useState} from "react";
 

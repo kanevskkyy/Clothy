@@ -1,7 +1,7 @@
 import React from "react";
 import type { IOrderReadDTO } from "../IOrderReadDTO.ts";
 import styles from "./OrderList.module.css";
-import { formatDate } from "../../../../shared/utils/formatDate.ts";
+import { formatDate } from "../../../../shared/lib/formatDate.ts";
 import { Package } from "lucide-react";
 import { Link } from "react-router-dom";
 import OrderStatus from "../orderStatus/OrderStatus.tsx";

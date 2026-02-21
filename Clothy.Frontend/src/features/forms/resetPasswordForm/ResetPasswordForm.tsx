@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { resetPasswordSchema, type ResetPasswordSchema } from "../../../app/schemas/resetPasswordSchema.ts";
-import FormField from "../../../shared/FormField/FormField.tsx";
-import Button from "../../../shared/Button/Button.tsx";
+import FormField from "../../../shared/form/FormField/FormField.tsx";
+import Button from "../../../shared/ui/Button/Button.tsx";
 import styles from "./ResetPassword.module.css";
 import { authApi } from "../../../app/api/authApi.ts";
 import { toast } from "sonner";
-import { getErrorMessage } from "../../../shared/utils/errorHandler.ts";
-import { getZodFieldErrors } from "../../../shared/utils/getZodFieldErrors.ts";
-import PasswordInput from "../../../shared/PasswordInput/PasswordInput.tsx";
+import { getErrorMessage } from "../../../shared/lib/errorHandler.ts";
+import { getZodFieldErrors } from "../../../shared/lib/getZodFieldErrors.ts";
+import PasswordInput from "../../../shared/ui/PasswordInput/PasswordInput.tsx";
 
 const ResetPasswordForm = () => {
     const navigate = useNavigate();

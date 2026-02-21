@@ -1,12 +1,26 @@
-import type { IQuestionAggregatedReadDTO } from "../IQuestionAggregatedReadDTO.ts";
+import { useState } from "react";
+import type { IQuestionReadDTO } from "../IQuestionReadDTO.ts";
 import styles from "./QuestionItem.module.css";
-import {formatDate} from "../../../../shared/utils/formatDate.ts";
+import { formatDate } from "../../../../shared/lib/formatDate.ts";
+import { CornerDownLeft } from "lucide-react";
+import AnswerCreateForm from "../../../../features/forms/answerCreateForm/AnswerCreateForm.tsx";
+import type {IAnswerReadDTO} from "../../answers/IAnswerReadDTO.ts";
 
 interface QuestionItemProps {
-    question: IQuestionAggregatedReadDTO;
+    question: IQuestionReadDTO;
+    onInvalidate?: () => void;
 }
 
-const QuestionItem: React.FC<QuestionItemProps> = ({ question }) => {
+const QuestionItem: React.FC<QuestionItemProps> = ({ question, onInvalidate }) => {
+    const [isReplying, setIsReplying] = useState(false);
+    const [answers, setAnswers] = useState<IAnswerReadDTO[]>(question.answers);
+
+    const handleAnswerSuccess = (newAnswer: IAnswerReadDTO) => {
+        setAnswers(prev => [...prev, newAnswer]);
+        setIsReplying(false);
+        onInvalidate?.();
+    };
+
     return (
         <div className={styles.questionItem}>
             <div className={styles.questionSection}>
@@ -21,9 +35,16 @@ const QuestionItem: React.FC<QuestionItemProps> = ({ question }) => {
                         <p className={styles.questionText}>{question.questionText}</p>
                     </div>
                 </div>
-                <div className={styles.questionDate}>{formatDate(question.createdAt)}</div>
+                <div className={styles.questionMeta}>
+                    <span className={styles.questionDate}>{formatDate(question.createdAt)}</span>
+                    <button className={styles.replyBtn} onClick={() => setIsReplying(prev => !prev)}>
+                        <CornerDownLeft size={16} />
+                        {isReplying ? "Cancel" : "Reply"}
+                    </button>
+                </div>
             </div>
-            {question.answers.map(answer => (
+
+            {answers.map(answer => (
                 <div key={answer.id} className={styles.answerSection}>
                     <div className={styles.answerWrapper}>
                         <img
@@ -39,6 +60,14 @@ const QuestionItem: React.FC<QuestionItemProps> = ({ question }) => {
                     <div className={styles.answerDate}>{formatDate(answer.createdAt)}</div>
                 </div>
             ))}
+
+            {isReplying && (
+                <AnswerCreateForm
+                    questionId={question.id}
+                    onSuccess={handleAnswerSuccess}
+                    onCancel={() => setIsReplying(false)}
+                />
+            )}
         </div>
     );
 };

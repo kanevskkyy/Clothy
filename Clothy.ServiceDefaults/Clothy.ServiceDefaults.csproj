@@ -8,6 +8,7 @@
 
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+		<PackageReference Include="Macross.Json.Extensions" Version="3.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.20" />
 		<PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="8.3.0" />
 		<PackageReference Include="Microsoft.Extensions.ServiceDiscovery" Version="8.0.0" />

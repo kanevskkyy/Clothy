@@ -4,9 +4,9 @@ import "swiper/swiper.css";
 import styles from './BrandsCarousel.module.css';
 import {useEffect} from "react";
 import {catalogApi} from "../../../app/api/catalogApi.ts";
-import Loader from "../../../shared/Loader/Loader.tsx";
+import Loader from "../../../shared/ui/Loader/Loader.tsx";
 import { toast } from "sonner";
-import {getErrorMessage} from "../../../shared/utils/errorHandler.ts";
+import {getErrorMessage} from "../../../shared/lib/errorHandler.ts";
 import {useQuery} from "@tanstack/react-query";
 
 const BrandsCarousel = () => {

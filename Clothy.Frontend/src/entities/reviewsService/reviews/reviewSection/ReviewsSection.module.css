@@ -90,6 +90,19 @@
     overflow: hidden;
 }
 
+.reviewPromptWrapper{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.reviewPrompt{
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333;
+    margin-bottom: 12px;
+}
+
 .barFill {
     height: 100%;
     background: #FFA500;
@@ -119,6 +132,17 @@
     .reviewsWrapper{
         margin-top: 15px;
         padding: 0;
+    }
+
+    .reviewPromptWrapper {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .reviewPrompt {
+        font-size: 13px;
+        margin-bottom: 0;
     }
 
     .ratingSummary {

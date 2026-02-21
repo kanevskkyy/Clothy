@@ -1,29 +1,40 @@
 import { useState } from "react";
-import type { PagedList } from "../../../../shared/utils/pagedList.ts";
+import type { PagedList } from "../../../../shared/lib/pagedList.ts";
 import type { IReviewStatistic } from "../IReviewStatistic.ts";
-import type { IQuestionAggregatedReadDTO } from "../../questions/IQuestionAggregatedReadDTO.ts";
+import type { IQuestionReadDTO } from "../../questions/IQuestionReadDTO.ts";
 import styles from "./ReviewsSection.module.css";
 import ReviewItem from "../reviewItem/ReviewItem.tsx";
 import QuestionItem from "../../questions/questionItem/QuestionItem.tsx";
-import Pagination from "../../../../shared/Pagination/Pagination.tsx";
+import Pagination from "../../../../shared/ui/Pagination/Pagination.tsx";
 import { reviewApi } from "../../../../app/api/reviewApi.ts";
 import { questionApi } from "../../../../app/api/questionApi.ts";
-import Loader from "../../../../shared/Loader/Loader.tsx";
-import type {IReviewReadDTO} from "../IReviewReadDTO.ts";
+import Loader from "../../../../shared/ui/Loader/Loader.tsx";
+import type { IReviewReadDTO } from "../IReviewReadDTO.ts";
+import ReviewForm from "../../../../features/forms/reviewForm/ReviewForm.tsx";
+import Modal from "../../../../shared/layout/Modal/Modal.tsx";
+import Button from "../../../../shared/ui/Button/Button.tsx";
+import QuestionCreateForm from "../../../../features/forms/questionCreateForm/QuestionCreateForm.tsx";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface ReviewsSectionProps {
     clotheId: string;
+    slug: string;
     initialReviews: PagedList<IReviewReadDTO>;
     statistics: IReviewStatistic;
-    initialQuestions: PagedList<IQuestionAggregatedReadDTO>;
+    initialQuestions: PagedList<IQuestionReadDTO>;
 }
 
-const ReviewsSection: React.FC<ReviewsSectionProps> = ({ clotheId, initialReviews, statistics, initialQuestions }) => {
+const ReviewsSection: React.FC<ReviewsSectionProps> = ({ clotheId, slug, initialReviews, statistics, initialQuestions }) => {
+    const queryClient = useQueryClient();
+    const invalidate = () => queryClient.invalidateQueries({ queryKey: ["clothe", slug] });
+
     const [activeTab, setActiveTab] = useState<'reviews' | 'questions'>('reviews');
     const [reviews, setReviews] = useState(initialReviews);
     const [questions, setQuestions] = useState(initialQuestions);
     const [reviewsLoading, setReviewsLoading] = useState(false);
     const [questionsLoading, setQuestionsLoading] = useState(false);
+    const [isReviewFormOpen, setIsReviewFormOpen] = useState(false);
+    const [isQuestionFormOpen, setIsQuestionFormOpen] = useState(false);
 
     const calculatePercentage = (count: number) => {
         if (statistics.totalReviews === 0) return 0;
@@ -82,6 +93,30 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ clotheId, initialReview
 
                 {activeTab === 'reviews' && (
                     <>
+                        <div className={styles.reviewPromptWrapper}>
+                            <div className={styles.reviewPrompt}>
+                                We'd love to hear what you think! <br />
+                                Your review helps us improve and helps other shoppers choose with confidence. <br />
+                                Thanks for your time!
+                            </div>
+
+                            <Button variant="outline" size="md" onClick={() => setIsReviewFormOpen(true)}>
+                                Leave a review
+                            </Button>
+                        </div>
+
+                        {isReviewFormOpen && (
+                            <Modal title="Leave a review" onClose={() => setIsReviewFormOpen(false)}>
+                                <ReviewForm
+                                    clotheId={clotheId}
+                                    onSuccess={() => {
+                                        invalidate();
+                                        setIsReviewFormOpen(false);
+                                    }}
+                                />
+                            </Modal>
+                        )}
+
                         {statistics.totalReviews > 0 ? (
                             <>
                                 <div className={styles.ratingSummary}>
@@ -157,6 +192,30 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ clotheId, initialReview
 
                 {activeTab === 'questions' && (
                     <>
+                        <div className={styles.reviewPromptWrapper}>
+                            <div className={styles.reviewPrompt}>
+                                Have a question about this product? <br />
+                                Ask anything and we'll get back to you as soon as possible!
+                            </div>
+
+                            <Button variant="outline" size="md" onClick={() => setIsQuestionFormOpen(true)}>
+                                Ask a question
+                            </Button>
+                        </div>
+
+                        {isQuestionFormOpen && (
+                            <Modal title="Ask a question" onClose={() => setIsQuestionFormOpen(false)}>
+                                <QuestionCreateForm
+                                    clotheId={clotheId}
+                                    onSuccess={(newQuestion) => {
+                                        invalidate();
+                                        setQuestions(prev => ({ ...prev, totalCount: prev.totalCount + 1, items: [newQuestion, ...prev.items] }));
+                                        setIsQuestionFormOpen(false);
+                                    }}
+                                />
+                            </Modal>
+                        )}
+
                         {questions.items.length > 0 ? (
                             <>
                                 {questionsLoading ? (
@@ -164,7 +223,11 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ clotheId, initialReview
                                 ) : (
                                     <>
                                         {questions.items.map(question => (
-                                            <QuestionItem key={question.id} question={question} />
+                                            <QuestionItem
+                                                key={question.id}
+                                                question={question}
+                                                onInvalidate={invalidate}
+                                            />
                                         ))}
 
                                         {questions.totalPages > 1 && (

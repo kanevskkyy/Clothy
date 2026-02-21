@@ -47,6 +47,7 @@ namespace Clothy.ReviewService.Domain.Entities
         {
             Comment = newComment.Trim();
             Rating = newRating;
+            Status = ReviewStatus.Pending;
             UpdateTimestamp();
         }
     }

@@ -1,6 +1,6 @@
 import styles from './Hero.module.css';
 import {ArrowRight, Sparkles} from "lucide-react";
-import Button from '../../../shared/Button/Button.tsx';
+import Button from '../../../shared/ui/Button/Button.tsx';
 
 const Hero = () => {
     return (

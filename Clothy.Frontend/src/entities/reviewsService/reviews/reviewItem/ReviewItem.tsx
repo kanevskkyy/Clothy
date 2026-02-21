@@ -1,20 +1,13 @@
-import type { IReviewAggregatedReadDTO } from "../IReviewAggregatedReadDTO.ts";
 import styles from "./ReviewItem.module.css";
-import {formatDate} from "../../../../shared/utils/formatDate.ts";
+import {formatDate} from "../../../../shared/lib/formatDate.ts";
+import type {IReviewReadDTO} from "../IReviewReadDTO.ts";
+import StarRating from "../starRating/StarRating.tsx";
 
 interface ReviewItemProps {
-    review: IReviewAggregatedReadDTO;
+    review: IReviewReadDTO;
 }
 
 const ReviewItem: React.FC<ReviewItemProps> = ({ review }) => {
-    const renderStars = (rating: number) => {
-        return Array.from({ length: 5 }, (_, index) => (
-            <span key={index} className={`${styles.star} ${index < rating ? styles.filled : ''}`}>
-                ★
-            </span>
-        ));
-    };
-
     return (
         <div className={styles.reviewItem}>
             <div className={styles.reviewHeader}>
@@ -25,9 +18,7 @@ const ReviewItem: React.FC<ReviewItemProps> = ({ review }) => {
                 />
                 <div className={styles.reviewInfo}>
                     <p className={styles.reviewAuthor}>{review.user.firstName} {review.user.lastName}</p>
-                    <div className={styles.reviewStars}>
-                        {renderStars(review.rating)}
-                    </div>
+                    <StarRating rating={review.rating} />
                 </div>
                 <span className={styles.reviewDate}>{formatDate(review.createdAt)}</span>
             </div>

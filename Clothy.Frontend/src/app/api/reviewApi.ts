@@ -1,6 +1,7 @@
-import type {PagedList} from "../../shared/utils/pagedList.ts";
+import type {PagedList} from "../../shared/lib/pagedList.ts";
 import apiClient from "./client.ts";
 import type {IReviewReadDTO} from "../../entities/reviewsService/reviews/IReviewReadDTO.ts";
+import type {ReviewSchemaData} from "../schemas/reviewSchema.ts";
 
 export type ReviewsStatusEnum = "Pending" | "Confirmed";
 
@@ -24,5 +25,28 @@ export const reviewApi = {
 
         const { data } = await apiClient.get<PagedList<IReviewReadDTO>>(`/api/reviews?${params.toString()}`);
         return data;
+    },
+
+    createReviewAsync: async (body : ReviewSchemaData): Promise<void> => {
+        await apiClient.post<void>("/api/reviews", body);
+    },
+
+    getReviewByIdAsync: async (id: string): Promise<IReviewReadDTO> => {
+        const { data } = await apiClient.get<IReviewReadDTO>(`/api/reviews/${id}`);
+        return data;
+    },
+
+    updateReviewAsync: async (id: string, body: ReviewSchemaData): Promise<IReviewReadDTO> => {
+        const updateBody = {
+            comment: body.comment,
+            rating: body.rating,
+        };
+
+        const { data } = await apiClient.put<IReviewReadDTO>(`/api/reviews/${id}`, updateBody);
+        return data;
+    },
+
+    deleteReviewAsync: async (id: string): Promise<void> => {
+        await apiClient.delete<void>(`/api/reviews/${id}`);
     }
 };

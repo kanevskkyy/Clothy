@@ -4,19 +4,19 @@ import styles from './CheckoutForm.module.css';
 import type { IRegionReadDTO } from '../../../entities/ordersService/regions/IRegionReadDTO.ts';
 import type { ISettlementReadDTO } from '../../../entities/ordersService/settlement/ISettlementReadDTO.ts';
 import type { IPickupPointReadDTO } from '../../../entities/ordersService/pickupPoints/IPickupPointReadDTO.ts';
-import type { PagedList } from '../../../shared/utils/pagedList.ts';
+import type { PagedList } from '../../../shared/lib/pagedList.ts';
 import { checkoutFormSchema, type CheckoutFormData } from '../../../app/schemas/checkoutFormSchema.ts';
-import FormField from '../../../shared/FormField/FormField.tsx';
-import RadioOption from '../../../shared/RadioOption/RadioOption.tsx';
-import Textarea from '../../../shared/Textarea/Textarea.tsx';
-import Input from '../../../shared/Input/Input.tsx';
-import Select from '../../../shared/Select/Select.tsx';
-import Loader from '../../../shared/Loader/Loader.tsx';
+import FormField from '../../../shared/form/FormField/FormField.tsx';
+import RadioOption from '../../../shared/ui/RadioOption/RadioOption.tsx';
+import Textarea from '../../../shared/ui/Textarea/Textarea.tsx';
+import Input from '../../../shared/ui/Input/Input.tsx';
+import Select from '../../../shared/ui/Select/Select.tsx';
+import Loader from '../../../shared/ui/Loader/Loader.tsx';
 import { ordersApi } from '../../../app/api/ordersApi.ts';
 import { toast } from 'sonner';
-import { getErrorMessage } from '../../../shared/utils/errorHandler.ts';
+import { getErrorMessage } from '../../../shared/lib/errorHandler.ts';
 import { useAuthStore } from '../../../app/api/stores/authStore.ts';
-import { getZodFieldErrors } from '../../../shared/utils/getZodFieldErrors.ts';
+import { getZodFieldErrors } from '../../../shared/lib/getZodFieldErrors.ts';
 import { useQuery } from '@tanstack/react-query';
 
 interface CheckoutFormProps {

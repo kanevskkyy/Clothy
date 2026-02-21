@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { type RegisterFormData, registerSchema } from "../../../app/schemas/registerSchema.ts";
-import FormField from "../../../shared/FormField/FormField.tsx";
+import FormField from "../../../shared/form/FormField/FormField.tsx";
 import styles from "./RegisterForm.module.css";
-import Input from "../../../shared/Input/Input.tsx";
+import Input from "../../../shared/ui/Input/Input.tsx";
 import { Link, useNavigate } from "react-router-dom";
-import Button from "../../../shared/Button/Button.tsx";
+import Button from "../../../shared/ui/Button/Button.tsx";
 import { authApi } from "../../../app/api/authApi.ts";
 import { toast } from "sonner";
-import { getErrorMessage } from "../../../shared/utils/errorHandler.ts";
-import { getZodFieldErrors } from "../../../shared/utils/getZodFieldErrors.ts";
-import PasswordInput from "../../../shared/PasswordInput/PasswordInput.tsx";
+import { getErrorMessage } from "../../../shared/lib/errorHandler.ts";
+import { getZodFieldErrors } from "../../../shared/lib/getZodFieldErrors.ts";
+import PasswordInput from "../../../shared/ui/PasswordInput/PasswordInput.tsx";
 
 const RegisterForm = () => {
     const navigate = useNavigate();
