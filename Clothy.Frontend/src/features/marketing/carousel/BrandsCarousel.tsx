@@ -28,7 +28,7 @@ const BrandsCarousel = () => {
             <Swiper
                 modules={[Autoplay, FreeMode]}
                 slidesPerView="auto"
-                spaceBetween={50}
+                spaceBetween={44}
                 loop={true}
                 freeMode={true}
                 speed={4000}
@@ -48,13 +48,6 @@ const BrandsCarousel = () => {
                 {duplicatedBrands.map((brand, index) => (
                     <SwiperSlide key={`${brand.id}-${index}`} className={styles.slide}>
                         <div className={styles.brandItem}>
-                            <div className={styles.logoBox}>
-                                <img
-                                    src={brand.photoURL}
-                                    alt={`${brand.name} brand logo`}
-                                    loading="lazy"
-                                />
-                            </div>
                             <span>{brand.name}</span>
                         </div>
                     </SwiperSlide>

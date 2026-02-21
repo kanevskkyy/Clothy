@@ -1,9 +1,11 @@
 .carouselContainer {
     padding: 2rem 0;
     overflow: hidden;
-    background: #FAFAFA;
-    border-bottom: 2px solid #E8E6E3;
     width: 100%;
+    background: #FAFAFA;
+    margin: 0 auto;
+    border-bottom: 1px solid #E5E1DC;
+    border-top: 1px solid #E5E1DC;
 }
 
 .swiper {
@@ -18,32 +20,18 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: 48px;
     padding: 0 10px;
 }
 
 .brandItem span {
-    font-size: 22px;
+    font-size: 30px;
     font-weight: 600;
-    color: #161616;
-    text-transform: capitalize;
+    color: #9F9E9D;
+    text-transform: uppercase;
     white-space: nowrap;
-    letter-spacing: -0.5px;
-}
-
-.logoBox {
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.logoBox img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
+    letter-spacing: 2px;
+    line-height: 36px;
 }
 
 @media (max-width: 768px) {

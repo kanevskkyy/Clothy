@@ -1,4 +1,3 @@
-import PageWrapper from "../../../shared/layout/PageWrapper/PageWrapper.tsx";
 import styles from "./PaymentCancelledPage.module.css";
 import {Helmet} from "react-helmet";
 import AuthLayout from "../../../features/auth/authLayout/AuthLayout.tsx";
@@ -10,25 +9,23 @@ const PaymentCancelledPage = () => {
     const paymentId = searchParams.get("paymentId");
 
     if (!paymentId) {
-        return <Navigate to="/not-found" replace />;
+        return <Navigate to="/not-found" replace/>;
     }
 
     return (
-        <PageWrapper>
-            <div className={styles.page}>
-                <Helmet>
-                    <title>Payment Cancelled - Clothy</title>
-                    <meta name="description" content="Your payment was cancelled" />
-                </Helmet>
+        <div className={styles.page}>
+            <Helmet>
+                <title>Payment Cancelled - Clothy</title>
+                <meta name="description" content="Your payment was cancelled"/>
+            </Helmet>
 
-                <AuthLayout
-                    title="Payment canceled!"
-                    subtitle="Unfortunately, your payment was not completed. This may have been due to a canceled transaction or technical issues. Your items are still in your cart."
-                >
-                    <PaymentCancelled paymentId={paymentId}/>
-                </AuthLayout>
-            </div>
-        </PageWrapper>
+            <AuthLayout
+                title="Payment canceled!"
+                subtitle="Unfortunately, your payment was not completed. This may have been due to a canceled transaction or technical issues. Your items are still in your cart."
+            >
+                <PaymentCancelled paymentId={paymentId}/>
+            </AuthLayout>
+        </div>
     );
 };
 

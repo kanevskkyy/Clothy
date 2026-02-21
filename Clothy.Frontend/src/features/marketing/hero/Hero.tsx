@@ -1,43 +1,34 @@
 import styles from './Hero.module.css';
-import {ArrowRight, Sparkles} from "lucide-react";
-import Button from '../../../shared/ui/Button/Button.tsx';
+import Button from "../../../shared/ui/Button/Button.tsx";
+import { ArrowRight } from "lucide-react";
 
 const Hero = () => {
     return (
         <section className={styles.hero}>
-            <div className={styles.backgroundWrapper}>
+            <div className={styles.content}>
+                <p className={styles.collection}>Spring — Summer 2026 Collection</p>
+                <h2 className={styles.title}>
+                    The Art of <br />
+                    <span className={styles.accent}>Being You</span>
+                </h2>
+                <p className={styles.description}>Clothing that highlights your individuality. Crafted with love for every detail.</p>
+                <div className={styles.buttonWrapper}>
+                    <Button
+                        to="/catalog"
+                        variant="primary"
+                        icon={<ArrowRight size={20} />}
+                    >
+                        Browse Catalog
+                    </Button>
+                </div>
+            </div>
+            <div className={styles.imageWrapper}>
                 <img
                     src="src/assets/images/banner.png"
-                    alt="Fashion model"
-                    className={styles.backgroundImage}
+                    alt="Hero image"
+                    className={styles.image}
+                    loading="lazy"
                 />
-                <div className={styles.overlay} />
-            </div>
-
-            <div className={styles.container}>
-                <div className={styles.content}>
-                    <div className={styles.collectionWrapper}>
-                        <Sparkles size={16} />
-                        <span className={styles.collection}>New collection 2026</span>
-                    </div>
-                    <h1 className={styles.title}>
-                        Style that
-                        <br />
-                        defines you
-                    </h1>
-                    <p className={styles.description}>
-                        Discover the best brands and latest collections. Your perfect look starts here.
-                    </p>
-                    <div className={styles.buttons}>
-                        <Button
-                            to="/catalog"
-                            variant="secondary"
-                            icon={<ArrowRight size={20} />}
-                        >
-                            Go to catalog
-                        </Button>
-                    </div>
-                </div>
             </div>
         </section>
     );

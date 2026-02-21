@@ -22,7 +22,8 @@ const PopularProductsSection = () => {
     return (
         <section className={styles.productsSection}>
             <div className={styles.container}>
-                <h2 className={styles.title}>Popular Products Among Visitors</h2>
+                <p className={styles.titleLabel}>Trending</p>
+                <h2 className={styles.title}>Most Popular</h2>
                 <ProductList products={clotheItems} />
             </div>
         </section>

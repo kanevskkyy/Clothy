@@ -2,23 +2,22 @@ import styles from "./ClotheDetailPage.module.css";
 import ImageGallery from "../../../features/clothe/imageGallery/ImageGallery.tsx";
 import ClotheDetail from '../../../entities/catalogService/clotheItem/clotheInfo/ClotheDetail.tsx';
 import ReviewsSection from "../../../entities/reviewsService/reviews/reviewSection/ReviewsSection.tsx";
-import { useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { Helmet } from 'react-helmet';
-import PageWrapper from "../../../shared/layout/PageWrapper/PageWrapper.tsx";
-import { catalogApi } from "../../../app/api/catalogApi.ts";
-import { toast } from "sonner";
-import { getErrorMessage } from "../../../shared/lib/errorHandler.ts";
+import {useMemo, useState} from "react";
+import {useNavigate, useParams} from "react-router-dom";
+import {Helmet} from 'react-helmet';
+import {catalogApi} from "../../../app/api/catalogApi.ts";
+import {toast} from "sonner";
+import {getErrorMessage} from "../../../shared/lib/errorHandler.ts";
 import ClotheDetailSkeleton from './skeleton/ClotheDetailSkeleton.tsx';
-import { useQuery } from '@tanstack/react-query';
+import {useQuery} from '@tanstack/react-query';
 import type {IColorReadDTO} from "../../../entities/catalogService/colors/IColorReadDTO.ts";
 
 
 const ClotheDetailPage = () => {
-    const { slug, colorSlug } = useParams<{ slug: string; colorSlug: string }>();
+    const {slug, colorSlug} = useParams<{ slug: string; colorSlug: string }>();
     const navigate = useNavigate();
 
-    const { data: clotheItem, isLoading } = useQuery({
+    const {data: clotheItem, isLoading} = useQuery({
         queryKey: ["clothe", slug],
         queryFn: () => catalogApi.getClotheBySlugAsync(slug ?? ""),
         throwOnError: (error) => {
@@ -54,16 +53,14 @@ const ClotheDetailPage = () => {
 
     const handleColorChange = (color: IColorReadDTO) => {
         setSelectedColor(color);
-        navigate(`/clothe/${slug}/${color.slug}`, { replace: true });
+        navigate(`/clothe/${slug}/${color.slug}`, {replace: true});
     };
 
     if (isLoading) {
         return (
-            <PageWrapper>
-                <div className={styles.pageWrapper}>
-                    <ClotheDetailSkeleton />
-                </div>
-            </PageWrapper>
+            <div className={styles.pageWrapper}>
+                <ClotheDetailSkeleton/>
+            </div>
         );
     }
 
@@ -73,33 +70,31 @@ const ClotheDetailPage = () => {
     const pageDescription = clotheItem.clotheDetailDTO.description;
 
     return (
-        <PageWrapper>
-            <div className={styles.pageWrapper}>
-                <Helmet>
-                    <title>{pageTitle}</title>
-                    <meta name="description" content={pageDescription} />
-                </Helmet>
+        <div className={styles.pageWrapper}>
+            <Helmet>
+                <title>{pageTitle}</title>
+                <meta name="description" content={pageDescription}/>
+            </Helmet>
 
-                <div className={styles.container}>
-                    <ImageGallery
-                        additionalPhotos={clotheItem.clotheDetailDTO.additionalPhotos}
-                        selectedColor={activeColor}
-                    />
-                    <ClotheDetail
-                        clotheDetail={clotheItem.clotheDetailDTO}
-                        selectedColor={activeColor}
-                        onColorChange={handleColorChange}
-                    />
-                </div>
-                <ReviewsSection
-                    slug={slug!}
-                    clotheId={clotheItem.clotheDetailDTO.id}
-                    initialReviews={clotheItem.reviews}
-                    statistics={clotheItem.statistics}
-                    initialQuestions={clotheItem.questions}
+            <div className={styles.container}>
+                <ImageGallery
+                    additionalPhotos={clotheItem.clotheDetailDTO.additionalPhotos}
+                    selectedColor={activeColor}
+                />
+                <ClotheDetail
+                    clotheDetail={clotheItem.clotheDetailDTO}
+                    selectedColor={activeColor}
+                    onColorChange={handleColorChange}
                 />
             </div>
-        </PageWrapper>
+            <ReviewsSection
+                slug={slug!}
+                clotheId={clotheItem.clotheDetailDTO.id}
+                initialReviews={clotheItem.reviews}
+                statistics={clotheItem.statistics}
+                initialQuestions={clotheItem.questions}
+            />
+        </div>
     );
 };
 

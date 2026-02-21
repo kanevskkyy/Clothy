@@ -1,6 +1,5 @@
 import {useState, useEffect} from "react";
 import {useSearchParams} from "react-router-dom";
-import PageWrapper from "../../../shared/layout/PageWrapper/PageWrapper.tsx";
 import CatalogFilter, {type FilterState} from "../../../features/catalog/catalogFilter/CatalogFilter.tsx";
 import SortSelect, {type SortOption} from "../../../features/catalog/sortSelect/SortSelect.tsx";
 import Pagination from "../../../shared/ui/Pagination/Pagination.tsx";
@@ -200,7 +199,7 @@ const CatalogPage = () => {
     }
 
     return (
-        <PageWrapper>
+        <div>
             <Helmet>
                 <title>{`Clothy — Clothing Catalog | Page ${currentPage} • ${pagedClothes.totalCount} items`}</title>
                 <meta
@@ -286,7 +285,7 @@ const CatalogPage = () => {
                     )}
                 </main>
             </div>
-        </PageWrapper>
+        </div>
     );
 };
 

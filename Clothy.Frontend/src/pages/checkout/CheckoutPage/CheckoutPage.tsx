@@ -1,9 +1,8 @@
-import PageWrapper from "../../../shared/layout/PageWrapper/PageWrapper.tsx";
 import OrderSummary from '../../../features/checkout/orderSummary/OrderSummary.tsx';
 import Button from "../../../shared/ui/Button/Button.tsx";
 import CheckoutForm from '../../../features/forms/checkoutForm/CheckoutForm.tsx';
 import styles from "./CheckoutPage.module.css";
-import type { CheckoutFormData } from '../../../app/schemas/checkoutFormSchema.ts';
+import type {CheckoutFormData} from '../../../app/schemas/checkoutFormSchema.ts';
 import {useEffect, useState} from "react";
 import {basketApi} from "../../../app/api/basketApi.ts";
 import {useNavigate} from "react-router-dom";
@@ -45,14 +44,12 @@ const CheckoutPage = () => {
 
             console.groupEnd();
 
-            await queryClient.invalidateQueries({ queryKey: ["clothe-top8"] });
+            await queryClient.invalidateQueries({queryKey: ["clothe-top8"]});
             const paymentData = await paymentApi.payForOrderAsync(orderData.id, formData.paymentMethod);
             window.location.href = paymentData.paymentUrl;
-        }
-        catch (error) {
+        } catch (error) {
             toast.error(getErrorMessage(error));
-        }
-        finally {
+        } finally {
             setIsCreatingOrder(false);
         }
     };
@@ -81,50 +78,48 @@ const CheckoutPage = () => {
     }, []);
 
     return (
-        <PageWrapper>
-            <div className={styles.container}>
-                <div className={styles.formSection}>
-                    <h1 className={styles.pageTitle}>Placing an order</h1>
-                    <CheckoutForm onValidSubmit={handleValidFormSubmit} />
-                </div>
-
-                <OrderSummary
-                    unAvailableItemsCount={0}
-                    title="Your order"
-                    priceRows={[
-                        { label: `Items (${totalItems})`, value: `${totalPrice} ₴` },
-                        { label: 'Delivery', value: totalPrice! > 1500 ? 'Free' : 'Paid' }
-                    ]}
-                    totalPrice={totalPrice!}
-                    buttons={
-                        <>
-                            <Button
-                                variant="primary"
-                                size="lg"
-                                fullWidth
-                                disabled={isCreatingOrder}
-                                onClick={handlePlaceOrder}
-                            >
-                                {isCreatingOrder ? 'Creating order...' : 'Create an order'}
-                            </Button>
-                            <Button
-                                variant="outline"
-                                fullWidth
-                                to="/cart"
-                            >
-                                Back to cart
-                            </Button>
-                        </>
-                    }
-                >
-                    <div className={styles.warning}>
-                        <strong>Attention!</strong><br />
-                        After creating an order, you will have <strong>10 minutes</strong> to pay.
-                        If payment is not made on time, the order will be automatically deleted.
-                    </div>
-                </OrderSummary>
+        <div className={styles.container}>
+            <div className={styles.formSection}>
+                <h1 className={styles.pageTitle}>Placing an order</h1>
+                <CheckoutForm onValidSubmit={handleValidFormSubmit}/>
             </div>
-        </PageWrapper>
+
+            <OrderSummary
+                unAvailableItemsCount={0}
+                title="Your order"
+                priceRows={[
+                    {label: `Items (${totalItems})`, value: `${totalPrice} ₴`},
+                    {label: 'Delivery', value: totalPrice! > 1500 ? 'Free' : 'Paid'}
+                ]}
+                totalPrice={totalPrice!}
+                buttons={
+                    <>
+                        <Button
+                            variant="primary"
+                            size="lg"
+                            fullWidth
+                            disabled={isCreatingOrder}
+                            onClick={handlePlaceOrder}
+                        >
+                            {isCreatingOrder ? 'Creating order...' : 'Create an order'}
+                        </Button>
+                        <Button
+                            variant="outline"
+                            fullWidth
+                            to="/cart"
+                        >
+                            Back to cart
+                        </Button>
+                    </>
+                }
+            >
+                <div className={styles.warning}>
+                    <strong>Attention!</strong><br/>
+                    After creating an order, you will have <strong>10 minutes</strong> to pay.
+                    If payment is not made on time, the order will be automatically deleted.
+                </div>
+            </OrderSummary>
+        </div>
     );
 };
 
