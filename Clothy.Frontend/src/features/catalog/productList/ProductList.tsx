@@ -6,7 +6,7 @@ interface ProductListProps {
     products: IClotheSummaryDTO[];
 }
 
-const ProductList = ({ products }: ProductListProps) => {
+const ProductList = ({products}: ProductListProps) => {
     return (
         <div className={styles.grid}>
             {products.map((product) => (

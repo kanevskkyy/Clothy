@@ -81,7 +81,7 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({ additionalPhotos, selectedC
                         src={photo.photoUrl}
                         className={`${styles.additionalImage} ${index === safeIndex ? styles.active : ''}`}
                         onClick={() => setActiveIndex(index)}
-                        alt={`Preview ${index + 1}`}
+                        alt={`Clothe photo № ${index + 1}`}
                     />
                 ))}
             </div>

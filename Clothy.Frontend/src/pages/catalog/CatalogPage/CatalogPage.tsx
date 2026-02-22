@@ -17,6 +17,7 @@ import {getErrorMessage} from "../../../shared/lib/errorHandler.ts";
 import EmptyState from "../../../shared/ui/EmptyState/EmptyState.tsx";
 import {PackageSearch} from "lucide-react";
 import {useQuery} from "@tanstack/react-query";
+import Container from "../../../shared/layout/Container/Container.tsx";
 
 const CatalogPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -26,7 +27,7 @@ const CatalogPage = () => {
     const [pagedClothes, setPagedClothes] = useState<PagedList<IClotheSummaryDTO> | null>(null);
     const [loading, setLoading] = useState(true);
 
-    const { data: filters } = useQuery({
+    const {data: filters} = useQuery({
         queryKey: ["catalog-filters"],
         queryFn: () => catalogApi.getFiltersAsync(),
         staleTime: 1000 * 60 * 15,
@@ -117,7 +118,7 @@ const CatalogPage = () => {
 
             const data = await catalogApi.getClothesPagedAsync({
                 pageNumber: currentPage,
-                pageSize: 27,
+                pageSize: 12,
                 brands: brandIds.length > 0 ? brandIds : undefined,
                 clothingTypes: clothingTypeIds.length > 0 ? clothingTypeIds : undefined,
                 colors: colorIds.length > 0 ? colorIds : undefined,
@@ -195,97 +196,97 @@ const CatalogPage = () => {
     };
 
     if (!filters || !pagedClothes) {
-        return <Loader />;
+        return (
+            <Loader/>
+        );
     }
 
     return (
-        <div>
-            <Helmet>
-                <title>{`Clothy — Clothing Catalog | Page ${currentPage} • ${pagedClothes.totalCount} items`}</title>
-                <meta
-                    name="description"
-                    content={`Clothy clothing catalog: ${pagedClothes.totalCount}+ items. Filter by brand, size, and price — fast and convenient online shopping.`}
-                />
-                <meta property="og:title" content="Clothy — Clothing Catalog"/>
-                <meta
-                    property="og:description"
-                    content="Wide selection of clothing in the Clothy catalog. Discounts, new arrivals, and popular brands."
-                />
-            </Helmet>
-
-            <div className={styles.catalogContainer}>
-                <aside className={styles.filterSidebar}>
-                    <CatalogFilter
-                        filters={filters}
-                        initialFilters={getInitialFilters()}
-                        onFilterChange={handleFilterChange}
+        <Container className={styles.catalogWrapper}>
+            <div>
+                <Helmet>
+                    <title>{`Clothy — Clothing Catalog | Page ${currentPage} • ${pagedClothes.totalCount} items`}</title>
+                    <meta
+                        name="description"
+                        content={`Clothy clothing catalog: ${pagedClothes.totalCount}+ items. Filter by brand, size, and price — fast and convenient online shopping.`}
                     />
-                </aside>
+                    <meta property="og:title" content="Clothy — Clothing Catalog"/>
+                    <meta
+                        property="og:description"
+                        content="Wide selection of clothing in the Clothy catalog. Discounts, new arrivals, and popular brands."
+                    />
+                </Helmet>
 
-                <main className={styles.catalogMain}>
-                    <div className={styles.catalogHeader}>
-                        <div className={styles.resultsCount}>
-                            Items found: {pagedClothes.totalCount}
-                        </div>
-
-                        <div className={styles.desktopSort}>
-                            <SortSelect
-                                value={sortBy}
-                                options={sortOptions}
-                                onChange={handleSortChange}
-                            />
-                        </div>
-
-                        <div className={styles.mobileFiltersRow}>
-                            <CatalogFilter
-                                filters={filters}
-                                initialFilters={getInitialFilters()}
-                                onFilterChange={handleFilterChange}
-                            />
-                            <SortSelect
-                                value={sortBy}
-                                options={sortOptions}
-                                onChange={handleSortChange}
-                            />
-                        </div>
-                    </div>
-
-                    {loading ? (
-                        <Loader />
-                    ) : pagedClothes.items.length === 0 ? (
-                        <EmptyState
-                            icon={<PackageSearch size={28} color="#6B6B6B" />}
-                            title="No items found"
-                            description="Try adjusting your filters or sorting options."
-                            buttons={[
-                                {
-                                    label: "Reset Filters",
-                                    onClick: () => {
-                                        setSearchParams(new URLSearchParams());
-                                    },
-                                    variant: "primary",
-                                    size: "md"
-                                }
-                            ]}
+                <div className={styles.catalogContainer}>
+                    <aside className={styles.filterSidebar}>
+                        <CatalogFilter
+                            filters={filters}
+                            initialFilters={getInitialFilters()}
+                            onFilterChange={handleFilterChange}
                         />
-                    ) : (
-                        <>
-                            <div className={styles.productWrapper}>
-                                <ProductList products={pagedClothes.items} />
+                    </aside>
+
+                    <main className={styles.catalogMain}>
+                        <div className={styles.catalogHeader}>
+                            <div className={styles.desktopSort}>
+                                <SortSelect
+                                    value={sortBy}
+                                    options={sortOptions}
+                                    onChange={handleSortChange}
+                                />
                             </div>
 
-                            {pagedClothes.totalPages > 1 && (
-                                <Pagination
-                                    currentPage={currentPage}
-                                    totalPages={pagedClothes.totalPages}
-                                    onPageChange={handlePageChange}
+                            <div className={styles.mobileFiltersRow}>
+                                <CatalogFilter
+                                    filters={filters}
+                                    initialFilters={getInitialFilters()}
+                                    onFilterChange={handleFilterChange}
                                 />
-                            )}
-                        </>
-                    )}
-                </main>
+                                <SortSelect
+                                    value={sortBy}
+                                    options={sortOptions}
+                                    onChange={handleSortChange}
+                                />
+                            </div>
+                        </div>
+
+                        {loading ? (
+                            <Loader/>
+                        ) : pagedClothes.items.length === 0 ? (
+                            <EmptyState
+                                icon={<PackageSearch size={28} color="#6B6B6B"/>}
+                                title="No items found"
+                                description="Try adjusting your filters or sorting options."
+                                buttons={[
+                                    {
+                                        label: "Reset Filters",
+                                        onClick: () => {
+                                            setSearchParams(new URLSearchParams());
+                                        },
+                                        variant: "primary",
+                                        size: "md"
+                                    }
+                                ]}
+                            />
+                        ) : (
+                            <>
+                                <div className={styles.productWrapper}>
+                                    <ProductList products={pagedClothes.items}/>
+                                </div>
+
+                                {pagedClothes.totalPages > 1 && (
+                                    <Pagination
+                                        currentPage={currentPage}
+                                        totalPages={pagedClothes.totalPages}
+                                        onPageChange={handlePageChange}
+                                    />
+                                )}
+                            </>
+                        )}
+                    </main>
+                </div>
             </div>
-        </div>
+        </Container>
     );
 };
 

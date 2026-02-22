@@ -12,6 +12,7 @@ import {toast} from 'sonner';
 import Loader from "../../../shared/ui/Loader/Loader.tsx";
 import EmptyState from "../../../shared/ui/EmptyState/EmptyState.tsx";
 import {ShoppingCart} from "lucide-react";
+import Container from '../../../shared/layout/Container/Container.tsx';
 
 const CartPage = () => {
     const navigate = useNavigate();
@@ -77,48 +78,50 @@ const CartPage = () => {
     }
 
     return (
-        <div className={styles.container}>
-            <Helmet>
-                <title>{`Clothy — your cart (${cartItems?.totalItems} items)`}</title>
-                <meta
-                    name="description"
-                    content="View the items in your cart and complete your order quickly and conveniently."
-                />
-            </Helmet>
-
-            <div className={styles.basketList}>
-                {items.map((item) => (
-                    <CartItem
-                        key={`${item.clotheId}-${item.colorId}-${item.sizeId}`}
-                        item={item}
-                        onUpdate={() => fetchUserCart(true)}
+        <Container className={styles.containerWrapper}>
+            <div className={styles.container}>
+                <Helmet>
+                    <title>{`Clothy — your cart (${cartItems?.totalItems} items)`}</title>
+                    <meta
+                        name="description"
+                        content="View the items in your cart and complete your order quickly and conveniently."
                     />
-                ))}
-            </div>
+                </Helmet>
 
-            <OrderSummary
-                unAvailableItemsCount={cartItems?.unAvailableItemsCount ?? 0}
-                title="Your Order"
-                priceRows={[
-                    {label: `Items (${cartItems?.totalItems})`, value: `${cartItems!.totalPrice} ₴`},
-                    {label: 'Delivery', value: cartItems!.totalPrice > 1500 ? 'Free' : 'Paid'}
-                ]}
-                totalPrice={cartItems!.totalPrice}
-                buttons={
-                    <>
-                        <Button variant="primary" size="lg" fullWidth onClick={handleCheckout}>
-                            Checkout →
-                        </Button>
-                        <Button variant="outline" fullWidth to="/catalog">
-                            Continue Shopping
-                        </Button>
-                        <Button variant="outline" fullWidth onClick={handleClearCart}>
-                            Clear All
-                        </Button>
-                    </>
-                }
-            />
-        </div>
+                <div className={styles.basketList}>
+                    {items.map((item) => (
+                        <CartItem
+                            key={`${item.clotheId}-${item.colorId}-${item.sizeId}`}
+                            item={item}
+                            onUpdate={() => fetchUserCart(true)}
+                        />
+                    ))}
+                </div>
+
+                <OrderSummary
+                    unAvailableItemsCount={cartItems?.unAvailableItemsCount ?? 0}
+                    title="Your Order"
+                    priceRows={[
+                        {label: `Items (${cartItems?.totalItems})`, value: `${cartItems!.totalPrice} ₴`},
+                        {label: 'Delivery', value: cartItems!.totalPrice > 1500 ? 'Free' : 'Paid'}
+                    ]}
+                    totalPrice={cartItems!.totalPrice}
+                    buttons={
+                        <>
+                            <Button variant="primary" size="lg" fullWidth onClick={handleCheckout}>
+                                Checkout →
+                            </Button>
+                            <Button variant="outline" fullWidth to="/catalog">
+                                Continue Shopping
+                            </Button>
+                            <Button variant="outline" fullWidth onClick={handleClearCart}>
+                                Clear All
+                            </Button>
+                        </>
+                    }
+                />
+            </div>
+        </Container>
     );
 };
 

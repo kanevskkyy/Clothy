@@ -8,6 +8,8 @@ const Header = () => {
     const [menuOpen, setMenuOpen] = useState<boolean>(false);
 
     return (
+        //TODO: Rename here if will rename brand
+
         <header className={styles.header}>
             <Container className={styles.inner}>
                 <Link to="/" className={styles.logo}>

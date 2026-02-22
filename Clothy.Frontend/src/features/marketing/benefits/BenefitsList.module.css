@@ -11,7 +11,7 @@
 }
 
 .item {
-    border: 1px solid #E5E1DC;
+    border: var(--border-color);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -32,20 +32,20 @@
 .title {
     font-size: 18px;
     font-weight: 600;
-    color: #161412;
+    color: var(--color-text-primary);
     line-height: 28px;
 }
 
 .subtitle {
     font-weight: 400;
     font-size: 14px;
-    color: #78736d;
+    color: var(--color-text-secondary);
 }
 
 @media (max-width: 1024px) {
     .container {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);  
+        grid-template-columns: repeat(3, 1fr);
         gap: 16px;
     }
 
@@ -57,7 +57,7 @@
 
 @media (max-width: 640px) {
     .container {
-        grid-template-columns: 1fr;  
+        grid-template-columns: 1fr;
         gap: 12px;
     }
 

@@ -1,4 +1,4 @@
-import {BrowserRouter, Route, Routes } from "react-router-dom";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
 import NotFoundPage from "../../pages/system/NotFoundPage/NotFoundPage";
 import styles from "./AppRouter.module.css";
 import ScrollToTop from "../scroll/ScrollToTop";
@@ -39,38 +39,42 @@ export const AppRouter = () => {
                 <main className={styles.mainContent}>
                     <Routes>
                         <Route path="/" element={<HomePage/>}/>
-                        <Route path="/about-us" element={<AboutUsPage/>}/>
-                        <Route path="/delivery-info" element={<DeliveryInfoPage/>}/>
-                        <Route path="/catalog" element={<CatalogPage/>}/>
                         <Route path="/clothe/:slug/:colorSlug" element={<ClotheDetailPage/>}/>
-                        <Route path="/payment/success" element={<PaymentSuccessfulPage/>}/>
-                        <Route path="/payment/cancelled" element={<PaymentCancelledPage/>}/>
-                        <Route path="/forbidden" element={<ForbiddenPage/>}/>
 
-                        <Route element={<GuestRoute/>}>
-                            <Route path="/login" element={<LoginPage/>}/>
-                            <Route path="/register" element={<RegisterPage/>}/>
-                            <Route path="/forgot-password" element={<ForgotPasswordPage/>}/>
-                        </Route>
+                        <Route>
+                            <Route path="/about-us" element={<AboutUsPage/>}/>
+                            <Route path="/delivery-info" element={<DeliveryInfoPage/>}/>
+                            <Route path="/catalog" element={<CatalogPage/>}/>
+                            <Route path="/payment/success" element={<PaymentSuccessfulPage/>}/>
+                            <Route path="/payment/cancelled" element={<PaymentCancelledPage/>}/>
+                            <Route path="/forbidden" element={<ForbiddenPage/>}/>
 
-                        <Route element={<EmailVerifyRoute/>}>
-                            <Route path="/email-verification" element={<VerifyEmailPage/>}/>
-                        </Route>
-
-                        <Route element={<ProtectedRoute/>}>
-                            <Route path="/cart" element={<CartPage/>}/>
-                            <Route path="/checkout" element={<CheckoutPage/>}/>
-                            <Route path="/order/:orderId" element={<OrderDetailPage/>}/>
-                            <Route path="/reset-password" element={<ResetPasswordPage/>}/>
-
-                            <Route path="/account" element={<AccountLayout />}>
-                                <Route index element={<AccountProfilePage />} />
-                                <Route path="orders" element={<AccountOrderPage />} />
-                                <Route path="reviews" element={<AccountReviewsPage />} />
+                            <Route element={<GuestRoute/>}>
+                                <Route path="/login" element={<LoginPage/>}/>
+                                <Route path="/register" element={<RegisterPage/>}/>
+                                <Route path="/forgot-password" element={<ForgotPasswordPage/>}/>
                             </Route>
+
+                            <Route element={<EmailVerifyRoute/>}>
+                                <Route path="/email-verification" element={<VerifyEmailPage/>}/>
+                            </Route>
+
+                            <Route element={<ProtectedRoute/>}>
+                                <Route path="/cart" element={<CartPage/>}/>
+                                <Route path="/checkout" element={<CheckoutPage/>}/>
+                                <Route path="/order/:orderId" element={<OrderDetailPage/>}/>
+                                <Route path="/reset-password" element={<ResetPasswordPage/>}/>
+
+                                <Route path="/account" element={<AccountLayout/>}>
+                                    <Route index element={<AccountProfilePage/>}/>
+                                    <Route path="orders" element={<AccountOrderPage/>}/>
+                                    <Route path="reviews" element={<AccountReviewsPage/>}/>
+                                </Route>
+                            </Route>
+
+                            <Route path="*" element={<NotFoundPage/>}/>
                         </Route>
 
-                        <Route path="*" element={<NotFoundPage/>}/>
                     </Routes>
                 </main>
 
@@ -81,7 +85,7 @@ export const AppRouter = () => {
                     closeButton
                     toastOptions={{
                         duration: 4000,
-                        style: { zIndex: 9999 },
+                        style: {zIndex: 9999},
                     }}
                 />
 

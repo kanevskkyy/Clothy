@@ -5,10 +5,18 @@
     justify-content: center;
     align-items: stretch;
     height: 350px;
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.section.visible {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .promoInner {
-    background-color: #161412;
+    background-color: var(--color-text-primary);
     padding: 80px 64px 64px;
     display: flex;
     flex-direction: column;
@@ -37,7 +45,7 @@
 
 .promoEyebrow {
     font-weight: 400;
-    color: #9F9E9C;
+    color: var(--color-text-secondary);
     font-size: 12px;
     line-height: 16px;
     text-transform: uppercase;

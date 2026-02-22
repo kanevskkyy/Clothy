@@ -29,7 +29,7 @@
     letter-spacing: 0.18em;
     text-transform: uppercase;
     line-height: 36px;
-    color: #161412;
+    color: var(--color-text-primary);
     text-decoration: none;
     flex-shrink: 0;
     display: inline-block;
@@ -37,7 +37,7 @@
 }
 
 .brandDescription {
-    color: #78736d;
+    color: var(--color-text-secondary);
     font-size: 14px;
     line-height: 23px;
     margin-bottom: 20px;
@@ -58,7 +58,7 @@
     font-size: 12px;
     font-weight: 600;
     margin-bottom: 16px;
-    color: #161412;
+    color: var(--color-text-primary);
     text-transform: uppercase;
     letter-spacing: 1px;
 }
@@ -70,7 +70,7 @@
 }
 
 .listItem {
-    color: #161412;
+    color: var(--color-text-primary);
     font-size: 14px;
     line-height: 20px;
     margin-bottom: 10px;
@@ -79,7 +79,7 @@
 }
 
 .listItem:hover {
-    color: #78736d;
+    color: var(--color-text-secondary);
     padding-left: 4px;
 }
 
@@ -92,7 +92,7 @@
 }
 
 .link:hover {
-    color: #78736d;
+    color: var(--color-text-secondary);
     padding-left: 4px;
 }
 

@@ -62,10 +62,10 @@ const ClotheSummaryCard = memo(({ product }: ClotheSummaryCardProps) => {
                 </div>
 
                 <div className={styles.priceContainer}>
-                    <span className={styles.price}>{product.price} $</span>
+                    <span className={styles.price}>${product.price}</span>
                     {product.oldPrice && (
                         <span className={styles.oldPrice}>
-                            {product.oldPrice} $
+                            ${product.oldPrice}
                         </span>
                     )}
                 </div>

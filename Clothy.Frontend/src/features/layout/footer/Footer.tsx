@@ -3,6 +3,8 @@ import styles from './Footer.module.css';
 
 const Footer = () => {
     return (
+        //TODO: Rename here if will rename brand
+
         <footer className={styles.footer}>
             <div className={styles.container}>
                 <div className={styles.grid}>

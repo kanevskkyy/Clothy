@@ -4,13 +4,13 @@ import styles from "./OrderList.module.css";
 import { formatDate } from "../../../../shared/lib/formatDate.ts";
 import { Package } from "lucide-react";
 import { Link } from "react-router-dom";
-import OrderStatus from "../orderStatus/OrderStatus.tsx";
+import Badge from "../../../../features/catalog/badge/Badge.tsx";
 
 interface OrderListItemProps {
     orders: IOrderReadDTO[];
 }
 
-const OrderList: React.FC<OrderListItemProps> = ({ orders }) => {
+export const OrderList: React.FC<OrderListItemProps> = ({ orders }) => {
     return (
         <div className={styles.container}>
             {orders.map((order) => (
@@ -38,7 +38,7 @@ const OrderList: React.FC<OrderListItemProps> = ({ orders }) => {
                     </div>
 
                     <div className={styles.orderInfoAdditional}>
-                        <OrderStatus name={order.status}/>
+                        <Badge label={order.status}/>
 
                         <p className={styles.orderPrice}>
                             {order.totalPrice} $

@@ -1,34 +1,46 @@
+import type { IBenefitItem } from "../../../pages/home/HomePage/HomePage";
 import styles from "./BenefitsList.module.css";
 
-interface IBenefitItem {
-    title: string;
-    description: string;
+interface BenefitsListProps {
+    benefits: IBenefitItem[];
+    titleSize?: string;
+    subtitleSize?: string;
+    uppercase?: boolean;
+    marginBottom?: string;
 }
 
-const benefits: IBenefitItem[] = [
-    {
-        title: "Free shipping",
-        description: "Enjoy complimentary delivery on orders over ₴1500.",
-    },
-    {
-        title: "Quality guarantee",
-        description: "Carefully selected materials and verified authenticity.",
-    },
-    {
-        title: "Welcome discount",
-        description: "Get 10% off your first purchase.",
-    },
-];
-
-const BenefitsList = () => {
+const BenefitsList: React.FC<BenefitsListProps> = ({
+                                                       benefits,
+                                                       titleSize = '18px',
+                                                       subtitleSize = '14px',
+                                                       uppercase = false,
+                                                       marginBottom,
+                                                   }) => {
     return (
         <section className={styles.wrapper}>
             <div className={styles.container}>
-                {benefits.map(({title, description }) => (
+                {benefits.map(({ title, description }) => (
                     <div className={styles.item} key={title}>
                         <div className={styles.textWrapper}>
-                            <h2 className={styles.title}>{title}</h2>
-                            <p className={styles.subtitle}>{description}</p>
+                            <h2
+                                className={styles.title}
+                                style={{
+                                    marginBottom,
+                                    fontSize: titleSize,
+                                    textTransform: uppercase ? 'uppercase' : 'initial',
+                                }}
+                            >
+                                {title}
+                            </h2>
+                            <p
+                                className={styles.subtitle}
+                                style={{
+                                    fontSize: subtitleSize,
+                                    textTransform: uppercase ? 'uppercase' : 'initial',
+                                }}
+                            >
+                                {description}
+                            </p>
                         </div>
                     </div>
                 ))}

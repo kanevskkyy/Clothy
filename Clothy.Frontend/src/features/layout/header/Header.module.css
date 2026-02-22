@@ -27,7 +27,7 @@
     letter-spacing: 0.18em;
     text-transform: uppercase;
     line-height: 36px;
-    color: #161412;
+    color: var(--color-text-primary);
     text-decoration: none;
     flex-shrink: 0;
 }
@@ -40,7 +40,7 @@
 
 .navLink {
     font-size: 14px;
-    color: #161412;
+    color: var(--color-text-primary);
     font-weight: 400;
     text-decoration: none;
     line-height: 20px;
@@ -84,14 +84,12 @@
 
 @media (hover: hover) {
     .iconButton:hover {
-        background: #0C0C0C;
-        color: #faf0f0;
+        color: var(--color-orange);
     }
 }
 
 .iconButton:active {
-    background: #0C0C0C;
-    color: #faf0f0;
+    color: var(--color-orange);
 }
 
 .iconButton svg {

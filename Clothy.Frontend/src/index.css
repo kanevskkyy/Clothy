@@ -9,6 +9,17 @@ body {
   font-family: 'Inter', sans-serif;
 }
 
+:root{
+  --color-text-primary: #161412;
+  --color-text-secondary: #78736d;
+
+  --color-orange: #ce783b;
+
+  --delay: 40ms;
+
+  --border-color: 1px solid #E5E1DC;
+}
+
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Playfair Display', serif;
 }

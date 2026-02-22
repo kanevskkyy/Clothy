@@ -2,9 +2,16 @@
     margin-top: -10px;
 }
 
+.sectionHeader {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
 .titleLabel {
     text-transform: uppercase;
-    color: #78736d;
+    color: var(--color-text-secondary);
     font-weight: 400;
     line-height: 16px;
     font-size: 12px;
@@ -13,18 +20,39 @@
 }
 
 .title {
-    font-family: "Playfair Display", serif;
     font-size: 36px;
     line-height: 40px;
     font-weight: 700;
-    color: #161412;
-    margin: 0 0 30px 0;
+    color: var(--color-text-primary);
+    margin: 0;
+}
+
+.viewAll {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    text-transform: uppercase;
+    padding-bottom: 4px;
+    transition: color 0.2s ease;
+    white-space: nowrap;
+}
+
+.viewAll:hover {
+    color: var(--color-text-primary);
 }
 
 @media (max-width: 768px) {
     .title {
         font-size: 28px;
         line-height: 34px;
+    }
+
+    .sectionHeader {
         margin-bottom: 24px;
     }
 }
@@ -33,11 +61,14 @@
     .title {
         font-size: 24px;
         line-height: 30px;
-        margin-bottom: 20px;
     }
 
     .titleLabel {
         font-size: 11px;
         letter-spacing: 2px;
+    }
+
+    .viewAll {
+        font-size: 11px;
     }
 }

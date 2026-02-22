@@ -8,7 +8,7 @@ import {ordersApi} from "../../../../app/api/ordersApi.ts";
 import {toast} from "sonner";
 import {getErrorMessage} from "../../../../shared/lib/errorHandler.ts";
 import Loader from "../../../../shared/ui/Loader/Loader.tsx";
-import OrderStatus from "../../../../entities/ordersService/order/orderStatus/OrderStatus.tsx";
+import Badge from "../../../../features/catalog/badge/Badge.tsx";
 
 const OrderDetailPage = () => {
     const {orderId} = useParams<{ orderId: string; }>();
@@ -45,7 +45,7 @@ const OrderDetailPage = () => {
                     <h3 className={styles.orderHeaderTitle}>Order #{orderDetail?.id}</h3>
                     <p className={styles.orderDate}>{formatDate(orderDetail!.createdAt)}</p>
                 </div>
-                <OrderStatus name={orderDetail.status}/>
+                <Badge label={orderDetail.status}/>
             </div>
 
             <div className={styles.orderItemsList}>

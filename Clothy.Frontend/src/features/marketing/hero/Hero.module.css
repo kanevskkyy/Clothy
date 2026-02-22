@@ -29,7 +29,7 @@
 .collection {
     text-transform: uppercase;
     font-weight: 400;
-    color: #78736d;
+    color: var(--color-text-secondary);
     font-size: 12px;
     line-height: 16px;
     letter-spacing: 4px;
@@ -39,7 +39,7 @@
     font-weight: 700;
     line-height: 72px;
     font-size: 72px;
-    color: #161412;
+    color: var(--color-text-primary);
 }
 
 .accent {
@@ -48,7 +48,7 @@
 }
 
 .description {
-    color: #78736d;
+    color: var(--color-text-secondary);
     font-size: 18px;
     line-height: 29px;
 }

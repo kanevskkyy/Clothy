@@ -4,8 +4,8 @@
     width: 100%;
     background: #FAFAFA;
     margin: 0 auto;
-    border-bottom: 1px solid #E5E1DC;
-    border-top: 1px solid #E5E1DC;
+    border-bottom: var(--border-color);
+    border-top: var(--border-color);
 }
 
 .swiper {
@@ -27,7 +27,7 @@
 .brandItem span {
     font-size: 30px;
     font-weight: 600;
-    color: #9F9E9D;
+    color: var(--color-text-secondary);
     text-transform: uppercase;
     white-space: nowrap;
     letter-spacing: 2px;

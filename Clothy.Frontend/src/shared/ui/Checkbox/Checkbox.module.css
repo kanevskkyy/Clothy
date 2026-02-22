@@ -1,7 +1,7 @@
 .checkboxItem {
     display: flex;
     align-items: center;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     cursor: pointer;
 }
 
@@ -10,21 +10,21 @@
     height: 18px;
     margin-right: 10px;
     cursor: pointer;
-    accent-color: #0d16c6;
+    accent-color: #0078D4;
 }
 
 .checkboxLabel {
     font-weight: 400;
     font-size: 15px;
-    color: #000000;
+    color: var(--color-text-secondary);
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 4px;
+    justify-content: space-between;
+    width: 100%;
 }
 
 .itemCount {
-    color: #000E8A;
-    font-weight: 600;
+    font-weight: 500;
     font-size: 14px;
 }

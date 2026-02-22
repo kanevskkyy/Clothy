@@ -11,6 +11,7 @@ import {getErrorMessage} from "../../../shared/lib/errorHandler.ts";
 import ClotheDetailSkeleton from './skeleton/ClotheDetailSkeleton.tsx';
 import {useQuery} from '@tanstack/react-query';
 import type {IColorReadDTO} from "../../../entities/catalogService/colors/IColorReadDTO.ts";
+import Container from "../../../shared/layout/Container/Container.tsx";
 
 
 const ClotheDetailPage = () => {
@@ -70,31 +71,33 @@ const ClotheDetailPage = () => {
     const pageDescription = clotheItem.clotheDetailDTO.description;
 
     return (
-        <div className={styles.pageWrapper}>
-            <Helmet>
-                <title>{pageTitle}</title>
-                <meta name="description" content={pageDescription}/>
-            </Helmet>
+        <Container className={styles.catalogWrapper}>
+            <div className={styles.pageWrapper}>
+                <Helmet>
+                    <title>{pageTitle}</title>
+                    <meta name="description" content={pageDescription}/>
+                </Helmet>
 
-            <div className={styles.container}>
-                <ImageGallery
-                    additionalPhotos={clotheItem.clotheDetailDTO.additionalPhotos}
-                    selectedColor={activeColor}
-                />
-                <ClotheDetail
-                    clotheDetail={clotheItem.clotheDetailDTO}
-                    selectedColor={activeColor}
-                    onColorChange={handleColorChange}
+                <div className={styles.container}>
+                    <ImageGallery
+                        additionalPhotos={clotheItem.clotheDetailDTO.additionalPhotos}
+                        selectedColor={activeColor}
+                    />
+                    <ClotheDetail
+                        clotheDetail={clotheItem.clotheDetailDTO}
+                        selectedColor={activeColor}
+                        onColorChange={handleColorChange}
+                    />
+                </div>
+                <ReviewsSection
+                    slug={slug!}
+                    clotheId={clotheItem.clotheDetailDTO.id}
+                    initialReviews={clotheItem.reviews}
+                    statistics={clotheItem.statistics}
+                    initialQuestions={clotheItem.questions}
                 />
             </div>
-            <ReviewsSection
-                slug={slug!}
-                clotheId={clotheItem.clotheDetailDTO.id}
-                initialReviews={clotheItem.reviews}
-                statistics={clotheItem.statistics}
-                initialQuestions={clotheItem.questions}
-            />
-        </div>
+        </Container>
     );
 };
 

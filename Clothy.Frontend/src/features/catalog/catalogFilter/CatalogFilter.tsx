@@ -1,5 +1,5 @@
 import { memo, useState, useEffect } from "react";
-import { ChevronDown, X, SlidersHorizontal } from "lucide-react";
+import { X, SlidersHorizontal, ChevronUp} from "lucide-react";
 import styles from "./CatalogFilter.module.css";
 import type { IFiltersResponse } from "../../../entities/catalogService/filters/IFiltersResponse.ts";
 import Checkbox from "../../../shared/ui/Checkbox/Checkbox.tsx";
@@ -191,8 +191,8 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange }: Catalog
                 <div className={styles.filterContent}>
                     <div className={styles.filterSection}>
                         <div className={styles.sectionHeader} onClick={() => toggleSection('brand')}>
-                            <h2 className={styles.filterTitle}>Brand</h2>
-                            <ChevronDown
+                            <div className={styles.filterTitle}>Brand</div>
+                            <ChevronUp
                                 className={`${styles.toggleIcon} ${expandedSections.has('brand') ? styles.expanded : ''}`}
                                 size={20}
                             />
@@ -217,8 +217,8 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange }: Catalog
 
                     <div className={styles.filterSection}>
                         <div className={styles.sectionHeader} onClick={() => toggleSection('type')}>
-                            <h2 className={styles.filterTitle}>Clothing Type</h2>
-                            <ChevronDown
+                            <div className={styles.filterTitle}>Clothing Type</div>
+                            <ChevronUp
                                 className={`${styles.toggleIcon} ${expandedSections.has('type') ? styles.expanded : ''}`}
                                 size={20}
                             />
@@ -243,8 +243,8 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange }: Catalog
 
                     <div className={styles.filterSection}>
                         <div className={styles.sectionHeader} onClick={() => toggleSection('color')}>
-                            <h2 className={styles.filterTitle}>Colors</h2>
-                            <ChevronDown
+                            <div className={styles.filterTitle}>Colors</div>
+                            <ChevronUp
                                 className={`${styles.toggleIcon} ${expandedSections.has('color') ? styles.expanded : ''}`}
                                 size={20}
                             />
@@ -269,8 +269,8 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange }: Catalog
 
                     <div className={styles.filterSection}>
                         <div className={styles.sectionHeader} onClick={() => toggleSection('material')}>
-                            <h2 className={styles.filterTitle}>Materials</h2>
-                            <ChevronDown
+                            <div className={styles.filterTitle}>Materials</div>
+                            <ChevronUp
                                 className={`${styles.toggleIcon} ${expandedSections.has('material') ? styles.expanded : ''}`}
                                 size={20}
                             />
@@ -295,8 +295,8 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange }: Catalog
 
                     <div className={styles.filterSection}>
                         <div className={styles.sectionHeader} onClick={() => toggleSection('size')}>
-                            <h2 className={styles.filterTitle}>Sizes</h2>
-                            <ChevronDown
+                            <div className={styles.filterTitle}>Sizes</div>
+                            <ChevronUp
                                 className={`${styles.toggleIcon} ${expandedSections.has('size') ? styles.expanded : ''}`}
                                 size={20}
                             />
@@ -321,8 +321,8 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange }: Catalog
 
                     <div className={styles.filterSection}>
                         <div className={styles.sectionHeader} onClick={() => toggleSection('tags')}>
-                            <h2 className={styles.filterTitle}>Tags</h2>
-                            <ChevronDown
+                            <div className={styles.filterTitle}>Tags</div>
+                            <ChevronUp
                                 className={`${styles.toggleIcon} ${expandedSections.has('tags') ? styles.expanded : ''}`}
                                 size={20}
                             />
@@ -347,8 +347,8 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange }: Catalog
 
                     <div className={styles.filterSection}>
                         <div className={styles.sectionHeader} onClick={() => toggleSection('collections')}>
-                            <h2 className={styles.filterTitle}>Collections</h2>
-                            <ChevronDown
+                            <div className={styles.filterTitle}>Collections</div>
+                            <ChevronUp
                                 className={`${styles.toggleIcon} ${expandedSections.has('collections') ? styles.expanded : ''}`}
                                 size={20}
                             />
@@ -373,8 +373,8 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange }: Catalog
 
                     <div className={styles.filterSection}>
                         <div className={styles.sectionHeader} onClick={() => toggleSection('gender')}>
-                            <h2 className={styles.filterTitle}>Gender</h2>
-                            <ChevronDown
+                            <div className={styles.filterTitle}>Gender</div>
+                            <ChevronUp
                                 className={`${styles.toggleIcon} ${expandedSections.has('gender') ? styles.expanded : ''}`}
                                 size={20}
                             />
@@ -410,8 +410,8 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange }: Catalog
 
                     <div className={styles.filterSection}>
                         <div className={styles.sectionHeader} onClick={() => toggleSection('price')}>
-                            <h2 className={styles.filterTitle}>Price</h2>
-                            <ChevronDown
+                            <div className={styles.filterTitle}>Price</div>
+                            <ChevronUp
                                 className={`${styles.toggleIcon} ${expandedSections.has('price') ? styles.expanded : ''}`}
                                 size={20}
                             />

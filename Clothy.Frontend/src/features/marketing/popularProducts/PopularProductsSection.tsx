@@ -6,12 +6,14 @@ import Loader from '../../../shared/ui/Loader/Loader.tsx';
 import {toast} from "sonner";
 import {getErrorMessage} from "../../../shared/lib/errorHandler.ts";
 import {useQuery} from "@tanstack/react-query";
+import {Link} from "react-router-dom";
+import {ArrowRight} from "lucide-react";
 
 const PopularProductsSection = () => {
-   const { data: clotheItems = [], isLoading, error } = useQuery({
-       queryKey: ["clothe-top8"],
-       queryFn: () => catalogApi.getTop8MostSaleAsync(),
-   });
+    const { data: clotheItems = [], isLoading, error } = useQuery({
+        queryKey: ["clothe-top8"],
+        queryFn: () => catalogApi.getTop8MostSaleAsync(),
+    });
 
     useEffect(() => {
         if (error) toast.error(getErrorMessage(error));
@@ -22,8 +24,16 @@ const PopularProductsSection = () => {
     return (
         <section className={styles.productsSection}>
             <div className={styles.container}>
-                <p className={styles.titleLabel}>Trending</p>
-                <h2 className={styles.title}>Most Popular</h2>
+                <div className={styles.sectionHeader}>
+                    <div>
+                        <p className={styles.titleLabel}>Trending</p>
+                        <h2 className={styles.title}>Most Popular</h2>
+                    </div>
+                    <Link to="/catalog" className={styles.viewAll}>
+                        VIEW ALL
+                        <ArrowRight size={14} strokeWidth={1.5} />
+                    </Link>
+                </div>
                 <ProductList products={clotheItems} />
             </div>
         </section>
