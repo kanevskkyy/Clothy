@@ -4,6 +4,7 @@
     overflow-y: auto;
     overscroll-behavior: contain;
     scroll-behavior: smooth;
+    background-color: #fff;
 }
 
 .filterContainer::-webkit-scrollbar {
@@ -47,6 +48,7 @@
 .filterSection {
     border-bottom: 1px solid #E5E1DC;
     padding: 0;
+    background-color: #fff;
 }
 
 .filterSection:last-child {
@@ -61,6 +63,7 @@
     min-height: 56px;
     cursor: pointer;
     user-select: none;
+    background-color: #fff;
 }
 
 .filterTitle {
@@ -85,6 +88,7 @@
 
 .sectionContent {
     animation: slideDown 0.3s ease;
+    background-color: #fff;
 }
 
 @keyframes slideDown {
@@ -104,6 +108,7 @@
     padding: 0 4px 16px 4px;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
+    background-color: #fff;
 }
 
 .checkboxList::-webkit-scrollbar {
@@ -126,6 +131,7 @@
 
 .resetButtonWrapper {
     padding: 12px 4px;
+    background-color: #fff;
 }
 
 .resetButton {
@@ -151,8 +157,9 @@
 }
 
 @media (max-width: 768px) {
+
     .mobileFilterButton {
-        background-color: #FFFFFF;
+        background-color: #ffffff;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -202,7 +209,7 @@
         padding: 0;
         display: flex;
         flex-direction: column;
-        background: #fff;
+        background-color: #fff;
     }
 
     .filterContainer.open {
@@ -215,7 +222,7 @@
         align-items: center;
         padding: 20px 24px;
         border-bottom: 1px solid #D9D9D9;
-        background-color: white;
+        background-color: #fff;
         z-index: 10;
         flex-shrink: 0;
     }
@@ -244,19 +251,32 @@
         overscroll-behavior: contain;
         -webkit-overflow-scrolling: touch;
         padding: 0 24px;
+        background-color: #fff;
+    }
+
+    .filterSection {
+        background-color: #fff;
     }
 
     .sectionHeader {
         padding: 22px 0;
+        background-color: #fff;
+    }
+
+    .sectionContent {
+        background-color: #fff;
     }
 
     .checkboxList {
         padding: 0 0 16px 0;
+        background-color: #fff;
     }
 
     .resetButtonWrapper {
-        padding: 12px 0;
+        padding: 16px 24px;
         border-top: 1px solid #D9D9D9;
         border-bottom: none;
+        background-color: #fff;
+        flex-shrink: 0;
     }
 }

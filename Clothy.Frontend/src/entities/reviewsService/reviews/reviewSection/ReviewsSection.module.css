@@ -168,6 +168,10 @@
         min-width: 38px;
     }
 
+    .reviewPromptWrapper button {
+        width: 100%;
+    }
+
     .ratingCount {
         min-width: 24px;
         font-size: 13px;

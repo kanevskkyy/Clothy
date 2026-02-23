@@ -41,7 +41,6 @@ namespace Clothy.CatalogService.SeedData.SeedData
                     CreatedAt = faker.Date.Past(2).ToUniversalTime(),
                     Name = brandName,
                     Slug = brandName.Replace(" ", "-").ToLower(),
-                    PhotoURL = faker.Image.PicsumUrl()
                 };
 
                 brands.Add(brand);

@@ -202,7 +202,7 @@ const CatalogPage = () => {
     }
 
     return (
-        <Container className={styles.catalogWrapper}>
+        <Container paddingY={40}>
             <div>
                 <Helmet>
                     <title>{`Clothy — Clothing Catalog | Page ${currentPage} • ${pagedClothes.totalCount} items`}</title>

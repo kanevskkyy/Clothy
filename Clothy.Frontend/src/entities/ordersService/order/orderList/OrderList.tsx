@@ -27,9 +27,9 @@ export const OrderList: React.FC<OrderListItemProps> = ({ orders }) => {
                         </div>
 
                         <div>
-                            <h3 className={styles.orderId}>
+                            <div className={styles.orderId}>
                                 Order #{order.id}
-                            </h3>
+                            </div>
 
                             <p className={styles.orderDate}>
                                 {formatDate(order.createdAt)}

@@ -84,12 +84,7 @@ const OrderDetailPage = () => {
                                     : styles.paid
                             }`}
                         >
-                            <Truck size={24}/>
-                            <span>
-                                    {orderDetail?.isFreeDelivery
-                                        ? "Free delivery"
-                                        : "Paid"}
-                                </span>
+                            <span>{orderDetail?.isFreeDelivery ? "Free delivery" : "Delivery not free"}</span>
                         </div>
 
                     </div>

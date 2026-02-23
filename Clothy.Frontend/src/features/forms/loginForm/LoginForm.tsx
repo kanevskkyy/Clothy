@@ -82,7 +82,7 @@ const LoginForm = () => {
 
             <div className={styles.actions}>
                 <Button type="submit" variant="primary" size="lg" disabled={isTryingLogin} fullWidth>
-                    Sign in
+                    {isTryingLogin? "Please wait..." : "Sign in"}
                 </Button>
                 <div className={styles.login}>
                     <span>Don't have an account?</span>

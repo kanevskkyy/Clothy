@@ -6,10 +6,6 @@
     gap: 60px;
 }
 
-.catalogWrapper {
-    padding-top: 20px;
-}
-
 @media (max-width: 1024px) {
     .container {
         flex-direction: column;

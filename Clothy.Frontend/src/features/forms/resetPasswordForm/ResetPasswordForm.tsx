@@ -74,7 +74,7 @@ const ResetPasswordForm = () => {
 
             <div className={styles.actions}>
                 <Button disabled={isTryingChangePassword} type="submit" variant="primary" size="lg" fullWidth>
-                    Change password
+                    {isTryingChangePassword ? "Please wait..." : "Change password"}
                 </Button>
                 <div className={styles.account}>
                     <Link to="/account" className={styles.accountLink}>Return to account</Link>

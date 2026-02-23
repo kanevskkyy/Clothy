@@ -71,7 +71,7 @@ const ClotheDetailPage = () => {
     const pageDescription = clotheItem.clotheDetailDTO.description;
 
     return (
-        <Container className={styles.catalogWrapper}>
+        <Container paddingY={20}>
             <div className={styles.pageWrapper}>
                 <Helmet>
                     <title>{pageTitle}</title>

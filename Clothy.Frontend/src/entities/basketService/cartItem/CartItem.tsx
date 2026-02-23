@@ -143,10 +143,10 @@ const CartItem: React.FC<CartItemProps> = ({ item, onUpdate }) => {
                                     +
                                 </button>
                             </div>
-                            <p className={styles.price}>{formatMoney(itemTotal)} ₴</p>
+                            <p className={styles.price}>${formatMoney(itemTotal)}</p>
                         </>
                     ) : (
-                        <p className={styles.unavailablePrice}>{formatMoney(itemTotal)} ₴</p>
+                        <p className={styles.unavailablePrice}>${formatMoney(itemTotal)}</p>
                     )}
                 </div>
             </div>

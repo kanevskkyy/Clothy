@@ -1,6 +1,7 @@
 import styles from './ErrorPage.module.css';
 import {Helmet} from "react-helmet";
 import type {LucideIcon} from "lucide-react";
+import Container from "../../../shared/layout/Container/Container.tsx";
 
 interface ActionButton {
     label: string;
@@ -21,35 +22,37 @@ interface ErrorPageProps {
 
 const ErrorPage = ({title, message, icon: Icon, iconColor, iconBgColor, pageTitle, actions}: ErrorPageProps) => {
     return (
-        <div className={styles.wrapper}>
-            <Helmet>
-                <title>{pageTitle || title} | Clothy</title>
-            </Helmet>
+        <Container paddingY={60}>
+            <div className={styles.wrapper}>
+                <Helmet>
+                    <title>{pageTitle || title} | Clothy</title>
+                </Helmet>
 
-            <div className={styles.container}>
-                <div className={styles.mainIcon} style={{backgroundColor: iconBgColor}}>
-                    <Icon size={24} style={{color: iconColor}}/>
-                </div>
-                <h1>{title}</h1>
-                <p>{message}</p>
-                <div className={styles.actions}>
-                    {actions.map((action, index) => (
-                        <a
-                            key={index}
-                            href={action.href}
-                            className={
-                                action.variant === 'primary'
-                                    ? styles.primaryButton
-                                    : styles.secondaryButton
-                            }
-                        >
-                            <action.icon size={20}/>
-                            {action.label}
-                        </a>
-                    ))}
+                <div className={styles.container}>
+                    <div className={styles.mainIcon} style={{backgroundColor: iconBgColor}}>
+                        <Icon size={24} style={{color: iconColor}}/>
+                    </div>
+                    <h1>{title}</h1>
+                    <p>{message}</p>
+                    <div className={styles.actions}>
+                        {actions.map((action, index) => (
+                            <a
+                                key={index}
+                                href={action.href}
+                                className={
+                                    action.variant === 'primary'
+                                        ? styles.primaryButton
+                                        : styles.secondaryButton
+                                }
+                            >
+                                <action.icon size={20}/>
+                                {action.label}
+                            </a>
+                        ))}
+                    </div>
                 </div>
             </div>
-        </div>
+        </Container>
     );
 };
 

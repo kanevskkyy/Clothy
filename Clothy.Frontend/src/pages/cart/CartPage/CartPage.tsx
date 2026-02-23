@@ -102,7 +102,7 @@ const CartPage = () => {
                     unAvailableItemsCount={cartItems?.unAvailableItemsCount ?? 0}
                     title="Your Order"
                     priceRows={[
-                        {label: `Items (${cartItems?.totalItems})`, value: `${cartItems!.totalPrice} ₴`},
+                        {label: `Items (${cartItems?.totalItems})`, value: `$${cartItems!.totalPrice.toFixed(2)}`},
                         {label: 'Delivery', value: cartItems!.totalPrice > 1500 ? 'Free' : 'Paid'}
                     ]}
                     totalPrice={cartItems!.totalPrice}

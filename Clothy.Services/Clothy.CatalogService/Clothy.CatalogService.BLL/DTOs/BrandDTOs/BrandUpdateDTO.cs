@@ -9,8 +9,7 @@ namespace Clothy.CatalogService.BLL.DTOs.BrandDTOs
 {
     public class BrandUpdateDTO
     {
-        public string Name { get; set; } = string.Empty;
-        public string Slug { get; set; } = string.Empty;
-        public IFormFile? Photo { get; set; }
+        public string? Name { get; set; }
+        public string? Slug { get; set; }
     }
 }

@@ -12,11 +12,14 @@ import {ordersApi} from "../../../app/api/ordersApi.ts";
 import {getErrorMessage} from "../../../shared/lib/errorHandler.ts";
 import {paymentApi} from "../../../app/api/paymentApi.ts";
 import {useQueryClient} from "@tanstack/react-query";
+import Loader from "../../../shared/ui/Loader/Loader.tsx";
+import Container from "../../../shared/layout/Container/Container.tsx";
 
 const CheckoutPage = () => {
     const queryClient = useQueryClient();
-    const [totalPrice, setTotalPrice] = useState<number>();
-    const [totalItems, setTotalItems] = useState<number>();
+    const [totalPrice, setTotalPrice] = useState<number>(0);
+    const [totalItems, setTotalItems] = useState<number>(0);
+    const [isLoading, setIsLoading] = useState(true);
 
     const user = useAuthStore(state => state.user);
     const emailVerified = user?.emailVerified;
@@ -42,8 +45,6 @@ const CheckoutPage = () => {
                 comment: formData.comment,
             });
 
-            console.groupEnd();
-
             await queryClient.invalidateQueries({queryKey: ["clothe-top8"]});
             const paymentData = await paymentApi.payForOrderAsync(orderData.id, formData.paymentMethod);
             window.location.href = paymentData.paymentUrl;
@@ -54,7 +55,6 @@ const CheckoutPage = () => {
         }
     };
 
-
     const handlePlaceOrder = () => {
         const form = document.getElementById('checkout-form') as HTMLFormElement;
         if (form) {
@@ -64,62 +64,72 @@ const CheckoutPage = () => {
 
     useEffect(() => {
         const getCartInfo = async () => {
-            const data = await basketApi.getMyCartAsync();
-            if (!data || !data.items || data.items.length === 0) {
-                navigate('/catalog');
-                return;
+            try {
+                const data = await basketApi.getMyCartAsync();
+                if (!data || !data.items || data.items.length === 0) {
+                    navigate('/catalog');
+                    return;
+                }
+                setTotalItems(data.items.length);
+                setTotalPrice(data.totalPrice);
+            } catch (error) {
+                toast.error(getErrorMessage(error));
+                navigate('/cart');
+            } finally {
+                setIsLoading(false);
             }
-
-            setTotalItems(data.items.length);
-            setTotalPrice(data.totalPrice);
         };
 
         getCartInfo();
     }, []);
 
-    return (
-        <div className={styles.container}>
-            <div className={styles.formSection}>
-                <h1 className={styles.pageTitle}>Placing an order</h1>
-                <CheckoutForm onValidSubmit={handleValidFormSubmit}/>
-            </div>
+    if (isLoading) return <Loader />;
 
-            <OrderSummary
-                unAvailableItemsCount={0}
-                title="Your order"
-                priceRows={[
-                    {label: `Items (${totalItems})`, value: `${totalPrice} ₴`},
-                    {label: 'Delivery', value: totalPrice! > 1500 ? 'Free' : 'Paid'}
-                ]}
-                totalPrice={totalPrice!}
-                buttons={
-                    <>
-                        <Button
-                            variant="primary"
-                            size="lg"
-                            fullWidth
-                            disabled={isCreatingOrder}
-                            onClick={handlePlaceOrder}
-                        >
-                            {isCreatingOrder ? 'Creating order...' : 'Create an order'}
-                        </Button>
-                        <Button
-                            variant="outline"
-                            fullWidth
-                            to="/cart"
-                        >
-                            Back to cart
-                        </Button>
-                    </>
-                }
-            >
-                <div className={styles.warning}>
-                    <strong>Attention!</strong><br/>
-                    After creating an order, you will have <strong>10 minutes</strong> to pay.
-                    If payment is not made on time, the order will be automatically deleted.
+    return (
+        <Container paddingY={30}>
+            <div className={styles.container}>
+                <div className={styles.formSection}>
+                    <h1 className={styles.pageTitle}>Checkout</h1>
+                    <CheckoutForm onValidSubmit={handleValidFormSubmit}/>
                 </div>
-            </OrderSummary>
-        </div>
+
+                <OrderSummary
+                    unAvailableItemsCount={0}
+                    title="Your order"
+                    priceRows={[
+                        {label: `Items (${totalItems})`, value: `$${totalPrice}`},
+                        {label: 'Delivery', value: totalPrice > 1500 ? 'Free' : 'Paid'}
+                    ]}
+                    totalPrice={totalPrice}
+                    buttons={
+                        <>
+                            <Button
+                                variant="primary"
+                                size="lg"
+                                fullWidth
+                                disabled={isCreatingOrder}
+                                onClick={handlePlaceOrder}
+                            >
+                                {isCreatingOrder ? 'Creating order...' : 'Create an order'}
+                            </Button>
+                            <Button
+                                variant="outline"
+                                fullWidth
+                                to="/cart"
+                            >
+                                Back to cart
+                            </Button>
+                        </>
+                    }
+                >
+                    <div className={styles.warning}>
+                        <strong>Attention!</strong><br/>
+                        After creating an order, you will have <strong>10 minutes</strong> to pay.
+                        If payment is not made on time, the order will be automatically deleted.
+                    </div>
+                </OrderSummary>
+            </div>
+        </Container>
     );
 };
 

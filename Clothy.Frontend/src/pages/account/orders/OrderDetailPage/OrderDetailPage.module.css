@@ -23,6 +23,7 @@
 }
 
 .orderDate {
+    margin-top: 10px;
     font-size: 14px;
     color: rgb(102, 102, 102);
     line-height: 20px;
@@ -59,7 +60,7 @@
 .itemImage {
     width: 100px;
     height: 100px;
-    object-fit: scale-down;
+    object-fit: contain;
     flex-shrink: 0;
 }
 
