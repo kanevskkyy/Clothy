@@ -25,10 +25,6 @@ namespace Clothy.CatalogService.DAL.EntityConfigurations.CatalogEFConfiguration
                 .IsRequired()
                 .HasMaxLength(100);
 
-            builder.Property(property => property.PhotoURL)
-                .IsRequired()
-                .HasMaxLength(500);
-
             builder.Property(property => property.CreatedAt)
                 .IsRequired();
 

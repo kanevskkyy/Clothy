@@ -119,7 +119,7 @@ const RegisterForm = () => {
 
             <div className={styles.actions}>
                 <Button type="submit" variant="primary" disabled={isTryingRegister} size="lg" fullWidth>
-                    Register
+                    {isTryingRegister ? "Please wait..." : "Register"}
                 </Button>
                 <div className={styles.login}>
                     <span>Already have an account?</span>

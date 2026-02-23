@@ -36,19 +36,9 @@ const ClotheSummaryCard = memo(({ product }: ClotheSummaryCardProps) => {
             </div>
 
             <div className={styles.content}>
-                <div className={styles.brandInfo}>
-                    <img
-                        src={product.brand.photoURL}
-                        alt={product.brand.name}
-                        width="20"
-                        height="20"
-                        loading="lazy"
-                        decoding="async"
-                    />
-                    <div className={styles.brand}>{product.brand.name}</div>
-                </div>
+                <div className={styles.brand}>{product.brand.name}</div>
 
-                <div className={styles.name}>{product.name}</div>
+                <h4 className={styles.name}>{product.name}</h4>
 
                 <div className={styles.colors}>
                     {product.colors.map((color) => (
@@ -72,10 +62,10 @@ const ClotheSummaryCard = memo(({ product }: ClotheSummaryCardProps) => {
                 </div>
 
                 <div className={styles.priceContainer}>
-                    <span className={styles.price}>{product.price} $</span>
+                    <span className={styles.price}>${product.price}</span>
                     {product.oldPrice && (
                         <span className={styles.oldPrice}>
-                            {product.oldPrice} $
+                            ${product.oldPrice}
                         </span>
                     )}
                 </div>

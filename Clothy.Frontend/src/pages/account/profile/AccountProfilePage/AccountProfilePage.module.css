@@ -1,18 +1,6 @@
 .page {
-    border: 2px solid #D9D9D9;
-    border-radius: 8px;
-    padding: 32px;
-    max-width: 800px;
+    max-width: 680px;
     width: 100%;
-    box-sizing: border-box;
-    margin: 0 auto;
-}
-
-.title {
-    font-size: 24px;
-    font-weight: 600;
-    margin: 0 0 32px 0;
-    color: #000;
 }
 
 .form {
@@ -22,32 +10,79 @@
     width: 100%;
 }
 
-.photoSection {
+.userRow {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 16px;
-    padding: 20px;
-    border-radius: 8px;
+    gap: 20px;
 }
 
-.photo {
-    width: 120px;
-    height: 120px;
+.avatarWrapper {
+    position: relative;
+    width: 72px;
+    height: 72px;
     border-radius: 50%;
-    object-fit: cover;
-    background-color: #171515;
+    cursor: pointer;
     flex-shrink: 0;
+}
+
+.avatar {
+    width: 72px;
+    background-color: #f0f0f0;
+    height: 72px;
+    border-radius: 50%;
+    object-fit: contain;
+    display: block;
+}
+
+.avatarOverlay {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.avatarWrapper:hover .avatarOverlay {
+    opacity: 1;
 }
 
 .fileInput {
     display: none;
 }
 
+.userMeta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.userName {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111;
+    margin: 0;
+}
+
+.userEmail {
+    font-size: 14px;
+    color: #888;
+    margin: 0;
+}
+
 .photoError {
     color: #dc2626;
-    font-size: 14px;
-    margin: 0;
+    font-size: 13px;
+    margin: -12px 0 0;
+}
+
+.divider {
+    height: 1px;
+    background: #E5E1DC;
+    margin: 4px 0;
 }
 
 .row {
@@ -58,13 +93,13 @@
 }
 
 .passwordSection {
-    border-top: 2px solid #d9d9d9;
+    border-top: 1px solid #E5E1DC;
     padding-top: 20px;
     text-align: center;
     font-size: 14px;
     color: #666;
     display: flex;
-    gap: 4px;
+    gap: 6px;
     justify-content: center;
     align-items: center;
 }
@@ -80,30 +115,18 @@
     text-decoration: underline;
 }
 
-@media (max-width: 1023px) {
-    .page {
-        max-width: 100%;
-    }
-}
-
 @media (max-width: 767px) {
-    .page {
-        padding: 24px 20px;
-        max-width: 100%;
-    }
-
-    .title {
-        font-size: 20px;
-        margin-bottom: 24px;
-    }
-
     .row {
         grid-template-columns: 1fr;
-        gap: 24px;
+        gap: 20px;
     }
 
-    .photo {
-        width: 100px;
-        height: 100px;
+    .avatar, .avatarWrapper {
+        width: 60px;
+        height: 60px;
+    }
+
+    .userName {
+        font-size: 16px;
     }
 }

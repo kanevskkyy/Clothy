@@ -241,6 +241,8 @@ const CheckoutForm = ({ onValidSubmit }: CheckoutFormProps) => {
     return (
         <form className={styles.form} onSubmit={handleSubmit} id="checkout-form">
             <section className={styles.section}>
+                <h2 className={styles.sectionTitle}>Personal information</h2>
+
                 <div className={styles.row}>
                     <FormField label="First name" htmlFor="firstName" required error={errors.firstName}>
                         <Input
@@ -395,7 +397,7 @@ const CheckoutForm = ({ onValidSubmit }: CheckoutFormProps) => {
                         iconBgColor="#2F71F0"
                         iconColor="#FFFFFF"
                         label="Credit Card"
-                        description="Visa, Mastercard, Приват24"
+                        description="Visa, Mastercard"
                     />
                     <RadioOption
                         id="payment-crypto"

@@ -1,10 +1,8 @@
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, Trash2, Pencil } from "lucide-react";
 import EmptyState from "../../../../shared/ui/EmptyState/EmptyState.tsx";
-import ReviewCard from "../../../../entities/reviewsService/reviews/reviewCard/ReviewCard.tsx";
 import Pagination from "../../../../shared/ui/Pagination/Pagination.tsx";
 import Loader from "../../../../shared/ui/Loader/Loader.tsx";
 import Modal from "../../../../shared/layout/Modal/Modal.tsx";
-import Button from "../../../../shared/ui/Button/Button.tsx";
 import { Helmet } from "react-helmet";
 import { useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -18,6 +16,7 @@ import type { IReviewReadDTO } from "../../../../entities/reviewsService/reviews
 import type { PagedList } from "../../../../shared/lib/pagedList.ts";
 import styles from "./AccountReviewsPage.module.css";
 import ReviewForm from "../../../../features/forms/reviewForm/ReviewForm.tsx";
+import ReviewRowCard from "../../../../entities/reviewsService/reviews/reviewRow/ReviewRowCard.tsx";
 
 const AccountReviewsPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -26,6 +25,7 @@ const AccountReviewsPage = () => {
     const [reviews, setReviews] = useState<PagedList<IReviewReadDTO>>();
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [editingReview, setEditingReview] = useState<IReviewReadDTO | null>(null);
+    const [deletingId, setDeletingId] = useState<string | null>(null);
 
     const accessToken = useAuthStore.getState().accessToken;
 
@@ -49,11 +49,14 @@ const AccountReviewsPage = () => {
 
     const handleDelete = async (id: string) => {
         try {
+            setDeletingId(id);
             await reviewApi.deleteReviewAsync(id);
             toast.success("Review deleted.");
             fetchUsersReviews();
         } catch (error) {
             toast.error(getErrorMessage(error));
+        } finally {
+            setDeletingId(null);
         }
     };
 
@@ -84,6 +87,7 @@ const AccountReviewsPage = () => {
                     <ReviewForm
                         method="update"
                         reviewId={editingReview.id}
+                        clotheId={editingReview.clotheInfo?.clotheItemId}
                         initialData={{
                             rating: editingReview.rating,
                             comment: editingReview.comment,
@@ -105,27 +109,26 @@ const AccountReviewsPage = () => {
                 />
             ) : (
                 <>
-                    <div className={styles.reviewsList}>
+                    <div className={styles.list}>
                         {reviews.items.map((review) => (
-                            <div key={review.id} className={styles.reviewWrapper}>
-                                <ReviewCard review={review} />
-                                <div className={styles.actions}>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => handleEditClick(review.id)}
-                                    >
-                                        Edit
-                                    </Button>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => handleDelete(review.id)}
-                                    >
-                                        Delete
-                                    </Button>
-                                </div>
-                            </div>
+                            <ReviewRowCard
+                                key={review.id}
+                                review={review}
+                                actions={[
+                                    {
+                                        icon: <Pencil size={15} />,
+                                        title: "Edit",
+                                        onClick: () => handleEditClick(review.id),
+                                    },
+                                    {
+                                        icon: <Trash2 size={15} />,
+                                        title: "Delete",
+                                        danger: true,
+                                        disabled: deletingId === review.id,
+                                        onClick: () => handleDelete(review.id),
+                                    },
+                                ]}
+                            />
                         ))}
                     </div>
 

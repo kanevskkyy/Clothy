@@ -1,9 +1,8 @@
-import PageWrapper from "../../../shared/layout/PageWrapper/PageWrapper.tsx";
 import OrderSummary from '../../../features/checkout/orderSummary/OrderSummary.tsx';
 import Button from "../../../shared/ui/Button/Button.tsx";
 import CheckoutForm from '../../../features/forms/checkoutForm/CheckoutForm.tsx';
 import styles from "./CheckoutPage.module.css";
-import type { CheckoutFormData } from '../../../app/schemas/checkoutFormSchema.ts';
+import type {CheckoutFormData} from '../../../app/schemas/checkoutFormSchema.ts';
 import {useEffect, useState} from "react";
 import {basketApi} from "../../../app/api/basketApi.ts";
 import {useNavigate} from "react-router-dom";
@@ -13,11 +12,14 @@ import {ordersApi} from "../../../app/api/ordersApi.ts";
 import {getErrorMessage} from "../../../shared/lib/errorHandler.ts";
 import {paymentApi} from "../../../app/api/paymentApi.ts";
 import {useQueryClient} from "@tanstack/react-query";
+import Loader from "../../../shared/ui/Loader/Loader.tsx";
+import Container from "../../../shared/layout/Container/Container.tsx";
 
 const CheckoutPage = () => {
     const queryClient = useQueryClient();
-    const [totalPrice, setTotalPrice] = useState<number>();
-    const [totalItems, setTotalItems] = useState<number>();
+    const [totalPrice, setTotalPrice] = useState<number>(0);
+    const [totalItems, setTotalItems] = useState<number>(0);
+    const [isLoading, setIsLoading] = useState(true);
 
     const user = useAuthStore(state => state.user);
     const emailVerified = user?.emailVerified;
@@ -43,20 +45,15 @@ const CheckoutPage = () => {
                 comment: formData.comment,
             });
 
-            console.groupEnd();
-
-            await queryClient.invalidateQueries({ queryKey: ["clothe-top8"] });
+            await queryClient.invalidateQueries({queryKey: ["clothe-top8"]});
             const paymentData = await paymentApi.payForOrderAsync(orderData.id, formData.paymentMethod);
             window.location.href = paymentData.paymentUrl;
-        }
-        catch (error) {
+        } catch (error) {
             toast.error(getErrorMessage(error));
-        }
-        finally {
+        } finally {
             setIsCreatingOrder(false);
         }
     };
-
 
     const handlePlaceOrder = () => {
         const form = document.getElementById('checkout-form') as HTMLFormElement;
@@ -67,35 +64,43 @@ const CheckoutPage = () => {
 
     useEffect(() => {
         const getCartInfo = async () => {
-            const data = await basketApi.getMyCartAsync();
-            if (!data || !data.items || data.items.length === 0) {
-                navigate('/catalog');
-                return;
+            try {
+                const data = await basketApi.getMyCartAsync();
+                if (!data || !data.items || data.items.length === 0) {
+                    navigate('/catalog');
+                    return;
+                }
+                setTotalItems(data.items.length);
+                setTotalPrice(data.totalPrice);
+            } catch (error) {
+                toast.error(getErrorMessage(error));
+                navigate('/cart');
+            } finally {
+                setIsLoading(false);
             }
-
-            setTotalItems(data.items.length);
-            setTotalPrice(data.totalPrice);
         };
 
         getCartInfo();
     }, []);
 
+    if (isLoading) return <Loader />;
+
     return (
-        <PageWrapper>
+        <Container paddingY={30}>
             <div className={styles.container}>
                 <div className={styles.formSection}>
-                    <h1 className={styles.pageTitle}>Placing an order</h1>
-                    <CheckoutForm onValidSubmit={handleValidFormSubmit} />
+                    <h1 className={styles.pageTitle}>Checkout</h1>
+                    <CheckoutForm onValidSubmit={handleValidFormSubmit}/>
                 </div>
 
                 <OrderSummary
                     unAvailableItemsCount={0}
                     title="Your order"
                     priceRows={[
-                        { label: `Items (${totalItems})`, value: `${totalPrice} ₴` },
-                        { label: 'Delivery', value: totalPrice! > 1500 ? 'Free' : 'Paid' }
+                        {label: `Items (${totalItems})`, value: `$${totalPrice}`},
+                        {label: 'Delivery', value: totalPrice > 1500 ? 'Free' : 'Paid'}
                     ]}
-                    totalPrice={totalPrice!}
+                    totalPrice={totalPrice}
                     buttons={
                         <>
                             <Button
@@ -118,13 +123,13 @@ const CheckoutPage = () => {
                     }
                 >
                     <div className={styles.warning}>
-                        <strong>Attention!</strong><br />
+                        <strong>Attention!</strong><br/>
                         After creating an order, you will have <strong>10 minutes</strong> to pay.
                         If payment is not made on time, the order will be automatically deleted.
                     </div>
                 </OrderSummary>
             </div>
-        </PageWrapper>
+        </Container>
     );
 };
 

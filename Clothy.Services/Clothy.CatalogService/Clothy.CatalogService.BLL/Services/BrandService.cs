@@ -99,10 +99,7 @@ namespace Clothy.CatalogService.BLL.Services
             exists = await unitOfWork.Brands.IsSlugAlreadyExistsAsync(brandCreateDTO.Slug, null, cancellationToken);
             if (exists) throw new AlreadyExistsException("Brand with this slug already exists");
 
-            string photoUrl = await imageService.UploadAsync(brandCreateDTO.Photo, "brands", true);
-
             Brand brand = mapper.Map<Brand>(brandCreateDTO);
-            brand.PhotoURL = photoUrl;
 
             await unitOfWork.Brands.AddAsync(brand, cancellationToken);
             await unitOfWork.SaveChangesAsync(cancellationToken);
@@ -126,12 +123,6 @@ namespace Clothy.CatalogService.BLL.Services
             exists = await unitOfWork.Brands.IsSlugAlreadyExistsAsync(brandUpdateDTO.Slug, id, cancellationToken);
             if (exists) throw new AlreadyExistsException("Brand with this slug already exists");
 
-            if (brandUpdateDTO.Photo != null)
-            {
-                if (!string.IsNullOrEmpty(brand.PhotoURL)) await imageService.DeleteImageAsync(brand.PhotoURL);
-                brand.PhotoURL = await imageService.UploadAsync(brandUpdateDTO.Photo, "brands");
-            }
-
             mapper.Map(brandUpdateDTO, brand);
             unitOfWork.Brands.Update(brand);
             await unitOfWork.SaveChangesAsync(cancellationToken);
@@ -149,8 +140,6 @@ namespace Clothy.CatalogService.BLL.Services
         {
             Brand? brand = await unitOfWork.Brands.GetByIdAsync(id, cancellationToken);
             if (brand == null) throw new NotFoundException($"Brand not found with ID: {id}");
-
-            if (!string.IsNullOrEmpty(brand.PhotoURL)) await imageService.DeleteImageAsync(brand.PhotoURL);
 
             unitOfWork.Brands.Delete(brand);
             await unitOfWork.SaveChangesAsync(cancellationToken);

@@ -1,40 +1,12 @@
-.container {
-    padding: 0 40px;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.content {
-    display: flex;
-    gap: 20px;
-    padding-bottom: 60px;
-    width: 100%;
-}
-
 .main {
     flex: 1;
     min-width: 0;
     max-width: 100%;
-}
-
-@media (max-width: 1023px) {
-    .container {
-        padding: 0 24px;
-    }
-
-    .content {
-        flex-direction: column;
-        gap: 24px;
-    }
+    padding-bottom: 60px;
 }
 
 @media (max-width: 767px) {
-    .container {
-        padding: 0 16px;
-    }
-
-    .content {
-        gap: 20px;
+    .main {
         padding-bottom: 40px;
     }
 }

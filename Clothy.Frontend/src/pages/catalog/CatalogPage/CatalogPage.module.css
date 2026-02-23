@@ -1,14 +1,15 @@
 .catalogContainer {
+    width: 100%;
     display: grid;
-    margin: 0 auto 0;
-    max-width: 1440px;
     grid-template-columns: 240px 1fr;
     gap: 40px;
-    padding: 20px 10px;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .filterSidebar {
     position: relative;
+    min-width: 0;
 }
 
 .catalogMain {
@@ -17,17 +18,11 @@
 
 .catalogHeader {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
     margin-bottom: 24px;
     gap: 20px;
     flex-wrap: wrap;
-}
-
-.resultsCount {
-    font-size: 14px;
-    color: #666;
-    white-space: nowrap;
 }
 
 .mobileFiltersRow {
@@ -39,7 +34,8 @@
 }
 
 .productWrapper {
-    min-height: 100vh;
+    margin: 0 auto;
+    width: 100%;
 }
 
 @media (max-width: 1024px) {
@@ -64,11 +60,6 @@
         align-items: flex-start;
         margin-bottom: 16px;
         gap: 12px;
-    }
-
-    .resultsCount {
-        margin-bottom: 0;
-        width: 100%;
     }
 
     .mobileFiltersRow {

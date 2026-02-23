@@ -58,7 +58,6 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                         Id = clotheItem?.Brand?.Id.ToString(),
                         Name = clotheItem?.Brand?.Name,
                         Slug = clotheItem?.Brand?.Slug,
-                        PhotoURL = clotheItem?.Brand?.PhotoURL
                     },
                     ClothingType = new ClothingTypeGrpcResponse
                     {

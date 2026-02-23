@@ -1,5 +1,6 @@
 .button {
     display: inline-flex;
+    text-transform: uppercase;
     align-items: center;
     justify-content: center;
     gap: 8px;
@@ -15,12 +16,13 @@
 
 .sm {
     padding: 10px 20px;
-    font-size: 14px;
+    font-size: 12px;
+    line-height: 20px;
 }
 
 .md {
-    padding: 14px 28px;
-    font-size: 16px;
+    padding: 8px 40px;
+    font-size: 14px;
 }
 
 .lg {
@@ -30,8 +32,8 @@
 }
 
 .primary {
-    background: #171515;
-    color: #ffffff;
+    background: #161412;
+    color: #FBFAF9;
 }
 
 .primary:hover:not(:disabled) {
@@ -86,8 +88,18 @@
 }
 
 @media (max-width: 767px) {
-    .button {
-        padding: 16px 32px;
-        font-size: 17px;
+    .sm {
+        padding: 8px 16px;
+        font-size: 11px;
+    }
+
+    .md {
+        padding: 8px 24px;
+        font-size: 13px;
+    }
+
+    .lg {
+        padding: 14px 32px;
+        font-size: 15px;
     }
 }

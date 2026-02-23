@@ -19,8 +19,7 @@
 
 .textarea:focus {
     outline: none;
-    border-color: #1a1a1a;
-    box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.05);
+    border-color: #000;
 }
 
 .textarea.error {

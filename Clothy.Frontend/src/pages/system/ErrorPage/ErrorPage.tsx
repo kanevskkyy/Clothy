@@ -1,7 +1,7 @@
 import styles from './ErrorPage.module.css';
-import { Helmet } from "react-helmet";
-import PageWrapper from "../../../shared/layout/PageWrapper/PageWrapper.tsx";
+import {Helmet} from "react-helmet";
 import type {LucideIcon} from "lucide-react";
+import Container from "../../../shared/layout/Container/Container.tsx";
 
 interface ActionButton {
     label: string;
@@ -20,9 +20,9 @@ interface ErrorPageProps {
     actions: ActionButton[];
 }
 
-const ErrorPage = ({ title, message, icon: Icon,  iconColor, iconBgColor, pageTitle, actions }: ErrorPageProps) => {
+const ErrorPage = ({title, message, icon: Icon, iconColor, iconBgColor, pageTitle, actions}: ErrorPageProps) => {
     return (
-        <PageWrapper>
+        <Container paddingY={60}>
             <div className={styles.wrapper}>
                 <Helmet>
                     <title>{pageTitle || title} | Clothy</title>
@@ -30,7 +30,7 @@ const ErrorPage = ({ title, message, icon: Icon,  iconColor, iconBgColor, pageTi
 
                 <div className={styles.container}>
                     <div className={styles.mainIcon} style={{backgroundColor: iconBgColor}}>
-                        <Icon size={24} style={{ color: iconColor }} />
+                        <Icon size={24} style={{color: iconColor}}/>
                     </div>
                     <h1>{title}</h1>
                     <p>{message}</p>
@@ -45,14 +45,14 @@ const ErrorPage = ({ title, message, icon: Icon,  iconColor, iconBgColor, pageTi
                                         : styles.secondaryButton
                                 }
                             >
-                                <action.icon size={20} />
+                                <action.icon size={20}/>
                                 {action.label}
                             </a>
                         ))}
                     </div>
                 </div>
             </div>
-        </PageWrapper>
+        </Container>
     );
 };
 

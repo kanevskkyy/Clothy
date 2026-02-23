@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import styles from "./OrderSummary.module.css";
 import {AlertTriangle} from "lucide-react";
+import {formatMoney} from "../../../shared/lib/formatMoney.ts";
 
 interface PriceRow {
     label: string;
@@ -17,15 +18,19 @@ interface OrderSummaryProps {
     unAvailableItemsCount: number;
 }
 
+const FREE_SHIPPING_THRESHOLD = 1500;
+
 const OrderSummary = ({
                           title = "Your Order",
                           priceRows = [],
                           totalPrice,
                           unAvailableItemsCount,
-                          currency = "₴",
+                          currency = "$",
                           children,
                           buttons
                       }: OrderSummaryProps) => {
+    const amountToFreeShipping = FREE_SHIPPING_THRESHOLD - totalPrice;
+
     return (
         <div className={styles.orderSummary}>
             <h3>{title}</h3>
@@ -42,18 +47,26 @@ const OrderSummary = ({
 
                 {unAvailableItemsCount > 0 && (
                     <div className={styles.warningBox}>
-                        <AlertTriangle  size={18} />
+                        <AlertTriangle size={18} />
                         <span>Unavailable items are not included in the total</span>
                     </div>
                 )}
 
                 <div className={styles.totalRow}>
                     <span>Total</span>
-                    <span>{totalPrice} {currency}</span>
+                    <span>{currency}{formatMoney(totalPrice)}</span>
                 </div>
             </div>
 
             {children}
+
+            {amountToFreeShipping > 0 && (
+                <div className={styles.freeShipping}>
+                    Add <span className={styles.freeShippingAmount}>
+                    ${formatMoney(amountToFreeShipping)}
+                </span> more for free shipping
+                </div>
+            )}
 
             {buttons && (
                 <div className={styles.buttonWrapper}>

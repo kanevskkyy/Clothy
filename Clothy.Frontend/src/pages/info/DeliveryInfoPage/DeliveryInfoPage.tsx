@@ -1,37 +1,44 @@
-import { Helmet } from "react-helmet";
+import {Helmet} from "react-helmet";
 import styles from "./DeliveryInfoPage.module.css";
-import { Clock, type LucideIcon, Package, RotateCcw, Truck } from "lucide-react";
-import PageWrapper from "../../../shared/layout/PageWrapper/PageWrapper.tsx";
+import {Truck, Clock, MapPin} from "lucide-react";
+import Container from "../../../shared/layout/Container/Container.tsx";
 
-interface DeliveryOption {
-    icon: LucideIcon;
+interface IDeliveryOption {
+    icon: React.ReactNode;
     title: string;
-    description: string;
-    time: string;
+    days: string;
     price: string;
+    note: string;
 }
 
-const deliveryOptions: DeliveryOption[] = [
-    {
-        icon: Truck,
-        title: 'Nova Poshta',
-        description: 'Delivery to branch or parcel locker',
-        time: '1-3 days',
-        price: 'from ₴70',
-    },
-    {
-        icon: Package,
-        title: "Nova Poshta Courier",
-        description: 'Delivery to your address',
-        time: '1-3 days',
-        price: 'from ₴100',
-    },
-];
-
 const DeliveryInfoPage = () => {
+    const deliveryOptions: IDeliveryOption[] = [
+        {
+            icon: <Truck size={28}/>,
+            title: "Standard Delivery",
+            days: "3–5 business days",
+            price: "$15.00",
+            note: "Free on orders over $1,500",
+        },
+        {
+            icon: <Clock size={28}/>,
+            title: "Express Delivery",
+            days: "1–2 business days",
+            price: "$35.00",
+            note: "Order before 2 PM for same-day dispatch",
+        },
+        {
+            icon: <MapPin size={28}/>,
+            title: "Pickup Point",
+            days: "2–4 business days",
+            price: "$10.00",
+            note: "Over 500 pickup locations available",
+        },
+    ];
+
     return (
-        <PageWrapper>
-            <section className={styles.storySection}>
+        <Container>
+            <div>
                 <Helmet>
                     <title>Clothy — Delivery and Returns</title>
                     <meta
@@ -40,46 +47,44 @@ const DeliveryInfoPage = () => {
                     />
                 </Helmet>
 
-                <h2 className={styles.sectionTitle}>Delivery and Payment</h2>
+                <section className={styles.header}>
+                    <h2 className={styles.title}>Delivery & Shipping</h2>
+                    <p className={styles.description}>
+                        We offer multiple shipping options to get your order to you as quickly and conveniently as possible.
+                    </p>
+                </section>
 
-                <div className={styles.deliveryOptions}>
-                    {deliveryOptions.map((option, index) => (
-                        <div key={index} className={styles.deliveryItem}>
-                            <div className={styles.icon}>
-                                <option.icon size={24} />
-                            </div>
-                            <div className={styles.deliveryInfo}>
-                                <h4>{option.title}</h4>
-                                <p>{option.description}</p>
-                                <div className={styles.details}>
-                                    <div className={styles.detailItem}>
-                                        <Clock size={20} />
-                                        <p>{option.time}</p>
-                                    </div>
-                                    <div className={styles.detailPrice}>{option.price}</div>
-                                </div>
-                            </div>
+                <div className={styles.cards}>
+                    {deliveryOptions.map(({icon, title, days, price, note}) => (
+                        <div key={title} className={styles.card}>
+                            <span className={styles.icon}>{icon}</span>
+                            <h3 className={styles.cardTitle}>{title}</h3>
+                            <p className={styles.days}>{days}</p>
+                            <p className={styles.price}>{price}</p>
+                            <p className={styles.note}>{note}</p>
                         </div>
                     ))}
                 </div>
 
-                <div className={styles.returnPolicy}>
-                    <div className={styles.returnHeader}>
-                        <RotateCcw size={24} />
-                        <h3>Returns and Exchanges</h3>
-                    </div>
+                <section className={styles.shippingPolicyHeader}>
+                    <h2 className={styles.shippingPolicyTitle}>Shipping Policy</h2>
+                    <p className={styles.shippingPolicyDescription}>
+                        All orders are processed within one business day. Once your order ships,
+                        you’ll receive a confirmation email with tracking details.
+                        We offer complimentary standard shipping on orders over $1,500.
+                    </p>
+                </section>
 
-                    <div className={styles.returnContent}>
-                        <p>
-                            You can return or exchange items within <span className={styles.highlight}>14 days </span>
-                            from the date of receipt. The items must be in original packaging, with all tags attached,
-                            and without signs of wear. To initiate a return, contact us by phone or email —
-                            we will help you resolve the issue quickly.
-                        </p>
-                    </div>
-                </div>
-            </section>
-        </PageWrapper>
+                <section className={styles.returnsSection}>
+                    <h2 className={styles.returnsTitle}>Returns & Exchanges</h2>
+                    <p className={styles.returnsDescription}>
+                        Returns are accepted within 14 days of delivery. Items must be unworn,
+                        unwashed, and returned in their original condition and packaging.
+                        If an item arrives damaged or defective, return shipping is covered by us.
+                    </p>
+                </section>
+            </div>
+        </Container>
     );
 };
 

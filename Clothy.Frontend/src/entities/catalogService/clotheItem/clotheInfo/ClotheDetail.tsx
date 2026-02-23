@@ -9,8 +9,10 @@ import { toast } from "sonner";
 import Loader from "../../../../shared/ui/Loader/Loader.tsx";
 import { tryOnService } from "../../../../app/api/tryOnApi.ts";
 import { catalogApi } from "../../../../app/api/catalogApi.ts";
-import {getErrorMessage} from "../../../../shared/lib/errorHandler.ts";
-import {basketApi, type IBasketItemCreateDTO} from "../../../../app/api/basketApi.ts";
+import { getErrorMessage } from "../../../../shared/lib/errorHandler.ts";
+import { basketApi, type IBasketItemCreateDTO } from "../../../../app/api/basketApi.ts";
+import {Tag} from "lucide-react";
+import Badge from "../../../../features/catalog/badge/Badge.tsx";
 
 interface ProductInfoProps {
     clotheDetail: IClotheDetailDTO;
@@ -18,28 +20,38 @@ interface ProductInfoProps {
     onColorChange: (color: IColorReadDTO) => void;
 }
 
-const ClotheDetail: React.FC<ProductInfoProps> = ({
-                                                      clotheDetail,
-                                                      selectedColor,
-                                                      onColorChange
-                                                  }) => {
+const ClotheDetail: React.FC<ProductInfoProps> = ({ clotheDetail, selectedColor, onColorChange }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const downloadLinkRef = useRef<HTMLAnchorElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
     const [selectedSize, setSelectedSize] = useState<ISizeReadDTO | null>(null);
     const [quantity, setQuantity] = useState(1);
     const [tryOnLoading, setTryOnLoading] = useState(false);
     const [tryOnResult, setTryOnResult] = useState<string | undefined>(undefined);
-
     const [isAddingToCart, setIsAddingToCart] = useState(false);
     const [isSubscribing, setIsSubscribing] = useState(false);
+
+    useEffect(() => {
+        const el = containerRef.current;
+        if (!el) return;
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    el.classList.add(styles.visible);
+                    observer.disconnect();
+                }
+            },
+            { threshold: 0.05 }
+        );
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, []);
 
     const uniqueColors = useMemo(() => {
         const colorMap = new Map<string, IColorReadDTO>();
         clotheDetail.stocks.forEach((stock) => {
-            if (!colorMap.has(stock.color.id)) {
-                colorMap.set(stock.color.id, stock.color);
-            }
+            if (!colorMap.has(stock.color.id)) colorMap.set(stock.color.id, stock.color);
         });
         return Array.from(colorMap.values());
     }, [clotheDetail.stocks]);
@@ -47,9 +59,7 @@ const ClotheDetail: React.FC<ProductInfoProps> = ({
     const uniqueSizes = useMemo(() => {
         const sizeMap = new Map<string, ISizeReadDTO>();
         clotheDetail.stocks.forEach((stock) => {
-            if (!sizeMap.has(stock.size.id)) {
-                sizeMap.set(stock.size.id, stock.size);
-            }
+            if (!sizeMap.has(stock.size.id)) sizeMap.set(stock.size.id, stock.size);
         });
         return Array.from(sizeMap.values());
     }, [clotheDetail.stocks]);
@@ -59,11 +69,7 @@ const ClotheDetail: React.FC<ProductInfoProps> = ({
             const stock = clotheDetail.stocks.find(
                 (s) => s.size.id === size.id && s.color.id === selectedColor?.id
             );
-            return {
-                size,
-                available: stock ? stock.quantity > 0 : false,
-                quantity: stock?.quantity || 0,
-            };
+            return { size, available: stock ? stock.quantity > 0 : false };
         });
     }, [selectedColor, clotheDetail.stocks, uniqueSizes]);
 
@@ -86,7 +92,6 @@ const ClotheDetail: React.FC<ProductInfoProps> = ({
 
     useEffect(() => {
         if (!sizeAvailability.length) return;
-
         const firstAvailable = sizeAvailability.find((s) => s.available);
         setSelectedSize((prev) => {
             if (firstAvailable && prev?.id !== firstAvailable.size.id) {
@@ -104,13 +109,13 @@ const ClotheDetail: React.FC<ProductInfoProps> = ({
     const handleAddToCart = async () => {
         setIsAddingToCart(true);
         try {
-            const basketItemCreateDTO: IBasketItemCreateDTO = {
+            const dto: IBasketItemCreateDTO = {
                 clotheId: clotheDetail.id,
                 sizeId: selectedSize?.id ?? "",
                 colorId: selectedColor.id,
-                quantity: quantity
+                quantity,
             };
-            await basketApi.addToCartAsync(basketItemCreateDTO);
+            await basketApi.addToCartAsync(dto);
             toast.success("Successfully added");
         } catch (error) {
             toast.error(getErrorMessage(error));
@@ -120,23 +125,15 @@ const ClotheDetail: React.FC<ProductInfoProps> = ({
     };
 
     const handleSubscribe = async () => {
-        if (!selectedSize || !selectedColor) {
-            toast.error("Please select size and color");
-            return;
-        }
-
+        if (!selectedSize || !selectedColor) { toast.error("Please select size and color"); return; }
         const stock = clotheDetail.stocks.find(
             (s) => s.size.id === selectedSize.id && s.color.id === selectedColor.id
         );
-
-        if (!stock) {
-            return;
-        }
-
+        if (!stock) return;
         setIsSubscribing(true);
         try {
             await catalogApi.subscribeOnUpdatesAsync(stock.id);
-            toast.success("Subscribed! We'll email you when it's back in stock. This is a one-time notification.");
+            toast.success("Subscribed! We'll email you when it's back in stock.");
         } catch (error) {
             toast.error(getErrorMessage(error));
         } finally {
@@ -144,33 +141,23 @@ const ClotheDetail: React.FC<ProductInfoProps> = ({
         }
     };
 
-    const handleTryOnYourself = () => {
-        fileInputRef.current?.click();
-    };
+    const handleTryOnYourself = () => fileInputRef.current?.click();
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-
-        if (file) {
-            setTryOnLoading(true);
-            setTryOnResult(undefined);
-
-            toast.info("AI is processing your photo. Please wait 15–30 seconds…");
-
-            try {
-                const response = await tryOnService.tryOn(file, currentClotheImage);
-
-                setTryOnLoading(false);
-                setTryOnResult(response.outputImageUrl);
-                toast.success("Try-on ready! You can download your photo now.");
-            } catch (error) {
-                setTryOnLoading(false);
-                toast.error(getErrorMessage(error));
-            } finally {
-                if (fileInputRef.current) {
-                    fileInputRef.current.value = '';
-                }
-            }
+        if (!file) return;
+        setTryOnLoading(true);
+        setTryOnResult(undefined);
+        toast.info("AI is processing your photo. Please wait 15–30 seconds…");
+        try {
+            const response = await tryOnService.tryOn(file, currentClotheImage);
+            setTryOnResult(response.outputImageUrl);
+            toast.success("Try-on ready! You can download your photo now.");
+        } catch (error) {
+            toast.error(getErrorMessage(error));
+        } finally {
+            setTryOnLoading(false);
+            if (fileInputRef.current) fileInputRef.current.value = '';
         }
     };
 
@@ -178,195 +165,145 @@ const ClotheDetail: React.FC<ProductInfoProps> = ({
         if (tryOnResult && downloadLinkRef.current) {
             downloadLinkRef.current.click();
             setTryOnResult(undefined);
-            toast.success("Image downloaded successfully");
-
-            if (fileInputRef.current) {
-                fileInputRef.current.value = '';
-            }
+            if (fileInputRef.current) fileInputRef.current.value = '';
         }
     };
 
     return (
-        <div className={styles.clotheInfo}>
-            <div className={styles.clotheInfoHeader}>
-                <h2>{clotheDetail.name}</h2>
+        <div className={styles.clotheInfo} ref={containerRef}>
+            <p className={`${styles.brandName} ${styles.animItem}`}>{clotheDetail.brand.name}</p>
 
-                <div className={styles.brandInfo}>
-                    <h4>
-                        Brand:{" "}
-                        <span className={styles.brandName}>
-                            {clotheDetail.brand.name}
-                        </span>
-                    </h4>
-                    <img
-                        src={clotheDetail.brand.photoURL}
-                        alt="brand logo"
-                        width={50}
-                        height={50}
-                    />
-                </div>
+            <h1 className={`${styles.clotheName} ${styles.animItem}`}>{clotheDetail.name}</h1>
 
-                <h4>
-                    Collection:{" "}
-                    <span className={styles.collectionName}>
-                        {clotheDetail.collection.name}
-                    </span>
-                </h4>
-
-                <h4>
-                    Gender:{" "}
-                    <span className={styles.genderName}>
-                        {clotheDetail.gender}
-                    </span>
-                </h4>
-
-                <div className={styles.tagsInfo}>
-                    <h4>Tags:</h4>
-                    <div className={styles.tagsList}>
-                        {clotheDetail.tags.map((tag) => (
-                            <div key={tag.id} className={styles.tagItem}>
-                                {tag.name}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                <div className={styles.colors}>
-                    <h4>
-                        Color:{" "}
-                        <span className={styles.colorName}>
-                            {selectedColor?.name}
-                        </span>
-                    </h4>
-                    <div className={styles.colorsContainer}>
-                        {uniqueColors.map((color) => (
-                            <div
-                                key={color.id}
-                                className={`${styles.color} ${
-                                    selectedColor?.id === color.id ? styles.activeColor : ""
-                                }`}
-                                style={{ backgroundColor: color.hexCode }}
-                                onClick={() => onColorChange(color)}
-                            />
-                        ))}
-                    </div>
-                </div>
-
-                <div className={styles.sizes}>
-                    <h4>Size</h4>
-                    <div className={styles.sizeContainer}>
-                        {sizeAvailability.map(({ size, available }) => (
-                            <div
-                                key={size.id}
-                                className={`${styles.size} ${
-                                    !available ? styles.sizeNotAvailable : ""
-                                } ${
-                                    selectedSize?.id === size.id ? styles.activeSize : ""
-                                }`}
-                                onClick={() => {
-                                    setSelectedSize(size);
-                                    setQuantity(1);
-                                }}
-                            >
-                                {size.name}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                <div className={styles.priceInfo}>
-                    <p className={styles.price}>{clotheDetail.price}₴</p>
-                    {clotheDetail.hasOldPrice && (
-                        <p className={styles.oldPrice}>
-                            {clotheDetail.oldPrice}₴
-                        </p>
-                    )}
-                </div>
-
-                <div className={styles.cart}>
-                    {isAvailable && (
-                        <div className={styles.itemOptions}>
-                            <button
-                                className={styles.removeCount}
-                                onClick={() => quantity > 1 && setQuantity((q) => q - 1)}
-                                disabled={quantity <= 1}
-                            >
-                                -
-                            </button>
-                            <div className={styles.productCount}>{quantity}</div>
-                            <button
-                                className={styles.addCount}
-                                onClick={() => quantity < maxQuantity && setQuantity((q) => q + 1)}
-                                disabled={quantity >= maxQuantity}
-                            >
-                                +
-                            </button>
-                        </div>
-                    )}
-                    <Button
-                        variant="primary"
-                        size="lg"
-                        fullWidth
-                        onClick={isAvailable ? handleAddToCart : handleSubscribe}
-                        disabled={isAddingToCart || isSubscribing}
-                    >
-                        {isAvailable ? "Add to cart" : "Subscribe to updates"}
-                    </Button>
-                </div>
-
-                <div className={styles.buttonWrapper}>
-                    <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
-                        onChange={handleFileChange}
-                        style={{ display: "none" }}
-                    />
-                    <Button
-                        variant="outline"
-                        size="lg"
-                        fullWidth
-                        onClick={handleTryOnYourself}
-                    >
-                        Try it on (AI)
-                    </Button>
-                </div>
-
-                {tryOnLoading && !tryOnResult && <Loader />}
-
-                {tryOnResult && (
-                    <>
-                        <a ref={downloadLinkRef} href={tryOnResult} download={`try-on-result-${Date.now()}.jpg`} style={{ display: "none" }} />
-                        <div className={styles.buttonWrapper}>
-                            <Button
-                                variant="outline"
-                                size="lg"
-                                fullWidth
-                                onClick={handleDownloadResult}
-                            >
-                                Download result
-                            </Button>
-                        </div>
-                    </>
-                )}
+            <div className={`${styles.priceInfo} ${styles.animItem}`}>
+                <span className={styles.price}>${clotheDetail.price}</span>
+                {clotheDetail.hasOldPrice && <span className={styles.oldPrice}>${clotheDetail.oldPrice}</span>}
             </div>
 
-            <div className={styles.clotheDescription}>
-                <h3>Product description</h3>
-                <p>{clotheDetail.description}</p>
+            <p className={`${styles.description} ${styles.animItem}`}>{clotheDetail.description}</p>
+
+            <div className={styles.divider} />
+
+            <div className={`${styles.section} ${styles.animItem}`}>
+                <p className={styles.sectionLabel}>Collection</p>
+                <div className={styles.pillList}>
+                    <Badge
+                        label={clotheDetail.collection.name}
+                        color="#2a2622"
+                        fontSize="13px"
+                        background="#F3F4F6"
+                        borderColor="#E5E7EB"
+                    />
+                </div>
             </div>
 
-            <div className={styles.clotheMaterials}>
-                <h3>Materials</h3>
-                <p>
-                    {clotheDetail.materials.map(
-                        (mat, idx) =>
-                            `${mat.name} (${mat.percentage}%)${
-                                idx < clotheDetail.materials.length - 1 ? ", " : ""
-                            }`
-                    )}
+            <div className={`${styles.section} ${styles.animItem}`}>
+                <p className={styles.sectionLabel}>Tags</p>
+                <div className={styles.pillList}>
+                    {clotheDetail.tags.map((tag) => (
+                        <Badge
+                            key={tag.id}
+                            label={tag.name}
+                            icon={<Tag size={12} />}
+                            color="#161412"
+                            fontSize="13px"
+                            background="transparent"
+                            borderColor="#D1D5DB"
+                        />
+                    ))}
+                </div>
+            </div>
+
+            <div className={`${styles.section} ${styles.animItem}`}>
+                <p className={styles.sectionLabel}>Materials</p>
+                <div className={styles.pillList}>
+                    {clotheDetail.materials.map((mat) => (
+                        <Badge
+                            key={mat.name}
+                            label={`${mat.name} — ${mat.percentage}%`}
+                            color="#161412"
+                            background="#F3F4F6"
+                            borderColor="transparent"
+                            fontSize="13px"
+                        />
+                    ))}
+                </div>
+            </div>
+
+            <div className={`${styles.section} ${styles.animItem}`}>
+                <p className={styles.sectionLabel}>Gender</p>
+                <div className={styles.pillList}>
+                    <Badge
+                        label={clotheDetail.gender}
+                        color="#161412"
+                        background="#F3F4F6"
+                        fontSize="13px"
+                        borderColor="#E5E7EB"
+                    />
+                </div>
+            </div>
+
+            <div className={`${styles.section} ${styles.animItem}`}>
+                <p className={styles.sectionLabel}>Size</p>
+                <div className={styles.sizeContainer}>
+                    {sizeAvailability.map(({ size, available }) => (
+                        <div
+                            key={size.id}
+                            className={`${styles.size} ${!available ? styles.sizeNotAvailable : ""} ${selectedSize?.id === size.id ? styles.activeSize : ""}`}
+                            onClick={() => { setSelectedSize(size); setQuantity(1); }}
+                        >
+                            {size.name}
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <div className={`${styles.section} ${styles.animItem}`}>
+                <p className={styles.sectionLabel}>
+                    Color —<span className={styles.colorNameInline}> {selectedColor?.name}</span>
                 </p>
+                <div className={styles.colorsContainer}>
+                    {uniqueColors.map((color) => (
+                        <div
+                            key={color.id}
+                            className={`${styles.color} ${selectedColor?.id === color.id ? styles.activeColor : ""}`}
+                            style={{ backgroundColor: color.hexCode }}
+                            onClick={() => onColorChange(color)}
+                        />
+                    ))}
+                </div>
             </div>
+
+            <div className={styles.divider} />
+
+            <div className={`${styles.cart} ${styles.animItem}`}>
+                {isAvailable && (
+                    <div className={styles.itemOptions}>
+                        <button className={styles.removeCount} onClick={() => quantity > 1 && setQuantity((q) => q - 1)} disabled={quantity <= 1}>−</button>
+                        <div className={styles.productCount}>{quantity}</div>
+                        <button className={styles.addCount} onClick={() => quantity < maxQuantity && setQuantity((q) => q + 1)} disabled={quantity >= maxQuantity}>+</button>
+                    </div>
+                )}
+                <Button variant="primary" size="lg" fullWidth onClick={isAvailable ? handleAddToCart : handleSubscribe} disabled={isAddingToCart || isSubscribing}>
+                    {isAvailable ? "Add to cart" : "Subscribe to updates"}
+                </Button>
+            </div>
+
+            <div className={`${styles.buttonWrapper} ${styles.animItem}`}>
+                <input ref={fileInputRef} type="file" accept="image/jpeg,image/jpg,image/png,image/webp,image/gif" onChange={handleFileChange} style={{ display: "none" }} />
+                <Button variant="outline" size="lg" fullWidth onClick={handleTryOnYourself}>Try it on (AI)</Button>
+            </div>
+
+            {tryOnLoading && !tryOnResult && <Loader />}
+
+            {tryOnResult && (
+                <>
+                    <a ref={downloadLinkRef} href={tryOnResult} download={`try-on-result-${Date.now()}.jpg`} style={{ display: "none" }} />
+                    <div className={styles.buttonWrapper}>
+                        <Button variant="outline" size="lg" fullWidth onClick={handleDownloadResult}>Download result</Button>
+                    </div>
+                </>
+            )}
         </div>
     );
 };

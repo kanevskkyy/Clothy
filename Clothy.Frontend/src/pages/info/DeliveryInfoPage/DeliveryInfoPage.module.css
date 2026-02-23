@@ -1,269 +1,170 @@
-.storySection {
-    padding: 32px 16px 16px;
-    max-width: 900px;
-    margin: 0 auto 0;
+.header {
+    margin-bottom: 48px;
 }
 
-.sectionTitle {
-    font-size: clamp(24px, 5vw, 36px);
-    color: #111827;
-    margin: 0 0 32px;
-    text-align: center;
-    font-weight: 600;
+.title {
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    line-height: 48px;
+    margin-bottom: 16px;
 }
 
-.deliveryOptions {
+.description {
+    font-size: 18px;
+    color: var(--color-text-secondary);
+    line-height: 28px;
+    max-width: 520px;
+    margin: 0;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.card {
+    border: var(--border-color);
+    border-radius: 4px;
+    padding: 28px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    margin-bottom: 24px;
-}
-
-.deliveryItem {
-    border: 3px solid #D9D9D9;
-    padding: 24px;
-    border-radius: 16px;
-    display: flex;
-    gap: 20px;
-    align-items: flex-start;
-    transition: border-color 0.2s;
+    gap: 6px;
 }
 
 .icon {
-    padding: 12px;
-    background-color: #f3f4f6;
-    border-radius: 12px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    color: var(--color-orange);
+    margin-bottom: 8px;
+    display: block;
 }
 
-.deliveryInfo {
-    display: flex;
-    font-weight: normal;
-    flex-direction: column;
-    gap: 8px;
-    flex: 1;
-}
-
-.deliveryInfo h4 {
+.cardTitle {
     font-size: 18px;
     font-weight: 600;
-    color: #111827;
+    color: var(--color-text-primary);
+    line-height: 28px;
     margin: 0;
 }
 
-.deliveryInfo > p {
+.days {
     font-size: 14px;
-    color: #1c1919;
-    font-weight: normal;
+    line-height: 20px;
+    color: var(--color-text-secondary);
     margin: 0;
 }
 
-.details {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-top: 4px;
+.price {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    line-height: 28px;
+    margin: 12px 0 0;
 }
 
-.detailItem {
-    display: flex;
-    align-items: center;
-    gap: 2px;
-    font-size: 14px;
-
-    color: #111827;
-}
-
-.detailItem p {
+.note {
+    line-height: 16px;
+    font-weight: 400;
+    font-size: 12px;
+    color: var(--color-text-secondary);
     margin: 0;
 }
 
-.detailPrice {
-    font-weight: normal;
-    font-size: 14px;
-    color: #111827;
+.shippingPolicyHeader{
+    margin-top: 64px;
+    margin-bottom: 32px;
 }
 
-.returnPolicy {
-    border-top: 2px solid #e5e7eb;
-    padding-top: 32px;
-}
-
-.returnHeader {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 24px;
-}
-
-.returnHeader h3 {
+.shippingPolicyTitle {
+    margin: 0 0 12px 0;
     font-size: 24px;
-    font-weight: 600;
-    color: #111827;
-    margin: 0;
+    line-height: 32px;
+    font-weight: 700;
+    color: var(--color-text-primary);
 }
 
-.returnContent {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    margin-bottom: 30px;
-}
-
-.returnContent p {
-    color: #111827;
-    line-height: 1.6;
-    margin: 0;
+.shippingPolicyDescription{
+    max-width: 700px;
+    color: var(--color-text-secondary);
+    line-height: 26px;
+    font-size: 16px;
     font-weight: 400;
 }
 
-.highlight {
-    color: #111827;
-    font-weight: 600;
+.returnsSection {
+    margin-top: 48px;
+}
+
+.returnsTitle {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 32px;
+    color: var(--color-text-primary);
+    margin-bottom: 12px;
+}
+
+.returnsDescription {
+    max-width: 700px;
+    color: var(--color-text-secondary);
+    line-height: 26px;
+    font-size: 16px;
+    font-weight: 400;
+    margin: 0;
+}
+
+@media (max-width: 1024px) {
+    .cards {
+        gap: 16px;
+    }
 }
 
 @media (max-width: 768px) {
-    .storySection {
-        padding: 0 12px 12px;
+    .title {
+        font-size: 36px;
+        line-height: 40px;
     }
 
-    .sectionTitle {
-        margin: 60px 0 24px;
-        font-size: 28px;
-    }
-
-    .deliveryItem {
-        padding: 16px;
-        gap: 12px;
-    }
-
-    .icon {
-        padding: 10px;
-    }
-
-    .icon svg {
-        width: 20px;
-        height: 20px;
-    }
-
-    .deliveryInfo h4 {
+    .description {
         font-size: 16px;
     }
 
-    .deliveryInfo > p {
-        font-size: 13px;
-    }
-
-    .details {
-        gap: 12px;
-        margin-top: 2px;
-    }
-
-    .detailItem {
-        font-size: 13px;
-        gap: 4px;
-    }
-
-    .detailItem svg {
-        width: 16px;
-        height: 16px;
-    }
-
-    .detailPrice {
-        font-size: 13px;
-    }
-
-    .returnHeader {
-        gap: 8px;
-    }
-
-    .returnHeader svg {
-        width: 20px;
-        height: 20px;
-    }
-
-    .returnHeader h3 {
-        font-size: 20px;
-    }
-
-    .returnContent {
+    .cards {
+        grid-template-columns: 1fr;
         gap: 12px;
     }
 
-    .returnContent p {
-        font-size: 14px;
-        line-height: 1.5;
+    .shippingPolicyHeader {
+        margin-top: 40px;
+        margin-bottom: 24px;
+    }
+
+    .returnsSection {
+        margin-top: 32px;
     }
 }
 
 @media (max-width: 480px) {
-    .sectionTitle {
-        font-size: 24px;
-        margin: 60px 0 20px;
+    .title {
+        font-size: 28px;
+        line-height: 34px;
     }
 
-    .deliveryOptions {
-        gap: 12px;
-    }
-
-    .deliveryItem {
-        padding: 14px;
-        gap: 10px;
-        border-radius: 12px;
-    }
-
-    .icon {
-        padding: 8px;
-        border-radius: 8px;
-    }
-
-    .icon svg {
-        width: 18px;
-        height: 18px;
-    }
-
-    .deliveryInfo {
-        gap: 6px;
-    }
-
-    .deliveryInfo h4 {
+    .description {
         font-size: 15px;
     }
 
-    .deliveryInfo > p {
-        font-size: 12px;
+    .card {
+        padding: 20px;
     }
 
-    .details {
-        gap: 10px;
-        flex-wrap: wrap;
+    .shippingPolicyTitle,
+    .returnsTitle {
+        font-size: 20px;
+        line-height: 28px;
     }
 
-    .detailItem {
-        font-size: 12px;
-    }
-
-    .detailItem svg {
-        width: 14px;
-        height: 14px;
-    }
-
-    .detailPrice {
-        font-size: 12px;
-    }
-
-    .returnPolicy {
-        padding-top: 24px;
-    }
-
-    .returnHeader h3 {
-        font-size: 18px;
-    }
-
-    .returnContent p {
-        font-size: 13px;
+    .shippingPolicyDescription,
+    .returnsDescription {
+        font-size: 14px;
     }
 }

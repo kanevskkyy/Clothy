@@ -1,9 +1,10 @@
-import { Link } from 'react-router-dom';
-import { Facebook, Instagram, Send } from "lucide-react";
+import {Link} from 'react-router-dom';
 import styles from './Footer.module.css';
 
 const Footer = () => {
     return (
+        //TODO: Rename here if will rename brand
+
         <footer className={styles.footer}>
             <div className={styles.container}>
                 <div className={styles.grid}>
@@ -12,41 +13,54 @@ const Footer = () => {
                         <p className={styles.brandDescription}>
                             Your stylish wardrobe. The best brands and latest collections.
                         </p>
-                        <div className={styles.socialLinks}>
-                            <Link to="https://www.instagram.com/clothy-shop" className={styles.socialLink}>
-                                <Instagram size={20} />
-                            </Link>
-                            <Link to="https://www.facebook.com/clothy-shop" className={styles.socialLink}>
-                                <Facebook size={20} />
-                            </Link>
-                            <Link to="https://www.telegram.com/clothy-shop" className={styles.socialLink}>
-                                <Send size={20} />
-                            </Link>
+                    </div>
+
+                    <div className={styles.sections}>
+
+                        <div className={styles.section}>
+                            <h4 className={styles.sectionTitle}>Catalog</h4>
+                            <ul className={styles.list}>
+                                <li className={styles.listItem}>
+                                    <Link to="/catalog" className={styles.link}>All products</Link>
+                                </li>
+                                <li className={styles.listItem}>
+                                    <Link to="/catalog?gender=Male" className={styles.link}>Men</Link>
+                                </li>
+                                <li className={styles.listItem}>
+                                    <Link to="/catalog?gender=Female" className={styles.link}>Women</Link>
+                                </li>
+                            </ul>
                         </div>
-                    </div>
 
-                    <div className={styles.section}>
-                        <h4 className={styles.sectionTitle}>Information</h4>
-                        <ul className={styles.list}>
-                            <li className={styles.listItem}>
-                                <Link to="/catalog" className={styles.link}>Catalog</Link>
-                            </li>
-                            <li className={styles.listItem}>
-                                <Link to="/about-us" className={styles.link}>About us</Link>
-                            </li>
-                            <li className={styles.listItem}>
-                                <Link to="/delivery-info" className={styles.link}>Delivery and payment</Link>
-                            </li>
-                        </ul>
-                    </div>
+                        <div className={styles.section}>
+                            <h4 className={styles.sectionTitle}>Information</h4>
+                            <ul className={styles.list}>
+                                <li className={styles.listItem}>
+                                    <Link to="/about-us" className={styles.link}>About us</Link>
+                                </li>
+                                <li className={styles.listItem}>
+                                    <Link to="/delivery-info" className={styles.link}>Delivery & Shipping</Link>
+                                </li>
+                                <li className={styles.listItem}>
+                                    <Link to="/account" className={styles.link}>My Account</Link>
+                                </li>
+                            </ul>
+                        </div>
 
-                    <div className={styles.section}>
-                        <h4 className={styles.sectionTitle}>Contacts</h4>
-                        <ul className={styles.list}>
-                            <li className={styles.listItem}>+38 (050) 238-19-39</li>
-                            <li className={styles.listItem}>info@clothy.ua</li>
-                            <li className={styles.listItem}>Mon–Fri: 9:00 - 21:00</li>
-                        </ul>
+                        <div className={styles.section}>
+                            <h4 className={styles.sectionTitle}>Contacts</h4>
+                            <ul className={styles.list}>
+                                <li className={styles.listItem}>
+                                    <a href="tel:+18001234567" className={styles.link}>+1 (800) 123-4567</a>
+                                </li>
+                                <li className={styles.listItem}>
+                                    <a href="mailto:info@atelier.com" className={styles.link}>info@atelier.com</a>
+                                </li>
+                                <li className={styles.listItem}>
+                                    <a href="https://maps.google.com/?q=5th+Avenue+New+York" target="_blank" rel="noreferrer" className={styles.link}>New York, 5th Avenue</a>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>

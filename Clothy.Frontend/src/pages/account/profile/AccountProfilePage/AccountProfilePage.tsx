@@ -1,13 +1,13 @@
 import {useState, useRef, useEffect} from "react";
 import {Link, Navigate, useOutletContext} from "react-router-dom";
 import styles from "./AccountProfilePage.module.css";
-import { Upload } from "lucide-react";
-import type { IUserReadDTO } from "../../../../entities/usersService/IUserReadDTO.ts";
-import { type UserUpdateFormData, userUpdateSchema, } from "../../../../app/schemas/userUpdateSchema.ts";
+import {Camera} from "lucide-react";
+import type {IUserReadDTO} from "../../../../entities/usersService/IUserReadDTO.ts";
+import {type UserUpdateFormData, userUpdateSchema,} from "../../../../app/schemas/userUpdateSchema.ts";
 import Button from "../../../../shared/ui/Button/Button.tsx";
 import FormField from "../../../../shared/form/FormField/FormField.tsx";
 import Input from "../../../../shared/ui/Input/Input.tsx";
-import { Helmet } from "react-helmet";
+import {Helmet} from "react-helmet";
 import {authApi} from "../../../../app/api/authApi.ts";
 import {toast} from "sonner";
 import {getErrorMessage} from "../../../../shared/lib/errorHandler.ts";
@@ -19,9 +19,8 @@ interface OutletContext {
 
 const AccountProfilePage = () => {
     const [isLoading, setIsLoading] = useState(false);
-
-    const { user } = useOutletContext<OutletContext>();
-    const { setUser } = useAuthStore();
+    const {user} = useOutletContext<OutletContext>();
+    const {setUser} = useAuthStore();
 
     useEffect(() => {
         const refreshUser = async () => {
@@ -32,7 +31,6 @@ const AccountProfilePage = () => {
                 console.error(getErrorMessage(error));
             }
         };
-
         refreshUser();
     }, []);
 
@@ -47,51 +45,28 @@ const AccountProfilePage = () => {
     const [errors, setErrors] = useState<Partial<Record<keyof UserUpdateFormData, string>>>({});
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    if (!user) {
-        return <Navigate to="/login" replace />;
-    }
+    if (!user) return <Navigate to="/login" replace/>;
 
     const handleChange =
         (field: keyof Omit<UserUpdateFormData, "photo">) =>
             (e: React.ChangeEvent<HTMLInputElement>) => {
-                setFormData((prev) => ({ ...prev, [field]: e.target.value }));
-
-                if (errors[field]) {
-                    setErrors((prev) => ({ ...prev, [field]: undefined }));
-                }
+                setFormData((prev) => ({...prev, [field]: e.target.value}));
+                if (errors[field]) setErrors((prev) => ({...prev, [field]: undefined}));
             };
 
     const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
-
         setPhotoFile(file);
-
         const reader = new FileReader();
-        reader.onloadend = () => {
-            setPhotoPreview(reader.result as string);
-        };
+        reader.onloadend = () => setPhotoPreview(reader.result as string);
         reader.readAsDataURL(file);
-
-        if (errors.photo) {
-            setErrors((prev) => ({ ...prev, photo: undefined }));
-        }
-    };
-
-    const triggerFileSelect = () => {
-        fileInputRef.current?.click();
+        if (errors.photo) setErrors((prev) => ({...prev, photo: undefined}));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
-        const dataToValidate = {
-            ...formData,
-            photo: photoFile,
-        };
-
-        const result = userUpdateSchema.safeParse(dataToValidate);
-
+        const result = userUpdateSchema.safeParse({...formData, photo: photoFile});
         if (!result.success) {
             const fieldErrors: Partial<Record<keyof UserUpdateFormData, string>> = {};
             result.error.issues.forEach((issue) => {
@@ -101,14 +76,13 @@ const AccountProfilePage = () => {
             setErrors(fieldErrors);
             return;
         }
-
         try {
             setIsLoading(true);
             const updatedUser = await authApi.updateMyAccountAsync(result.data);
             setUser(updatedUser);
             toast.success("Successfully updated your account");
         } catch (error) {
-            toast.error(getErrorMessage(error))
+            toast.error(getErrorMessage(error));
         } finally {
             setIsLoading(false);
         }
@@ -118,52 +92,37 @@ const AccountProfilePage = () => {
         <div className={styles.page}>
             <Helmet>
                 <title>Profile Settings | Account</title>
-                <meta
-                    name="description"
-                    content="Manage your personal information, profile photo, and contact details in your account settings."
-                />
+                <meta name="description" content="Manage your personal information, profile photo, and contact details."/>
             </Helmet>
 
-            <h2 className={styles.title}>Personal Information</h2>
-
             <form className={styles.form} onSubmit={handleSubmit}>
-                <div className={styles.photoSection}>
-                    <img
-                        src={photoPreview}
-                        alt="Profile"
-                        className={styles.photo}
-                    />
-
-                    <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept=".jpg,.jpeg,.png,.gif,.svg"
-                        onChange={handlePhotoChange}
-                        className={styles.fileInput}
-                    />
-
-                    <Button
-                        type="button"
-                        onClick={triggerFileSelect}
-                        variant="outline"
-                        size="sm"
-                        icon={<Upload size={18} />}
-                    >
-                        Upload Photo
-                    </Button>
-
-                    {errors.photo && (
-                        <p className={styles.photoError}>{errors.photo}</p>
-                    )}
+                {/* Avatar + user info row */}
+                <div className={styles.userRow}>
+                    <div className={styles.avatarWrapper} onClick={() => fileInputRef.current?.click()}>
+                        <img src={photoPreview} alt="Profile" className={styles.avatar}/>
+                        <div className={styles.avatarOverlay}>
+                            <Camera size={18} color="#fff"/>
+                        </div>
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept=".jpg,.jpeg,.png,.gif,.svg"
+                            onChange={handlePhotoChange}
+                            className={styles.fileInput}
+                        />
+                    </div>
+                    <div className={styles.userMeta}>
+                        <p className={styles.userName}>{user.firstName} {user.lastName}</p>
+                        <p className={styles.userEmail}>{user.email}</p>
+                    </div>
                 </div>
 
+                {errors.photo && <p className={styles.photoError}>{errors.photo}</p>}
+
+                <div className={styles.divider}/>
+
                 <div className={styles.row}>
-                    <FormField
-                        label="First Name"
-                        htmlFor="firstName"
-                        required
-                        error={errors.firstName}
-                    >
+                    <FormField label="First Name" htmlFor="firstName" required error={errors.firstName}>
                         <Input
                             type="text"
                             id="firstName"
@@ -172,13 +131,7 @@ const AccountProfilePage = () => {
                             error={!!errors.firstName}
                         />
                     </FormField>
-
-                    <FormField
-                        label="Last Name"
-                        htmlFor="lastName"
-                        required
-                        error={errors.lastName}
-                    >
+                    <FormField label="Last Name" htmlFor="lastName" required error={errors.lastName}>
                         <Input
                             type="text"
                             id="lastName"
@@ -189,12 +142,7 @@ const AccountProfilePage = () => {
                     </FormField>
                 </div>
 
-                <FormField
-                    label="Phone Number"
-                    htmlFor="phoneNumber"
-                    required
-                    error={errors.phoneNumber}
-                >
+                <FormField label="Phone Number" htmlFor="phoneNumber" required error={errors.phoneNumber}>
                     <Input
                         type="tel"
                         id="phoneNumber"
@@ -211,9 +159,7 @@ const AccountProfilePage = () => {
 
                 <div className={styles.passwordSection}>
                     <span>Want to change your password?</span>
-                    <Link to="/reset-password" className={styles.passwordLink}>
-                        Change password
-                    </Link>
+                    <Link to="/reset-password" className={styles.passwordLink}>Change password</Link>
                 </div>
             </form>
         </div>
