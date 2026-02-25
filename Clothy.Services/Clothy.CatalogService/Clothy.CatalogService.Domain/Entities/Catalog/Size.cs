@@ -11,7 +11,6 @@ namespace Clothy.CatalogService.Domain.Entities.Catalog
     public class Size : BaseEntity
     {
         public string? Name { get; set; }
-        public string? Slug { get; set; }
         public ICollection<ClothesStock> ClothesStocks { get; set; } = new List<ClothesStock>();
     }
 }

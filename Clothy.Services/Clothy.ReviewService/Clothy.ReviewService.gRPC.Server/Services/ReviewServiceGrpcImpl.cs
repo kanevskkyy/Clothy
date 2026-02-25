@@ -138,6 +138,59 @@ namespace Clothy.ReviewService.gRPC.Server.Services
             }
         }
 
+        public override async Task<PendingReviewsCountGrpcResponse> GetPendingReviewsCount(Google.Protobuf.WellKnownTypes.Empty request, ServerCallContext context)
+        {
+            logger.LogInformation("Starting fetching pending reviews count");
+
+            try
+            {
+                int pendingCount = await reviewRepository.GetPendingReviewsCountAsync(context.CancellationToken);
+
+                logger.LogInformation("Successfully fetched pending reviews count: {Count}", pendingCount);
+
+                PendingReviewsCountGrpcResponse response = new PendingReviewsCountGrpcResponse
+                {
+                    ReviewsCount = pendingCount,
+                };
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error while fetching pending reviews count");
+                throw new RpcException(new Status(StatusCode.Internal, "Database error occurred during fetching pending reviews count"));
+            }
+        }
+
+        public override async Task<QuestionsWithoutAnswerGrpcResponse> GetQuestionsCountWithoutAnswer(Google.Protobuf.WellKnownTypes.Empty request, ServerCallContext context)
+        {
+            logger.LogInformation("Starting fetching questions without answers count");
+
+            try
+            {
+                QuestionQueryParameters questionQueryParameters = new QuestionQueryParameters
+                {
+                    WithoutAnswer = true
+                };
+
+                PagedList<Question> questionsWithoutAnswer = await questionRepository.GetQuestionsAsync(questionQueryParameters, context.CancellationToken);
+
+                logger.LogInformation("Successfully fetched questions without answers count: {Count}", questionsWithoutAnswer.TotalCount);
+
+                QuestionsWithoutAnswerGrpcResponse response = new QuestionsWithoutAnswerGrpcResponse
+                {
+                    QuestionsCount = questionsWithoutAnswer.TotalCount,
+                };
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error while fetching questions without answers count");
+                throw new RpcException(new Status(StatusCode.Internal, "Database error occurred during fetching questions without answers count"));
+            }
+        }
+
         public override async Task<ReviewStatisticGrpcResponse> GetStatisticsByClotheId(ReviewClotheIdGrpcRequest request, ServerCallContext context)
         {
             logger.LogInformation("Starting fetching review statistics for ClotheItemId: {ClotheId}", request.Id);

@@ -17,13 +17,8 @@ namespace Clothy.CatalogService.BLL.DTOs.ClotheDTOs
         public string? Slug { get; set; }
         public decimal Price { get; set; }
         public decimal? OldPrice { get; set; }
-        public int? DiscountPercent => OldPrice.HasValue 
-            ? (int)Math.Round((OldPrice.Value - Price) / OldPrice.Value * 100)
-            : null;
-
         public BrandReadDTO? Brand { get; set; }
         public List<ClotheColorSummaryDTO> Colors { get; set; } = new();
-
         public bool IsAvailable { get; set; }
     }
 }

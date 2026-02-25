@@ -29,7 +29,15 @@ namespace Clothy.ReviewService.Infrastructure.Repositories
 
             if (queryParameters.UserId.HasValue) filter &= filterBuilder.Eq(question => question.User.UserId, queryParameters.UserId.Value);
 
-            if (queryParameters.ClotheItemId.HasValue) filter &= filterBuilder.Eq(question => question.ClotheItemId, queryParameters.ClotheItemId.Value);
+            if (queryParameters.ClotheItemId.HasValue) filter &= filterBuilder.Eq(question => question.ClotheInfo.ClotheItemId, queryParameters.ClotheItemId.Value);
+
+            if (queryParameters.WithoutAnswer == true)
+            {
+                filter &= filterBuilder.Or(
+                    filterBuilder.Size(q => q.Answers, 0),
+                    filterBuilder.Eq(q => q.Answers, null)
+                );
+            }
 
             IFindFluent<Question, Question> findFluent = collection.Find(filter);
 
@@ -83,7 +91,7 @@ namespace Clothy.ReviewService.Infrastructure.Repositories
 
         public async Task DeleteAllQuestionsByClotheId(Guid clotheId, CancellationToken cancellationToken = default)
         {
-            var questionsByClotheId = Builders<Question>.Filter.Eq(tempQuestion => tempQuestion.ClotheItemId, clotheId);
+            var questionsByClotheId = Builders<Question>.Filter.Eq(tempQuestion => tempQuestion.ClotheInfo.ClotheItemId, clotheId);
 
             await collection.DeleteManyAsync(questionsByClotheId, cancellationToken);
         }

@@ -1,5 +1,5 @@
 import {useNavigate} from 'react-router-dom';
-import type {IBasketList} from "../../../entities/basketService/IBasketList.ts";
+import type {IBasketList} from "../../../entities/basketService/interfaces/IBasketList.ts";
 import styles from './CartPage.module.css';
 import CartItem from "../../../entities/basketService/cartItem/CartItem.tsx";
 import {Helmet} from 'react-helmet';
@@ -108,7 +108,16 @@ const CartPage = () => {
                     totalPrice={cartItems!.totalPrice}
                     buttons={
                         <>
-                            <Button variant="primary" size="lg" fullWidth onClick={handleCheckout}>
+                            <Button
+                                variant="primary"
+                                size="lg"
+                                fullWidth
+                                onClick={handleCheckout}
+                                disabled={
+                                    cartItems!.totalPrice === 0 ||
+                                    cartItems!.unAvailableItemsCount > 0
+                                }
+                            >
                                 Checkout →
                             </Button>
                             <Button variant="outline" fullWidth to="/catalog">

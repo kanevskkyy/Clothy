@@ -4,7 +4,7 @@ import CatalogFilter, {type FilterState} from "../../../features/catalog/catalog
 import SortSelect, {type SortOption} from "../../../features/catalog/sortSelect/SortSelect.tsx";
 import Pagination from "../../../shared/ui/Pagination/Pagination.tsx";
 import ProductList from "../../../features/catalog/productList/ProductList.tsx";
-import type {IClotheSummaryDTO} from "../../../entities/catalogService/clotheItem/IClotheSummaryDTO.ts";
+import type {IClotheSummaryDTO} from "../../../entities/catalogService/interfaces/clothe/IClotheSummaryDTO.ts";
 import styles from "./CatalogPage.module.css";
 import type {PagedList} from "../../../shared/lib/pagedList.ts";
 import {Helmet} from "react-helmet";
@@ -202,7 +202,7 @@ const CatalogPage = () => {
     }
 
     return (
-        <Container paddingY={40}>
+        <Container paddingY={30} paddingX={10}>
             <div>
                 <Helmet>
                     <title>{`Clothy — Clothing Catalog | Page ${currentPage} • ${pagedClothes.totalCount} items`}</title>

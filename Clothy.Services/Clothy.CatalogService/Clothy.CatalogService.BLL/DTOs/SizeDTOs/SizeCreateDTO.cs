@@ -9,6 +9,5 @@ namespace Clothy.CatalogService.BLL.DTOs.SizeDTOs
     public class SizeCreateDTO
     {
         public string? Name { get; set; }
-        public string? Slug { get; set; }
     }
 }

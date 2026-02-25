@@ -8,7 +8,7 @@ import { getErrorMessage } from "../../../shared/lib/errorHandler.ts";
 import { getZodFieldErrors } from "../../../shared/lib/getZodFieldErrors.ts";
 import { type AnswerSchema, answerSchemas } from "../../../app/schemas/answerSchemas.ts";
 import { questionApi } from "../../../app/api/questionApi.ts";
-import type { IAnswerReadDTO } from "../../../entities/reviewsService/answers/IAnswerReadDTO.ts";
+import type { IAnswerReadDTO } from "../../../entities/reviewsService/interfaces/IAnswerReadDTO.ts";
 
 interface AnswerCreateFormProps {
     questionId: string;

@@ -135,6 +135,7 @@ app.MapGrpcService<OrderItemValidatorService>();
 app.MapGrpcService<ClotheItemValidatorService>();
 app.MapGrpcService<ClotheFilterService>();
 app.MapGrpcService<GetClotheByIdGrpcService>();
+app.MapGrpcService<ClotheStockServiceImpl>();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseServiceDefaults();

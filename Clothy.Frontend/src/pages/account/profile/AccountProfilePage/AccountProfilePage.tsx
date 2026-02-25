@@ -1,9 +1,9 @@
 import {useState, useRef, useEffect} from "react";
-import {Link, Navigate, useOutletContext} from "react-router-dom";
+import {Link, useNavigate, useOutletContext} from "react-router-dom";
 import styles from "./AccountProfilePage.module.css";
 import {Camera} from "lucide-react";
 import type {IUserReadDTO} from "../../../../entities/usersService/IUserReadDTO.ts";
-import {type UserUpdateFormData, userUpdateSchema,} from "../../../../app/schemas/userUpdateSchema.ts";
+import {type UserUpdateFormData, userUpdateSchema} from "../../../../app/schemas/userUpdateSchema.ts";
 import Button from "../../../../shared/ui/Button/Button.tsx";
 import FormField from "../../../../shared/form/FormField/FormField.tsx";
 import Input from "../../../../shared/ui/Input/Input.tsx";
@@ -18,11 +18,31 @@ interface OutletContext {
 }
 
 const AccountProfilePage = () => {
-    const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
     const {user} = useOutletContext<OutletContext>();
     const {setUser} = useAuthStore();
 
+    const [isLoading, setIsLoading] = useState(false);
+    const [formData, setFormData] = useState({
+        firstName: user?.firstName ?? "",
+        lastName: user?.lastName ?? "",
+        phoneNumber: user?.phoneNumber ?? "",
+    });
+    const [photoFile, setPhotoFile] = useState<File | undefined>(undefined);
+    const [photoPreview, setPhotoPreview] = useState<string>(user?.photoUrl ?? "");
+    const [errors, setErrors] = useState<Partial<Record<keyof UserUpdateFormData, string>>>({});
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
     useEffect(() => {
+        if (!user) {
+            navigate("/login", {replace: true});
+            return;
+        }
+        if (user.roles.includes("Admin")) {
+            navigate("/admin", {replace: true});
+            return;
+        }
+
         const refreshUser = async () => {
             try {
                 const updatedUser = await authApi.getInfoAboutMeAsync();
@@ -31,21 +51,9 @@ const AccountProfilePage = () => {
                 console.error(getErrorMessage(error));
             }
         };
+
         refreshUser();
     }, []);
-
-    const [formData, setFormData] = useState({
-        firstName: user?.firstName ?? "",
-        lastName: user?.lastName ?? "",
-        phoneNumber: user?.phoneNumber ?? "",
-    });
-
-    const [photoFile, setPhotoFile] = useState<File | undefined>(undefined);
-    const [photoPreview, setPhotoPreview] = useState<string>(user?.photoUrl ?? "");
-    const [errors, setErrors] = useState<Partial<Record<keyof UserUpdateFormData, string>>>({});
-    const fileInputRef = useRef<HTMLInputElement>(null);
-
-    if (!user) return <Navigate to="/login" replace/>;
 
     const handleChange =
         (field: keyof Omit<UserUpdateFormData, "photo">) =>
@@ -96,7 +104,6 @@ const AccountProfilePage = () => {
             </Helmet>
 
             <form className={styles.form} onSubmit={handleSubmit}>
-                {/* Avatar + user info row */}
                 <div className={styles.userRow}>
                     <div className={styles.avatarWrapper} onClick={() => fileInputRef.current?.click()}>
                         <img src={photoPreview} alt="Profile" className={styles.avatar}/>

@@ -11,6 +11,7 @@ namespace Clothy.CatalogService.DAL.Interfaces
 {
     public interface IClothesStockRepository : IGenericRepository<ClothesStock>
     {
+        Task<int> GetTotalQuantityAsync(CancellationToken cancellationToken = default);
         Task<ClothesStock?> GetByClotheColorSizeAsync(Guid clotheId, Guid colorId, Guid sizeId, CancellationToken cancellationToken = default);
         Task<ClothesStock?> GetByIdWithDetailsAsync(Guid id, CancellationToken cancellationToken = default);
         Task<PagedList<ClothesStock>> GetPagedClothesStockAsync(ClothesStockSpecificationParameters parameters, CancellationToken cancellationToken = default);

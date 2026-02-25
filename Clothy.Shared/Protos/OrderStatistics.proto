@@ -1,0 +1,12 @@
+﻿syntax = "proto3";
+import "google/protobuf/empty.proto";
+
+message OrderStats {
+	int32 newOrdersCount = 1;
+	string totalPrice = 2;
+	int32 pendingOrders = 3;
+}
+
+service OrderStatsService {
+	rpc GetOrderStats (google.protobuf.Empty) returns (OrderStats);
+}

@@ -1,8 +1,8 @@
 import apiClient from "./client.ts";
 import type {PagedList} from "../../shared/lib/pagedList.ts";
-import type {IClotheSummaryDTO} from "../../entities/catalogService/clotheItem/IClotheSummaryDTO.ts";
-import type {IBrandReadDTO} from "../../entities/catalogService/brand/IBrandReadDTO.ts";
-import type {IFiltersResponse} from "../../entities/catalogService/filters/IFiltersResponse.ts";
+import type {IClotheSummaryDTO} from "../../entities/catalogService/interfaces/clothe/IClotheSummaryDTO.ts";
+import type {IBrandReadDTO} from "../../entities/catalogService/interfaces/brand/IBrandReadDTO.ts";
+import type {IFiltersResponse} from "../../entities/catalogService/interfaces/filters/IFiltersResponse.ts";
 
 interface GetClothesParams {
     pageNumber?: number;

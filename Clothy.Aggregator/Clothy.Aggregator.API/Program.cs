@@ -34,8 +34,11 @@ builder.Services.AddMemoryCache(options =>
 builder.Services.AddScoped<IFilterGrpcClient, FilterGrpcClient>();
 builder.Services.AddScoped<IClotheGrpcClient, ClotheGrpcClient>();
 builder.Services.AddScoped<IReviewGrpcClient, ReviewGrpcClient>();
+builder.Services.AddScoped<IStockGrpcClient, StockGrpcClient>();
+builder.Services.AddScoped<IOrderGrpcClient, OrderGrpcClient>();
 
 builder.Services.AddScoped<IClotheAggregateService, ClotheAggregateService>();
+builder.Services.AddScoped<IDashboardAggregateService, DashboardAggregateService>();
 
 builder.Services.AddConfiguredGrpcClient<ClotheFilterServiceGrpc.ClotheFilterServiceGrpcClient>("catalog")
     .AddStandardResilienceHandler(resilience =>
@@ -43,18 +46,34 @@ builder.Services.AddConfiguredGrpcClient<ClotheFilterServiceGrpc.ClotheFilterSer
         resilience.Retry.MaxRetryAttempts = 2;
         resilience.CircuitBreaker.FailureRatio = 0.6;
     });
+
+builder.Services.AddConfiguredGrpcClient<ClotheStockService.ClotheStockServiceClient>("catalog")
+    .AddStandardResilienceHandler(resilience =>
+    {
+        resilience.Retry.MaxRetryAttempts = 2;
+        resilience.CircuitBreaker.FailureRatio = 0.6;
+    });
+
 builder.Services.AddConfiguredGrpcClient<ClotheServiceGrpc.ClotheServiceGrpcClient>("catalog")
     .AddStandardResilienceHandler(resilience =>
     {
         resilience.Retry.MaxRetryAttempts = 2;
         resilience.CircuitBreaker.FailureRatio = 0.4;
-    }); ;
+    }); 
+
 builder.Services.AddConfiguredGrpcClient<ReviewServiceGrpc.ReviewServiceGrpcClient>("reviews")
     .AddStandardResilienceHandler(resilience =>
     {
         resilience.Retry.MaxRetryAttempts = 3;
         resilience.CircuitBreaker.FailureRatio = 0.6;
-    }); ;
+    });
+
+builder.Services.AddConfiguredGrpcClient<OrderStatsService.OrderStatsServiceClient>("orders")
+    .AddStandardResilienceHandler(resilience =>
+    {
+        resilience.Retry.MaxRetryAttempts = 3;
+        resilience.CircuitBreaker.FailureRatio = 0.6;
+    });
 
 builder.Services.AddTransient<CorrelationIdDelegatingHandler>();
 

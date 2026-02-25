@@ -31,12 +31,14 @@
 	<ItemGroup>
 		<Protobuf Include="Protos/ValidateOrderItem.proto" GrpcServices="Both" />
 		<Protobuf Include="Protos/GetClotheById.proto" GrpcServices="Both" />
-		<Protobuf Include="Protos/ValidateClotheItemId.proto" GrpcServices="Both" />
 		<Protobuf Include="Protos/Reviews.proto" GrpcServices="Both" />
+		<Protobuf Include="Protos/OrderStatistics.proto" GrpcServices="Both" />
 		<Protobuf Include="Protos/GetFilters.proto" GrpcServices="Both" />
 		<Protobuf Include="Protos/Basket.proto" GrpcServices="Both" />
 		<Protobuf Include="Protos/CheckUserPurchasedClothe.proto" GrpcServices="Both" />
 		<Protobuf Include="Protos/GetOrderInfo.proto" GrpcServices="Both" />
+		<Protobuf Include="Protos/ValidateClotheItemId.proto" GrpcServices="Both" />
+		<Protobuf Include="Protos/ClotheStock.proto" GrpcServices="Both" />
 	</ItemGroup>
 
 </Project>

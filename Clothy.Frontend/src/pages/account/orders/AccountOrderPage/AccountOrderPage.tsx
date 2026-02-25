@@ -1,5 +1,5 @@
-import type { IOrderReadDTO } from "../../../../entities/ordersService/order/IOrderReadDTO.ts";
-import OrderList from "../../../../entities/ordersService/order/orderList/OrderList.tsx";
+import type { IOrderReadDTO } from "../../../../entities/ordersService/interfaces/order/IOrderReadDTO.ts";
+import OrderList from "../../../../entities/ordersService/orderList/OrderList.tsx";
 import Pagination from "../../../../shared/ui/Pagination/Pagination.tsx";
 import { useSearchParams } from "react-router-dom";
 import type { PagedList } from "../../../../shared/lib/pagedList.ts";

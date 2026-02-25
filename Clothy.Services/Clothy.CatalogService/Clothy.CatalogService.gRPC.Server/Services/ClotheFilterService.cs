@@ -120,7 +120,6 @@ namespace Clothy.CatalogService.gRPC.Server.Services
             {
                 Id = size.Key.Id.ToString(),
                 Name = size.Key.Name,
-                Slug = size.Key.Slug,
                 ClotheItemCount = size.Value
             }).ToList();
         }   

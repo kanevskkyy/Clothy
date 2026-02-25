@@ -42,8 +42,7 @@ message MaterialsGrpcResponse {
 message SizesGrpcResponse {
 	string id = 1;
 	string name = 2;
-	string slug = 3;
-	int32 clotheItemCount = 4;
+	int32 clotheItemCount = 3;
 }
 
 message TagsGrpcResponse {

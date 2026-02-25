@@ -1,0 +1,10 @@
+﻿syntax = "proto3";
+import "google/protobuf/empty.proto";
+
+message GetTotalQuantityResponse {
+    int32 totalQuantity = 1;
+}
+
+service ClotheStockService {
+    rpc GetTotalQuantity(google.protobuf.Empty) returns (GetTotalQuantityResponse);
+}

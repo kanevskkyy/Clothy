@@ -1,7 +1,7 @@
 import styles from "./ClotheDetailPage.module.css";
 import ImageGallery from "../../../features/clothe/imageGallery/ImageGallery.tsx";
-import ClotheDetail from '../../../entities/catalogService/clotheItem/clotheInfo/ClotheDetail.tsx';
-import ReviewsSection from "../../../entities/reviewsService/reviews/reviewSection/ReviewsSection.tsx";
+import ClotheDetail from '../../../entities/catalogService/clotheInfo/ClotheDetail.tsx';
+import ReviewsSection from "../../../entities/reviewsService/reviewSection/ReviewsSection.tsx";
 import {useMemo, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import {Helmet} from 'react-helmet';
@@ -10,7 +10,7 @@ import {toast} from "sonner";
 import {getErrorMessage} from "../../../shared/lib/errorHandler.ts";
 import ClotheDetailSkeleton from './skeleton/ClotheDetailSkeleton.tsx';
 import {useQuery} from '@tanstack/react-query';
-import type {IColorReadDTO} from "../../../entities/catalogService/colors/IColorReadDTO.ts";
+import type {IColorReadDTO} from "../../../entities/catalogService/interfaces/color/IColorReadDTO.ts";
 import Container from "../../../shared/layout/Container/Container.tsx";
 
 

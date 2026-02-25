@@ -120,6 +120,14 @@ namespace Clothy.ReviewService.Infrastructure.Repositories
             await collection.DeleteManyAsync(reviewsByUserId, cancellationToken);
         }
 
+        public async Task<int> GetPendingReviewsCountAsync(CancellationToken cancellationToken = default)
+        {
+            var filter = Builders<Review>.Filter.Eq(review => review.Status, ReviewStatus.Pending);
+
+            long count = await collection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
+            return (int)count;
+        }
+
         public async Task UpdateUserInfoInReviewsAsync(UserUpdatedEvent userUpdatedEvent, bool newPhoto = false, CancellationToken cancellationToken = default)
         {
             var filter = Builders<Review>.Filter.Eq(r => r.User.UserId, userUpdatedEvent.UserId);

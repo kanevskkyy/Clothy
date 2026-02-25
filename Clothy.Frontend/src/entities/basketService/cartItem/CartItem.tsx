@@ -1,4 +1,4 @@
-import type { IBasketItemCart } from "../IBasketItemCart.ts";
+import type { IBasketItemCart } from "../interfaces/IBasketItemCart.ts";
 import styles from "./CartItem.module.css";
 import { Link } from "react-router-dom";
 import { X, AlertTriangle } from "lucide-react";

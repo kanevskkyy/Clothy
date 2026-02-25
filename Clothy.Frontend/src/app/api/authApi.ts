@@ -27,13 +27,16 @@ export interface IRegisterResponse {
 }
 
 export const authApi = {
-    loginAsync: async (body: LoginFormData): Promise<void> => {
+    loginAsync: async (body: LoginFormData): Promise<ILoginResponse> => {
         const response = await apiClient.post<ILoginResponse>("/api/auth/login", body);
         const { tokens, user } = response.data;
 
         const { setTokens, setUser } = useAuthStore.getState();
+
         setTokens(tokens.accessToken, tokens.refreshToken);
         setUser(user);
+
+        return response.data;
     },
 
     registerAsync: async (body: RegisterFormData): Promise<void> => {

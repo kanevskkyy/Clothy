@@ -80,5 +80,41 @@ namespace Clothy.Aggregator.Aggregate.Clients
                 throw;
             }
         }
+
+        public async Task<PendingReviewsCountGrpcResponse> GetPendingReviewsCountAsync(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                logger.LogInformation("Fetching pending reviews count...");
+                PendingReviewsCountGrpcResponse response = await client.GetPendingReviewsCountAsync(new Google.Protobuf.WellKnownTypes.Empty(), cancellationToken: cancellationToken);
+
+                logger.LogInformation("Successfully fetched pending reviews count: {ReviewsCount}", response.ReviewsCount);
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error while fetching pending reviews count");
+                throw;
+            }
+        }
+
+        public async Task<QuestionsWithoutAnswerGrpcResponse> GetQuestionsWithoutAnswerAsync(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                logger.LogInformation("Fetching questions without answer count...");
+                QuestionsWithoutAnswerGrpcResponse response = await client.GetQuestionsCountWithoutAnswerAsync(new Google.Protobuf.WellKnownTypes.Empty(), cancellationToken: cancellationToken);
+
+                logger.LogInformation("Successfully fetched questions without answer count: {QuestionsCount}", response.QuestionsCount);
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error while fetching questions without answer count");
+                throw;
+            }
+        }
     }
 }

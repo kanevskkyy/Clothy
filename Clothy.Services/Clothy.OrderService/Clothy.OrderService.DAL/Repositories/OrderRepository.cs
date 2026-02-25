@@ -18,6 +18,7 @@ namespace Clothy.OrderService.DAL.Repositories
     {
         public OrderRepository(IConnectionFactory connectionFactory) : base(connectionFactory, "orders")
         {
+
         }
 
         public async Task<(IEnumerable<OrderSummaryData> Items, int TotalCount)> GetPagedAsync(OrderFilterDTO filter, CancellationToken cancellationToken = default)
@@ -215,6 +216,42 @@ namespace Clothy.OrderService.DAL.Repositories
                 }, cancellationToken: cancellationToken)
             );
             return count > 0;
+        }
+
+        public async Task<(int newOrdersCount, decimal totalPrice, int pendingOrdersCount)> GetOrdersStatistics(CancellationToken cancellationToken = default)
+        {
+            using IDbConnection connection = await GetOpenConnectionAsync();
+
+            string sql = @"
+                SELECT
+                    COUNT(DISTINCT o.id) FILTER (
+                        WHERE o.createdat >= DATE_TRUNC('day', (NOW() AT TIME ZONE 'utc'))
+                    ) AS NewOrdersCount,
+
+                    COALESCE(SUM(oi.price * oi.quantity) FILTER (
+                        WHERE o.createdat >= DATE_TRUNC('day', (NOW() AT TIME ZONE 'utc'))
+                    ), 0) AS TotalPrice,
+
+                    COUNT(DISTINCT o.id) FILTER (
+                        WHERE o.status = @PendingStatus
+                    ) AS PendingOrdersCount
+
+                FROM orders o
+                LEFT JOIN order_item oi ON oi.orderid = o.id;
+            ";
+
+            var result = await connection.QueryFirstAsync(
+                new CommandDefinition(sql, new
+                {
+                    PendingStatus = (int)OrderStatus.AwaitingPayment
+                }, cancellationToken: cancellationToken)
+            );
+
+            return (
+                (int)result.neworderscount,
+                (decimal)result.totalprice,
+                (int)result.pendingorderscount
+            );
         }
     }
 }

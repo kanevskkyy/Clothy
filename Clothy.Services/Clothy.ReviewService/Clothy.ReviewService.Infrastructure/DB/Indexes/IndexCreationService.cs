@@ -25,12 +25,13 @@ namespace Clothy.ReviewService.Infrastructure.DB.Indexes
             reviewCollection.Indexes.CreateOne(new CreateIndexModel<Review>(reviewKeys.Ascending(r => r.User.UserId)));
             reviewCollection.Indexes.CreateOne(new CreateIndexModel<Review>(reviewKeys.Ascending(r => r.ClotheInfo.ClotheItemId)));
             reviewCollection.Indexes.CreateOne(new CreateIndexModel<Review>(reviewKeys.Ascending(r => r.Rating)));
+            reviewCollection.Indexes.CreateOne(new CreateIndexModel<Review>(reviewKeys.Ascending(r => r.Status)));
 
             var questionCollection = dbContext.Questions;
             var questionKeys = Builders<Question>.IndexKeys;
 
             questionCollection.Indexes.CreateOne(new CreateIndexModel<Question>(questionKeys.Ascending(q => q.User.UserId)));
-            questionCollection.Indexes.CreateOne(new CreateIndexModel<Question>(questionKeys.Ascending(q => q.ClotheItemId)));
+            questionCollection.Indexes.CreateOne(new CreateIndexModel<Question>(questionKeys.Ascending(q => q.ClotheInfo.ClotheItemId)));
         }
     }
 }

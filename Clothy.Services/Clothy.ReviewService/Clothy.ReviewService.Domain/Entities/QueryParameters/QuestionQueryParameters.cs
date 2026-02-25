@@ -10,5 +10,6 @@ namespace Clothy.ReviewService.Domain.Entities.QueryParameters
     {
         public Guid? UserId { get; set; }
         public Guid? ClotheItemId { get; set; }
+        public bool? WithoutAnswer { get; set; }
     }
 }

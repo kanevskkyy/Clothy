@@ -4,7 +4,6 @@
     overflow-y: auto;
     overscroll-behavior: contain;
     scroll-behavior: smooth;
-    background-color: #fff;
 }
 
 .filterContainer::-webkit-scrollbar {
@@ -157,7 +156,6 @@
 }
 
 @media (max-width: 768px) {
-
     .mobileFilterButton {
         background-color: #ffffff;
         display: flex;

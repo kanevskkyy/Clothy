@@ -10,8 +10,8 @@ namespace Clothy.ReviewService.Domain.Entities
 {
     public class Question : BaseEntity
     {
-        [BsonElement("clotheItemId")]
-        public Guid ClotheItemId { get; private set; }
+        [BsonElement("clothe")]
+        public ClotheInfo ClotheInfo { get; set; }
 
         [BsonElement("questionText")]
         public string QuestionText { get; private set; }
@@ -24,9 +24,9 @@ namespace Clothy.ReviewService.Domain.Entities
 
         }
 
-        public Question(Guid clotheItemId, UserInfo user, string questionText)
+        public Question(ClotheInfo clotheInfo, UserInfo user, string questionText)
         {
-            ClotheItemId = clotheItemId;
+            ClotheInfo = clotheInfo;
             User = user;
             QuestionText = questionText.Trim();
         }

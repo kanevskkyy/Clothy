@@ -1,0 +1,17 @@
+﻿using Clothy.Shared.Helpers;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Clothy.Aggregator.Aggregate.DTOs
+{
+    public class ClotheDetailFullDTO
+    {
+        public ClotheDetailGrpcResponse? ClotheDetailDTO { get; set; }
+        public PagedList<ReviewGrpcResponse>? Reviews { get; set; }
+        public ReviewStatisticGrpcResponse? Statistics { get; set; }
+        public PagedList<QuestionGrpcResponse>? Questions { get; set; }
+    }
+}

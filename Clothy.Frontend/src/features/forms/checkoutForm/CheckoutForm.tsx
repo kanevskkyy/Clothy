@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { CreditCard, Bitcoin } from 'lucide-react';
 import styles from './CheckoutForm.module.css';
-import type { IRegionReadDTO } from '../../../entities/ordersService/regions/IRegionReadDTO.ts';
-import type { ISettlementReadDTO } from '../../../entities/ordersService/settlement/ISettlementReadDTO.ts';
-import type { IPickupPointReadDTO } from '../../../entities/ordersService/pickupPoints/IPickupPointReadDTO.ts';
+import type { IRegionReadDTO } from '../../../entities/ordersService/interfaces/IRegionReadDTO.ts';
+import type { ISettlementReadDTO } from '../../../entities/ordersService/interfaces/ISettlementReadDTO.ts';
+import type { IPickupPointReadDTO } from '../../../entities/ordersService/interfaces/IPickupPointReadDTO.ts';
 import type { PagedList } from '../../../shared/lib/pagedList.ts';
 import { checkoutFormSchema, type CheckoutFormData } from '../../../app/schemas/checkoutFormSchema.ts';
 import FormField from '../../../shared/form/FormField/FormField.tsx';

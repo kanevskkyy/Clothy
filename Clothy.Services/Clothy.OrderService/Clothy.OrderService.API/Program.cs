@@ -180,6 +180,7 @@ app.UseServiceDefaults();
 
 app.MapGrpcService<CheckUserPurchasedGrpcImpl>();
 app.MapGrpcService<GetOrderInfoGrpcServer>();
+app.MapGrpcService<OrderStatsServiceImpl>();
 
 if (app.Environment.IsDevelopment())
 {

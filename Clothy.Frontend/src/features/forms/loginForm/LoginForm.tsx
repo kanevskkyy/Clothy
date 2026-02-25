@@ -41,9 +41,15 @@ const LoginForm = () => {
         }
 
         try {
-            await authApi.loginAsync(formData);
+            const response = await authApi.loginAsync(formData);
+
             toast.success("Successfully signed in. Welcome back!");
-            navigate("/account");
+
+            if (response.user.roles.includes("Admin")) {
+                navigate("/admin");
+            } else {
+                navigate("/account");
+            }
         } catch (error) {
             toast.error(getErrorMessage(error));
         } finally {

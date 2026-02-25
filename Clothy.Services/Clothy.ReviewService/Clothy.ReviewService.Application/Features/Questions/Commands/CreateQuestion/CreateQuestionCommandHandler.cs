@@ -33,16 +33,18 @@ namespace Clothy.ReviewService.Application.Features.Questions.Commands.CreateQue
         public async Task<Question> Handle(CreateQuestionCommand request, CancellationToken cancellationToken)
         {
             UserInfo userInfo = new UserInfo(request.UserId, request.FirstName, request.LastName, request.PhotoUrl);
-            Question question = new Question(request.ClotheItemId, userInfo, request.QuestionText);
 
             ClotheItemIdToValidate clotheItemIdToValidate = new ClotheItemIdToValidate();
-            clotheItemIdToValidate.ClotheId = question.ClotheItemId.ToString();
+            clotheItemIdToValidate.ClotheId = request.ClotheItemId.ToString();
             ClotheItemResponse clotheItemResponse = await clotheItemIdValidatorGrpcClient.ValidateClotheItemIdAsync(clotheItemIdToValidate);
 
             if (!clotheItemResponse.IsValid) throw new ValidationFailedException($"Clothe item ID validation failed: {clotheItemResponse.ErrorMessage}");
 
+            ClotheInfo clotheInfo = new ClotheInfo(request.ClotheItemId, clotheItemResponse.ClotheName, clotheItemResponse.ClothePhotoUrl);
+            Question question = new Question(clotheInfo, userInfo, request.QuestionText);
+
             await questionRepository.AddAsync(question, cancellationToken);
-            questionsCreated.Add(1, new KeyValuePair<string, object?>("ClotheItemId", question.ClotheItemId));
+            questionsCreated.Add(1, new KeyValuePair<string, object?>("ClotheItemId", question.ClotheInfo.ClotheItemId));
 
             return question;
         }

@@ -1,5 +1,5 @@
 ﻿using Clothy.Aggregator.Aggregate.Clients.Interfaces;
-using Clothy.Aggregator.Aggregate.DTOs.ClotheItem;
+using Clothy.Aggregator.Aggregate.DTOs;
 using Clothy.Aggregator.Aggregate.Services.Interfaces;
 using Clothy.Shared.Helpers;
 using Clothy.Shared.Helpers.Exceptions;

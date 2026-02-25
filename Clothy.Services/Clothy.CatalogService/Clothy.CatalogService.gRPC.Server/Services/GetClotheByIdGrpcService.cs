@@ -105,8 +105,7 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                     Size = new SizeGrpc
                     {
                         Id = s?.Size?.Id.ToString(),
-                        Name = s?.Size?.Name,
-                        Slug = s?.Size?.Slug
+                        Name = s?.Size?.Name
                     },
                     Color = new ColorGrpc
                     {

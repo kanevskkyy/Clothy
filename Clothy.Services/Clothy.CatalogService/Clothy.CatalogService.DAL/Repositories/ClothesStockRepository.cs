@@ -48,5 +48,10 @@ namespace Clothy.CatalogService.DAL.Repositories
 
             return new PagedList<ClothesStock>(stocks, count, parameters.PageNumber, parameters.PageSize);
         }
+
+        public async Task<int> GetTotalQuantityAsync(CancellationToken cancellationToken = default)
+        {
+            return await dbSet.SumAsync(property => property.Quantity);
+        }
     }
 }

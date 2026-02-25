@@ -6,4 +6,5 @@ export interface IUserReadDTO {
     phoneNumber: string;
     photoUrl: string;
     emailVerified: boolean;
+    roles: string[];
 }

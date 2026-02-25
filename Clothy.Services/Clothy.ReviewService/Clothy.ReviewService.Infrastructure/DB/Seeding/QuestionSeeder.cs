@@ -25,22 +25,22 @@ namespace Clothy.ReviewService.Infrastructure.DB.Seeding
             List<Question> fakeData = new List<Question>
             {
                 new Question(
-                    Guid.NewGuid(),
+                    new ClotheInfo(Guid.NewGuid(), "Off-White hoodie 1", "https://randomuser.me/api/portraits/men/11.jpg"),
                     new UserInfo(Guid.NewGuid(), "Charlie", "Brown", "https://randomuser.me/api/portraits/men/10.jpg"),
                     "What sizes are available?"
                 ),
                 new Question(
-                    Guid.NewGuid(),
+                    new ClotheInfo(Guid.NewGuid(), "Off-White hoodie 2", "https://randomuser.me/api/portraits/men/10.jpg"),
                     new UserInfo(Guid.NewGuid(), "Dana", "White", "https://randomuser.me/api/portraits/women/11.jpg"),
                     "Is this item washable?"
                 ),
                 new Question(
-                    Guid.NewGuid(),
+                    new ClotheInfo(Guid.NewGuid(), "Off-White hoodie 3", "https://randomuser.me/api/portraits/men/10.jpg"),
                     new UserInfo(Guid.NewGuid(), "Ella", "Green", "https://randomuser.me/api/portraits/women/12.jpg"),
                     "Can I return it if it doesn't fit?"
                 ),
                 new Question(
-                    Guid.NewGuid(),
+                    new ClotheInfo(Guid.NewGuid(), "Off-White hoodie 4", "https://randomuser.me/api/portraits/men/10.jpg"),
                     new UserInfo(Guid.NewGuid(), "Frank", "Black", "https://randomuser.me/api/portraits/men/13.jpg"),
                     "Does it come in different colors?"
                 )

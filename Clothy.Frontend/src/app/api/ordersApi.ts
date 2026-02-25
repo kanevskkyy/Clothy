@@ -1,12 +1,12 @@
 import type { PagedList } from "../../shared/lib/pagedList.ts";
-import type { IOrderReadDTO } from "../../entities/ordersService/order/IOrderReadDTO.ts";
+import type { IOrderReadDTO } from "../../entities/ordersService/interfaces/order/IOrderReadDTO.ts";
 import apiClient from "./client.ts";
-import type { IOrderDetailDTO } from "../../entities/ordersService/order/IOrderDetailDTO.ts";
-import type { IDeliveryProviderReadDTO } from "../../entities/ordersService/deliveryProviders/IDeliveryProviderReadDTO.ts";
-import type { IRegionReadDTO } from "../../entities/ordersService/regions/IRegionReadDTO.ts";
-import type { ISettlementReadDTO } from "../../entities/ordersService/settlement/ISettlementReadDTO.ts";
-import type { IPickupPointReadDTO } from "../../entities/ordersService/pickupPoints/IPickupPointReadDTO.ts";
-import type {IOrderCreateDTO} from "../../entities/ordersService/order/IOrderCreateDTO.ts";
+import type { IOrderDetailDTO } from "../../entities/ordersService/interfaces/order/IOrderDetailDTO.ts";
+import type { IDeliveryProviderReadDTO } from "../../entities/ordersService/interfaces/IDeliveryProviderReadDTO.ts";
+import type { IRegionReadDTO } from "../../entities/ordersService/interfaces/IRegionReadDTO.ts";
+import type { ISettlementReadDTO } from "../../entities/ordersService/interfaces/ISettlementReadDTO.ts";
+import type { IPickupPointReadDTO } from "../../entities/ordersService/interfaces/IPickupPointReadDTO.ts";
+import type {IOrderCreateDTO} from "../../entities/ordersService/interfaces/order/IOrderCreateDTO.ts";
 
 export interface ISettlementFilters {
     regionId?: string;
@@ -25,6 +25,21 @@ export const ordersApi = {
     getMyOrdersAsync: async (pageNumber: number): Promise<PagedList<IOrderReadDTO>> => {
         const { data } = await apiClient.get<PagedList<IOrderReadDTO>>(`/api/orders/my?pageNumber=${pageNumber}`);
         return data;
+    },
+
+    getAllOrdersAsync: async (pageNumber: number, status?: string): Promise<PagedList<IOrderReadDTO>> => {
+        let url = `/api/orders/?pageNumber=${pageNumber}`;
+
+        if (status) url += `&status=${status}`;
+
+        const { data } = await apiClient.get<PagedList<IOrderReadDTO>>(url);
+        return data;
+    },
+
+    updateOrderAsync: async (id: string, status: string): Promise<void> => {
+        await apiClient.put(`/api/orders/${id}`, {
+            status: status
+        });
     },
 
     createOrderAsync: async (body : IOrderCreateDTO): Promise<IOrderDetailDTO> => {

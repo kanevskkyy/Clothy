@@ -1,0 +1,80 @@
+.header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.questionCard {
+    border: 1px solid #EBEBEB;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.clotheInfo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    border-bottom: 1px solid #F0F0F0;
+    background: #FAFAFA;
+}
+
+.clothePhoto {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.clotheName {
+    font-size: 13px;
+    font-weight: 500;
+    color: #333;
+}
+
+.questionBody {
+    padding: 0;
+}
+
+.questionItemWrapper {
+    padding: 16px 20px;
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    padding: 12px 20px;
+    border-top: 1px solid #F0F0F0;
+}
+
+.deleteBtn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    border-radius: 8px;
+    border: 1px solid #FFCDD2;
+    background: #FFF5F5;
+    color: #D32F2F;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.deleteBtn:hover:not(:disabled) {
+    background: #FFEBEE;
+    border-color: #EF9A9A;
+}
+
+.deleteBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

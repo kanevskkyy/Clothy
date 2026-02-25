@@ -31,8 +31,8 @@ namespace Clothy.ReviewService.gRPC.Client.Services
                 ClotheItemResponse response = await client.ValidateClotheItemIdAsync(clotheItemIdToValidate);
 
                 if (response.IsValid) logger.LogInformation("ClotheItemId {ClotheId} is valid", clotheItemIdToValidate.ClotheId);
-                else logger.LogWarning("ClotheItemId {ClotheId} is invalid: {Error}", clotheItemIdToValidate.ClotheId, response.ErrorMessage); 
-                
+                else logger.LogWarning("ClotheItemId {ClotheId} is invalid: {Error}", clotheItemIdToValidate.ClotheId, response.ErrorMessage);
+
                 return response;
             }
             catch (RpcException ex) when (ex.StatusCode == StatusCode.InvalidArgument)

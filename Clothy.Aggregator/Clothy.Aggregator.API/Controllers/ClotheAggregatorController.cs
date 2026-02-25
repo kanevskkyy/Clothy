@@ -1,4 +1,4 @@
-﻿using Clothy.Aggregator.Aggregate.DTOs.ClotheItem;
+﻿using Clothy.Aggregator.Aggregate.DTOs;
 using Clothy.Aggregator.Aggregate.Services;
 using Clothy.Aggregator.Aggregate.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;

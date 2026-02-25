@@ -1,4 +1,5 @@
 ﻿syntax = "proto3";
+import "google/protobuf/empty.proto";
 
 message ReviewClotheIdGrpcRequest {
     string id = 1;
@@ -61,8 +62,18 @@ message QuestionsListGrpcResponse {
     repeated QuestionGrpcResponse items = 5;
 }
 
+message PendingReviewsCountGrpcResponse {
+    int32 reviewsCount = 1;
+}
+
+message QuestionsWithoutAnswerGrpcResponse {
+    int32 questionsCount = 1;
+}
+
 service ReviewServiceGrpc {
     rpc GetReviewsByClotheId (ReviewClotheIdGrpcRequest) returns (ReviewsListGrpcResponse);
     rpc GetAnswersAndQuestionByClotheId (ReviewClotheIdGrpcRequest) returns (QuestionsListGrpcResponse);
     rpc GetStatisticsByClotheId (ReviewClotheIdGrpcRequest) returns (ReviewStatisticGrpcResponse);
+    rpc GetPendingReviewsCount (google.protobuf.Empty) returns (PendingReviewsCountGrpcResponse);
+    rpc GetQuestionsCountWithoutAnswer (google.protobuf.Empty) returns (QuestionsWithoutAnswerGrpcResponse);
 }

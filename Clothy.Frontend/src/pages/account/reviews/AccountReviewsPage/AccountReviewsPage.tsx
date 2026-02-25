@@ -12,15 +12,17 @@ import { useAuthStore } from "../../../../app/api/stores/authStore.ts";
 import { toast } from "sonner";
 import { getErrorMessage } from "../../../../shared/lib/errorHandler.ts";
 import { getCurrentPage, handlePageChange } from "../../../../shared/lib/paginationUtils.ts";
-import type { IReviewReadDTO } from "../../../../entities/reviewsService/reviews/IReviewReadDTO.ts";
+import type { IReviewReadDTO } from "../../../../entities/reviewsService/interfaces/IReviewReadDTO.ts";
 import type { PagedList } from "../../../../shared/lib/pagedList.ts";
 import styles from "./AccountReviewsPage.module.css";
 import ReviewForm from "../../../../features/forms/reviewForm/ReviewForm.tsx";
-import ReviewRowCard from "../../../../entities/reviewsService/reviews/reviewRow/ReviewRowCard.tsx";
+import ReviewRowCard from "../../../../entities/reviewsService/reviewRow/ReviewRowCard.tsx";
+import { useQueryClient } from "@tanstack/react-query";
 
 const AccountReviewsPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const currentPage = getCurrentPage(searchParams);
+    const queryClient = useQueryClient();
 
     const [reviews, setReviews] = useState<PagedList<IReviewReadDTO>>();
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -52,6 +54,7 @@ const AccountReviewsPage = () => {
             setDeletingId(id);
             await reviewApi.deleteReviewAsync(id);
             toast.success("Review deleted.");
+            await queryClient.invalidateQueries({ queryKey: ["clothe"] });
             fetchUsersReviews();
         } catch (error) {
             toast.error(getErrorMessage(error));
@@ -92,8 +95,9 @@ const AccountReviewsPage = () => {
                             rating: editingReview.rating,
                             comment: editingReview.comment,
                         }}
-                        onSuccess={() => {
+                        onSuccess={async () => {
                             setEditingReview(null);
+                            await queryClient.invalidateQueries({ queryKey: ["clothe"] });
                             fetchUsersReviews();
                         }}
                     />

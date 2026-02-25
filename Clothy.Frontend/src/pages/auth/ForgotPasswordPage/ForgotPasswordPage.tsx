@@ -1,5 +1,5 @@
 import {Helmet} from "react-helmet";
-import AuthLayout from "../../../features/auth/authLayout/AuthLayout.tsx";
+import AuthLayout from "../../../features/auth/user/authLayout/AuthLayout.tsx";
 import ForgotPasswordForm from "../../../features/forms/forgotPasswordForm/ForgotPasswordForm.tsx";
 import styles from "./ForgotPasswordPage.module.css";
 import Container from "../../../shared/layout/Container/Container.tsx";

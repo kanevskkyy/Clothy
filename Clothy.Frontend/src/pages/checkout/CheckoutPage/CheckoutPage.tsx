@@ -70,6 +70,10 @@ const CheckoutPage = () => {
                     navigate('/catalog');
                     return;
                 }
+                if (data.unAvailableItemsCount > 0) {
+                    navigate('/cart');
+                    return;
+                }
                 setTotalItems(data.items.length);
                 setTotalPrice(data.totalPrice);
             } catch (error) {

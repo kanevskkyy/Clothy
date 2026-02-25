@@ -60,6 +60,8 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                 else
                 {
                     clotheItemResponse.IsValid = true;                   
+                    clotheItemResponse.ClotheName = clotheItem.Name;
+                    clotheItemResponse.ClothePhotoUrl = clotheItem.Photos.FirstOrDefault(photo => photo.IsMain)?.PhotoURL ?? "";
                     logger.LogInformation("ClotheItemId {ClotheItemId} is valid", clotheItemId);
                 }
 

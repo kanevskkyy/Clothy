@@ -1,6 +1,6 @@
 import {Helmet} from "react-helmet";
 import styles from "./LoginPage.module.css";
-import AuthLayout from "../../../features/auth/authLayout/AuthLayout.tsx";
+import AuthLayout from "../../../features/auth/user/authLayout/AuthLayout.tsx";
 import LoginForm from "../../../features/forms/loginForm/LoginForm.tsx";
 import Container from "../../../shared/layout/Container/Container.tsx";
 

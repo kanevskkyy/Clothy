@@ -14,6 +14,7 @@ namespace Clothy.ReviewService.Domain.Interfaces
 {
     public interface IReviewRepository : IGenericRepository<Review>
     {
+        Task<int> GetPendingReviewsCountAsync(CancellationToken cancellationToken = default);
         Task UpdateUserInfoInReviewsAsync(UserUpdatedEvent userUpdatedEvent, bool newPhoto = false, CancellationToken cancellationToken = default);
         Task DeleteAllReviewsByClotheId(Guid clotheId, CancellationToken cancellationToken = default);
         Task DeleteAllReviewsByUserId(Guid userId, CancellationToken cancellationToken = default);

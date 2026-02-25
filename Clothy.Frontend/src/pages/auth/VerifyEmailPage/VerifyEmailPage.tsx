@@ -1,5 +1,5 @@
 import {Helmet} from "react-helmet";
-import AuthLayout from "../../../features/auth/authLayout/AuthLayout.tsx";
+import AuthLayout from "../../../features/auth/user/authLayout/AuthLayout.tsx";
 import ConfirmEmail from "../../../features/forms/confirmEmail/ConfirmEmail.tsx";
 import styles from "./VerifyEmailPage.module.css";
 import {useEffect, useState} from "react";

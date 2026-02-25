@@ -1,6 +1,6 @@
 import {Truck, User} from "lucide-react";
 import styles from "./OrderDetailPage.module.css";
-import type {IOrderDetailDTO} from "../../../../entities/ordersService/order/IOrderDetailDTO.ts";
+import type {IOrderDetailDTO} from "../../../../entities/ordersService/interfaces/order/IOrderDetailDTO.ts";
 import {formatDate} from "../../../../shared/lib/formatDate.ts";
 import {useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
@@ -43,7 +43,15 @@ const OrderDetailPage = () => {
             <div className={styles.orderHeader}>
                 <div className={styles.orderHeaderInfo}>
                     <h3 className={styles.orderHeaderTitle}>Order #{orderDetail?.id}</h3>
-                    <p className={styles.orderDate}>{formatDate(orderDetail!.createdAt)}</p>
+                    <p className={styles.orderDate}>
+                        {formatDate(orderDetail!.createdAt)}
+
+                        {orderDetail?.updatedAt && (
+                            <span>
+                                {" "} (updated at: {formatDate(orderDetail.updatedAt)})
+                            </span>
+                        )}
+                    </p>
                 </div>
                 <Badge label={orderDetail.status}/>
             </div>

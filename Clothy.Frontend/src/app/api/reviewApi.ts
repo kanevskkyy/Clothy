@@ -1,6 +1,6 @@
 import type {PagedList} from "../../shared/lib/pagedList.ts";
 import apiClient from "./client.ts";
-import type {IReviewReadDTO} from "../../entities/reviewsService/reviews/IReviewReadDTO.ts";
+import type {IReviewReadDTO} from "../../entities/reviewsService/interfaces/IReviewReadDTO.ts";
 import type {ReviewSchemaData} from "../schemas/reviewSchema.ts";
 
 export type ReviewsStatusEnum = "Pending" | "Confirmed";
@@ -44,6 +44,10 @@ export const reviewApi = {
 
         const { data } = await apiClient.put<IReviewReadDTO>(`/api/reviews/${id}`, updateBody);
         return data;
+    },
+
+    confirmReviewAsync: async (id: string): Promise<void> => {
+        await apiClient.patch<void>(`/api/reviews/status/${id}/confirm`)
     },
 
     deleteReviewAsync: async (id: string): Promise<void> => {

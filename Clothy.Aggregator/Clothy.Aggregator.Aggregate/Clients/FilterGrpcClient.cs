@@ -86,7 +86,6 @@ namespace Clothy.Aggregator.Aggregate.Clients
                             {
                                 Id = size.Id,
                                 Name = size.Name,
-                                Slug = size.Slug,
                                 ClotheItemCount = size.ClotheItemCount
                             }).ToList(),
 

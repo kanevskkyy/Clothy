@@ -6,13 +6,24 @@ interface ContainerProps {
     className?: string;
     centered?: boolean;
     paddingY?: string | number;
+    paddingX?: string | number;
 }
 
-const Container = ({ children, className = '', centered = true, paddingY }: ContainerProps) => {
+const Container = ({ children, className = '', centered = true, paddingY, paddingX }: ContainerProps) => {
+    const style: React.CSSProperties = {};
+    if (paddingY !== undefined) {
+        style.paddingTop = paddingY;
+        style.paddingBottom = paddingY;
+    }
+    if (paddingX !== undefined) {
+        style.paddingLeft = paddingX;
+        style.paddingRight = paddingX;
+    }
+
     return (
         <div
             className={`${styles.container} ${centered ? styles.centered : ''} ${className}`}
-            style={paddingY !== undefined ? { paddingTop: paddingY, paddingBottom: paddingY } : undefined}
+            style={Object.keys(style).length ? style : undefined}
         >
             {children}
         </div>

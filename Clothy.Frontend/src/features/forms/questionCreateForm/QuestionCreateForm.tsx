@@ -8,7 +8,7 @@ import { getErrorMessage } from "../../../shared/lib/errorHandler.ts";
 import { getZodFieldErrors } from "../../../shared/lib/getZodFieldErrors.ts";
 import { type QuestionSchema, questionSchema } from "../../../app/schemas/questionSchema.ts";
 import { questionApi } from "../../../app/api/questionApi.ts";
-import type { IQuestionReadDTO } from "../../../entities/reviewsService/questions/IQuestionReadDTO.ts";
+import type { IQuestionReadDTO } from "../../../entities/reviewsService/interfaces/IQuestionReadDTO.ts";
 
 interface QuestionCreateFormProps {
     clotheId: string;

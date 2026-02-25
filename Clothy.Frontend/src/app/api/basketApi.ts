@@ -1,5 +1,5 @@
 import apiClient from "./client.ts";
-import type {IBasketList} from "../../entities/basketService/IBasketList.ts";
+import type {IBasketList} from "../../entities/basketService/interfaces/IBasketList.ts";
 
 export interface IBasketItemCreateDTO {
     clotheId: string;

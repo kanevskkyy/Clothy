@@ -1,6 +1,6 @@
 import styles from "./PaymentCancelledPage.module.css";
 import {Helmet} from "react-helmet";
-import AuthLayout from "../../../features/auth/authLayout/AuthLayout.tsx";
+import AuthLayout from "../../../features/auth/user/authLayout/AuthLayout.tsx";
 import PaymentCancelled from "../../../features/checkout/paymentCancelled/PaymentCancelled.tsx";
 import {Navigate, useSearchParams} from "react-router-dom";
 import Container from "../../../shared/layout/Container/Container.tsx";

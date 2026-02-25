@@ -1,7 +1,7 @@
 import { memo, useState, useEffect } from "react";
 import { X, SlidersHorizontal, ChevronUp} from "lucide-react";
 import styles from "./CatalogFilter.module.css";
-import type { IFiltersResponse } from "../../../entities/catalogService/filters/IFiltersResponse.ts";
+import type { IFiltersResponse } from "../../../entities/catalogService/interfaces/filters/IFiltersResponse.ts";
 import Checkbox from "../../../shared/ui/Checkbox/Checkbox.tsx";
 import PriceSlider from "../priceSlider/PriceSlider.tsx";
 import { parsePrice } from "../../../shared/lib/parsePrice.ts";
@@ -310,8 +310,8 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange }: Catalog
                                             id={`size-${size.id}`}
                                             label={size.name}
                                             count={size.clotheItemCount}
-                                            checked={selectedFilters.sizes.includes(size.slug)}
-                                            onChange={(checked) => handleCheckboxChange('sizes', size.slug, checked)}
+                                            checked={selectedFilters.sizes.includes(size.name)}
+                                            onChange={(checked) => handleCheckboxChange('sizes', size.name, checked)}
                                         />
                                     ))}
                                 </div>
