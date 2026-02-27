@@ -25,3 +25,54 @@ export interface IClotheDetailDTO {
     materials: IMaterialPercentage[];
     stocks: IStockReadDTO[];
 }
+
+interface IClotheByIdPhotoDTO {
+    id: string;
+    photoURL: string;
+    colorId: string;
+    isMain: boolean;
+}
+
+interface IClotheByIdClothingTypeDTO {
+    id: string;
+    name: string;
+    slug: string;
+    createdAt?: string;
+}
+
+interface IClotheStockColorDTO {
+    id: string;
+    name: string;
+    hexCode: string;
+    slug: string;
+    createdAt?: string;
+}
+
+interface IClotheStockSizeDTO {
+    id: string;
+    name: string;
+    createdAt?: string;
+}
+
+export interface IClotheStockDTO {
+    stockId: string;
+    size: IClotheStockSizeDTO;
+    color: IClotheStockColorDTO;
+    quantity: number;
+}
+
+export interface IClotheByIdDTO {
+    id: string;
+    name: string;
+    slug: string;
+    description: string;
+    price: number;
+    gender: string;
+    brand: IBrandReadDTO;
+    clothyType: IClotheByIdClothingTypeDTO;
+    collection: ICollectionReadDTO;
+    additionalPhotos: IClotheByIdPhotoDTO[];
+    tags: ITagReadDTO[];
+    materials: IMaterialPercentage[];
+    stocks: IClotheStockDTO[];
+}

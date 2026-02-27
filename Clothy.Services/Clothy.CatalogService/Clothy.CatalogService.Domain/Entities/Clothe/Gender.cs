@@ -10,6 +10,5 @@ namespace Clothy.CatalogService.Domain.Entities.Clothe
     {
         Male = 1,
         Female = 2,
-        Unisex = 3,
     }
 }

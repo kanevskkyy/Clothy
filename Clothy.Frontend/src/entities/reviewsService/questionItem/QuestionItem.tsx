@@ -5,6 +5,8 @@ import { formatDate } from "../../../shared/lib/formatDate.ts";
 import { CornerDownLeft } from "lucide-react";
 import AnswerCreateForm from "../../../features/forms/answerCreateForm/AnswerCreateForm.tsx";
 import type {IAnswerReadDTO} from "../interfaces/IAnswerReadDTO.ts";
+import {useNavigate } from "react-router-dom";
+import { useAuthStore } from "../../../app/api/stores/authStore.ts";
 
 interface QuestionItemProps {
     question: IQuestionReadDTO;
@@ -15,10 +17,18 @@ const QuestionItem: React.FC<QuestionItemProps> = ({ question, onInvalidate }) =
     const [isReplying, setIsReplying] = useState(false);
     const [answers, setAnswers] = useState<IAnswerReadDTO[]>(question.answers);
 
+    const navigate = useNavigate();
+    const isAuthenticated = useAuthStore((state) => !!state.accessToken);
+
     const handleAnswerSuccess = (newAnswer: IAnswerReadDTO) => {
         setAnswers(prev => [...prev, newAnswer]);
         setIsReplying(false);
         onInvalidate?.();
+    };
+
+    const handleReply = () => {
+        if (!isAuthenticated) { navigate('/login'); return; }
+        setIsReplying(prev => !prev);
     };
 
     return (
@@ -37,7 +47,7 @@ const QuestionItem: React.FC<QuestionItemProps> = ({ question, onInvalidate }) =
                 </div>
                 <div className={styles.questionMeta}>
                     <span className={styles.questionDate}>{formatDate(question.createdAt)}</span>
-                    <button className={styles.replyBtn} onClick={() => setIsReplying(prev => !prev)}>
+                    <button className={styles.replyBtn} onClick={handleReply}>
                         <CornerDownLeft size={16} />
                         {isReplying ? "Cancel" : "Reply"}
                     </button>

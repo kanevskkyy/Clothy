@@ -10,9 +10,9 @@ using Clothy.CatalogService.Domain.Entities.Clothe;
 using Clothy.CatalogService.Domain.Entities.Stock;
 using Microsoft.EntityFrameworkCore;
 
-namespace Clothy.CatalogService.SeedData.SeedData
+namespace Clothy.CatalogService.SeedData.SeedData.Development
 {
-    public class ClotheItemSeeder : ISeeder
+    public class ClotheItemFakeSeeder : ISeeder
     {
         public async Task SeedAsync(ClothyCatalogDbContext context)
         {

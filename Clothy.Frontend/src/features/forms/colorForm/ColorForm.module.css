@@ -1,0 +1,20 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.colorInputWrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.colorPicker {
+    width: 40px;
+    height: 40px;
+    border: none;
+    padding: 0;
+    background: none;
+    cursor: pointer;
+}

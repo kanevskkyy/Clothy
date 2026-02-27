@@ -50,6 +50,10 @@ namespace Clothy.BasketService.BLL.Services
 
                 return await GetBasketAsync(userId) ?? new BasketDTO { UserId = userId, Items = new List<BasketItemDTO>() };
             }
+            catch (ValidationFailedException)
+            {
+                throw;
+            }
             catch (RpcException rpcEx)
             {
                 throw new ValidationFailedException($"gRPC validation failed: {rpcEx.Status.Detail}");

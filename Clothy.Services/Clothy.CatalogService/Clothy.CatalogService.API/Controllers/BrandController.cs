@@ -57,7 +57,7 @@ namespace Clothy.CatalogService.API.Controllers
         /// <returns>Created brand.</returns>
         [HttpPost]
         [Authorize(Policy = "ManagerOrAdmin")]
-        public async Task<ActionResult<BrandReadDTO>> Create([FromForm] BrandCreateDTO brandCreateDTO, CancellationToken cancellationToken)
+        public async Task<ActionResult<BrandReadDTO>> Create([FromBody] BrandCreateDTO brandCreateDTO, CancellationToken cancellationToken)
         {
             logger.LogInformation("Creating brand with name: {Name}", brandCreateDTO.Name);
             BrandReadDTO created = await brandService.CreateAsync(brandCreateDTO, cancellationToken);
@@ -75,7 +75,7 @@ namespace Clothy.CatalogService.API.Controllers
         /// <returns>Updated brand.</returns>
         [HttpPut("{id:guid}")]
         [Authorize(Policy = "ManagerOrAdmin")]
-        public async Task<ActionResult<BrandReadDTO>> Update(Guid id, [FromForm] BrandUpdateDTO brandUpdateDTO, CancellationToken cancellationToken)
+        public async Task<ActionResult<BrandReadDTO>> Update(Guid id, [FromBody] BrandUpdateDTO brandUpdateDTO, CancellationToken cancellationToken)
         {
             logger.LogInformation("Updating brand with ID: {Id}", id);
             BrandReadDTO updated = await brandService.UpdateAsync(id, brandUpdateDTO, cancellationToken);

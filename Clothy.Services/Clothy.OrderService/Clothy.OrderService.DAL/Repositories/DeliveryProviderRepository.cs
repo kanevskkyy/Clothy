@@ -23,14 +23,16 @@ namespace Clothy.OrderService.DAL.Repositories
         {
             using IDbConnection connection = await GetOpenConnectionAsync();
 
-            string sql = @" 
-                SELECT COUNT(1) 
-                FROM delivery_provider 
-                WHERE LOWER(name) = LOWER(@Name) 
-                  AND (@ExcludeId IS NULL OR id <> @ExcludeId); 
-            ";
+            string sql = excludeId.HasValue
+                    ? @"SELECT COUNT(1) 
+                FROM delivery_provider
+                WHERE LOWER(name) = LOWER(@Name)
+                  AND id <> @ExcludeId"
+                    : @"SELECT COUNT(1) 
+                FROM delivery_provider
+                WHERE LOWER(name) = LOWER(@Name)";
 
-            IDbCommand command = connection.CreateCommand();
+            using IDbCommand command = connection.CreateCommand();
             command.CommandText = sql;
 
             IDbDataParameter nameParam = command.CreateParameter();
@@ -38,16 +40,18 @@ namespace Clothy.OrderService.DAL.Repositories
             nameParam.Value = name;
             command.Parameters.Add(nameParam);
 
-            IDbDataParameter excludeIdParam = command.CreateParameter();
-            excludeIdParam.ParameterName = "@ExcludeId";
-            excludeIdParam.Value = excludeId ?? (object)DBNull.Value;
-            excludeIdParam.DbType = DbType.Guid; 
-            command.Parameters.Add(excludeIdParam);
+            if (excludeId.HasValue)
+            {
+                IDbDataParameter excludeParam = command.CreateParameter();
+                excludeParam.ParameterName = "@ExcludeId";
+                excludeParam.DbType = DbType.Guid;
+                excludeParam.Value = excludeId.Value;
+                command.Parameters.Add(excludeParam);
+            }
 
-            DbCommand dbCommand = (DbCommand)command;
-            object? result = await dbCommand.ExecuteScalarAsync(cancellationToken);
-
+            Object? result = await ((DbCommand)command).ExecuteScalarAsync(cancellationToken);
             int count = Convert.ToInt32(result);
+
             return count > 0;
         }
 

@@ -20,7 +20,7 @@ const ClotheDetailPage = () => {
 
     const {data: clotheItem, isLoading} = useQuery({
         queryKey: ["clothe", slug],
-        queryFn: () => catalogApi.getClotheBySlugAsync(slug ?? ""),
+        queryFn: () => catalogApi.getClotheBySlugAggregatorAsync(slug ?? ""),
         throwOnError: (error) => {
             toast.error(getErrorMessage(error));
             return false;

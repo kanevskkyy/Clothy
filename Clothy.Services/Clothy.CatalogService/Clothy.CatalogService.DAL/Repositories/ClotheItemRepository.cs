@@ -67,13 +67,12 @@ namespace Clothy.CatalogService.DAL.Repositories
             return new PagedList<ClotheItem>(clotheItems, count, parameters.PageNumber, parameters.PageSize);
         }
 
-        public async Task<(int maleCount, int femaleCount, int unisexCount)> GetClotheItemCountByGenderAsync(CancellationToken cancellationToken = default)
+        public async Task<(int maleCount, int femaleCount)> GetClotheItemCountByGenderAsync(CancellationToken cancellationToken = default)
         {
             int maleCount = await dbSet.Where(property => property.Gender == Gender.Male).CountAsync(cancellationToken);
             int femaleCount = await dbSet.Where(property => property.Gender == Gender.Female).CountAsync(cancellationToken);
-            int unisexCount = await dbSet.Where(property => property.Gender == Gender.Unisex).CountAsync(cancellationToken);
 
-            return (maleCount, femaleCount, unisexCount);
+            return (maleCount, femaleCount);
         }
 
         public async Task<ClotheItem?> GetBySlugWithDetailsAsync(string slug, CancellationToken cancellationToken = default)

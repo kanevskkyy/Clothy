@@ -13,6 +13,8 @@ import { getErrorMessage } from "../../../shared/lib/errorHandler.ts";
 import { basketApi, type IBasketItemCreateDTO } from "../../../app/api/basketApi.ts";
 import {Tag} from "lucide-react";
 import Badge from "../../../features/catalog/badge/Badge.tsx";
+import { useAuthStore } from "../../../app/api/stores/authStore.ts";
+import {useNavigate} from "react-router-dom";
 
 interface ProductInfoProps {
     clotheDetail: IClotheDetailDTO;
@@ -21,9 +23,13 @@ interface ProductInfoProps {
 }
 
 const ClotheDetail: React.FC<ProductInfoProps> = ({ clotheDetail, selectedColor, onColorChange }) => {
+    const navigate = useNavigate();
+
     const fileInputRef = useRef<HTMLInputElement>(null);
     const downloadLinkRef = useRef<HTMLAnchorElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
+
+    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
     const [selectedSize, setSelectedSize] = useState<ISizeReadDTO | null>(null);
     const [quantity, setQuantity] = useState(1);
@@ -107,6 +113,11 @@ const ClotheDetail: React.FC<ProductInfoProps> = ({ clotheDetail, selectedColor,
     }, [selectedColor.id, sizeAvailability]);
 
     const handleAddToCart = async () => {
+        if(!isAuthenticated()) {
+            navigate('/login');
+            return;
+        }
+
         setIsAddingToCart(true);
         try {
             const dto: IBasketItemCreateDTO = {
@@ -125,7 +136,15 @@ const ClotheDetail: React.FC<ProductInfoProps> = ({ clotheDetail, selectedColor,
     };
 
     const handleSubscribe = async () => {
-        if (!selectedSize || !selectedColor) { toast.error("Please select size and color"); return; }
+        if(!isAuthenticated()) {
+            navigate('/login');
+            return;
+        }
+
+        if (!selectedSize || !selectedColor) {
+            toast.error("Please select size and color");
+            return;
+        }
         const stock = clotheDetail.stocks.find(
             (s) => s.size.id === selectedSize.id && s.color.id === selectedColor.id
         );

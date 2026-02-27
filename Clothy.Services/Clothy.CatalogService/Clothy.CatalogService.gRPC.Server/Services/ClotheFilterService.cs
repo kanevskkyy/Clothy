@@ -35,7 +35,7 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                 Dictionary<Size, int> sizes = await unitOfWork.Sizes.GetSizesCountWithStockAsync(context.CancellationToken);
                 Dictionary<Tag, int> tags = await unitOfWork.Tags.GetTagsWithStockCountAsync(context.CancellationToken);
                 (decimal minPrice, decimal maxPrice) priceRange = await unitOfWork.ClotheItems.GetMinAndMaxPriceAsync(context.CancellationToken);
-                (int maleCount, int femaleCount, int unisexCount) genderCount = await unitOfWork.ClotheItems.GetClotheItemCountByGenderAsync(context.CancellationToken);
+                (int maleCount, int femaleCount) genderCount = await unitOfWork.ClotheItems.GetClotheItemCountByGenderAsync(context.CancellationToken);
 
                 logger.LogInformation("Succesfully collected all filters!");
 
@@ -144,13 +144,12 @@ namespace Clothy.CatalogService.gRPC.Server.Services
             };
         }
 
-        private GenderGrpcResponse ConvertGenderCountToGrpcResponse((int maleCount, int femaleCount, int unisexCount) genderCount)
+        private GenderGrpcResponse ConvertGenderCountToGrpcResponse((int maleCount, int femaleCount) genderCount)
         {
             return new GenderGrpcResponse
             {
                 MaleCount = genderCount.maleCount,
                 FemaleCount = genderCount.femaleCount,
-                UnisexCount = genderCount.unisexCount
             };
         }
     }

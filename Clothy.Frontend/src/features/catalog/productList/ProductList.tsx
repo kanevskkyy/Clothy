@@ -4,11 +4,12 @@ import type {IClotheSummaryDTO} from "../../../entities/catalogService/interface
 
 interface ProductListProps {
     products: IClotheSummaryDTO[];
+    className?: string;
 }
 
-const ProductList = ({products}: ProductListProps) => {
+const ProductList = ({products, className}: ProductListProps) => {
     return (
-        <div className={styles.grid}>
+        <div className={`${styles.grid} ${className ?? ''}`}>
             {products.map((product) => (
                 <ClotheSummaryCard key={product.id} product={product} />
             ))}

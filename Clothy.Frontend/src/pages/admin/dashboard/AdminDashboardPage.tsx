@@ -51,7 +51,7 @@ const AdminDashboardPage = () => {
         {
             title: "Awaiting processing",
             value: data.pendingOrdersCount,
-            label: "pending orders",
+            label: "processing orders",
             icon: <Clock size={18} />,
             iconClass: styles.iconOrange,
         },

@@ -18,12 +18,12 @@ interface ReviewCreateFormProps {
 }
 
 const ReviewForm = ({
-                              clotheId,
-                              reviewId,
-                              initialData,
-                              method = "create",
-                              onSuccess,
-                          }: ReviewCreateFormProps) => {
+                        clotheId,
+                        reviewId,
+                        initialData,
+                        method = "create",
+                        onSuccess,
+                    }: ReviewCreateFormProps) => {
     const [formData, setFormData] = useState<ReviewSchemaData>({
         clotheItemId: clotheId ?? "",
         rating: initialData?.rating ?? 0,

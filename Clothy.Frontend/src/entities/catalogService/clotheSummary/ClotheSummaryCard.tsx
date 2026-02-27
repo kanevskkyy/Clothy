@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import { memo, useState } from "react";
 import styles from "./ClotheSummaryCard.module.css";
-import type {IClotheSummaryDTO} from "../interfaces/clothe/IClotheSummaryDTO.ts";
-import {formatMoney} from "../../../shared/lib/formatMoney.ts";
+import type { IClotheSummaryDTO } from "../interfaces/clothe/IClotheSummaryDTO.ts";
+import { formatMoney } from "../../../shared/lib/formatMoney.ts";
 
 interface ClotheSummaryCardProps {
     product: IClotheSummaryDTO;
@@ -24,47 +24,36 @@ const ClotheSummaryCard = memo(({ product }: ClotheSummaryCardProps) => {
                     loading="lazy"
                     decoding="async"
                 />
-
                 {!product.isAvailable && (
-                    <div className={styles.unavailableBadge}>
-                        Not available
-                    </div>
+                    <div className={styles.unavailableBadge}>Not available</div>
                 )}
             </div>
 
             <div className={styles.content}>
-                <div className={styles.brand}>{product.brand.name}</div>
-
                 <h4 className={styles.name}>{product.name}</h4>
-
-                <div className={styles.colors}>
-                    {product.colors.map((color) => (
-                        <button
-                            key={color.id}
-                            type="button"
-                            className={`${styles.colorDot} ${
-                                selectedColor.id === color.id
-                                    ? styles.activeColor
-                                    : ""
-                            }`}
-                            style={{ backgroundColor: color.hexCode }}
-                            title={color.colorId}
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                setSelectedColor(color);
-                            }}
-                        />
-                    ))}
-                </div>
-
-                <div className={styles.priceContainer}>
-                    <span className={styles.price}>${formatMoney(product.price)}</span>
-                    {product.oldPrice && (
-                        <span className={styles.oldPrice}>
-                            ${formatMoney(product.oldPrice)}
-                        </span>
-                    )}
+                <div className={styles.footer}>
+                    <div className={styles.colors}>
+                        {product.colors.map((color) => (
+                            <button
+                                key={color.id}
+                                type="button"
+                                className={`${styles.colorDot} ${selectedColor.id === color.id ? styles.activeColor : ""}`}
+                                style={{ backgroundColor: color.hexCode }}
+                                title={color.colorId}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setSelectedColor(color);
+                                }}
+                            />
+                        ))}
+                    </div>
+                    <div className={styles.priceTag}>
+                        ${formatMoney(product.price)}
+                        {product.oldPrice && (
+                            <span className={styles.oldPrice}>${formatMoney(product.oldPrice)}</span>
+                        )}
+                    </div>
                 </div>
             </div>
         </Link>

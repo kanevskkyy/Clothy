@@ -8,7 +8,7 @@ using Clothy.CatalogService.DAL.DB;
 using Clothy.CatalogService.Domain.Entities.Catalog;
 using Microsoft.EntityFrameworkCore;
 
-namespace Clothy.CatalogService.SeedData.SeedData
+namespace Clothy.CatalogService.SeedData.SeedData.Always
 {
     public class ClothingTypeSeeder : ISeeder
     {

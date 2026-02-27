@@ -29,7 +29,6 @@ namespace Clothy.CatalogService.BLL.Mapper
             CreateMap<ClotheItem, ClotheSummaryDTO>()
                 .ForMember(dto => dto.IsAvailable, map => map.MapFrom(c => c.Stocks.Any(s => s.Quantity > 0)))
                 .ForMember(dto => dto.OldPrice, map => map.MapFrom(p => p.OldPrice))
-                .ForMember(dto => dto.Brand, map => map.MapFrom(c => c.Brand))
                 .ForMember(dto => dto.Colors, map => map.MapFrom(c => c.Photos.Where(p => p.IsMain)));
 
             CreateMap<ClotheItem, ClotheDetailDTO>()

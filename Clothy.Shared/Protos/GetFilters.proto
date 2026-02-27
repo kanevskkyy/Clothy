@@ -60,7 +60,6 @@ message PriceGrpcResponse {
 message GenderGrpcResponse {
 	int32 maleCount = 1;
 	int32 femaleCount = 2;
-	int32 unisexCount = 3;
 }
 
 message FilterResponse {

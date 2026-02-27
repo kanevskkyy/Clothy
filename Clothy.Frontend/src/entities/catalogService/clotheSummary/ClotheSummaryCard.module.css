@@ -1,37 +1,32 @@
 .card {
     display: flex;
-    border: var(--border-color);
     flex-direction: column;
-    border-radius: 12px;
-    overflow: hidden;
-    justify-content: flex-start;
-    background: #fff;
-    transition: transform 0.2s ease;
     text-decoration: none;
     color: inherit;
-    contain: layout style paint;
-    max-width: 400px;
     width: 100%;
-}
-
-.card:hover {
-    transform: translateY(-8px);
+    overflow: hidden;
+    border-radius: 8px;
+    border: var(--border-color);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .imageContainer {
     position: relative;
     width: 100%;
-    aspect-ratio: 3 / 4 ;
+    aspect-ratio: 3 / 4;
     overflow: hidden;
-    background: #f5f5f5;
-    contain: strict;
+    background: #f8f8f8
 }
 
 .image {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    content-visibility: auto;
+    transition: transform 0.4s ease;
+}
+
+.card:hover .image {
+    transform: scale(1.05);
 }
 
 .unavailableBadge {
@@ -39,210 +34,100 @@
     bottom: 0;
     left: 0;
     right: 0;
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 8px;
+    background: var(--color-text-primary);
+    color: #fff;
+    padding: 6px;
     text-align: center;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+}
+
+.priceTag {
+    position: static;
+    background: transparent;
+    backdrop-filter: none;
+    padding: 0;
     font-size: 14px;
-    font-weight: 300;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.oldPrice {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    text-decoration: line-through;
+    font-weight: 400;
 }
 
 .content {
-    padding: 16px;
+    padding: 12px;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-}
-
-.brand {
-    font-size: 12px;
-    color: var(--color-text-secondary);
-    line-height: 15px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: 400;
+    gap: 6px;
 }
 
 .name {
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     color: var(--color-text-primary);
-    line-height: 19px;
-    margin-bottom: 0;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.4;
+}
+
+.footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 6px;
 }
 
 .colors {
+    padding-left: 5px;
     display: flex;
-    gap: 8px;
-    margin-top: 4px;
+    align-items: center;
+    gap: 5px;
     flex-wrap: wrap;
 }
 
 .colorDot {
-    width: 18px;
-    height: 18px;
+    width: 13px;
+    height: 13px;
     border-radius: 50%;
-    border: 2px solid #e5e7eb;
+    border: var(--border-color);
     cursor: pointer;
-    transition: transform 0.2s ease, border-color 0.2s ease;
     flex-shrink: 0;
     background-clip: padding-box;
-}
-
-.colorDot:hover {
-    transform: scale(1.1);
-    border-color: #9ca3af;
+    padding: 0;
 }
 
 .activeColor {
-    border-color: #111827;
+    border-color: var(--color-text-primary);
     transform: scale(1.15);
 }
 
-.priceContainer {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 4px;
-    flex-wrap: wrap;
+.extraColors {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    line-height: 1;
 }
 
-.price {
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 20px;
-    color: var(--color-text-primary );
-}
-
-.oldPrice {
-    font-size: 14px;
-    color: #9ca3af;
-    line-height: 20px;
-    font-weight: 500;
-    text-decoration: line-through;
-}
-
-@media (max-width: 768px) {
+@media (max-width: 600px) {
     .card {
-        border-radius: 10px;
-        border-width: 2px;
-    }
-
-    .card:hover {
-        transform: none;
-        box-shadow: 0 0 0 rgba(0,0,0,0);
-    }
-
-    .content {
-        padding: 12px;
-        gap: 6px;
-    }
-
-    .brand {
-        font-size: 11px;
-    }
-
-    .name {
-        font-size: 14px;
-    }
-
-    .colorDot {
-        width: 20px;
-        height: 20px;
-    }
-
-    .price {
-        font-size: 16px;
-    }
-
-    .oldPrice {
-        font-size: 14px;
-    }
-}
-
-@media (max-width: 480px) {
-    .card {
-        margin: 0;
-        border-radius: 8px;
-        border-width: 2px;
-    }
-
-    .card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    }
-
-    .unavailableBadge {
-        padding: 4px;
-        font-size: 10px;
-    }
-
-    .content {
-        padding: 8px;
-        gap: 4px;
-    }
-
-
-    .brand {
-        font-size: 10px;
-        letter-spacing: 0.3px;
+        max-width: 100%;
     }
 
     .name {
         font-size: 12px;
-        line-height: 1.3;
     }
 
-    .colors {
-        gap: 3px;
-        margin-top: 2px;
-    }
-
-    .colorDot {
-        width: 16px;
-        height: 16px;
-        border-width: 1.5px;
-    }
-
-    .priceContainer {
-        gap: 4px;
-        margin-top: 2px;
-    }
-
-    .price {
-        font-size: 14px;
-    }
-
-    .oldPrice {
+    .priceTag {
         font-size: 12px;
-    }
-}
-
-@media (max-width: 360px) {
-    .content {
-        padding: 6px;
-        gap: 3px;
-    }
-
-    .brand {
-        font-size: 9px;
-    }
-
-    .name {
-        font-size: 11px;
-    }
-
-    .colorDot {
-        width: 14px;
-        height: 14px;
-    }
-
-    .price {
-        font-size: 13px;
-    }
-
-    .oldPrice {
-        font-size: 11px;
+        padding: 3px 7px;
     }
 }

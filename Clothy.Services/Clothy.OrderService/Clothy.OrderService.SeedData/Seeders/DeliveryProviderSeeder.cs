@@ -14,29 +14,34 @@ namespace Clothy.OrderService.SeedData.Seeders
         public async Task SeedAsync(IUnitOfWork uow)
         {
             IEnumerable<DeliveryProvider> existingProviders = await uow.DeliveryProviders.GetAllAsync();
-            if (existingProviders.Any()) return;
+            if (existingProviders.Count() > 1) return;
 
-            List<string> providers = new List<string>
+            Dictionary<string, string> providers = new Dictionary<string, string>
             {
-                "Ukrposhta",
-                "Meest Express",
-                "Delivery Service X",
-                "Fast Courier"
+                {
+                    "Ukrposhta", "https://res.cloudinary.com/dkdljnfja/image/upload/v1772204480/pin_2_lbzhuo.png"
+                },
+                {
+                    "Meest Express", "https://res.cloudinary.com/dkdljnfja/image/upload/v1772204523/share_yizm42.png"
+                },
+                {
+                    "Fast Delivery", "https://res.cloudinary.com/dkdljnfja/image/upload/v1772204607/pngtree-fast-delivery-label-design-vector-png-image_7087605_xqmdbg.png"
+                },
             };
 
             Faker faker = new Faker();
 
-            foreach (string providerName in providers)
+            foreach (KeyValuePair<string, string> provider in providers)
             {
-                DeliveryProvider provider = new DeliveryProvider
+                DeliveryProvider deliveryProvider = new DeliveryProvider
                 {
-                    Name = providerName,
-                    IconUrl = faker.Image.PicsumUrl(),
+                    Name = provider.Key,
+                    IconUrl = provider.Value,
                     CreatedAt = faker.Date.Past(5).ToUniversalTime(),
                     UpdatedAt = faker.Date.Recent(30).ToUniversalTime()
                 };
 
-                await uow.DeliveryProviders.AddWithoutReturningAsync(provider);
+                await uow.DeliveryProviders.AddWithoutReturningAsync(deliveryProvider);
             }
             await uow.CommitAsync();
         }

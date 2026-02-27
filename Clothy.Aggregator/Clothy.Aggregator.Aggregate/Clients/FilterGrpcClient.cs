@@ -107,7 +107,6 @@ namespace Clothy.Aggregator.Aggregate.Clients
                             {
                                 MaleCount = gRPCresponse.Gender.MaleCount,
                                 FemaleCount = gRPCresponse.Gender.FemaleCount,
-                                UnisexCount = gRPCresponse.Gender.UnisexCount,
                             }
                         };
 

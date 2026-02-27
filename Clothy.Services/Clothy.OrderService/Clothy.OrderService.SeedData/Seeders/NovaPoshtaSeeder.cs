@@ -40,7 +40,7 @@ namespace Clothy.OrderService.SeedData.Seeders
             DeliveryProvider deliveryProvider = new DeliveryProvider()
             {
                 Name = "NovaPoshta",
-                IconUrl = faker.Image.PlaceImgUrl(),
+                IconUrl = "https://res.cloudinary.com/dkdljnfja/image/upload/v1772204809/unnamed_apw8b3.jpg",
                 CreatedAt = DateTime.UtcNow
             };
             deliveryProvider.Id = await unitOfWork.DeliveryProviders.AddAsync(deliveryProvider);
@@ -55,7 +55,7 @@ namespace Clothy.OrderService.SeedData.Seeders
                 new ParallelOptions { MaxDegreeOfParallelism = MAX_PARALLEL_REGIONS },
                 async (regionDTO, ct) =>
                 {
-                    using var scope = serviceProvider.CreateScope();
+                    using IServiceScope scope = serviceProvider.CreateScope();
                     IUnitOfWork threadUnitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
                     await ProcessRegionAsync(regionDTO, deliveryProvider.Id, threadUnitOfWork);

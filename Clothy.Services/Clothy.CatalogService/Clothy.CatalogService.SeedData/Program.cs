@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Clothy.CatalogService.DAL.DB;
+﻿using Clothy.CatalogService.DAL.DB;
 using Clothy.CatalogService.SeedData.SeedData;
+using Clothy.CatalogService.SeedData.SeedData.Always;
+using Clothy.CatalogService.SeedData.SeedData.Development;
+using Clothy.CatalogService.SeedData.SeedData.Production;
+using DotNetEnv;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
@@ -15,14 +14,20 @@ namespace Clothy.CatalogService.SeedData
     {
         public static async Task Main()
         {
-            var builder = new ConfigurationBuilder()
-                    .AddEnvironmentVariables()  
-                    .Build();
+            Env.Load();
+
+            string? seedMode = Environment.GetEnvironmentVariable("SEED__MODE");
+
+            if (seedMode != null && seedMode != "Real" && seedMode != "Fake") throw new InvalidOperationException($"Invalid SEED__MODE value: '{seedMode}'. Expected values are 'Real' or 'Fake'");
+
+            IConfigurationRoot builder = new ConfigurationBuilder()
+                .AddEnvironmentVariables()
+                .Build();
 
             string? connectionString = builder.GetConnectionString("ClothyCatalogDb");
             Console.WriteLine($"Using connection string: {connectionString}");
 
-            var options = new DbContextOptionsBuilder<ClothyCatalogDbContext>()
+            DbContextOptions<ClothyCatalogDbContext> options = new DbContextOptionsBuilder<ClothyCatalogDbContext>()
                 .UseNpgsql(connectionString)
                 .Options;
 
@@ -30,25 +35,37 @@ namespace Clothy.CatalogService.SeedData
 
             await WaitForDatabaseAsync(context);
 
-            ISeeder[] seeders = new ISeeder[]
+            List<ISeeder> seeders = new List<ISeeder>
             {
-                new BrandSeeder(),
-                new TagSeeder(),
                 new SizeSeeder(),
                 new MaterialSeeder(),
-                new ColorSeeder(), 
-                new CollectionSeeder(),
+                new ColorSeeder(),
                 new ClothingTypeSeeder(),
-                new ClotheItemSeeder(),
             };
 
+            if (seedMode == "Real")
+            {
+                seeders.Add(new BrandSeeder());
+                seeders.Add(new CollectionSeeder());
+                seeders.Add(new TagSeeder());
+                seeders.Add(new ManClotheSeeder());
+                seeders.Add(new WomanClotheSeeder());
+            }
+            else
+            {
+                seeders.Add(new BrandFakeSeeder());
+                seeders.Add(new CollectionFakeSeeder());
+                seeders.Add(new TagFakeSeeder());
+                seeders.Add(new ClotheItemFakeSeeder());
+            }
+
             Console.WriteLine("Start seeding data!");
-            
-            foreach(ISeeder seeder in seeders)
+
+            foreach (ISeeder seeder in seeders)
             {
                 await seeder.SeedAsync(context);
             }
-            
+
             Console.WriteLine("Seeding completed!");
         }
 
@@ -62,18 +79,16 @@ namespace Clothy.CatalogService.SeedData
                 try
                 {
                     Console.WriteLine($"[{i}/{MAX_RETRIES}] Checking database readiness...");
-                    
-                    var canConnect = await context.Database.CanConnectAsync();
-                    if (!canConnect)
-                    {
-                        throw new Exception("Cannot connect to database");
-                    }
+
+                    bool canConnect = await context.Database.CanConnectAsync();
+                    if (!canConnect) throw new Exception("Cannot connect to database");
+
                     await context.Database.ExecuteSqlRawAsync("SELECT 1 FROM brands LIMIT 1");
-                    
+
                     Console.WriteLine("Database is ready! Tables exist, migrations completed.");
                     return;
                 }
-                catch (PostgresException ex) when (ex.SqlState == "42P01") 
+                catch (PostgresException ex) when (ex.SqlState == "42P01")
                 {
                     Console.WriteLine($"Tables not created yet. Waiting for migrations... (retry in {delayMs}ms)");
                 }

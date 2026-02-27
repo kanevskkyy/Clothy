@@ -27,11 +27,11 @@ namespace Clothy.OrderService.SeedData.Seeders
 
             Faker faker = new Faker();
 
-            for (int i = 0; i < 20; i++)
+            foreach(Order order in orders)
             {
                 DeliveryDetail detail = new DeliveryDetail
                 {
-                    OrderId = faker.PickRandom(orders).Id,
+                    OrderId = order.Id,
                     PhoneNumber = faker.Phone.PhoneNumber("+380#########"),
                     FirstName = faker.Name.FirstName(),
                     LastName = faker.Name.LastName(),

@@ -243,7 +243,7 @@ namespace Clothy.OrderService.DAL.Repositories
             var result = await connection.QueryFirstAsync(
                 new CommandDefinition(sql, new
                 {
-                    PendingStatus = (int)OrderStatus.AwaitingPayment
+                    PendingStatus = (int)OrderStatus.Processing
                 }, cancellationToken: cancellationToken)
             );
 

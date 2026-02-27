@@ -52,80 +52,97 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 0;
     padding-top: 4px;
 }
 
-.brandLine {
+.brandName {
     composes: bone;
     height: 12px;
-    width: 30%;
+    width: 28%;
     border-radius: 4px;
+    margin-bottom: 10px;
 }
 
-.titleLarge {
+.clotheName {
     composes: bone;
-    height: 36px;
-    width: 80%;
+    height: 40px;
+    width: 75%;
+    border-radius: 6px;
+    margin-bottom: 16px;
+}
+
+.priceRow {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.price {
+    composes: bone;
+    height: 32px;
+    width: 80px;
     border-radius: 6px;
 }
 
-.priceLine {
+.oldPrice {
     composes: bone;
-    height: 28px;
-    width: 25%;
+    height: 24px;
+    width: 60px;
     border-radius: 6px;
 }
 
-.line {
+.descLine {
     composes: bone;
     height: 14px;
     width: 90%;
     border-radius: 4px;
-}
-
-.lineShort {
-    composes: bone;
-    height: 14px;
-    width: 60%;
-    border-radius: 4px;
+    margin-bottom: 6px;
 }
 
 .divider {
     height: 1px;
     background: #ebebeb;
-    margin: 4px 0;
+    margin: 8px 0 20px;
+}
+
+.section {
+    margin-bottom: 20px;
+}
+
+.sectionLabel {
+    composes: bone;
+    height: 11px;
+    width: 22%;
+    border-radius: 3px;
+    margin-bottom: 10px;
 }
 
 .pillRow {
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
 }
 
 .pill {
     composes: bone;
     height: 28px;
-    width: 90px;
+    width: 80px;
     border-radius: 20px;
 }
 
-.colorRow {
-    display: flex;
-    gap: 10px;
-    margin-top: 4px;
-}
-
-.colorDot {
+.pillWide {
     composes: bone;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
+    height: 28px;
+    width: 120px;
+    border-radius: 20px;
 }
 
 .sizeRow {
     display: flex;
     gap: 8px;
-    margin-top: 4px;
+    flex-wrap: wrap;
 }
 
 .sizeBox {
@@ -135,19 +152,44 @@
     border-radius: 4px;
 }
 
+.colorRow {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.colorDot {
+    composes: bone;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+}
+
+.cartRow {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.quantityBox {
+    composes: bone;
+    height: 52px;
+    width: 130px;
+    border-radius: 6px;
+    flex-shrink: 0;
+}
+
 .button {
     composes: bone;
     height: 52px;
+    flex: 1;
     border-radius: 8px;
-    margin-top: 4px;
+    margin-top: 10px;
 }
 
-.sectionLabel {
-    composes: bone;
-    height: 11px;
-    width: 22%;
-    border-radius: 3px;
-    margin-bottom: 10px;
+.cartRow .button {
+    margin-top: 0;
 }
 
 @media (max-width: 768px) {
@@ -183,7 +225,7 @@
         aspect-ratio: unset;
     }
 
-    .titleLarge {
+    .clotheName {
         height: 28px;
     }
 }

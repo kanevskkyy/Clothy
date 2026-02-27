@@ -27,6 +27,12 @@
     margin: 0;
 }
 
+.popularGrid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 4px;
+    margin: 0 auto;
+}
+
 .viewAll {
     display: flex;
     align-items: center;
@@ -47,6 +53,10 @@
 }
 
 @media (max-width: 768px) {
+    .popularGrid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
     .title {
         font-size: 28px;
         line-height: 34px;

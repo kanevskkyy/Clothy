@@ -11,10 +11,9 @@
 }
 
 .questionCard {
-    border: 1px solid #EBEBEB;
+    border: var(--border-color);
     border-radius: 12px;
     overflow: hidden;
-    background: #fff;
 }
 
 .clotheInfo {
@@ -22,7 +21,7 @@
     align-items: center;
     gap: 10px;
     padding: 12px 20px;
-    border-bottom: 1px solid #F0F0F0;
+    border-bottom: var(--border-color);
     background: #FAFAFA;
 }
 
@@ -37,7 +36,7 @@
 .clotheName {
     font-size: 13px;
     font-weight: 500;
-    color: #333;
+    color: var(--color-text-secondary);
 }
 
 .questionBody {
@@ -52,7 +51,7 @@
     display: flex;
     justify-content: flex-end;
     padding: 12px 20px;
-    border-top: 1px solid #F0F0F0;
+    border-top: var(--border-color);
 }
 
 .deleteBtn {

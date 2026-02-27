@@ -111,6 +111,14 @@ namespace Clothy.CatalogService.BLL.Services
             return cached!;
         }
 
+        public async Task<ClotheDetailDTO> GetDetailByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            ClotheItem? clotheItem = await unitOfWork.ClotheItems.GetByIdWithDetailsAsync(id, cancellationToken);
+            if (clotheItem == null) throw new NotFoundException($"Clothe item not found with ID: {id}");
+
+            return mapper.Map<ClotheDetailDTO>(clotheItem);
+        }
+
         public async Task<ClotheDetailDTO> CreateAsync(ClotheCreateDTO clotheCreateDTO, CancellationToken cancellationToken = default)
         {
             if (await unitOfWork.ClotheItems.IsSlugAlreadyExistsAsync(clotheCreateDTO.Slug, null, cancellationToken)) throw new AlreadyExistsException("Clothe with this slug already exists");

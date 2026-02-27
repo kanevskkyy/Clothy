@@ -14,8 +14,8 @@
 
 .sectionTitle {
     font-size: 18px;
-    font-weight: 500;
-    color: #000;
+    font-weight: 600;
+    color: var(--color-text-primary);
 }
 
 .buttonGroup {

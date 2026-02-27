@@ -10,6 +10,7 @@ interface CatalogFilterProps {
     filters: IFiltersResponse;
     initialFilters?: FilterState;
     onFilterChange: (filters: FilterState) => void;
+    backgroundColor?: string;
 }
 
 export interface FilterState {
@@ -25,7 +26,7 @@ export interface FilterState {
     maxPrice: number;
 }
 
-const CatalogFilter = memo(({ filters, initialFilters, onFilterChange }: CatalogFilterProps) => {
+const CatalogFilter = memo(({ filters, initialFilters, onFilterChange, backgroundColor = "#fff" }: CatalogFilterProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['price']));
 
@@ -138,36 +139,25 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange }: Catalog
     const handleCheckboxListScroll = (e: React.WheelEvent<HTMLDivElement>) => {
         const element = e.currentTarget;
         const isScrollable = element.scrollHeight > element.clientHeight;
-
-        if (!isScrollable) {
-            return;
-        }
-
+        if (!isScrollable) return;
         const isAtTop = element.scrollTop === 0;
         const isAtBottom = element.scrollTop + element.clientHeight >= element.scrollHeight - 1;
-
-        if ((isAtTop && e.deltaY < 0) || (isAtBottom && e.deltaY > 0)) {
-            return;
-        }
-
+        if ((isAtTop && e.deltaY < 0) || (isAtBottom && e.deltaY > 0)) return;
         e.stopPropagation();
     };
 
     const handleFilterContainerScroll = (e: React.WheelEvent<HTMLDivElement>) => {
         const element = e.currentTarget;
         const isScrollable = element.scrollHeight > element.clientHeight;
-
-        if (!isScrollable) {
-            return;
-        }
-
+        if (!isScrollable) return;
         const isAtTop = element.scrollTop === 0;
         const isAtBottom = Math.abs(element.scrollHeight - element.scrollTop - element.clientHeight) < 2;
-
         if (!((isAtTop && e.deltaY < 0) || (isAtBottom && e.deltaY > 0))) {
             e.stopPropagation();
         }
     };
+
+    const anyActive = hasActiveFilters();
 
     return (
         <>
@@ -179,6 +169,7 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange }: Catalog
 
             <div
                 className={`${styles.filterContainer} ${isOpen ? styles.open : ''}`}
+                style={{ "--filter-bg": backgroundColor } as React.CSSProperties}
                 onWheel={handleFilterContainerScroll}
             >
                 <div className={styles.filterHeader}>
@@ -192,10 +183,7 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange }: Catalog
                     <div className={styles.filterSection}>
                         <div className={styles.sectionHeader} onClick={() => toggleSection('brand')}>
                             <div className={styles.filterTitle}>Brand</div>
-                            <ChevronUp
-                                className={`${styles.toggleIcon} ${expandedSections.has('brand') ? styles.expanded : ''}`}
-                                size={20}
-                            />
+                            <ChevronUp className={`${styles.toggleIcon} ${expandedSections.has('brand') ? styles.expanded : ''}`} size={20} />
                         </div>
                         {expandedSections.has('brand') && (
                             <div className={styles.sectionContent}>
@@ -205,7 +193,7 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange }: Catalog
                                             key={brand.id}
                                             id={`brand-${brand.id}`}
                                             label={brand.name}
-                                            count={brand.clotheItemCount}
+                                            count={anyActive ? undefined : brand.clotheItemCount}
                                             checked={selectedFilters.brands.includes(brand.slug)}
                                             onChange={(checked) => handleCheckboxChange('brands', brand.slug, checked)}
                                         />
@@ -218,10 +206,7 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange }: Catalog
                     <div className={styles.filterSection}>
                         <div className={styles.sectionHeader} onClick={() => toggleSection('type')}>
                             <div className={styles.filterTitle}>Clothing Type</div>
-                            <ChevronUp
-                                className={`${styles.toggleIcon} ${expandedSections.has('type') ? styles.expanded : ''}`}
-                                size={20}
-                            />
+                            <ChevronUp className={`${styles.toggleIcon} ${expandedSections.has('type') ? styles.expanded : ''}`} size={20} />
                         </div>
                         {expandedSections.has('type') && (
                             <div className={styles.sectionContent}>
@@ -231,7 +216,7 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange }: Catalog
                                             key={type.id}
                                             id={`type-${type.id}`}
                                             label={type.name}
-                                            count={type.clotheItemCount}
+                                            count={anyActive ? undefined : type.clotheItemCount}
                                             checked={selectedFilters.clothingTypes.includes(type.slug)}
                                             onChange={(checked) => handleCheckboxChange('clothingTypes', type.slug, checked)}
                                         />
@@ -244,10 +229,7 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange }: Catalog
                     <div className={styles.filterSection}>
                         <div className={styles.sectionHeader} onClick={() => toggleSection('color')}>
                             <div className={styles.filterTitle}>Colors</div>
-                            <ChevronUp
-                                className={`${styles.toggleIcon} ${expandedSections.has('color') ? styles.expanded : ''}`}
-                                size={20}
-                            />
+                            <ChevronUp className={`${styles.toggleIcon} ${expandedSections.has('color') ? styles.expanded : ''}`} size={20} />
                         </div>
                         {expandedSections.has('color') && (
                             <div className={styles.sectionContent}>
@@ -257,7 +239,7 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange }: Catalog
                                             key={color.id}
                                             id={`color-${color.id}`}
                                             label={color.name}
-                                            count={color.clotheItemCount}
+                                            count={anyActive ? undefined : color.clotheItemCount}
                                             checked={selectedFilters.colors.includes(color.slug)}
                                             onChange={(checked) => handleCheckboxChange('colors', color.slug, checked)}
                                         />
@@ -270,10 +252,7 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange }: Catalog
                     <div className={styles.filterSection}>
                         <div className={styles.sectionHeader} onClick={() => toggleSection('material')}>
                             <div className={styles.filterTitle}>Materials</div>
-                            <ChevronUp
-                                className={`${styles.toggleIcon} ${expandedSections.has('material') ? styles.expanded : ''}`}
-                                size={20}
-                            />
+                            <ChevronUp className={`${styles.toggleIcon} ${expandedSections.has('material') ? styles.expanded : ''}`} size={20} />
                         </div>
                         {expandedSections.has('material') && (
                             <div className={styles.sectionContent}>
@@ -283,7 +262,7 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange }: Catalog
                                             key={material.id}
                                             id={`material-${material.id}`}
                                             label={material.name}
-                                            count={material.clotheItemCount}
+                                            count={anyActive ? undefined : material.clotheItemCount}
                                             checked={selectedFilters.materials.includes(material.slug)}
                                             onChange={(checked) => handleCheckboxChange('materials', material.slug, checked)}
                                         />
@@ -296,10 +275,7 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange }: Catalog
                     <div className={styles.filterSection}>
                         <div className={styles.sectionHeader} onClick={() => toggleSection('size')}>
                             <div className={styles.filterTitle}>Sizes</div>
-                            <ChevronUp
-                                className={`${styles.toggleIcon} ${expandedSections.has('size') ? styles.expanded : ''}`}
-                                size={20}
-                            />
+                            <ChevronUp className={`${styles.toggleIcon} ${expandedSections.has('size') ? styles.expanded : ''}`} size={20} />
                         </div>
                         {expandedSections.has('size') && (
                             <div className={styles.sectionContent}>
@@ -309,7 +285,7 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange }: Catalog
                                             key={size.id}
                                             id={`size-${size.id}`}
                                             label={size.name}
-                                            count={size.clotheItemCount}
+                                            count={anyActive ? undefined : size.clotheItemCount}
                                             checked={selectedFilters.sizes.includes(size.name)}
                                             onChange={(checked) => handleCheckboxChange('sizes', size.name, checked)}
                                         />
@@ -322,10 +298,7 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange }: Catalog
                     <div className={styles.filterSection}>
                         <div className={styles.sectionHeader} onClick={() => toggleSection('tags')}>
                             <div className={styles.filterTitle}>Tags</div>
-                            <ChevronUp
-                                className={`${styles.toggleIcon} ${expandedSections.has('tags') ? styles.expanded : ''}`}
-                                size={20}
-                            />
+                            <ChevronUp className={`${styles.toggleIcon} ${expandedSections.has('tags') ? styles.expanded : ''}`} size={20} />
                         </div>
                         {expandedSections.has('tags') && (
                             <div className={styles.sectionContent}>
@@ -335,7 +308,7 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange }: Catalog
                                             key={tag.id}
                                             id={`tag-${tag.id}`}
                                             label={tag.name}
-                                            count={tag.clotheItemCount}
+                                            count={anyActive ? undefined : tag.clotheItemCount}
                                             checked={selectedFilters.tags.includes(tag.slug)}
                                             onChange={(checked) => handleCheckboxChange('tags', tag.slug, checked)}
                                         />
@@ -348,10 +321,7 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange }: Catalog
                     <div className={styles.filterSection}>
                         <div className={styles.sectionHeader} onClick={() => toggleSection('collections')}>
                             <div className={styles.filterTitle}>Collections</div>
-                            <ChevronUp
-                                className={`${styles.toggleIcon} ${expandedSections.has('collections') ? styles.expanded : ''}`}
-                                size={20}
-                            />
+                            <ChevronUp className={`${styles.toggleIcon} ${expandedSections.has('collections') ? styles.expanded : ''}`} size={20} />
                         </div>
                         {expandedSections.has('collections') && (
                             <div className={styles.sectionContent}>
@@ -361,7 +331,7 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange }: Catalog
                                             key={collection.id}
                                             id={`collection-${collection.id}`}
                                             label={collection.name}
-                                            count={collection.clotheItemCount}
+                                            count={anyActive ? undefined : collection.clotheItemCount}
                                             checked={selectedFilters.collections.includes(collection.slug)}
                                             onChange={(checked) => handleCheckboxChange('collections', collection.slug, checked)}
                                         />
@@ -374,10 +344,7 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange }: Catalog
                     <div className={styles.filterSection}>
                         <div className={styles.sectionHeader} onClick={() => toggleSection('gender')}>
                             <div className={styles.filterTitle}>Gender</div>
-                            <ChevronUp
-                                className={`${styles.toggleIcon} ${expandedSections.has('gender') ? styles.expanded : ''}`}
-                                size={20}
-                            />
+                            <ChevronUp className={`${styles.toggleIcon} ${expandedSections.has('gender') ? styles.expanded : ''}`} size={20} />
                         </div>
                         {expandedSections.has('gender') && (
                             <div className={styles.sectionContent}>
@@ -385,23 +352,16 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange }: Catalog
                                     <Checkbox
                                         id="gender-male"
                                         label="Male"
-                                        count={filters.gender.maleCount}
+                                        count={anyActive ? undefined : filters.gender.maleCount}
                                         checked={selectedFilters.gender.includes('Male')}
                                         onChange={(checked) => handleCheckboxChange('gender', 'Male', checked)}
                                     />
                                     <Checkbox
                                         id="gender-female"
                                         label="Female"
-                                        count={filters.gender.femaleCount}
+                                        count={anyActive ? undefined : filters.gender.femaleCount}
                                         checked={selectedFilters.gender.includes('Female')}
                                         onChange={(checked) => handleCheckboxChange('gender', 'Female', checked)}
-                                    />
-                                    <Checkbox
-                                        id="gender-unisex"
-                                        label="Unisex"
-                                        count={filters.gender.unisexCount}
-                                        checked={selectedFilters.gender.includes('Unisex')}
-                                        onChange={(checked) => handleCheckboxChange('gender', 'Unisex', checked)}
                                     />
                                 </div>
                             </div>
@@ -411,10 +371,7 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange }: Catalog
                     <div className={styles.filterSection}>
                         <div className={styles.sectionHeader} onClick={() => toggleSection('price')}>
                             <div className={styles.filterTitle}>Price</div>
-                            <ChevronUp
-                                className={`${styles.toggleIcon} ${expandedSections.has('price') ? styles.expanded : ''}`}
-                                size={20}
-                            />
+                            <ChevronUp className={`${styles.toggleIcon} ${expandedSections.has('price') ? styles.expanded : ''}`} size={20} />
                         </div>
                         {expandedSections.has('price') && (
                             <div className={styles.sectionContent}>
@@ -429,7 +386,7 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange }: Catalog
                         )}
                     </div>
 
-                    {hasActiveFilters() && (
+                    {anyActive && (
                         <div className={styles.resetButtonWrapper}>
                             <button className={styles.resetButton} onClick={resetFilters}>
                                 <X size={16} />

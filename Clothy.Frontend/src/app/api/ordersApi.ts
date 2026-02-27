@@ -57,6 +57,35 @@ export const ordersApi = {
         return data;
     },
 
+    getDeliveryProviderByIdAsync: async (id: string): Promise<IDeliveryProviderReadDTO> => {
+        const { data } = await apiClient.get<IDeliveryProviderReadDTO>(
+            `/api/delivery-providers/${id}`
+        );
+        return data;
+    },
+
+    createDeliveryProviderAsync: async (body: FormData): Promise<IDeliveryProviderReadDTO> => {
+        const { data } = await apiClient.post<IDeliveryProviderReadDTO>(
+            "/api/delivery-providers",
+            body,
+            { headers: { "Content-Type": "multipart/form-data" } }
+        );
+        return data;
+    },
+
+    updateDeliveryProviderAsync: async (id: string, body: FormData): Promise<IDeliveryProviderReadDTO> => {
+        const { data } =  await apiClient.put(
+            `/api/delivery-providers/${id}`,
+            body,
+            { headers: { "Content-Type": "multipart/form-data" } }
+        );
+        return data;
+    },
+
+    deleteDeliveryProviderAsync: async (id: string): Promise<void> => {
+        await apiClient.delete(`/api/delivery-providers/${id}`);
+    },
+
     getAllRegionsAsync: async (): Promise<IRegionReadDTO[]> => {
         const { data } = await apiClient.get<IRegionReadDTO[]>("/api/regions");
         return data;

@@ -57,7 +57,7 @@ namespace Clothy.ReviewService.Application.Features.Reviews.Commands.CreateRevie
             Review review = new Review(new ClotheInfo(request.ClotheItemId, userPurchasedResponse.ClotheName, userPurchasedResponse.ClothePhotoURL), userInfo, request.Rating, request.Comment);
 
             bool alreadyExists = await reviewRepository.HasUserReviewedClotheAsync(review.User.UserId, review.ClotheInfo.ClotheItemId, cancellationToken);
-            if (alreadyExists) throw new AlreadyExistsException("User has already reviewed this clothe!");
+            if (alreadyExists) throw new AlreadyExistsException("You have already reviewed this clothe!");
 
             await reviewRepository.AddAsync(review, cancellationToken);
             reviewsCreated.Add(1, new KeyValuePair<string, object?>("ClotheId", review.ClotheInfo.ClotheItemId));

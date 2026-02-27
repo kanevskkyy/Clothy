@@ -32,6 +32,15 @@ import VerifyEmailPage from "../../pages/auth/VerifyEmailPage/VerifyEmailPage.ts
 import AdminOrdersPage from "../../pages/admin/orders/AdminOrdersPage.tsx";
 import AdminReviewsPage from "../../pages/admin/reviews/AdminReviewsPage.tsx";
 import AdminQuestionsPage from "../../pages/admin/questions/AdminQuestionsPage.tsx";
+import AdminBrandsPage from "../../pages/admin/brand/AdminBrandsPage.tsx";
+import AdminCollectionsPage from "../../pages/admin/collection/AdminCollectionsPage.tsx";
+import AdminColorsPage from "../../pages/admin/colors/AdminColorsPage.tsx";
+import AdminTagsPage from "../../pages/admin/tags/AdminTagsPage.tsx";
+import AdminSizesPage from "../../pages/admin/sizes/AdminSizesPage.tsx";
+import AdminDeliveryProvidersPage from "../../pages/admin/deliveryProvider/AdminDeliveryProvidersPage.tsx";
+import AdminClothesPage from "../../pages/admin/clothes/page/AdminClothesPage.tsx";
+import AdminClotheCreatePage from "../../pages/admin/clothes/create/AdminClotheCreatePage.tsx";
+import AdminClotheEditPage from "../../pages/admin/clothes/update/AdminClotheEditPage.tsx";
 
 export const AppRouter = () => {
     return (
@@ -82,6 +91,15 @@ export const AppRouter = () => {
                         <Route path="orders" element={<AdminOrdersPage />} />
                         <Route path="reviews" element={<AdminReviewsPage />} />
                         <Route path="questions" element={<AdminQuestionsPage />} />
+                        <Route path="brands" element={<AdminBrandsPage />} />
+                        <Route path="collections" element={<AdminCollectionsPage />} />
+                        <Route path="colors" element={<AdminColorsPage />} />
+                        <Route path="tags" element={<AdminTagsPage />} />
+                        <Route path="sizes" element={<AdminSizesPage />} />
+                        <Route path="delivery" element={<AdminDeliveryProvidersPage />} />
+                        <Route path="clothes" element={<AdminClothesPage  />} />
+                        <Route path="clothes/create" element={<AdminClotheCreatePage  />} />
+                        <Route path="clothes/edit/:id" element={<AdminClotheEditPage  />} />
                     </Route>
                 </Route>
 

@@ -27,17 +27,60 @@ const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
     const navigate = useNavigate();
 
     const menuItems: IMenuItem[] = [
-        { to: "/admin", label: "Dashboard", icon: <LayoutDashboard size={16} /> },
-        { to: "/admin/clothes", label: "Clothes", icon: <ShoppingBag size={16} /> },
-        { to: "/admin/orders", label: "Orders", icon: <Package size={16} /> },
-        { to: "/admin/brands", label: "Brands", icon: <Tag size={16} /> },
-        { to: "/admin/collections", label: "Collections", icon: <Layers size={16} /> },
-        { to: "/admin/colors", label: "Colors", icon: <Palette size={16} /> },
-        { to: "/admin/tags", label: "Tags", icon: <Hash size={16} /> },
-        { to: "/admin/sizes", label: "Sizes", icon: <Ruler size={16} /> },
-        { to: "/admin/delivery", label: "Delivery", icon: <Truck size={16} /> },
-        { to: "/admin/reviews", label: "Reviews", icon: <MessageSquare size={16} /> },
-        { to: "/admin/questions", label: "Questions", icon: <HelpCircle size={16} /> },
+        {
+            to: "/admin",
+            label: "Dashboard",
+            icon: <LayoutDashboard size={16} />
+        },
+        {
+            to: "/admin/clothes",
+            label: "Clothes",
+            icon: <ShoppingBag size={16} />
+        },
+        {
+            to: "/admin/orders",
+            label: "Orders",
+            icon: <Package size={16} /> },
+        {
+            to: "/admin/brands",
+            label: "Brands",
+            icon: <Tag size={16} />
+        },
+        {
+            to: "/admin/collections",
+            label: "Collections",
+            icon: <Layers size={16} />
+        },
+        {
+            to: "/admin/colors",
+            label: "Colors",
+            icon: <Palette size={16} />
+        },
+        {
+            to: "/admin/tags",
+            label: "Tags",
+            icon: <Hash size={16} />
+        },
+        {
+            to: "/admin/sizes",
+            label: "Sizes",
+            icon: <Ruler size={16} />
+        },
+        {
+            to: "/admin/delivery",
+            label: "Delivery",
+            icon: <Truck size={16} />
+        },
+        {
+            to: "/admin/reviews",
+            label: "Reviews",
+            icon: <MessageSquare size={16} />
+        },
+        {
+            to: "/admin/questions",
+            label: "Questions",
+            icon: <HelpCircle size={16} />
+        },
     ];
 
     const isActive = (path: string) => {

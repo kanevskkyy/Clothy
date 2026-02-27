@@ -17,7 +17,6 @@ namespace Clothy.CatalogService.BLL.DTOs.ClotheDTOs
         public string? Slug { get; set; }
         public decimal Price { get; set; }
         public decimal? OldPrice { get; set; }
-        public BrandReadDTO? Brand { get; set; }
         public List<ClotheColorSummaryDTO> Colors { get; set; } = new();
         public bool IsAvailable { get; set; }
     }

@@ -170,6 +170,7 @@ var paymentService = builder.AddProject<Clothy_PaymentService_API>("payments")
 
 var seedCatalog = builder.AddProject<Clothy_CatalogService_SeedData>("catalog-seed")
     .WithReference(postgresCatalogDB)
+    .WithEnvironment("SEED__MODE", Environment.GetEnvironmentVariable("SEED__MODE"))
     .WaitFor(catalogService);
 
 var seedOrders = builder.AddProject<Clothy_OrderService_SeedData>("order-seed")

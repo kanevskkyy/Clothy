@@ -10,7 +10,7 @@ import {Link} from "react-router-dom";
 import {ArrowRight} from "lucide-react";
 
 const PopularProductsSection = () => {
-    const { data: clotheItems = [], isLoading, error } = useQuery({
+    const {data: clotheItems = [], isLoading, error} = useQuery({
         queryKey: ["clothe-top8"],
         queryFn: () => catalogApi.getTop8MostSaleAsync(),
     });
@@ -19,7 +19,7 @@ const PopularProductsSection = () => {
         if (error) toast.error(getErrorMessage(error));
     }, [error]);
 
-    if (isLoading) return <Loader />;
+    if (isLoading) return <Loader/>;
 
     return (
         <section className={styles.productsSection}>
@@ -31,10 +31,10 @@ const PopularProductsSection = () => {
                     </div>
                     <Link to="/catalog" className={styles.viewAll}>
                         VIEW ALL
-                        <ArrowRight size={14} strokeWidth={1.5} />
+                        <ArrowRight size={14} strokeWidth={1.5}/>
                     </Link>
                 </div>
-                <ProductList products={clotheItems} />
+                <ProductList products={clotheItems} className={styles.popularGrid}/>
             </div>
         </section>
     );

@@ -15,6 +15,8 @@ import Modal from "../../../shared/layout/Modal/Modal.tsx";
 import Button from "../../../shared/ui/Button/Button.tsx";
 import QuestionCreateForm from "../../../features/forms/questionCreateForm/QuestionCreateForm.tsx";
 import { useQueryClient } from "@tanstack/react-query";
+import {useNavigate} from "react-router-dom";
+import {useAuthStore} from "../../../app/api/stores/authStore.ts";
 
 interface ReviewsSectionProps {
     clotheId: string;
@@ -27,6 +29,9 @@ interface ReviewsSectionProps {
 const ReviewsSection: React.FC<ReviewsSectionProps> = ({ clotheId, slug, initialReviews, statistics, initialQuestions }) => {
     const queryClient = useQueryClient();
     const invalidate = () => queryClient.invalidateQueries({ queryKey: ["clothe", slug] });
+
+    const navigate = useNavigate();
+    const isAuthenticated = useAuthStore((state) => !!state.accessToken);
 
     const [activeTab, setActiveTab] = useState<'reviews' | 'questions'>('reviews');
     const [reviews, setReviews] = useState(initialReviews);
@@ -74,6 +79,16 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ clotheId, slug, initial
         }
     };
 
+    const handleOpenReviewForm = () => {
+        if (!isAuthenticated) { navigate('/login'); return; }
+        setIsReviewFormOpen(true);
+    };
+
+    const handleOpenQuestionForm = () => {
+        if (!isAuthenticated) { navigate('/login'); return; }
+        setIsQuestionFormOpen(true);
+    };
+
     return (
         <div className={styles.reviewsWrapper}>
             <div className={styles.reviewsSection}>
@@ -101,7 +116,7 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ clotheId, slug, initial
                                 Thanks for your time!
                             </div>
 
-                            <Button variant="outline" size="md" onClick={() => setIsReviewFormOpen(true)}>
+                            <Button variant="outline" size="md" onClick={handleOpenReviewForm}>
                                 Leave a review
                             </Button>
                         </div>
@@ -199,7 +214,7 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({ clotheId, slug, initial
                                 Ask anything and we'll get back to you as soon as possible!
                             </div>
 
-                            <Button variant="outline" size="md" onClick={() => setIsQuestionFormOpen(true)}>
+                            <Button variant="outline" size="md" onClick={handleOpenQuestionForm}>
                                 Ask a question
                             </Button>
                         </div>

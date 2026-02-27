@@ -75,12 +75,13 @@ const CatalogPage = () => {
         };
     };
 
-    const convertSlugsToIds = (slugs: string[], items: Array<{ id: string; slug: string }>): string[] => {
-        return slugs
-            .map(slug => {
-                const item = items.find(i => i.slug === slug);
-                return item?.id;
-            })
+    const convertToIds = (
+        values: string[],
+        items: Array<{ id: string; slug?: string; name?: string }>,
+        key: "slug" | "name" = "slug"
+    ): string[] => {
+        return values
+            .map(val => items.find(i => i[key] === val)?.id)
             .filter((id): id is string => id !== undefined);
     };
 
@@ -91,27 +92,21 @@ const CatalogPage = () => {
         try {
             const selectedFilters = getInitialFilters();
 
-            const brandIds = convertSlugsToIds(selectedFilters.brands, filters.brands);
-            const clothingTypeIds = convertSlugsToIds(selectedFilters.clothingTypes, filters.clothingTypes);
-            const colorIds = convertSlugsToIds(selectedFilters.colors, filters.colors);
-            const materialIds = convertSlugsToIds(selectedFilters.materials, filters.materials);
-            const sizeIds = convertSlugsToIds(selectedFilters.sizes, filters.sizes);
-            const tagIds = convertSlugsToIds(selectedFilters.tags, filters.tags);
-            const collectionIds = convertSlugsToIds(selectedFilters.collections, filters.collections);
+            const brandIds = convertToIds(selectedFilters.brands, filters.brands);
+            const clothingTypeIds = convertToIds(selectedFilters.clothingTypes, filters.clothingTypes);
+            const colorIds = convertToIds(selectedFilters.colors, filters.colors);
+            const materialIds = convertToIds(selectedFilters.materials, filters.materials);
+            const sizeIds = convertToIds(selectedFilters.sizes, filters.sizes, "name");
+            const tagIds = convertToIds(selectedFilters.tags, filters.tags);
+            const collectionIds = convertToIds(selectedFilters.collections, filters.collections);
 
             let sortByParam: 'price' | 'name' | undefined;
             let sortDescending = false;
 
             if (sortBy === 'price-asc') sortByParam = 'price';
-            else if (sortBy === 'price-desc') {
-                sortByParam = 'price';
-                sortDescending = true;
-            } else if (sortBy === 'name-asc') {
-                sortByParam = 'name';
-            } else if (sortBy === 'name-desc') {
-                sortByParam = 'name';
-                sortDescending = true;
-            }
+            else if (sortBy === 'price-desc') { sortByParam = 'price'; sortDescending = true; }
+            else if (sortBy === 'name-asc') sortByParam = 'name';
+            else if (sortBy === 'name-desc') { sortByParam = 'name'; sortDescending = true; }
 
             const defaultMinPrice = parsePrice(filters.priceRange.minPrice);
             const defaultMaxPrice = parsePrice(filters.priceRange.maxPrice);
@@ -130,7 +125,7 @@ const CatalogPage = () => {
                 minPrice: selectedFilters.minPrice !== defaultMinPrice ? selectedFilters.minPrice : undefined,
                 maxPrice: selectedFilters.maxPrice !== defaultMaxPrice ? selectedFilters.maxPrice : undefined,
                 sortBy: sortByParam,
-                sortDescending: sortDescending ? true : undefined,
+                sortDescending: sortDescending || undefined,
             });
 
             setPagedClothes(data);

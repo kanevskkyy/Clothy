@@ -1,0 +1,752 @@
+﻿[
+  {
+    "name": "Metal Arrow Skate Zip Hoodie",
+    "slug": "metal-arrow-skate-zip-hoodie",
+    "description": "This Off-White™ zip-up hoodie showcases the brand's unique ability to merge classical art with modern streetwear. The deep black base is defined by the iconic diagonal stripes running down the sleeves, which feature a striking graphic print inspired by the dramatic lighting and artistry of Caravaggio.\n\nA minimalist white logo at the chest adds a sharp contrast, while the full-length silver zipper and adjustable drawstring hood offer a polished, industrial feel. The piece is designed with dropped shoulders and a relaxed silhouette, creating an effortlessly cool look that fits perfectly into a contemporary urban wardrobe.",
+    "price": 685,
+    "oldPrice": null,
+    "brand": "Off-White",
+    "type": "Zip Hoodie",
+    "collection": "Spring 2025",
+    "tags": [ "Streetwear", "New Arrival", "Limited Edition" ],
+    "materials": [
+      {
+        "name": "Cotton",
+        "percentage": 100
+      }
+    ],
+    "photos": [
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772184685/off_white_photo_1_cd9whp.webp",
+        "isMain": true
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772184685/off_white_photo_2_guftin.webp",
+        "isMain": false
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772184685/off_white_photo_3_i2tylk.webp",
+        "isMain": false
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772184685/off_white_photo_4_zbhmsd.webp",
+        "isMain": false
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772184685/off_white_photo_5_jnsqby.webp",
+        "isMain": false
+      }
+    ]
+  },
+  {
+    "name": "Bookish Skate Sweatshirt",
+    "slug": "bookish-skate-sweatshirt",
+    "description": "The Bookish Skate Sweatshirt offers a refined yet relaxed aesthetic, perfect for elevated everyday wear. Rendered in a deep dark blue hue, it features the signature Off-White™ logo prominently printed across the chest in a clean, sans-serif font. The oversized fit and dropped shoulders provide a modern skate-inspired silhouette, while the ribbed crew neck, cuffs, and hem ensure a structured finish. This versatile piece effortlessly bridges the gap between high-fashion minimalism and comfortable street culture.",
+    "price": 285,
+    "oldPrice": 570,
+    "brand": "Off-White",
+    "type": "Sweatshirt",
+    "collection": "Autumn 2025",
+    "tags": [ "Streetwear", "Casual", "Comfort" ],
+    "materials": [
+      {
+        "name": "Cotton",
+        "percentage": 100
+      }
+    ],
+    "photos": [
+      {
+        "color": "Blue",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772185900/off_white_blue_1_sgd5gt.webp",
+        "isMain": true
+      },
+      {
+        "color": "Blue",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772185900/off_white_blue_2_j6psqb.webp",
+        "isMain": false
+      },
+      {
+        "color": "Blue",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772185899/off_white_blue_3_kwscy0.webp",
+        "isMain": false
+      },
+      {
+        "color": "Blue",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772185900/off_white_blue_4_mhiugc.webp",
+        "isMain": false
+      },
+      {
+        "color": "Blue",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772185899/off_white_blue_5_skptvc.jpg",
+        "isMain": false
+      }
+    ]
+  },
+  {
+    "name": "Air Jordan T-Shirt Flight Essentials 85",
+    "slug": "air-jordan-t-shirt-flight-essentials-85",
+    "description": "This premium heavy-weight cotton tee pays homage to Jordan's heritage. Featuring a minimalist tonal patch at the center chest and a structured, oversized fit, it embodies the intersection of elite sportswear and modern street aesthetic. The '85 construction ensures durability and a boxy silhouette that pairs perfectly with layered looks.",
+    "price": 58,
+    "oldPrice": null,
+    "brand": "Nike",
+    "type": "T-Shirt",
+    "collection": "Summer 2025",
+    "tags": [ "Streetwear", "Sport", "Comfort", "New Arrival" ],
+    "materials": [
+      {
+        "name": "Cotton",
+        "percentage": 100
+      }
+    ],
+    "photos": [
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772186295/nike_black_1_s2kcmg.webp",
+        "isMain": true
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772186293/nike_black_2_we6vin.webp",
+        "isMain": false
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772186292/nike_black_3_tgaqox.webp",
+        "isMain": false
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772186292/nike_black_4_nzqvlp.webp",
+        "isMain": false
+      },
+      {
+        "color": "Gray",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772186488/nike_gray_1_vadytb.webp",
+        "isMain": true
+      },
+      {
+        "color": "Gray",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772186486/nike_gray_2_wrp43o.webp",
+        "isMain": false
+      },
+      {
+        "color": "Gray",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772186485/nike_gray_3_lguayc.webp",
+        "isMain": false
+      },
+      {
+        "color": "Gray",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772186484/nike_gray_4_wwrcfs.webp",
+        "isMain": false
+      },
+      {
+        "color": "Blue",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772186696/nike_blue_1_jdkop6.jpg",
+        "isMain": true
+      },
+      {
+        "color": "Blue",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772186686/nike_blue_2_ihwt2b.jpg",
+        "isMain": false
+      },
+      {
+        "color": "Blue",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772186685/nike_blue_3_vtpfcd.jpg",
+        "isMain": false
+      }
+    ]
+  },
+
+  {
+    "name": "Stone Island Garment Dyed Crewneck Sweatshirt",
+    "slug": "stone-island-garment-dyed-crewneck-sweatshirt",
+    "description": "One of Stone Island's most iconic pieces, this crewneck sweatshirt is produced through a special garment dyeing process that gives each piece a unique, worn-in character impossible to replicate. Made from a heavyweight cotton-fleece blend, it features the signature Compass Badge patch on the left sleeve — the unmistakable mark of the brand. The relaxed fit and ribbed trims make it a timeless staple for any serious wardrobe.",
+    "price": 295,
+    "oldPrice": null,
+    "brand": "Stone Island",
+    "type": "Sweatshirt",
+    "collection": "Autumn 2025",
+    "tags": [ "Casual", "Streetwear", "Comfort", "Autumn" ],
+    "materials": [
+      {
+        "name": "Cotton",
+        "percentage": 85
+      },
+      {
+        "name": "Fleece",
+        "percentage": 15
+      }
+    ],
+    "photos": [
+      {
+        "color": "Soft Peach",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772189717/stone_island_1_nzsbbn.avif",
+        "isMain": true
+      },
+      {
+        "color": "Soft Peach",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772189716/stone_island_2_n9kg0e.avif",
+        "isMain": false
+      },
+      {
+        "color": "Soft Peach",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772189713/stone_island_3_zj2p5f.avif",
+        "isMain": false
+      },
+      {
+        "color": "Soft Peach",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772189712/stone_island_4_tijzms.avif",
+        "isMain": false
+      },
+      {
+        "color": "Navy",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772189838/stone_island_1_z1h1f7.avif",
+        "isMain": true
+      },
+      {
+        "color": "Navy",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772189837/stone_island_2_ewhvh2.avif",
+        "isMain": false
+      },
+      {
+        "color": "Navy",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772189835/stone_island_3_cjlps9.avif",
+        "isMain": false
+      },
+      {
+        "color": "Navy",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772189834/stone_island_4_yksq1c.avif",
+        "isMain": false
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772189947/stone_island_1_wqz5cv.avif",
+        "isMain": true
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772189961/stone_island_2_mlovvk.avif",
+        "isMain": false
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772189959/stone_island_3_vlffby.avif",
+        "isMain": false
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772189948/stone_island_4_duwu61.avif",
+        "isMain": false
+      }
+    ]
+  },
+  {
+    "name": "Stone Island Soft Shell-R Hooded Jacket",
+    "slug": "stone-island-soft-shell-r-hooded-jacket",
+    "description": "The Soft Shell-R Jacket is a cornerstone of Stone Island's technical outerwear programme. Constructed from a bonded 3-layer softshell fabric with a polyurethane membrane, it delivers exceptional wind and water resistance while remaining highly breathable. Features include a detachable hood, multiple zipped pockets, and the iconic removable Compass Badge. A masterclass in the intersection of function and fashion.",
+    "price": 695,
+    "oldPrice": null,
+    "brand": "Stone Island",
+    "type": "Jacket",
+    "collection": "Winter 2025",
+    "tags": [ "Outdoor", "Streetwear", "Winter", "Limited Edition" ],
+    "materials": [
+      {
+        "name": "Wool",
+        "percentage": 60
+      },
+      {
+        "name": "Spandex",
+        "percentage": 40
+      }
+    ],
+    "photos": [
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190053/stone_island_1_yql2nk.avif",
+        "isMain": true
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190052/stone_island_2_rmiace.avif",
+        "isMain": false
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190050/stone_island_3_nwkrhd.avif",
+        "isMain": false
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190049/stone_island_4_u4uwut.avif",
+        "isMain": false
+      },
+      {
+        "color": "Green",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190133/stone_island_3_cdz1z3.avif",
+        "isMain": true
+      },
+      {
+        "color": "Green",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190137/stone_island_2_glwmhk.avif",
+        "isMain": false
+      },
+      {
+        "color": "Green",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190155/4100112-nylon-smerigliato-tc_-photo_tfkkcy.avif",
+        "isMain": false
+      }
+    ]
+  },
+  {
+    "name": "Nike Tech Fleece Full-Zip Hoodie",
+    "slug": "nike-tech-fleece-full-zip-hoodie",
+    "description": "The Nike Tech Fleece Hoodie redefines what a zip-up can be. Engineered from Nike's innovative Tech Fleece fabric — a lightweight spacer material that traps warmth between two layers — it delivers exceptional insulation without the bulk. A clean tapered silhouette, flatlock seams, and the embroidered Swoosh on the chest make this one of Nike's most enduring modern icons.",
+    "price": 130,
+    "oldPrice": null,
+    "brand": "Nike",
+    "type": "Zip Hoodie",
+    "collection": "Autumn 2025",
+    "tags": [ "Sport", "Casual", "Comfort", "New Arrival" ],
+    "materials": [
+      {
+        "name": "Cotton",
+        "percentage": 66
+      },
+      {
+        "name": "Spandex",
+        "percentage": 34
+      }
+    ],
+    "photos": [
+      {
+        "color": "Gray",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190319/nike_1_ncatfi.webp",
+        "isMain": true
+      },
+      {
+        "color": "Gray",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190315/nike_2_sxl63d.webp",
+        "isMain": false
+      },
+      {
+        "color": "Gray",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190309/nike_3_jzezoz.webp",
+        "isMain": false
+      },
+      {
+        "color": "Gray",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190302/nike_4_cogtpc.webp",
+        "isMain": false
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190390/nike_1_qwgg8m.webp",
+        "isMain": true
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190387/nike_2_uskupt.webp",
+        "isMain": false
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190386/nike_3_wcqsvp.webp",
+        "isMain": false
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190384/nike_4_rtzkg5.webp",
+        "isMain": false
+      }
+    ]
+  },
+  {
+    "name": "Balenciaga BB Paris Icon Oversized T-Shirt",
+    "slug": "balenciaga-bb-paris-icon-oversized-tee",
+    "description": "Balenciaga's BB Paris Icon T-Shirt is a study in refined simplicity. Cut in a heavily oversized silhouette from premium heavyweight jersey cotton, it features the bold 'BB Paris' logo printed across the chest. The intentionally dropped shoulders and elongated back hem push the boundaries of proportion, reflecting Demna's signature deconstructivist approach to everyday garments.",
+    "price": 350,
+    "oldPrice": null,
+    "brand": "Balenciaga",
+    "type": "T-Shirt",
+    "collection": "Spring 2025",
+    "tags": [ "Streetwear", "Casual", "Limited Edition" ],
+    "materials": [
+      {
+        "name": "Cotton",
+        "percentage": 100
+      }
+    ],
+    "photos": [
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190533/balenciaga_1_fqwer0.jpg",
+        "isMain": true
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190531/balenciaga_2_anrjdd.jpg",
+        "isMain": false
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190529/balenciaga_3_bd8bbe.jpg",
+        "isMain": false
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190527/balenciaga_4_rooevq.jpg",
+        "isMain": false
+      }
+    ]
+  },
+  {
+    "name": "BAPE ABC Camo Full Zip Double Hoodie",
+    "slug": "bape-abc-camo-full-zip-double-hoodie",
+    "description": "The BAPE ABC Camo Double Hoodie is one of A Bathing Ape's most recognizable and coveted silhouettes. Crafted from heavyweight cotton, it features the iconic all-over ABC camouflage print and the signature double-layer hood with a face mask zip hidden inside. The bold graphic construction and premium craftsmanship have made this piece a cornerstone of streetwear culture for over two decades.",
+    "price": 498,
+    "oldPrice": null,
+    "brand": "BAPE",
+    "type": "Zip Hoodie",
+    "collection": "Autumn 2025",
+    "tags": [ "Streetwear", "Limited Edition", "Casual" ],
+    "materials": [
+      {
+        "name": "Cotton",
+        "percentage": 100
+      }
+    ],
+    "photos": [
+      {
+        "color": "Green",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190638/bape_4_hvdxna.avif",
+        "isMain": true
+      },
+      {
+        "color": "Green",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190643/bape_3_qsyvqr.avif",
+        "isMain": false
+      },
+      {
+        "color": "Green",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190646/bape_2_jmr3do.avif",
+        "isMain": false
+      }
+    ]
+  },
+  {
+    "name": "Palm Angels Classic Logo Track Jacket",
+    "slug": "palm-angels-classic-logo-track-jacket",
+    "description": "The Palm Angels Track Jacket is the label's defining silhouette — a piece that launched a thousand imitations but has never been bettered. Cut from technical tricot fabric with a signature side stripe and slim athletic fit, it features the brand's classic script logo embroidered on the chest. Equally at home on the streets of LA or the runways of Milan.",
+    "price": 590,
+    "oldPrice": 780,
+    "brand": "Palm Angels",
+    "type": "Jacket",
+    "collection": "Spring 2025",
+    "tags": [ "Streetwear", "Sport", "Casual" ],
+    "materials": [
+      {
+        "name": "Viscose",
+        "percentage": 70
+      },
+      {
+        "name": "Acrylic",
+        "percentage": 30
+      }
+    ],
+    "photos": [
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190768/palmangels_2_gueszo.webp",
+        "isMain": true
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190776/palmangels_1_xqx2ly.jpg",
+        "isMain": false
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190765/palmangels_3_gxmn85.jpg",
+        "isMain": false
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190762/palmangels_4_k4pogx.jpg",
+        "isMain": false
+      },
+      {
+        "color": "White",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190844/palm_angels_white_3_emwx5y.jpg",
+        "isMain": true
+      },
+      {
+        "color": "White",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190846/palm_angels_white_2_pj09bh.jpg",
+        "isMain": false
+      },
+      {
+        "color": "White",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190842/palm_angels_white_4_r6rclj.jpg",
+        "isMain": false
+      },
+      {
+        "color": "White",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190848/palm_angels_white_1_o8ps9r.jpg",
+        "isMain": false
+      }
+    ]
+  },
+  {
+    "name": "Fear of God Eternal Fleece Hoodie",
+    "slug": "fear-of-god-eternal-fleece-hoodie",
+    "description": "Jerry Lorenzo's Fear of God Eternal line delivers luxury basics without compromise. This heavyweight fleece hoodie is cut in a characteristically oversized silhouette with dropped shoulders and an elongated body. The subtle tonal Fear of God wordmark at the chest and the premium brushed fleece interior speak to the label's quiet luxury aesthetic — refined enough for anywhere.",
+    "price": 325,
+    "oldPrice": null,
+    "brand": "Fear of God",
+    "type": "Hoodie",
+    "collection": "Winter 2025",
+    "tags": [ "Casual", "Comfort", "Winter", "New Arrival" ],
+    "materials": [
+      {
+        "name": "Cotton",
+        "percentage": 55
+      },
+      {
+        "name": "Acrylic",
+        "percentage": 45
+      }
+    ],
+    "photos": [
+      {
+        "color": "Beige",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190963/fear_of_good_1_uluwe6.webp",
+        "isMain": true
+      },
+      {
+        "color": "Beige",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190960/fear_of_good_2_rq2svg.webp",
+        "isMain": false
+      },
+      {
+        "color": "Beige",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190955/fear_of_good_3_pnyn7p.webp",
+        "isMain": false
+      },
+      {
+        "color": "Beige",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772190954/fear_of_good_4_khhy4u.jpg",
+        "isMain": false
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772191110/1_rxt3m6.webp",
+        "isMain": true
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772191105/2_gdgn3x.webp",
+        "isMain": false
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772191100/3_kslgbj.webp",
+        "isMain": false
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772191096/4_rer092.webp",
+        "isMain": false
+      }
+    ]
+  },
+  {
+    "name": "Adidas Originals Trefoil Crew Sweatshirt",
+    "slug": "adidas-originals-trefoil-crew-sweatshirt",
+    "description": "A heritage staple that has never gone out of style. The Adidas Originals Trefoil Crew is made from a soft cotton-acrylic french terry blend and features the iconic Trefoil logo printed on the chest — a symbol that has defined sportswear culture since 1972. The clean relaxed cut, ribbed trims, and effortless proportions keep it relevant across every generation.",
+    "price": 90,
+    "oldPrice": null,
+    "brand": "Adidas",
+    "type": "Sweatshirt",
+    "collection": "Autumn 2025",
+    "tags": [ "Sport", "Casual", "Streetwear" ],
+    "materials": [
+      {
+        "name": "Cotton",
+        "percentage": 70
+      },
+      {
+        "name": "Acrylic",
+        "percentage": 30
+      }
+    ],
+    "photos": [
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772191237/adidas_2_vji709.webp",
+        "isMain": true
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772191232/adidas_3_lqcve0.webp",
+        "isMain": false
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772191227/adidas_4_e54su1.webp",
+        "isMain": false
+      }
+    ]
+  },
+  {
+    "name": "Louis Vuitton LV Signature 3D Pocket Monogram Hoodie",
+    "slug": "lv-signature-3d-pocket-monogram-hoodie",
+    "description": "Louis Vuitton elevates the most casual of garments into a luxury statement. Crafted from a premium cotton-cashmere blend with a brushed interior, this hoodie features embossed Monogram detailing on the chest and a 3D structured kangaroo pocket. The refined fit and exceptional material quality make it a piece that transcends seasonal trends — a wardrobe cornerstone by design.",
+    "price": 1850,
+    "oldPrice": null,
+    "brand": "Louis Vuitton",
+    "type": "Hoodie",
+    "collection": "Winter 2025",
+    "tags": [ "Streetwear", "Elegant", "Limited Edition", "New Arrival" ],
+    "materials": [
+      {
+        "name": "Cotton",
+        "percentage": 75
+      },
+      {
+        "name": "Cashmere",
+        "percentage": 25
+      }
+    ],
+    "photos": [
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772191426/lous_1_rf33wd.avif",
+        "isMain": true
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772191423/lous_2_w6t771.avif",
+        "isMain": false
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772191418/lous_3_czzxff.avif",
+        "isMain": false
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772191412/lous_4_thejme.avif",
+        "isMain": false
+      },
+      {
+        "color": "Navy",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772191527/1_xj7kl2.avif",
+        "isMain": true
+      },
+      {
+        "color": "Navy",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772191524/2_mi5kdi.avif",
+        "isMain": false
+      },
+      {
+        "color": "Navy",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772191521/3_xbujxh.avif",
+        "isMain": false
+      },
+      {
+        "color": "Navy",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772191519/4_ptbqhj.avif",
+        "isMain": false
+      }
+    ]
+  },
+  {
+    "name": "New Balance Athletics Woven Jacket",
+    "slug": "new-balance-athletics-woven-jacket",
+    "description": "New Balance's Athletics Woven Jacket bridges the gap between performance and lifestyle dressing. Constructed from a lightweight wind-resistant woven fabric with a mesh lining, it features the bold NB Athletics logo across the back and a clean embroidered wordmark on the chest. Elastic cuffs, a full-length zip, and a packable design make it an ideal layer for any conditions.",
+    "price": 148,
+    "oldPrice": 185,
+    "brand": "New Balance",
+    "type": "Jacket",
+    "collection": "Spring 2026",
+    "tags": [ "Sport", "Outdoor", "Travel", "Casual" ],
+    "materials": [
+      {
+        "name": "Viscose",
+        "percentage": 60
+      },
+      {
+        "name": "Spandex",
+        "percentage": 40
+      }
+    ],
+    "photos": [
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772191685/1_ji50ap.webp",
+        "isMain": true
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772191681/2_lw6mjw.webp",
+        "isMain": false
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772191679/3_wkpkxs.webp",
+        "isMain": false
+      },
+      {
+        "color": "Black",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772191675/4_zizu7h.webp",
+        "isMain": false
+      },
+      {
+        "color": "Gray",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772191764/1_wdzkjd.webp",
+        "isMain": true
+      },
+      {
+        "color": "Gray",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772191760/2_jzpg9n.webp",
+        "isMain": false
+      },
+      {
+        "color": "Gray",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772191755/3_b1s65k.webp",
+        "isMain": false
+      },
+      {
+        "color": "Gray",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772191741/4_fvwsqs.webp",
+        "isMain": false
+      },
+      {
+        "color": "Navy",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772191838/1_lbytf2.webp",
+        "isMain": true
+      },
+      {
+        "color": "Navy",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772191826/2_vpn2ci.webp",
+        "isMain": false
+      },
+      {
+        "color": "Navy",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772191820/3_oitxfq.webp",
+        "isMain": false
+      },
+      {
+        "color": "Navy",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772191815/4_zqogaj.webp",
+        "isMain": false
+      }
+    ]
+  }
+]

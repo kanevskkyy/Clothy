@@ -8,7 +8,7 @@ using Clothy.CatalogService.DAL.DB;
 using Clothy.CatalogService.Domain.Entities.Catalog;
 using Microsoft.EntityFrameworkCore;
 
-namespace Clothy.CatalogService.SeedData.SeedData
+namespace Clothy.CatalogService.SeedData.SeedData.Always
 {
     public class ColorSeeder : ISeeder
     {
@@ -16,18 +16,20 @@ namespace Clothy.CatalogService.SeedData.SeedData
         {
             if (await context.Colors.AnyAsync()) return;
 
-            List<(string Name, string slug, string Hex)> colorsData = new List<(string Name, string slug, string Hex)>
+            List<(string Name, string Slug, string Hex)> colorsData = new List<(string Name, string Slug, string Hex)>
             {
-                ("Red", "red", "#FF5733"),
-                ("Green", "green", "#33FF57"),
-                ("Blue", "blue", "#3357FF"),
-                ("Yellow", "yellow", "#F1C40F"),
-                ("Purple", "purple", "#9B59B6"),
-                ("Turquoise", "turquoise", "#1ABC9C"),
-                ("Orange", "orange", "#E67E22"),
-                ("Silver", "silver", "#BDC3C7"),
-                ("Dark Blue", "dark-blue", "#2C3E50"),
-                ("White", "white", "#ECF0F1")
+                ("Black", "black", "#000000"),
+                ("White", "white", "#FFFFFF"),
+                ("Red", "red", "#FF0000"),
+                ("Blue", "blue", "#233656"),
+                ("Green", "green", "#00FF00"),
+                ("Yellow", "yellow", "#FFFF00"),
+                ("Gray", "gray", "#808080"),
+                ("Brown", "brown", "#8B4513"),
+                ("Beige", "beige", "#F5F5DC"),
+                ("Navy", "navy", "#000080"),
+                ("Soft Peach", "soft-peach", "#E4B8A3"),
+                ("Warm Taupe", "warm-taupe", "#A77F6B"),
             };
 
             Faker faker = new Faker();

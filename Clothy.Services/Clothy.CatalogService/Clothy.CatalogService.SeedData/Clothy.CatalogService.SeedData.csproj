@@ -11,8 +11,19 @@
     <PackageReference Include="Bogus" Version="35.6.4" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
 	<PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+	  <PackageReference Include="DotNetEnv" Version="3.1.1" />
 	<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="8.0.0" />
   </ItemGroup>
+
+	<ItemGroup>
+		<Content Include="SeedData/Production/Data/man_clothes.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+
+		<Content Include="SeedData/Production/Data/woman_clothes.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Clothy.CatalogService.DAL\Clothy.CatalogService.DAL.csproj" />

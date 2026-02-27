@@ -1,0 +1,24 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.hiddenInput {
+    display: none;
+}
+
+.fileRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.fileName {
+    font-size: 14px;
+    color: #6b7280;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 220px;
+}

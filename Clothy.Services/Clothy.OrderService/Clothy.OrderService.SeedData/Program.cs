@@ -48,10 +48,10 @@ class Program
 
         services.AddScoped<IDeliveryAPIClient, NovaPoshtaAPIClient>();
 
-        services.AddScoped<ISeeder, DeliveryProviderSeeder>();
         services.AddScoped<ISeeder, OrderSeeder>();
         services.AddScoped<ISeeder, OrderItemSeeder>();
         services.AddScoped<ISeeder>(sp => new NovaPoshtaSeeder(sp.GetRequiredService<IDeliveryAPIClient>(), sp ));
+        services.AddScoped<ISeeder, DeliveryProviderSeeder>();
         services.AddScoped<ISeeder, PickupPointSeeder>();
         services.AddScoped<ISeeder, DeliveryDetailSeeder>();
 

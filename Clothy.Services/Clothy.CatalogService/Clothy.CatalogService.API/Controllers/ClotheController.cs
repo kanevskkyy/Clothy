@@ -53,6 +53,22 @@ namespace Clothy.CatalogService.API.Controllers
         }
 
         /// <summary>
+        /// Get a single clothe item by ID with details.
+        /// </summary>
+        /// <param name="id">Clothe id.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Clothe details.</returns>
+        [HttpGet("{id:guid}")]
+        [AllowAnonymous]
+        public async Task<ActionResult<ClotheDetailDTO>> GetById(Guid id, CancellationToken cancellationToken)
+        {
+            logger.LogInformation("Fetching clothe with ID: {ID}", id);
+            ClotheDetailDTO clothe = await clotheService.GetDetailByIdAsync(id, cancellationToken);
+
+            return Ok(clothe);
+        }
+
+        /// <summary>
         /// Create a new clothe item.
         /// </summary>
         /// <param name="clotheCreateDTO">Clothe creation data (supports main photo + additional photos).</param>
