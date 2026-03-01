@@ -15,7 +15,6 @@ namespace Clothy.CatalogService.Domain.QueryParameters
         public List<Guid>? Brands { get; set; } = new List<Guid>();    
         public List<Guid>? Materials { get; set; } = new List<Guid>();
         public List<Guid>? Collections { get; set; } = new List<Guid>();
-        public List<Guid>? Sizes { get; set; } = new List<Guid>();
         public List<Guid>? Tags { get; set; } = new List<Guid>();
         public List<Guid>? ClothingTypes { get; set; } = new List<Guid>();
         public List<Guid>? Colors { get; set; } = new List<Guid>();
@@ -29,7 +28,6 @@ namespace Clothy.CatalogService.Domain.QueryParameters
             if (Gender.HasValue) stringBuilder.Append($"gender:{Gender.Value}:");
             if (Brands?.Any() == true) stringBuilder.Append($"brands:{string.Join(",", Brands.OrderBy(x => x))}:");
             if (Collections?.Any() == true) stringBuilder.Append($"collections:{string.Join(",", Collections.OrderBy(x => x))}:");
-            if (Sizes?.Any() == true) stringBuilder.Append($"sizes:{string.Join(",", Sizes.OrderBy(x => x))}:");
             if (Tags?.Any() == true) stringBuilder.Append($"tags:{string.Join(",", Tags.OrderBy(x => x))}:");
             if (ClothingTypes?.Any() == true) stringBuilder.Append($"types:{string.Join(",", ClothingTypes.OrderBy(x => x))}:");
             if (Materials?.Any() == true) stringBuilder.Append($"materials:{string.Join(",", Materials.OrderBy(x => x))}:");

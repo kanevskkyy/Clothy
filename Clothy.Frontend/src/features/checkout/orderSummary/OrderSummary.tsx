@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type {ReactNode} from "react";
 import styles from "./OrderSummary.module.css";
 import {AlertTriangle} from "lucide-react";
 import {formatMoney} from "../../../shared/lib/formatMoney.ts";
@@ -6,6 +6,7 @@ import {formatMoney} from "../../../shared/lib/formatMoney.ts";
 interface PriceRow {
     label: string;
     value: string | number;
+    isDiscount?: boolean;
 }
 
 interface OrderSummaryProps {
@@ -37,7 +38,7 @@ const OrderSummary = ({
 
             <div className={styles.orderPriceInfo}>
                 {priceRows.map((row, index) => (
-                    <div key={index} className={styles.priceRow}>
+                    <div key={index} className={`${styles.priceRow} ${row.isDiscount ? styles.discountRow : ''}`}>
                         <span className={styles.label}>{row.label}</span>
                         <span className={styles.value}>{row.value}</span>
                     </div>
@@ -47,7 +48,7 @@ const OrderSummary = ({
 
                 {unAvailableItemsCount > 0 && (
                     <div className={styles.warningBox}>
-                        <AlertTriangle size={18} />
+                        <AlertTriangle size={18}/>
                         <span>Unavailable items are not included in the total</span>
                     </div>
                 )}

@@ -52,7 +52,6 @@ const CatalogPage = () => {
                 clothingTypes: [],
                 colors: [],
                 materials: [],
-                sizes: [],
                 tags: [],
                 collections: [],
                 gender: [],
@@ -66,7 +65,6 @@ const CatalogPage = () => {
             clothingTypes: searchParams.get("clothingTypes")?.split(",").filter(Boolean) || [],
             colors: searchParams.get("colors")?.split(",").filter(Boolean) || [],
             materials: searchParams.get("materials")?.split(",").filter(Boolean) || [],
-            sizes: searchParams.get("sizes")?.split(",").filter(Boolean) || [],
             tags: searchParams.get("tags")?.split(",").filter(Boolean) || [],
             collections: searchParams.get("collections")?.split(",").filter(Boolean) || [],
             gender: searchParams.get("gender")?.split(",").filter(Boolean) || [],
@@ -96,7 +94,6 @@ const CatalogPage = () => {
             const clothingTypeIds = convertToIds(selectedFilters.clothingTypes, filters.clothingTypes);
             const colorIds = convertToIds(selectedFilters.colors, filters.colors);
             const materialIds = convertToIds(selectedFilters.materials, filters.materials);
-            const sizeIds = convertToIds(selectedFilters.sizes, filters.sizes, "name");
             const tagIds = convertToIds(selectedFilters.tags, filters.tags);
             const collectionIds = convertToIds(selectedFilters.collections, filters.collections);
 
@@ -118,7 +115,6 @@ const CatalogPage = () => {
                 clothingTypes: clothingTypeIds.length > 0 ? clothingTypeIds : undefined,
                 colors: colorIds.length > 0 ? colorIds : undefined,
                 materials: materialIds.length > 0 ? materialIds : undefined,
-                sizes: sizeIds.length > 0 ? sizeIds : undefined,
                 tags: tagIds.length > 0 ? tagIds : undefined,
                 collections: collectionIds.length > 0 ? collectionIds : undefined,
                 gender: selectedFilters.gender.length > 0 ? selectedFilters.gender : undefined,
@@ -152,7 +148,6 @@ const CatalogPage = () => {
         setOrDelete("clothingTypes", filterState.clothingTypes);
         setOrDelete("colors", filterState.colors);
         setOrDelete("materials", filterState.materials);
-        setOrDelete("sizes", filterState.sizes);
         setOrDelete("tags", filterState.tags);
         setOrDelete("collections", filterState.collections);
         setOrDelete("gender", filterState.gender);

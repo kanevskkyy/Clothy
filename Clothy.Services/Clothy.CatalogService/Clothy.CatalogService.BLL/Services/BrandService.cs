@@ -23,7 +23,6 @@ namespace Clothy.CatalogService.BLL.Services
     {
         private IUnitOfWork unitOfWork;
         private IMapper mapper;
-        private IImageService imageService;
         private IFilterCacheInvalidationService filterCacheInvalidationService;
         private IEntityCacheInvalidationService<ClotheItem> clotheItemInvalidationService;
         private IEntityCacheInvalidationService<Brand> brandInvalidationService;
@@ -36,7 +35,6 @@ namespace Clothy.CatalogService.BLL.Services
         public BrandService(
             IUnitOfWork unitOfWork,
             IMapper mapper,
-            IImageService imageService,
             IFilterCacheInvalidationService filterCacheInvalidationService,
             Meter meter,
             IEntityCacheInvalidationService<ClotheItem> clotheItemInvalidationService,
@@ -46,7 +44,6 @@ namespace Clothy.CatalogService.BLL.Services
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
             this.filterCacheInvalidationService = filterCacheInvalidationService;
-            this.imageService = imageService;
             this.clotheItemInvalidationService = clotheItemInvalidationService;
             this.brandInvalidationService = brandInvalidationService;
             this.cacheService = cacheService;

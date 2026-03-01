@@ -39,6 +39,7 @@
 		<Protobuf Include="Protos/GetOrderInfo.proto" GrpcServices="Both" />
 		<Protobuf Include="Protos/ValidateClotheItemId.proto" GrpcServices="Both" />
 		<Protobuf Include="Protos/ClotheStock.proto" GrpcServices="Both" />
+		<Protobuf Include="Protos/HasUserAlreadyOrdered.proto" GrpcServices="Both" />
 	</ItemGroup>
 
 </Project>

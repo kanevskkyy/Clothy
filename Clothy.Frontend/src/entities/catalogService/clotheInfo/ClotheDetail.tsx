@@ -285,7 +285,7 @@ const ClotheDetail: React.FC<ProductInfoProps> = ({ clotheDetail, selectedColor,
                     {uniqueColors.map((color) => (
                         <div
                             key={color.id}
-                            className={`${styles.color} ${selectedColor?.id === color.id ? styles.activeColor : ""}`}
+                            className={`${styles.color} ${selectedColor?.id === color.id ? styles.activeColor : styles.notActiveColor}`}
                             style={{ backgroundColor: color.hexCode }}
                             onClick={() => onColorChange(color)}
                         />

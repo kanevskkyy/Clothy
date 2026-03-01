@@ -22,7 +22,7 @@ namespace Clothy.CatalogService.SeedData.SeedData.Always
                 ("White", "white", "#FFFFFF"),
                 ("Red", "red", "#FF0000"),
                 ("Blue", "blue", "#233656"),
-                ("Green", "green", "#00FF00"),
+                ("Green", "green", "#105A33"),
                 ("Yellow", "yellow", "#FFFF00"),
                 ("Gray", "gray", "#808080"),
                 ("Brown", "brown", "#8B4513"),

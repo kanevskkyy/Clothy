@@ -153,9 +153,12 @@
     transition: all 0.2s;
 }
 
+.notActiveColor{
+    border: 2px solid #D9D9D9;
+}
+
 .color:hover {
     outline-color: #aaa;
-    outline-offset: 2px;
 }
 
 .activeColor {

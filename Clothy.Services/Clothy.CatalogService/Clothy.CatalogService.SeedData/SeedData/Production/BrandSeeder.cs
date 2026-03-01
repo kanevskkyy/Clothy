@@ -95,6 +95,13 @@ namespace Clothy.CatalogService.SeedData.SeedData.Production
                 new Brand
                 {
                     Id = Guid.NewGuid(),
+                    Name = "Lacoste",
+                    Slug = "lacoste",
+                    CreatedAt = DateTime.UtcNow.ToUniversalTime()
+                },
+                new Brand
+                {
+                    Id = Guid.NewGuid(),
                     Name = "Under Armour",
                     Slug = "under-armour",
                     CreatedAt = DateTime.UtcNow.ToUniversalTime()

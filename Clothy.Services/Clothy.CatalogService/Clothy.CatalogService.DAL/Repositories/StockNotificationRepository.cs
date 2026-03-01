@@ -31,9 +31,9 @@ namespace Clothy.CatalogService.DAL.Repositories
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<bool> HasUserAlreadySubscribeInStockId(Guid userId, CancellationToken cancellationToken = default)
+        public async Task<bool> HasUserAlreadySubscribeInStockId(Guid userId, Guid stockId, CancellationToken cancellationToken = default)
         {
-            return await dbSet.AnyAsync(property => property.UserId == userId && !property.IsNotified, cancellationToken);
+            return await dbSet.AnyAsync(property => property.UserId == userId && !property.IsNotified && property.StockId == stockId, cancellationToken);
         }
     }
 }

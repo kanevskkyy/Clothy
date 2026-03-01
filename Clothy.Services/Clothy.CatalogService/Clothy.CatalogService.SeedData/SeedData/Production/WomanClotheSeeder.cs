@@ -17,6 +17,22 @@ namespace Clothy.CatalogService.SeedData.SeedData.Production
     {
         private static Random random = new Random();
 
+        private static Dictionary<string, int> womanClothePopularity = new Dictionary<string, int>()
+        {
+            {
+                "Palm Angels Classic Script Logo Fitted Tee", 996   
+            },
+            {
+                "Gucci GG Logo Intarsia Wool Cardigan", 995
+            },
+            {
+                "Adidas Originals Trefoil Cropped Hoodie", 994
+            },
+            {
+                "BAPE ABC Camo Cropped Zip Hoodie", 993
+            }
+        };
+        
         public async Task SeedAsync(ClothyCatalogDbContext context)
         {
             if (await context.ClotheItems.AnyAsync(p => p.Gender == Gender.Female)) return;
@@ -96,18 +112,25 @@ namespace Clothy.CatalogService.SeedData.SeedData.Production
                             IsMain = p.IsMain
                         })
                         .ToList(),
-                    ClothePopularities = new List<ClothePopularity>
-                    {
-                        new ClothePopularity
-                        {
-                            Id = Guid.NewGuid(),
-                            ClotheId = clotheId,
-                            SoldCount = random.Next(0, 1000)
-                        }
-                    },
                     Stocks = stocks
                 };
             }).ToList();
+            
+            foreach (KeyValuePair<string, int> valuePair in womanClothePopularity)
+            {
+                ClotheItem? clotheItem = items.FirstOrDefault(p => p.Name == valuePair.Key);
+                if (clotheItem is null) continue;
+
+                clotheItem.ClothePopularities = new List<ClothePopularity>
+                {
+                    new ClothePopularity
+                    {
+                        Id = Guid.NewGuid(),
+                        ClotheId = clotheItem.Id,
+                        SoldCount = valuePair.Value
+                    }
+                };
+            }
 
             await context.ClotheItems.AddRangeAsync(items);
             await context.SaveChangesAsync();

@@ -9,7 +9,7 @@ namespace Clothy.CatalogService.DAL.Interfaces
 {
     public interface IStockNotificationRepository : IGenericRepository<StockNotification>
     {
-        Task<bool> HasUserAlreadySubscribeInStockId(Guid userId, CancellationToken cancellationToken = default);
+        Task<bool> HasUserAlreadySubscribeInStockId(Guid userId, Guid stockId, CancellationToken cancellationToken = default);
         Task<List<StockNotification>> GetAllSubscribersByStockId(Guid stockId, CancellationToken cancellationToken = default);
     }
 }

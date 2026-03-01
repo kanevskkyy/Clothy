@@ -39,12 +39,6 @@ message MaterialsGrpcResponse {
 	int32 clotheItemCount = 4;
 }
 
-message SizesGrpcResponse {
-	string id = 1;
-	string name = 2;
-	int32 clotheItemCount = 3;
-}
-
 message TagsGrpcResponse {
 	string id = 1;
 	string name = 2;
@@ -68,7 +62,6 @@ message FilterResponse {
 	repeated CollectionsGrpcResponse collections = 3;
 	repeated ColorsGrpcResponse colors = 4;
 	repeated MaterialsGrpcResponse materials = 5;
-	repeated SizesGrpcResponse sizes = 6;
 	repeated TagsGrpcResponse tags = 7;
 	PriceGrpcResponse priceRange = 8;
 	GenderGrpcResponse gender = 9;

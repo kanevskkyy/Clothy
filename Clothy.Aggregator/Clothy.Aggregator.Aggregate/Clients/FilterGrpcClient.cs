@@ -82,13 +82,6 @@ namespace Clothy.Aggregator.Aggregate.Clients
                                 Slug = material.Slug
                             }).ToList(),
 
-                            Sizes = gRPCresponse.Sizes.Select(size => new SizesGrpcResponse
-                            {
-                                Id = size.Id,
-                                Name = size.Name,
-                                ClotheItemCount = size.ClotheItemCount
-                            }).ToList(),
-
                             Tags = gRPCresponse.Tags.Select(tag => new TagsGrpcResponse
                             {
                                 Id = tag.Id,

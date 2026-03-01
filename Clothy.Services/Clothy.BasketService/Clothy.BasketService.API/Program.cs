@@ -12,6 +12,8 @@ using FluentValidation;
 using Clothy.BasketService.gRPC.Server.Server;
 using MassTransit;
 using Clothy.BasketService.BLL.Consumers;
+using Clothy.BasketService.gRPC.Client.Services;
+using Clothy.BasketService.gRPC.Client.Services.Interfaces;
 using Clothy.ServiceDefaults.Middleware.Grpc;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,6 +33,22 @@ builder.Services.AddConfiguredGrpcClient<OrderItemValidator.OrderItemValidatorCl
     {
         resilience.Retry.MaxRetryAttempts = 3;
         resilience.CircuitBreaker.FailureRatio = 0.3;
+    });
+
+builder.Services.AddScoped<IOrderHistoryGrpcClient, OrderHistoryGrpcClient>();
+builder.Services.AddGrpcClient<OrderHistoryService.OrderHistoryServiceClient>(o =>
+    {
+        o.Address = new Uri(builder.Configuration["Grpc:OrderService"]!);
+    })
+    .ConfigureChannel(channelOptions =>
+    {
+        channelOptions.MaxReceiveMessageSize = 5 * 1024 * 1024;
+        channelOptions.MaxSendMessageSize = 5 * 1024 * 1024;
+    })
+    .AddStandardResilienceHandler(resilience =>
+    {
+        resilience.Retry.MaxRetryAttempts = 3;
+        resilience.CircuitBreaker.FailureRatio = 0.5;
     });
 
 builder.Services.AddAutoMapper(typeof(BasketProfile));

@@ -18,6 +18,7 @@
     <ProjectReference Include="..\..\..\Clothy.ServiceDefaults\Clothy.ServiceDefaults.csproj" />
     <ProjectReference Include="..\..\..\Clothy.Shared\Clothy.Shared.csproj" />
     <ProjectReference Include="..\Clothy.BasketService.BLL\Clothy.BasketService.BLL.csproj" />
+    <ProjectReference Include="..\Clothy.BasketService.gRPC.Client\Clothy.BasketService.gRPC.Client.csproj" />
     <ProjectReference Include="..\Clothy.BasketService.gRPC.Server\Clothy.BasketService.gRPC.Server.csproj" />
   </ItemGroup>
 

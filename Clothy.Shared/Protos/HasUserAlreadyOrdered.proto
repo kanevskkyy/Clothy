@@ -1,0 +1,13 @@
+﻿syntax = "proto3";
+
+message HasUserAlreadyOrderedRequest {
+  string userId = 1;
+}
+
+message HasUserAlreadyOrderedResponse {
+  bool hasOrdered = 1;
+}
+
+service OrderHistoryService {
+  rpc HasUserAlreadyOrdered (HasUserAlreadyOrderedRequest) returns (HasUserAlreadyOrderedResponse);
+}

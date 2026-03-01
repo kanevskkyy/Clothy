@@ -115,6 +115,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.PaymentService.DAL",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.PaymentService.gRPC.Client", "Clothy.Services\Clothy.PaymentService\Clothy.PaymentService.gRPC.Client\Clothy.PaymentService.gRPC.Client.csproj", "{57F6DC0D-DA73-4BA2-9968-0E71FBDBEE5C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.BasketService.gRPC.Client", "Clothy.Services\Clothy.BasketService\Clothy.BasketService.gRPC.Client\Clothy.BasketService.gRPC.Client.csproj", "{79157E99-08D1-445E-B2AA-C3AD1CCAE2A7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -665,6 +667,18 @@ Global
 		{57F6DC0D-DA73-4BA2-9968-0E71FBDBEE5C}.Release|x64.Build.0 = Release|Any CPU
 		{57F6DC0D-DA73-4BA2-9968-0E71FBDBEE5C}.Release|x86.ActiveCfg = Release|Any CPU
 		{57F6DC0D-DA73-4BA2-9968-0E71FBDBEE5C}.Release|x86.Build.0 = Release|Any CPU
+		{79157E99-08D1-445E-B2AA-C3AD1CCAE2A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79157E99-08D1-445E-B2AA-C3AD1CCAE2A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79157E99-08D1-445E-B2AA-C3AD1CCAE2A7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{79157E99-08D1-445E-B2AA-C3AD1CCAE2A7}.Debug|x64.Build.0 = Debug|Any CPU
+		{79157E99-08D1-445E-B2AA-C3AD1CCAE2A7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{79157E99-08D1-445E-B2AA-C3AD1CCAE2A7}.Debug|x86.Build.0 = Debug|Any CPU
+		{79157E99-08D1-445E-B2AA-C3AD1CCAE2A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79157E99-08D1-445E-B2AA-C3AD1CCAE2A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79157E99-08D1-445E-B2AA-C3AD1CCAE2A7}.Release|x64.ActiveCfg = Release|Any CPU
+		{79157E99-08D1-445E-B2AA-C3AD1CCAE2A7}.Release|x64.Build.0 = Release|Any CPU
+		{79157E99-08D1-445E-B2AA-C3AD1CCAE2A7}.Release|x86.ActiveCfg = Release|Any CPU
+		{79157E99-08D1-445E-B2AA-C3AD1CCAE2A7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -719,6 +733,7 @@ Global
 		{47E1EB53-98D8-49DC-B026-99E10110E406} = {041E4A6E-25E0-4E06-A78D-13913DE440A3}
 		{121EDDC1-DBBB-40D8-999B-E988FA3DA092} = {041E4A6E-25E0-4E06-A78D-13913DE440A3}
 		{57F6DC0D-DA73-4BA2-9968-0E71FBDBEE5C} = {041E4A6E-25E0-4E06-A78D-13913DE440A3}
+		{79157E99-08D1-445E-B2AA-C3AD1CCAE2A7} = {9CF928D4-457C-4723-B647-709DF39F86C3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F15FA95A-2976-493B-AA4A-033ECCBFD759}

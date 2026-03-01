@@ -249,7 +249,7 @@ namespace Clothy.OrderService.DAL.Repositories
 
             return (
                 (int)result.neworderscount,
-                (decimal)result.totalprice,
+                (decimal)result.totalprice/100m,
                 (int)result.pendingorderscount
             );
         }

@@ -48,10 +48,12 @@ namespace Clothy.CatalogService.BLL.Services
                     {
                         UserEmail = stockNotification.UserEmail,
                         UserFirstName = stockNotification.UserFirstName,
-                        ClotheId = stockNotification.Stock!.ClotheId,
+                        ClotheId = stockNotification.Stock!.Clothe!.Id,
                         ClotheName = stockNotification.Stock!.Clothe!.Name,
+                        ClotheSlug = stockNotification.Stock!.Clothe!.Slug,
                         Size = stockNotification.Stock!.Size!.Name,
                         Color = stockNotification.Stock!.Color!.Name,
+                        ColorSlug = stockNotification.Stock!.Color!.Slug
                     };
                     await publishEndpoint.Publish(clotheStockUpdatedEvent, cancellationToken);
 
@@ -74,7 +76,7 @@ namespace Clothy.CatalogService.BLL.Services
             if (clothesStock.Quantity > 0) throw new ValidationFailedException("You cannot subscribe to clothing that is in stock!");
 
             Guid userId = userClaimsExtractor.GetUserId(claimsPrincipal);
-            bool alreadySubscribed = await unitOfWork.StockNotification.HasUserAlreadySubscribeInStockId(userId, cancellationToken);
+            bool alreadySubscribed = await unitOfWork.StockNotification.HasUserAlreadySubscribeInStockId(userId, stockId, cancellationToken);
             if (alreadySubscribed) throw new AlreadyExistsException("You are already subscribed to this stock!");
 
             StockNotification stockNotification = new StockNotification

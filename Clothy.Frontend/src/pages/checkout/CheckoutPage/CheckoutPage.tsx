@@ -17,14 +17,15 @@ import Container from "../../../shared/layout/Container/Container.tsx";
 
 const CheckoutPage = () => {
     const queryClient = useQueryClient();
+    const [originalPrice, setOriginalPrice] = useState<number>(0);
     const [totalPrice, setTotalPrice] = useState<number>(0);
     const [totalItems, setTotalItems] = useState<number>(0);
+    const [isFirstOrder, setIsFirstOrder] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [isCreatingOrder, setIsCreatingOrder] = useState(false);
 
     const user = useAuthStore(state => state.user);
     const emailVerified = user?.emailVerified;
-
-    const [isCreatingOrder, setIsCreatingOrder] = useState(false);
 
     const navigate = useNavigate();
 
@@ -57,9 +58,7 @@ const CheckoutPage = () => {
 
     const handlePlaceOrder = () => {
         const form = document.getElementById('checkout-form') as HTMLFormElement;
-        if (form) {
-            form.requestSubmit();
-        }
+        if (form) form.requestSubmit();
     };
 
     useEffect(() => {
@@ -74,8 +73,10 @@ const CheckoutPage = () => {
                     navigate('/cart');
                     return;
                 }
-                setTotalItems(data.items.length);
+                setOriginalPrice(data.originalPrice);
                 setTotalPrice(data.totalPrice);
+                setTotalItems(data.items.length);
+                setIsFirstOrder(data.isFirstOrder);
             } catch (error) {
                 toast.error(getErrorMessage(error));
                 navigate('/cart');
@@ -87,7 +88,7 @@ const CheckoutPage = () => {
         getCartInfo();
     }, []);
 
-    if (isLoading) return <Loader />;
+    if (isLoading) return <Loader/>;
 
     return (
         <Container paddingY={30}>
@@ -101,7 +102,12 @@ const CheckoutPage = () => {
                     unAvailableItemsCount={0}
                     title="Your order"
                     priceRows={[
-                        {label: `Items (${totalItems})`, value: `$${totalPrice}`},
+                        {label: `Items (${totalItems})`, value: `$${originalPrice.toFixed(2)}`},
+                        ...(isFirstOrder ? [{
+                            label: 'First order discount (10%)',
+                            value: `-$${(originalPrice - totalPrice).toFixed(2)}`,
+                            isDiscount: true
+                        }] : []),
                         {label: 'Delivery', value: totalPrice > 1500 ? 'Free' : 'Paid'}
                     ]}
                     totalPrice={totalPrice}

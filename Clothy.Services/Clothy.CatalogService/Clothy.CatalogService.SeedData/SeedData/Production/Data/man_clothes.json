@@ -204,26 +204,6 @@
         "isMain": false
       },
       {
-        "color": "Navy",
-        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772189838/stone_island_1_z1h1f7.avif",
-        "isMain": true
-      },
-      {
-        "color": "Navy",
-        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772189837/stone_island_2_ewhvh2.avif",
-        "isMain": false
-      },
-      {
-        "color": "Navy",
-        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772189835/stone_island_3_cjlps9.avif",
-        "isMain": false
-      },
-      {
-        "color": "Navy",
-        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772189834/stone_island_4_yksq1c.avif",
-        "isMain": false
-      },
-      {
         "color": "Black",
         "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772189947/stone_island_1_wqz5cv.avif",
         "isMain": true
@@ -566,39 +546,60 @@
     ]
   },
   {
-    "name": "Adidas Originals Trefoil Crew Sweatshirt",
-    "slug": "adidas-originals-trefoil-crew-sweatshirt",
-    "description": "A heritage staple that has never gone out of style. The Adidas Originals Trefoil Crew is made from a soft cotton-acrylic french terry blend and features the iconic Trefoil logo printed on the chest — a symbol that has defined sportswear culture since 1972. The clean relaxed cut, ribbed trims, and effortless proportions keep it relevant across every generation.",
-    "price": 90,
+    "name": "Lacoste Classic Crocodile Zip-Up Sweatshirt",
+    "slug": "lacoste-classic-crocodile-zip-up-sweatshirt",
+    "description": "Born from the courts, worn everywhere else. The Lacoste Classic Crocodile Zip-Up is crafted from a premium brushed fleece cotton blend with a signature petit piqué texture — refined, yet effortlessly relaxed. The embroidered crocodile on the chest carries over 90 years of sporting legacy, while the full-zip silhouette and contrast ribbed trims give it a clean, modern edge. A wardrobe essential that moves between the club and the street without missing a beat.",
+    "price": 120,
     "oldPrice": null,
-    "brand": "Adidas",
+    "brand": "Lacoste",
     "type": "Sweatshirt",
     "collection": "Autumn 2025",
-    "tags": [ "Sport", "Casual", "Streetwear" ],
+    "tags": ["Sport", "Casual", "Streetwear"],
     "materials": [
       {
         "name": "Cotton",
-        "percentage": 70
-      },
-      {
-        "name": "Acrylic",
-        "percentage": 30
+        "percentage": 100
       }
     ],
     "photos": [
       {
-        "color": "Black",
-        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772191237/adidas_2_vji709.webp",
+        "color": "Brown",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772384809/1_yssnzh.webp",
         "isMain": true
       },
       {
-        "color": "Black",
-        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772191232/adidas_3_lqcve0.webp",
+        "color": "Brown",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772384809/2_b2jiay.webp",
         "isMain": false
       },
       {
-        "color": "Black",
-        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772191227/adidas_4_e54su1.webp",
+        "color": "Brown",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772384809/3_scwk7f.webp",
+        "isMain": false
+      },
+      {
+        "color": "Brown",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772384808/4_hapkwi.webp",
+        "isMain": false
+      },
+      {
+        "color": "Green",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772384966/1_mb8zo8.webp",
+        "isMain": true
+      },
+      {
+        "color": "Green",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772384962/2_w1ashw.webp",
+        "isMain": false
+      },
+      {
+        "color": "Green",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772384962/3_fnxfup.webp",
+        "isMain": false
+      },
+      {
+        "color": "Green",
+        "url": "https://res.cloudinary.com/dkdljnfja/image/upload/v1772384962/4_dbmckc.webp",
         "isMain": false
       }
     ]

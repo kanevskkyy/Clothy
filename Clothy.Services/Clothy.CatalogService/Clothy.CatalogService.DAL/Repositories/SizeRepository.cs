@@ -17,20 +17,7 @@ namespace Clothy.CatalogService.DAL.Repositories
         {
 
         }
-
-        public async Task<Dictionary<Size, int>> GetSizesCountWithStockAsync(CancellationToken cancellationToken = default)
-        {
-            List<Size> sizes = await dbSet
-                .AsNoTracking()
-                .Include(s => s.ClothesStocks)
-                .ToListAsync(cancellationToken);
-
-            return sizes.ToDictionary(
-                size => size,
-                size => size.ClothesStocks.DistinctBy(stock => stock.ClotheId).Count()
-            );
-        }
-
+        
         public async Task<bool> IsNameAlreadyExistsAsync(string name, Guid? id = null, CancellationToken cancellationToken = default)
         {
             if (id == null)

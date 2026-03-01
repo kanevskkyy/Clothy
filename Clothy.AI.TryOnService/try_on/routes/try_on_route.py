@@ -1,4 +1,3 @@
-# router.py
 from fastapi import HTTPException, APIRouter, UploadFile, File, Form
 
 from try_on import Config

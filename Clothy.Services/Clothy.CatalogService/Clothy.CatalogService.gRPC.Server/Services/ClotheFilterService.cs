@@ -32,7 +32,6 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                 Dictionary<Collection, int> collections = await unitOfWork.Collections.GetCollectionsCountWithStockAsync(context.CancellationToken);
                 Dictionary<Color, int> colors = await unitOfWork.Colors.GetColorsCountWithStockAsync(context.CancellationToken);
                 Dictionary<Material, int> materials = await unitOfWork.Materials.GetMaterialsWithStockAsync(context.CancellationToken);
-                Dictionary<Size, int> sizes = await unitOfWork.Sizes.GetSizesCountWithStockAsync(context.CancellationToken);
                 Dictionary<Tag, int> tags = await unitOfWork.Tags.GetTagsWithStockCountAsync(context.CancellationToken);
                 (decimal minPrice, decimal maxPrice) priceRange = await unitOfWork.ClotheItems.GetMinAndMaxPriceAsync(context.CancellationToken);
                 (int maleCount, int femaleCount) genderCount = await unitOfWork.ClotheItems.GetClotheItemCountByGenderAsync(context.CancellationToken);
@@ -45,7 +44,6 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                 response.Collections.AddRange(ConvertCollectionsToGrpcResponse(collections));
                 response.Colors.AddRange(ConvertColorsToGrpcResponse(colors));
                 response.Materials.AddRange(ConvertMaterialsToGrpcResponse(materials));
-                response.Sizes.AddRange(ConvertSizesToGrpcResponse(sizes));
                 response.Tags.AddRange(ConvertTagsToGrpcResponse(tags));
                 response.PriceRange = ConvertPriceRangeToGrpcResponse(priceRange);
                 response.Gender = ConvertGenderCountToGrpcResponse(genderCount);
@@ -113,16 +111,6 @@ namespace Clothy.CatalogService.gRPC.Server.Services
                 Slug = pair.Key.Slug
             }).ToList();
         }
-
-        private List<SizesGrpcResponse> ConvertSizesToGrpcResponse(Dictionary<Size, int> sizes)
-        {
-            return sizes.Select(size => new SizesGrpcResponse
-            {
-                Id = size.Key.Id.ToString(),
-                Name = size.Key.Name,
-                ClotheItemCount = size.Value
-            }).ToList();
-        }   
 
         private List<TagsGrpcResponse> ConvertTagsToGrpcResponse(Dictionary<Tag, int> tags)
         {

@@ -38,7 +38,15 @@ const CartPage = () => {
     const handleClearCart = async () => {
         try {
             await basketApi.clearCartAsync();
-            setCartItems({userId: "", items: [], totalPrice: 0, totalItems: 0, unAvailableItemsCount: 0});
+            setCartItems({
+                userId: "",
+                items: [],
+                originalPrice: 0,
+                totalPrice: 0,
+                totalItems: 0,
+                unAvailableItemsCount: 0,
+                isFirstOrder: false
+            });
         } catch (error) {
             toast.error(getErrorMessage(error));
         }
@@ -77,6 +85,9 @@ const CartPage = () => {
         );
     }
 
+    const originalPrice = cartItems!.originalPrice;
+    const totalPrice = cartItems!.totalPrice;
+
     return (
         <Container className={styles.containerWrapper}>
             <div className={styles.container}>
@@ -102,10 +113,15 @@ const CartPage = () => {
                     unAvailableItemsCount={cartItems?.unAvailableItemsCount ?? 0}
                     title="Your Order"
                     priceRows={[
-                        {label: `Items (${cartItems?.totalItems})`, value: `$${cartItems!.totalPrice.toFixed(2)}`},
-                        {label: 'Delivery', value: cartItems!.totalPrice > 1500 ? 'Free' : 'Paid'}
+                        {label: `Items (${cartItems?.totalItems})`, value: `$${originalPrice.toFixed(2)}`},
+                        ...(cartItems!.isFirstOrder ? [{
+                            label: 'First order discount (10%)',
+                            value: `-$${(originalPrice - totalPrice).toFixed(2)}`,
+                            isDiscount: true
+                        }] : []),
+                        {label: 'Delivery', value: totalPrice > 1500 ? 'Free' : 'Paid'}
                     ]}
-                    totalPrice={cartItems!.totalPrice}
+                    totalPrice={totalPrice}
                     buttons={
                         <>
                             <Button
@@ -113,10 +129,7 @@ const CartPage = () => {
                                 size="lg"
                                 fullWidth
                                 onClick={handleCheckout}
-                                disabled={
-                                    cartItems!.totalPrice === 0 ||
-                                    cartItems!.unAvailableItemsCount > 0
-                                }
+                                disabled={totalPrice === 0 || cartItems!.unAvailableItemsCount > 0}
                             >
                                 Checkout →
                             </Button>

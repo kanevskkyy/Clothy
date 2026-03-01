@@ -18,7 +18,6 @@ export interface FilterState {
     clothingTypes: string[];
     colors: string[];
     materials: string[];
-    sizes: string[];
     tags: string[];
     collections: string[];
     gender: string[];
@@ -36,7 +35,6 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange, backgroun
             clothingTypes: [],
             colors: [],
             materials: [],
-            sizes: [],
             tags: [],
             collections: [],
             gender: [],
@@ -110,7 +108,6 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange, backgroun
             selectedFilters.clothingTypes.length > 0 ||
             selectedFilters.colors.length > 0 ||
             selectedFilters.materials.length > 0 ||
-            selectedFilters.sizes.length > 0 ||
             selectedFilters.tags.length > 0 ||
             selectedFilters.collections.length > 0 ||
             selectedFilters.gender.length > 0 ||
@@ -125,7 +122,6 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange, backgroun
             clothingTypes: [],
             colors: [],
             materials: [],
-            sizes: [],
             tags: [],
             collections: [],
             gender: [],
@@ -265,29 +261,6 @@ const CatalogFilter = memo(({ filters, initialFilters, onFilterChange, backgroun
                                             count={anyActive ? undefined : material.clotheItemCount}
                                             checked={selectedFilters.materials.includes(material.slug)}
                                             onChange={(checked) => handleCheckboxChange('materials', material.slug, checked)}
-                                        />
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    <div className={styles.filterSection}>
-                        <div className={styles.sectionHeader} onClick={() => toggleSection('size')}>
-                            <div className={styles.filterTitle}>Sizes</div>
-                            <ChevronUp className={`${styles.toggleIcon} ${expandedSections.has('size') ? styles.expanded : ''}`} size={20} />
-                        </div>
-                        {expandedSections.has('size') && (
-                            <div className={styles.sectionContent}>
-                                <div className={styles.checkboxList} onWheel={handleCheckboxListScroll}>
-                                    {filters.sizes.map(size => (
-                                        <Checkbox
-                                            key={size.id}
-                                            id={`size-${size.id}`}
-                                            label={size.name}
-                                            count={anyActive ? undefined : size.clotheItemCount}
-                                            checked={selectedFilters.sizes.includes(size.name)}
-                                            onChange={(checked) => handleCheckboxChange('sizes', size.name, checked)}
                                         />
                                     ))}
                                 </div>

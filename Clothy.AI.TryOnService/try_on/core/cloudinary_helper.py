@@ -14,7 +14,6 @@ async def process_clothe_cloudinary(source: Union[str, bytes]) -> str:
         executor,
         lambda: cloudinary.uploader.upload(
             source,
-            background_removal='cloudinary_ai',
             format='png'
         )
     )

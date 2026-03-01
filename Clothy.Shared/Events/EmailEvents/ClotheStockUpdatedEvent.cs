@@ -10,9 +10,11 @@ namespace Clothy.Shared.Events.EmailEvents.ClotheStockUpdated
     {
         public string? UserFirstName { get; init; }
         public string? UserEmail { get; init; }
-        public Guid ClotheId { get; init; }
+        public Guid? ClotheId { get; init; }
         public string? ClotheName { get; init; }
+        public string? ClotheSlug { get; init; }
         public string? Size { get; init; }
         public string? Color { get; init; }
+        public string? ColorSlug { get; init; }
     }
 }

@@ -16,9 +16,6 @@ namespace Clothy.CatalogService.DAL.Specification
             Query.Include(property => property.Stocks)
                 .ThenInclude(property => property.Color);
             Query.Include(property => property.ClotheTags);
-            Query.Include(property => property.ClothyType);
-            Query.Include(property => property.Collection);
-            Query.Include(property => property.Brand);
             Query.Include(property => property.Photos);
             Query.Include(property => property.ClotheMaterials);
 
@@ -50,11 +47,6 @@ namespace Clothy.CatalogService.DAL.Specification
             if (parameters.ClothingTypes != null && parameters.ClothingTypes.Any())
             {
                 Query.Where(property => parameters.ClothingTypes.Contains(property.ClothyType.Id));
-            }
-
-            if (parameters.Sizes != null && parameters.Sizes.Any())
-            {
-                Query.Where(property => property.Stocks.Any(size => parameters.Sizes.Contains(size.SizeId)));
             }
 
             if (parameters.Colors != null && parameters.Colors.Any())

@@ -36,6 +36,12 @@
     color: #EF4444;
 }
 
+.discountRow .label,
+.discountRow .value {
+    color: #16a34a;
+    font-weight: 500;
+}
+
 .orderPriceInfo {
     display: flex;
     flex-direction: column;

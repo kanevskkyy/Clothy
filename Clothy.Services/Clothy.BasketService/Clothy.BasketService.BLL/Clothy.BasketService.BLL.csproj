@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Clothy.OrderService\Clothy.OrderService.gRPC.Client\Clothy.OrderService.gRPC.Client.csproj" />
     <ProjectReference Include="..\Clothy.BasketService.DAL\Clothy.BasketService.DAL.csproj" />
+    <ProjectReference Include="..\Clothy.BasketService.gRPC.Client\Clothy.BasketService.gRPC.Client.csproj" />
   </ItemGroup>
 
 </Project>
