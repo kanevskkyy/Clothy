@@ -1,0 +1,89 @@
+.productsSection {
+    padding: 60px 0;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.sectionHeader {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+
+.titleLabel {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+    margin: 0 0 6px 0;
+}
+
+.title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.viewAll {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--color-text-primary);
+    text-decoration: none;
+    padding-bottom: 2px;
+    border-bottom: 1px solid currentColor;
+    transition: opacity 0.2s ease;
+    white-space: nowrap;
+}
+
+.viewAll:hover {
+    opacity: 0.6;
+}
+
+.popularGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+    gap: 32px;
+    margin: 0;
+}
+
+@media (max-width: 1200px) {
+    .popularGrid {
+        grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
+        gap: 24px;
+    }
+}
+
+@media (max-width: 768px) {
+    .popularGrid {
+        grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr));
+        gap: 20px;
+    }
+}
+
+@media (max-width: 600px) {
+    .popularGrid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        padding: 4px;
+    }
+}
+
+@media (max-width: 400px) {
+    .popularGrid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+        padding: 4px;
+    }
+}

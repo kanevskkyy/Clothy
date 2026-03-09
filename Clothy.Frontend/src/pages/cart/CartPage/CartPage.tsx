@@ -13,17 +13,20 @@ import Loader from "../../../shared/ui/Loader/Loader.tsx";
 import EmptyState from "../../../shared/ui/EmptyState/EmptyState.tsx";
 import {ShoppingCart} from "lucide-react";
 import Container from '../../../shared/layout/Container/Container.tsx';
+import {useCartStore} from '../../../app/stores/cartStore.ts';
 
 const CartPage = () => {
     const navigate = useNavigate();
     const [cartItems, setCartItems] = useState<IBasketList | null>(null);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
+    const setTotalItems = useCartStore(state => state.setTotalItems);
 
     const fetchUserCart = async (silent = false) => {
         try {
             if (!silent) setIsInitialLoading(true);
             const data = await basketApi.getMyCartAsync();
             setCartItems(data);
+            setTotalItems(data.totalItems);
         } catch (error) {
             toast.error(getErrorMessage(error));
         } finally {
@@ -47,6 +50,7 @@ const CartPage = () => {
                 unAvailableItemsCount: 0,
                 isFirstOrder: false
             });
+            setTotalItems(0);
         } catch (error) {
             toast.error(getErrorMessage(error));
         }

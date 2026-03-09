@@ -2,12 +2,12 @@ import {useEffect} from 'react';
 import styles from "./PopularProductsSection.module.css";
 import {catalogApi} from "../../../app/api/catalogApi.ts";
 import ProductList from '../../catalog/productList/ProductList.tsx';
-import Loader from '../../../shared/ui/Loader/Loader.tsx';
 import {toast} from "sonner";
 import {getErrorMessage} from "../../../shared/lib/errorHandler.ts";
 import {useQuery} from "@tanstack/react-query";
 import {Link} from "react-router-dom";
 import {ArrowRight} from "lucide-react";
+import ProductGridSkeleton from "../../catalog/skeleton/gridSkeleton/ProductGridSkeleton.tsx";
 
 const PopularProductsSection = () => {
     const {data: clotheItems = [], isLoading, error} = useQuery({
@@ -19,7 +19,7 @@ const PopularProductsSection = () => {
         if (error) toast.error(getErrorMessage(error));
     }, [error]);
 
-    if (isLoading) return <Loader/>;
+    if (isLoading) return <ProductGridSkeleton />;
 
     return (
         <section className={styles.productsSection}>

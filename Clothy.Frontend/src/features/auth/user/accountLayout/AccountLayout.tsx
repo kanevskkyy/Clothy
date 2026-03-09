@@ -3,7 +3,7 @@ import styles from "./AccountLayout.module.css";
 import EmailVerificationBanner from "../emailBanner/EmailVerificationBanner.tsx";
 import AccountSidebar from "../accountSidebar/AccountSidebar.tsx";
 import {useEffect, useState} from "react";
-import {useAuthStore} from "../../../../app/api/stores/authStore.ts";
+import {useAuthStore} from "../../../../app/stores/authStore.ts";
 import {Loader} from "lucide-react";
 import Container from "../../../../shared/layout/Container/Container.tsx";
 

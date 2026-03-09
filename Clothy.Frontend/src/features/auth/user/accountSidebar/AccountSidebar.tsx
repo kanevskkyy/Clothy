@@ -5,7 +5,7 @@ import {authApi} from "../../../../app/api/authApi.ts";
 import {toast} from "sonner";
 import {getErrorMessage} from "../../../../shared/lib/errorHandler.ts";
 import Button from "../../../../shared/ui/Button/Button.tsx";
-import {useAuthStore} from "../../../../app/api/stores/authStore.ts";
+import {useAuthStore} from "../../../../app/stores/authStore.ts";
 
 const AccountSidebar = () => {
     const location = useLocation();

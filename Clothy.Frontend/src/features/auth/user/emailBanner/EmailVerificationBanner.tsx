@@ -1,7 +1,7 @@
 import styles from "./EmailVerificationBanner.module.css";
 import Button from "../../../../shared/ui/Button/Button.tsx";
 import { AlertCircle, RefreshCw } from "lucide-react";
-import { useAuthStore } from "../../../../app/api/stores/authStore.ts";
+import { useAuthStore } from "../../../../app/stores/authStore.ts";
 import { toast } from "sonner";
 import { authApi, type IResendVerificationEmailRequest } from "../../../../app/api/authApi.ts";
 import { getErrorMessage } from "../../../../shared/lib/errorHandler.ts";

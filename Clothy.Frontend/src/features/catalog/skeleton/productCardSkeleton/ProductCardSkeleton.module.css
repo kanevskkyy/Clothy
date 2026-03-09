@@ -1,0 +1,42 @@
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position:  200% 0;
+    }
+}
+
+.shimmer,
+.nameLine,
+.colorDot,
+.priceLine {
+    background: linear-gradient(
+            90deg,
+            #f0f0f0 0%,
+            #e0e0e0 50%,
+            #f0f0f0 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.nameLine {
+    height: 14px;
+    width: 65%;
+    border-radius: 4px;
+}
+
+.colorDot {
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: none;
+}
+
+.priceLine {
+    height: 14px;
+    width: 48px;
+    border-radius: 4px;
+}

@@ -108,7 +108,6 @@ const AdminOrdersPage = () => {
             </Helmet>
 
             <div className={styles.header}>
-                <h1 className={styles.title}>Orders</h1>
                 <SortSelect
                     value={currentStatus}
                     options={ORDER_STATUS_OPTIONS}

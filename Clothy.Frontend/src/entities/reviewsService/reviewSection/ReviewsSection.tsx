@@ -16,7 +16,7 @@ import Button from "../../../shared/ui/Button/Button.tsx";
 import QuestionCreateForm from "../../../features/forms/questionCreateForm/QuestionCreateForm.tsx";
 import { useQueryClient } from "@tanstack/react-query";
 import {useNavigate} from "react-router-dom";
-import {useAuthStore} from "../../../app/api/stores/authStore.ts";
+import {useAuthStore} from "../../../app/stores/authStore.ts";
 
 interface ReviewsSectionProps {
     clotheId: string;

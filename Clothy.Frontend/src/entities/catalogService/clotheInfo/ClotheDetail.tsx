@@ -13,7 +13,8 @@ import { getErrorMessage } from "../../../shared/lib/errorHandler.ts";
 import { basketApi, type IBasketItemCreateDTO } from "../../../app/api/basketApi.ts";
 import {Tag} from "lucide-react";
 import Badge from "../../../features/catalog/badge/Badge.tsx";
-import { useAuthStore } from "../../../app/api/stores/authStore.ts";
+import { useAuthStore } from "../../../app/stores/authStore.ts";
+import { useCartStore } from "../../../app/stores/cartStore.ts";
 import {useNavigate} from "react-router-dom";
 
 interface ProductInfoProps {
@@ -30,6 +31,7 @@ const ClotheDetail: React.FC<ProductInfoProps> = ({ clotheDetail, selectedColor,
     const containerRef = useRef<HTMLDivElement>(null);
 
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+    const increment = useCartStore((state) => state.increment);
 
     const [selectedSize, setSelectedSize] = useState<ISizeReadDTO | null>(null);
     const [quantity, setQuantity] = useState(1);
@@ -113,7 +115,7 @@ const ClotheDetail: React.FC<ProductInfoProps> = ({ clotheDetail, selectedColor,
     }, [selectedColor.id, sizeAvailability]);
 
     const handleAddToCart = async () => {
-        if(!isAuthenticated()) {
+        if (!isAuthenticated()) {
             navigate('/login');
             return;
         }
@@ -127,6 +129,7 @@ const ClotheDetail: React.FC<ProductInfoProps> = ({ clotheDetail, selectedColor,
                 quantity,
             };
             await basketApi.addToCartAsync(dto);
+            increment(quantity);
             toast.success("Successfully added");
         } catch (error) {
             toast.error(getErrorMessage(error));
@@ -136,7 +139,7 @@ const ClotheDetail: React.FC<ProductInfoProps> = ({ clotheDetail, selectedColor,
     };
 
     const handleSubscribe = async () => {
-        if(!isAuthenticated()) {
+        if (!isAuthenticated()) {
             navigate('/login');
             return;
         }

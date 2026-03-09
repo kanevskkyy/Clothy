@@ -3,8 +3,6 @@ import styles from './Footer.module.css';
 
 const Footer = () => {
     return (
-        //TODO: Rename here if will rename brand
-
         <footer className={styles.footer}>
             <div className={styles.container}>
                 <div className={styles.grid}>
@@ -54,7 +52,7 @@ const Footer = () => {
                                     <a href="tel:+18001234567" className={styles.link}>+1 (800) 123-4567</a>
                                 </li>
                                 <li className={styles.listItem}>
-                                    <a href="mailto:info@atelier.com" className={styles.link}>info@atelier.com</a>
+                                    <a href="mailto:info@clothy.com" className={styles.link}>info@clothy.com</a>
                                 </li>
                                 <li className={styles.listItem}>
                                     <a href="https://maps.google.com/?q=5th+Avenue+New+York" target="_blank" rel="noreferrer" className={styles.link}>New York, 5th Avenue</a>

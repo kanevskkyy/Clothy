@@ -1,5 +1,5 @@
 import axios, { type InternalAxiosRequestConfig, type AxiosError } from 'axios';
-import { useAuthStore } from './stores/authStore.ts';
+import { useAuthStore } from '../stores/authStore.ts';
 
 const API_BASE_URL: string = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 

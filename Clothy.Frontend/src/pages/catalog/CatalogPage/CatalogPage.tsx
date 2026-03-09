@@ -10,7 +10,6 @@ import type {PagedList} from "../../../shared/lib/pagedList.ts";
 import {Helmet} from "react-helmet";
 import {getCurrentPage, handlePageChange as handlePageChangeUtil} from "../../../shared/lib/paginationUtils.ts";
 import {catalogApi} from "../../../app/api/catalogApi.ts";
-import Loader from "../../../shared/ui/Loader/Loader.tsx";
 import {parsePrice} from "../../../shared/lib/parsePrice.ts";
 import {toast} from "sonner";
 import {getErrorMessage} from "../../../shared/lib/errorHandler.ts";
@@ -18,6 +17,8 @@ import EmptyState from "../../../shared/ui/EmptyState/EmptyState.tsx";
 import {PackageSearch} from "lucide-react";
 import {useQuery} from "@tanstack/react-query";
 import Container from "../../../shared/layout/Container/Container.tsx";
+import ProductGridSkeleton from "../../../features/catalog/skeleton/gridSkeleton/ProductGridSkeleton.tsx";
+import CatalogSkeleton from "../../../features/catalog/skeleton/catalogSkeleton/CatalogSkeleton.tsx";
 
 const CatalogPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -48,18 +49,10 @@ const CatalogPage = () => {
     const getInitialFilters = (): FilterState => {
         if (!filters) {
             return {
-                brands: [],
-                clothingTypes: [],
-                colors: [],
-                materials: [],
-                tags: [],
-                collections: [],
-                gender: [],
-                minPrice: 0,
-                maxPrice: 0,
+                brands: [], clothingTypes: [], colors: [], materials: [],
+                tags: [], collections: [], gender: [], minPrice: 0, maxPrice: 0,
             };
         }
-
         return {
             brands: searchParams.get("brands")?.split(",").filter(Boolean) || [],
             clothingTypes: searchParams.get("clothingTypes")?.split(",").filter(Boolean) || [],
@@ -85,11 +78,9 @@ const CatalogPage = () => {
 
     const fetchClothes = async () => {
         if (!filters) return;
-
         setLoading(true);
         try {
             const selectedFilters = getInitialFilters();
-
             const brandIds = convertToIds(selectedFilters.brands, filters.brands);
             const clothingTypeIds = convertToIds(selectedFilters.clothingTypes, filters.clothingTypes);
             const colorIds = convertToIds(selectedFilters.colors, filters.colors);
@@ -99,7 +90,6 @@ const CatalogPage = () => {
 
             let sortByParam: 'price' | 'name' | undefined;
             let sortDescending = false;
-
             if (sortBy === 'price-asc') sortByParam = 'price';
             else if (sortBy === 'price-desc') { sortByParam = 'price'; sortDescending = true; }
             else if (sortBy === 'name-asc') sortByParam = 'name';
@@ -123,7 +113,6 @@ const CatalogPage = () => {
                 sortBy: sortByParam,
                 sortDescending: sortDescending || undefined,
             });
-
             setPagedClothes(data);
         } catch (error) {
             toast.error(getErrorMessage(error));
@@ -133,14 +122,11 @@ const CatalogPage = () => {
     };
 
     useEffect(() => {
-        if (filters) {
-            fetchClothes();
-        }
+        if (filters) fetchClothes();
     }, [filters, searchParams, sortBy, currentPage]);
 
     const handleFilterChange = (filterState: FilterState) => {
         const params = new URLSearchParams(searchParams);
-
         const setOrDelete = (key: string, arr: string[]) =>
             arr.length ? params.set(key, arr.join(",")) : params.delete(key);
 
@@ -157,13 +143,11 @@ const CatalogPage = () => {
         } else {
             params.delete("minPrice");
         }
-
         if (filters && filterState.maxPrice !== parsePrice(filters.priceRange.maxPrice)) {
             params.set("maxPrice", filterState.maxPrice.toString());
         } else {
             params.delete("maxPrice");
         }
-
         params.delete("page");
         setSearchParams(params);
     };
@@ -171,13 +155,8 @@ const CatalogPage = () => {
     const handleSortChange = (newSort: string) => {
         setSortBy(newSort);
         const params = new URLSearchParams(searchParams);
-
-        if (newSort === "newest") {
-            params.delete("sort");
-        } else {
-            params.set("sort", newSort);
-        }
-
+        if (newSort === "newest") params.delete("sort");
+        else params.set("sort", newSort);
         setSearchParams(params);
     };
 
@@ -187,7 +166,9 @@ const CatalogPage = () => {
 
     if (!filters || !pagedClothes) {
         return (
-            <Loader/>
+            <Container paddingY={30} paddingX={10}>
+                <CatalogSkeleton />
+            </Container>
         );
     }
 
@@ -196,15 +177,9 @@ const CatalogPage = () => {
             <div>
                 <Helmet>
                     <title>{`Clothy — Clothing Catalog | Page ${currentPage} • ${pagedClothes.totalCount} items`}</title>
-                    <meta
-                        name="description"
-                        content={`Clothy clothing catalog: ${pagedClothes.totalCount}+ items. Filter by brand, size, and price — fast and convenient online shopping.`}
-                    />
-                    <meta property="og:title" content="Clothy — Clothing Catalog"/>
-                    <meta
-                        property="og:description"
-                        content="Wide selection of clothing in the Clothy catalog. Discounts, new arrivals, and popular brands."
-                    />
+                    <meta name="description" content={`Clothy clothing catalog: ${pagedClothes.totalCount}+ items. Filter by brand, size, and price — fast and convenient online shopping.`} />
+                    <meta property="og:title" content="Clothy — Clothing Catalog" />
+                    <meta property="og:description" content="Wide selection of clothing in the Clothy catalog. Discounts, new arrivals, and popular brands." />
                 </Helmet>
 
                 <div className={styles.catalogContainer}>
@@ -219,51 +194,32 @@ const CatalogPage = () => {
                     <main className={styles.catalogMain}>
                         <div className={styles.catalogHeader}>
                             <div className={styles.desktopSort}>
-                                <SortSelect
-                                    value={sortBy}
-                                    options={sortOptions}
-                                    onChange={handleSortChange}
-                                />
+                                <SortSelect value={sortBy} options={sortOptions} onChange={handleSortChange} />
                             </div>
-
                             <div className={styles.mobileFiltersRow}>
                                 <CatalogFilter
                                     filters={filters}
                                     initialFilters={getInitialFilters()}
                                     onFilterChange={handleFilterChange}
                                 />
-                                <SortSelect
-                                    value={sortBy}
-                                    options={sortOptions}
-                                    onChange={handleSortChange}
-                                />
+                                <SortSelect value={sortBy} options={sortOptions} onChange={handleSortChange} />
                             </div>
                         </div>
 
                         {loading ? (
-                            <Loader/>
+                            <ProductGridSkeleton />
                         ) : pagedClothes.items.length === 0 ? (
                             <EmptyState
-                                icon={<PackageSearch size={28} color="#6B6B6B"/>}
+                                icon={<PackageSearch size={28} color="#6B6B6B" />}
                                 title="No items found"
                                 description="Try adjusting your filters or sorting options."
-                                buttons={[
-                                    {
-                                        label: "Reset Filters",
-                                        onClick: () => {
-                                            setSearchParams(new URLSearchParams());
-                                        },
-                                        variant: "primary",
-                                        size: "md"
-                                    }
-                                ]}
+                                buttons={[{ label: "Reset Filters", onClick: () => setSearchParams(new URLSearchParams()), variant: "primary", size: "md" }]}
                             />
                         ) : (
                             <>
                                 <div className={styles.productWrapper}>
-                                    <ProductList products={pagedClothes.items}/>
+                                    <ProductList products={pagedClothes.items} />
                                 </div>
-
                                 {pagedClothes.totalPages > 1 && (
                                     <Pagination
                                         currentPage={currentPage}

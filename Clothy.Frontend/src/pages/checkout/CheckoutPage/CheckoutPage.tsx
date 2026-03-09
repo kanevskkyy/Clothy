@@ -6,7 +6,7 @@ import type {CheckoutFormData} from '../../../app/schemas/checkoutFormSchema.ts'
 import {useEffect, useState} from "react";
 import {basketApi} from "../../../app/api/basketApi.ts";
 import {useNavigate} from "react-router-dom";
-import {useAuthStore} from "../../../app/api/stores/authStore.ts";
+import {useAuthStore} from "../../../app/stores/authStore.ts";
 import {toast} from "sonner";
 import {ordersApi} from "../../../app/api/ordersApi.ts";
 import {getErrorMessage} from "../../../shared/lib/errorHandler.ts";
@@ -14,6 +14,7 @@ import {paymentApi} from "../../../app/api/paymentApi.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import Loader from "../../../shared/ui/Loader/Loader.tsx";
 import Container from "../../../shared/layout/Container/Container.tsx";
+import {useCartStore} from "../../../app/stores/cartStore.ts";
 
 const CheckoutPage = () => {
     const queryClient = useQueryClient();
@@ -23,6 +24,7 @@ const CheckoutPage = () => {
     const [isFirstOrder, setIsFirstOrder] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState(true);
     const [isCreatingOrder, setIsCreatingOrder] = useState(false);
+    const setCartItems = useCartStore(state => state.setTotalItems);
 
     const user = useAuthStore(state => state.user);
     const emailVerified = user?.emailVerified;
@@ -75,7 +77,8 @@ const CheckoutPage = () => {
                 }
                 setOriginalPrice(data.originalPrice);
                 setTotalPrice(data.totalPrice);
-                setTotalItems(data.items.length);
+                setTotalItems(data.totalItems);
+                setCartItems(data.totalItems);
                 setIsFirstOrder(data.isFirstOrder);
             } catch (error) {
                 toast.error(getErrorMessage(error));

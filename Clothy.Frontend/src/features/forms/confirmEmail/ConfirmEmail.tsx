@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react";
 import Button from "../../../shared/ui/Button/Button.tsx";
 import { useState, useEffect } from "react";
 import StepList, { type Step } from "../../onboarding/stepList/StepList.tsx";
-import { useAuthStore } from "../../../app/api/stores/authStore.ts";
+import { useAuthStore } from "../../../app/stores/authStore.ts";
 import { authApi, type IResendVerificationEmailRequest } from "../../../app/api/authApi.ts";
 import { toast } from "sonner";
 import { getErrorMessage } from "../../../shared/lib/errorHandler.ts";

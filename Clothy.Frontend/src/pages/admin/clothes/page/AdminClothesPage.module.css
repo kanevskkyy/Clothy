@@ -1,15 +1,8 @@
 .pageHeader {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     margin-bottom: 28px;
-}
-
-.pageTitle {
-    font-size: 24px;
-    font-weight: 600;
-    color: var(--color-text-primary);
-    margin: 0;
 }
 
 .catalogContainer {
@@ -83,8 +76,12 @@
         align-items: stretch;
     }
 
-    .mobileFiltersRow > :first-child { flex-shrink: 0; }
-    .mobileFiltersRow > :last-child { flex: 1; min-width: 0; }
+    .mobileFiltersRow > :first-child {
+        flex-shrink: 0;
+    }
+    .mobileFiltersRow > :last-child {
+        flex: 1; min-width: 0;
+    }
 
     .desktopSort {
         display: none;

@@ -6,7 +6,7 @@ import { CornerDownLeft } from "lucide-react";
 import AnswerCreateForm from "../../../features/forms/answerCreateForm/AnswerCreateForm.tsx";
 import type {IAnswerReadDTO} from "../interfaces/IAnswerReadDTO.ts";
 import {useNavigate } from "react-router-dom";
-import { useAuthStore } from "../../../app/api/stores/authStore.ts";
+import { useAuthStore } from "../../../app/stores/authStore.ts";
 
 interface QuestionItemProps {
     question: IQuestionReadDTO;

@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuthStore } from "../api/stores/authStore.ts";
+import { useAuthStore } from "../stores/authStore.ts";
 
 const AdminRoute = () => {
     const isAuthenticated = useAuthStore(store => store.isAuthenticated);

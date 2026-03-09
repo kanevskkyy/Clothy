@@ -5,7 +5,7 @@ import styles from "./VerifyEmailPage.module.css";
 import {useEffect, useState} from "react";
 import {useLocation} from "react-router-dom";
 import {decodeJwt} from "../../../shared/lib/decodeJwt.ts";
-import {useAuthStore} from "../../../app/api/stores/authStore.ts";
+import {useAuthStore} from "../../../app/stores/authStore.ts";
 import Container from "../../../shared/layout/Container/Container.tsx";
 
 const VerifyEmailPage = () => {

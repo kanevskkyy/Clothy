@@ -8,7 +8,7 @@ import {Helmet} from 'react-helmet';
 import {catalogApi} from "../../../app/api/catalogApi.ts";
 import {toast} from "sonner";
 import {getErrorMessage} from "../../../shared/lib/errorHandler.ts";
-import ClotheDetailSkeleton from './skeleton/ClotheDetailSkeleton.tsx';
+import ClotheDetailSkeleton from '../../../features/catalog/skeleton/clotheDetailSkeleton/ClotheDetailSkeleton.tsx';
 import {useQuery} from '@tanstack/react-query';
 import type {IColorReadDTO} from "../../../entities/catalogService/interfaces/color/IColorReadDTO.ts";
 import Container from "../../../shared/layout/Container/Container.tsx";

@@ -1,6 +1,6 @@
 import type { LoginFormData } from "../schemas/loginSchema.ts";
 import apiClient from "./client.ts";
-import { useAuthStore } from "./stores/authStore.ts";
+import { useAuthStore } from "../stores/authStore.ts";
 import type { RegisterFormData } from "../schemas/registerSchema.ts";
 import type { IUserReadDTO } from "../../entities/usersService/IUserReadDTO.ts";
 import type { ResetPasswordSchema } from "../schemas/resetPasswordSchema.ts";

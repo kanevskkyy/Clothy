@@ -1,16 +1,17 @@
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, FreeMode } from "swiper/modules";
+import {Swiper, SwiperSlide} from "swiper/react";
+import {Autoplay, FreeMode} from "swiper/modules";
 import "swiper/swiper.css";
 import styles from './BrandsCarousel.module.css';
 import {useEffect} from "react";
 import {catalogApi} from "../../../app/api/catalogApi.ts";
-import Loader from "../../../shared/ui/Loader/Loader.tsx";
-import { toast } from "sonner";
+import {toast} from "sonner";
 import {getErrorMessage} from "../../../shared/lib/errorHandler.ts";
 import {useQuery} from "@tanstack/react-query";
 
+const SKELETON_WIDTHS = [88, 120, 72, 104, 96, 80, 112, 92];
+
 const BrandsCarousel = () => {
-    const { data: brands = [], isLoading, error } = useQuery({
+    const {data: brands = [], isLoading, error} = useQuery({
         queryKey: ["brands"],
         queryFn: () => catalogApi.getAllBrandsAsync(),
     });
@@ -19,7 +20,21 @@ const BrandsCarousel = () => {
         if (error) toast.error(getErrorMessage(error));
     }, [error]);
 
-    if (isLoading) return <Loader />;
+    if (isLoading) {
+        return (
+            <div className={styles.carouselContainer}>
+                <div className={styles.skeletonRow}>
+                    {SKELETON_WIDTHS.map((w, i) => (
+                        <div
+                            key={i}
+                            className={styles.skeletonItem}
+                            style={{width: w}}
+                        />
+                    ))}
+                </div>
+            </div>
+        );
+    }
 
     const duplicatedBrands = [...brands, ...brands];
 

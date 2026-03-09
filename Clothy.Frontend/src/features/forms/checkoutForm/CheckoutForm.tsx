@@ -15,7 +15,7 @@ import Loader from '../../../shared/ui/Loader/Loader.tsx';
 import { ordersApi } from '../../../app/api/ordersApi.ts';
 import { toast } from 'sonner';
 import { getErrorMessage } from '../../../shared/lib/errorHandler.ts';
-import { useAuthStore } from '../../../app/api/stores/authStore.ts';
+import { useAuthStore } from '../../../app/stores/authStore.ts';
 import { getZodFieldErrors } from '../../../shared/lib/getZodFieldErrors.ts';
 import { useQuery } from '@tanstack/react-query';
 

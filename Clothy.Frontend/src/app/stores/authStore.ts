@@ -1,6 +1,6 @@
 import { create } from "zustand/react";
 import { persist, createJSONStorage } from "zustand/middleware";
-import type { IUserReadDTO } from "../../../entities/usersService/IUserReadDTO.ts";
+import type { IUserReadDTO } from "../../entities/usersService/IUserReadDTO.ts";
 
 export interface IAuthStore {
     accessToken: string | null;

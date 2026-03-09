@@ -8,7 +8,7 @@ import { useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { reviewApi } from "../../../../app/api/reviewApi.ts";
 import { decodeJwt } from "../../../../shared/lib/decodeJwt.ts";
-import { useAuthStore } from "../../../../app/api/stores/authStore.ts";
+import { useAuthStore } from "../../../../app/stores/authStore.ts";
 import { toast } from "sonner";
 import { getErrorMessage } from "../../../../shared/lib/errorHandler.ts";
 import { getCurrentPage, handlePageChange } from "../../../../shared/lib/paginationUtils.ts";
