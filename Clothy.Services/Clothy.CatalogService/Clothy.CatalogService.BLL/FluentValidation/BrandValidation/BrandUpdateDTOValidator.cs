@@ -11,7 +11,6 @@ namespace Clothy.CatalogService.BLL.FluentValidation.BrandValidation
 {
     public class BrandUpdateDTOValidator : AbstractValidator<BrandUpdateDTO>
     {
-        private readonly string[] permittedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".svg", ".webp" };
         public BrandUpdateDTOValidator()
         {
             RuleFor(x => x.Name)

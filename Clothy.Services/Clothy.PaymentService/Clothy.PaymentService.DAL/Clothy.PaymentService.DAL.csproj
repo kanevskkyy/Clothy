@@ -10,4 +10,8 @@
     <ProjectReference Include="..\Clothy.PaymentService.Domain\Clothy.PaymentService.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.10" />
+  </ItemGroup>
+
 </Project>

@@ -1,20 +1,12 @@
 ﻿using AutoMapper;
 using Clothy.Aggregator.Aggregate.RedisCache;
-using Clothy.CatalogService.BLL.DTOs.ClothingTypeDTOs;
 using Clothy.CatalogService.BLL.DTOs.CollectionDTOs;
-using Clothy.CatalogService.BLL.Exceptions;
 using Clothy.CatalogService.BLL.Interfaces;
 using Clothy.CatalogService.DAL.UOW;
 using Clothy.CatalogService.Domain.Entities.Catalog;
 using Clothy.CatalogService.Domain.Entities.Clothe;
 using Clothy.Shared.Cache.Interfaces;
 using Clothy.Shared.Helpers.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Clothy.CatalogService.BLL.Services
 {

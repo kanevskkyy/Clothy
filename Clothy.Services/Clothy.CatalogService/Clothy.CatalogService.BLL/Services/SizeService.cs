@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.Serialization.Formatters;
-using System.Threading;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using Clothy.Aggregator.Aggregate.RedisCache;
 using Clothy.CatalogService.BLL.DTOs.SizeDTOs;
-using Clothy.CatalogService.BLL.Exceptions;
 using Clothy.CatalogService.BLL.Interfaces;
 using Clothy.CatalogService.DAL.UOW;
 using Clothy.CatalogService.Domain.Entities.Catalog;

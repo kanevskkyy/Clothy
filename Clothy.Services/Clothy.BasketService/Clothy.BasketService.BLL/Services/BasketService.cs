@@ -108,12 +108,19 @@ namespace Clothy.BasketService.BLL.Services
 
                 BasketList? basket = await basketRepository.GetBasketAsync(userId);
                 if (basket == null || !basket.BasketItems.Any())
-                    return new BasketDTO { UserId = userId, Items = new List<BasketItemDTO>() };
+                    return new BasketDTO
+                    {
+                        UserId = userId,
+                        Items = new List<BasketItemDTO>()
+                    };
 
-                return await BuildBasketDTOFromCachedValidation(userId, basket,
-                    updateDto.ClotheId, updateDto.SizeId, updateDto.ColorId, validationResult);
+                return await BuildBasketDTOFromCachedValidation(userId, basket, updateDto.ClotheId, updateDto.SizeId,
+                    updateDto.ColorId, validationResult);
             }
-            catch (ValidationFailedException) { throw; }
+            catch (ValidationFailedException)
+            {
+                throw;
+            }
             catch (RpcException rpcEx)
             {
                 throw new ValidationFailedException($"gRPC validation failed: {rpcEx.Status.Detail}");
