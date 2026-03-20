@@ -12,8 +12,6 @@
 }
 
 .inner {
-    padding: 0 32px !important;
-    max-width: 100% !important;
     height: 72px;
     display: flex;
     align-items: center;

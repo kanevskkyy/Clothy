@@ -201,7 +201,6 @@ const CheckoutForm = ({ onValidSubmit }: CheckoutFormProps) => {
     const handleSettlementChange = (value: string) => {
         settlementIdRef.current = value;
         setFormData(prev => ({ ...prev, settlementId: value, pickupPointId: '' }));
-        setSettlementSearch('');
         setPickupSearch('');
         setPickupPoints(defaultPagedList());
         if (errors.settlementId) setErrors(prev => ({ ...prev, settlementId: undefined }));

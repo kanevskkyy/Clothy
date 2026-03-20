@@ -34,6 +34,10 @@ export const questionApi = {
         await apiClient.delete(`/api/questions/${id}`);
     },
 
+    deleteAnswerAsync: async (questionId: string, answerId: string): Promise<void> => {
+        await apiClient.delete(`/api/questions/${questionId}/answers/${answerId}`);
+    },
+
     createAnswerAsync: async ( questionId: string, body: AnswerSchema ): Promise<IAnswerReadDTO> => {
         const { data } = await apiClient.post<IAnswerReadDTO>(`/api/questions/${questionId}/answers`, body);
         return data;

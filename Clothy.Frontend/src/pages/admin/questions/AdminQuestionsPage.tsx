@@ -33,10 +33,11 @@ const AdminQuestionsPage = () => {
     const [questions, setQuestions] = useState<PagedList<IQuestionReadDTO> | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [deletingId, setDeletingId] = useState<string | null>(null);
+    const [deletingAnswerId, setDeletingAnswerId] = useState<string | null>(null);
     const [filter, setFilter] = useState<FilterType>("unanswered");
 
     useEffect(() => {
-        setPageHeader({ title: "Questions", description: "Customer questions awaiting answers" });
+        setPageHeader({ title: "Questions", description: "Customer questions" });
     }, []);
 
     const fetchQuestions = async () => {
@@ -58,13 +59,17 @@ const AdminQuestionsPage = () => {
         fetchQuestions();
     }, [currentPage, filter]);
 
+    const invalidate = () => {
+        queryClient.invalidateQueries({ queryKey: ["clothe"] });
+        fetchQuestions();
+    };
+
     const handleDelete = async (id: string) => {
         try {
             setDeletingId(id);
             await questionApi.deleteQuestionAsync(id);
             toast.success("Question deleted.");
-            await queryClient.invalidateQueries({ queryKey: ["clothe"] });
-            fetchQuestions();
+            invalidate();
         } catch (error) {
             toast.error(getErrorMessage(error));
         } finally {
@@ -72,12 +77,23 @@ const AdminQuestionsPage = () => {
         }
     };
 
+    const handleDeleteAnswer = async (questionId: string, answerId: string) => {
+        try {
+            setDeletingAnswerId(answerId);
+            await questionApi.deleteAnswerAsync(questionId, answerId);
+            toast.success("Answer deleted.");
+            invalidate();
+        } catch (error) {
+            toast.error(getErrorMessage(error));
+        } finally {
+            setDeletingAnswerId(null);
+        }
+    };
+
     const handleFilterChange = (newFilter: FilterType) => {
         setFilter(newFilter);
         handlePageChange(1, searchParams, setSearchParams);
     };
-
-
 
     const onPageChange = (page: number) => {
         handlePageChange(page, searchParams, setSearchParams);
@@ -116,10 +132,9 @@ const AdminQuestionsPage = () => {
                                 <div className={styles.questionItemWrapper}>
                                     <QuestionItem
                                         question={question}
-                                        onInvalidate={() => {
-                                            queryClient.invalidateQueries({ queryKey: ["clothe"] });
-                                            fetchQuestions();
-                                        }}
+                                        onInvalidate={invalidate}
+                                        onDeleteAnswer={(answerId) => handleDeleteAnswer(question.id, answerId)}
+                                        deletingAnswerId={deletingAnswerId}
                                     />
                                 </div>
                                 <div className={styles.actions}>

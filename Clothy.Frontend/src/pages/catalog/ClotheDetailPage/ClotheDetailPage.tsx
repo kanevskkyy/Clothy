@@ -13,7 +13,6 @@ import {useQuery} from '@tanstack/react-query';
 import type {IColorReadDTO} from "../../../entities/catalogService/interfaces/color/IColorReadDTO.ts";
 import Container from "../../../shared/layout/Container/Container.tsx";
 
-
 const ClotheDetailPage = () => {
     const {slug, colorSlug} = useParams<{ slug: string; colorSlug: string }>();
     const navigate = useNavigate();

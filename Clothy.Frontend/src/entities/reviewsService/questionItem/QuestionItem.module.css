@@ -25,6 +25,14 @@
     gap: 8px;
 }
 
+.answerMeta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
 .replyBtn {
     display: flex;
     align-items: center;
@@ -40,6 +48,28 @@
 
 .replyBtn:hover {
     color: #333;
+}
+
+.deleteAnswerBtn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #999;
+    font-size: 13px;
+    padding: 0;
+    transition: color 0.2s;
+}
+
+.deleteAnswerBtn:hover {
+    color: #dc3545;
+}
+
+.deleteAnswerBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .questionAvatar, .answerAvatar {
@@ -80,5 +110,11 @@
     .answerDate {
         align-self: flex-end;
         font-size: 13px;
+    }
+
+    .answerMeta {
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-end;
     }
 }

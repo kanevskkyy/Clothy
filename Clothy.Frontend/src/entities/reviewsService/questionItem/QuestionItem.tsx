@@ -2,18 +2,20 @@ import { useState } from "react";
 import type { IQuestionReadDTO } from "../interfaces/IQuestionReadDTO.ts";
 import styles from "./QuestionItem.module.css";
 import { formatDate } from "../../../shared/lib/formatDate.ts";
-import { CornerDownLeft } from "lucide-react";
+import { CornerDownLeft, Trash2 } from "lucide-react";
 import AnswerCreateForm from "../../../features/forms/answerCreateForm/AnswerCreateForm.tsx";
-import type {IAnswerReadDTO} from "../interfaces/IAnswerReadDTO.ts";
-import {useNavigate } from "react-router-dom";
+import type { IAnswerReadDTO } from "../interfaces/IAnswerReadDTO.ts";
+import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../../app/stores/authStore.ts";
 
 interface QuestionItemProps {
     question: IQuestionReadDTO;
     onInvalidate?: () => void;
+    onDeleteAnswer?: (answerId: string) => void;
+    deletingAnswerId?: string | null;
 }
 
-const QuestionItem: React.FC<QuestionItemProps> = ({ question, onInvalidate }) => {
+const QuestionItem: React.FC<QuestionItemProps> = ({ question, onInvalidate, onDeleteAnswer, deletingAnswerId }) => {
     const [isReplying, setIsReplying] = useState(false);
     const [answers, setAnswers] = useState<IAnswerReadDTO[]>(question.answers);
 
@@ -67,7 +69,19 @@ const QuestionItem: React.FC<QuestionItemProps> = ({ question, onInvalidate }) =
                             <p className={styles.answerText}>{answer.answerText}</p>
                         </div>
                     </div>
-                    <div className={styles.answerDate}>{formatDate(answer.createdAt)}</div>
+                    <div className={styles.answerMeta}>
+                        <span className={styles.answerDate}>{formatDate(answer.createdAt)}</span>
+                        {onDeleteAnswer && (
+                            <button
+                                className={styles.deleteAnswerBtn}
+                                disabled={deletingAnswerId === answer.id}
+                                onClick={() => onDeleteAnswer(answer.id)}
+                            >
+                                <Trash2 size={14} />
+                                Delete
+                            </button>
+                        )}
+                    </div>
                 </div>
             ))}
 

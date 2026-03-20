@@ -20,7 +20,7 @@ type FormData = {
     slug: string;
     description: string;
     price: number | "";
-    gender: "Male" | "Female" | "Unisex" | "";
+    gender: "Male" | "Female" | "";
     brandId: string;
     clothingTypeId: string;
     collectionId: string;
@@ -46,7 +46,7 @@ const ClotheUpdateForm = ({ clothe, onSuccess }: Props) => {
         slug: clothe.slug,
         description: clothe.description,
         price: clothe.price,
-        gender: clothe.gender as "Male" | "Female" | "Unisex",
+        gender: clothe.gender as "Male" | "Female",
         brandId: clothe.brand.id,
         clothingTypeId: clothe.clothyType.id,
         collectionId: clothe.collection.id,
@@ -197,7 +197,7 @@ const ClotheUpdateForm = ({ clothe, onSuccess }: Props) => {
 
                     <FormField label="Gender" htmlFor="gender" required error={errors.gender}>
                         <div className={styles.radioGroup}>
-                            {(["Male", "Female", "Unisex"] as const).map((g) => (
+                            {(["Male", "Female"] as const).map((g) => (
                                 <RadioOption
                                     key={g}
                                     id={`gender-${g}`}
@@ -253,26 +253,6 @@ const ClotheUpdateForm = ({ clothe, onSuccess }: Props) => {
                         </FormField>
                     </div>
                 </section>
-
-                <div className={styles.formActions}>
-                    <Button
-                        disabled={isSubmitting || isDeleting}
-                        type="submit"
-                        variant="primary"
-                        size="lg"
-                        fullWidth
-                    >
-                        {isSubmitting ? "Saving..." : "Save changes"}
-                    </Button>
-                    <Button
-                        variant="secondary"
-                        icon={<Trash2 size={15} />}
-                        disabled={isDeleting || isSubmitting}
-                        onClick={handleDelete}
-                    >
-                        {isDeleting ? "Deleting..." : "Delete clothe"}
-                    </Button>
-                </div>
             </form>
 
             {stocks.length > 0 && (
@@ -323,6 +303,26 @@ const ClotheUpdateForm = ({ clothe, onSuccess }: Props) => {
                     </div>
                 </section>
             )}
+
+            <div className={styles.formActions}>
+                <Button
+                    disabled={isSubmitting || isDeleting}
+                    type="submit"
+                    variant="primary"
+                    size="lg"
+                    fullWidth
+                >
+                    {isSubmitting ? "Saving..." : "Save changes"}
+                </Button>
+                <Button
+                    variant="secondary"
+                    icon={<Trash2 size={15} />}
+                    disabled={isDeleting || isSubmitting}
+                    onClick={handleDelete}
+                >
+                    {isDeleting ? "Deleting..." : "Delete clothe"}
+                </Button>
+            </div>
         </div>
     );
 };
