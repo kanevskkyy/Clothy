@@ -4,7 +4,7 @@ import path from 'path';
 import react from "@vitejs/plugin-react-swc";
 
 export default defineConfig(({ mode }) => {
-  const parentDir = path.resolve(__dirname, '..');
+  const parentDir = path.resolve(__dirname, '../..');
   loadEnv(mode, parentDir, '');
 
   return {

@@ -111,7 +111,7 @@ public static class Extensions
         app.UseCorrelationId();
         app.UseServiceLogging();
         app.MapDefaultEndpoints();
-
+        
         app.MapControllers();
 
         return app;

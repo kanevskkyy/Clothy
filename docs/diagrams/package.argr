@@ -1,0 +1,226 @@
+<ArchitectureGraph>
+  <Module Identifier="F86F401E-046A-4432-970D-357F4DF2352C" Name="Clothy.AppHost" />
+  <Module Identifier="63674236-D30C-41B9-9985-617A8562999E" Name="Clothy.ServiceDefaults" />
+  <Module Identifier="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" Name="Clothy.Shared" />
+  <Module Identifier="32627D81-CF67-44B9-B659-342EA79966A8" Name="Clothy.CatalogService.API" />
+  <Module Identifier="C58D4ED3-BA80-41BF-9BE4-7A16B1449710" Name="Clothy.Aggregator.Aggregate" />
+  <Module Identifier="B6C1FC06-F651-4B35-8B2E-1F20889ADB99" Name="Clothy.CatalogService.BLL" />
+  <Module Identifier="97B30EC7-FE9B-4A95-ACA0-6CE44FB020EE" Name="Clothy.CatalogService.DAL" />
+  <Module Identifier="FB7457A9-68C4-4837-B207-C9F80A8CA97B" Name="Clothy.CatalogService.Domain" />
+  <Module Identifier="520B3BF2-8ACA-401F-9DBB-D3C002C66DB6" Name="Clothy.CatalogService.gRPC.Server" />
+  <Module Identifier="AD75B11A-7533-40B2-86DB-DEDD491655B5" Name="Clothy.CatalogService.SeedData" />
+  <Module Identifier="F00D0774-A24A-4533-95FC-D18A58452C31" Name="Clothy.CatalogService.UnitTests" />
+  <Module Identifier="7454DAD6-57D7-4B89-AF9F-7365EE3A28FC" Name="Clothy.OrderService.API" />
+  <Module Identifier="47B743BA-406F-4253-9B77-75842E1ABC32" Name="Clothy.OrderService.BLL" />
+  <Module Identifier="0D6F17C2-3364-40F1-9604-8B4A9622A9BA" Name="Clothy.BasketService.gRPC.Server" />
+  <Module Identifier="E75DE544-F3B7-43F6-9659-DF78FB6CF12B" Name="Clothy.BasketService.BLL" />
+  <Module Identifier="33B82821-FF18-4B25-A359-620E3825B6F0" Name="Clothy.OrderService.gRPC.Client" />
+  <Module Identifier="DAAA2492-F056-4EF7-90DF-297123DEDF50" Name="Clothy.BasketService.DAL" />
+  <Module Identifier="093582DC-B111-4E22-9A82-AD72781BDA48" Name="Clothy.BaskteService.Domain" />
+  <Module Identifier="79157E99-08D1-445E-B2AA-C3AD1CCAE2A7" Name="Clothy.BasketService.gRPC.Client" />
+  <Module Identifier="77399A4C-18D3-4D0D-AC2B-30BAB7FCCE47" Name="Clothy.OrderService.DAL" />
+  <Module Identifier="8C910B2B-2F75-4973-8F6D-39A00E62E342" Name="Clothy.OrderService.Domain" />
+  <Module Identifier="EE161405-1234-43E0-AECC-6DE787112C75" Name="Clothy.OrderService.gRPC.Server" />
+  <Module Identifier="38682539-568A-3719-8909-5B3324805543" Name="Clothy.OrderService.SeedData" />
+  <Module Identifier="DF64D92B-6D8A-4686-A458-B28E96BC8FB7" Name="Clothy.OrderService.UnitTests" />
+  <Module Identifier="566AFF6A-3348-495E-AE06-87934A643C54" Name="Clothy.ReviewService.API" />
+  <Module Identifier="E2CE7D75-D47B-4F73-859C-FA096FB24874" Name="Clothy.ReviewService.Application" />
+  <Module Identifier="20B03FD1-521F-4893-B5E7-9C8E44DDDF73" Name="Clothy.ReviewService.Domain" />
+  <Module Identifier="F167B4A7-20A9-4B12-85D0-1FC09F984D67" Name="Clothy.ReviewService.gRPC.Client" />
+  <Module Identifier="00BB86B3-D096-489F-962C-8B41711EE054" Name="Clothy.ReviewService.gRPC.Server" />
+  <Module Identifier="FBB9A5CB-60A3-4C01-8400-A7D4A5FDF1DB" Name="Clothy.ReviewService.Infrastructure" />
+  <Module Identifier="605F086E-82C3-433C-8045-572D734BCBEB" Name="Clothy.ReviewService.UnitTests" />
+  <Module Identifier="805FDE96-7045-22B9-E11D-A78575AD706B" Name="Clothy.UserService.API" />
+  <Module Identifier="6E7F8A04-3677-42F3-9688-B014619623C4" Name="Clothy.UserService.BLL" />
+  <Module Identifier="06947FFC-23C1-427E-AC0A-5F45436E9421" Name="Clothy.UserService.DAL" />
+  <Module Identifier="B6670DF3-1E0E-4B0A-822E-796326EFA124" Name="Clothy.UserService.Domain" />
+  <Module Identifier="B510B834-2C93-B650-5B7C-ACC6E9DCBA2E" Name="Clothy.BasketService.API" />
+  <Module Identifier="01071113-F3A9-4DF0-B123-989D991B2EB6" Name="Clothy.BasketService.UnitTests" />
+  <Module Identifier="9C84E2C0-2341-278D-FF49-56010E1C12A0" Name="Clothy.AuthService.API" />
+  <Module Identifier="3976F328-36F5-4F3C-8112-61A19D1255D3" Name="Clothy.AuthService.BLL" />
+  <Module Identifier="A1DC74B8-F634-2B95-E1FD-25C94050A0AF" Name="Clothy.IdentityServer.API" />
+  <Module Identifier="5E667C18-9E0D-5982-8ED8-6F9F5D911883" Name="Clothy.NotificationService.API" />
+  <Module Identifier="0E9D6269-26FC-4FB4-92CF-0A4EE797314B" Name="Clothy.NotificationService.BLL" />
+  <Module Identifier="75BF675C-D456-2EC7-5F19-FE350130AEA1" Name="Clothy.PaymentService.API" />
+  <Module Identifier="D7F5DE3A-3E49-4EE9-9A3F-E6D0247375C6" Name="Clothy.PaymentService.BLL" />
+  <Module Identifier="121EDDC1-DBBB-40D8-999B-E988FA3DA092" Name="Clothy.PaymentService.DAL" />
+  <Module Identifier="47E1EB53-98D8-49DC-B026-99E10110E406" Name="Clothy.PaymentService.Domain" />
+  <Module Identifier="57F6DC0D-DA73-4BA2-9968-0E71FBDBEE5C" Name="Clothy.PaymentService.gRPC.Client" />
+  <Module Identifier="55CC5F82-7F5D-4663-94C4-7ADFC26BD7CC" Name="Clothy.PaymentService.UnitTests" />
+  <Module Identifier="0F1C189A-17C0-498C-B67A-C3777FB13684" Name="Clothy.Gateway" />
+  <Module Identifier="81F08E08-4D19-B8F3-ED88-DF1849F60E13" Name="Clothy.Aggregator.API" />
+  <Module Identifier="9A23ED6A-4812-4D64-A001-269281A701CF" Name="Clothy.Aggregator.UnitTests" />
+  <Module Identifier="CD442A07-18BC-1242-BF29-AE659E46A452" Name="Clothy.Pulumi" />
+  <Reference Identifier="63674236-D30C-41B9-9985-617A8562999E/r:Clothy.Shared" SourceId="63674236-D30C-41B9-9985-617A8562999E" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="C58D4ED3-BA80-41BF-9BE4-7A16B1449710/r:Clothy.Shared" SourceId="C58D4ED3-BA80-41BF-9BE4-7A16B1449710" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="32627D81-CF67-44B9-B659-342EA79966A8/r:Clothy.Aggregator.Aggregate" SourceId="32627D81-CF67-44B9-B659-342EA79966A8" Name="Clothy.Aggregator.Aggregate" TargetId="C58D4ED3-BA80-41BF-9BE4-7A16B1449710" />
+  <Reference Identifier="32627D81-CF67-44B9-B659-342EA79966A8/r:Clothy.Shared" SourceId="32627D81-CF67-44B9-B659-342EA79966A8" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="B6C1FC06-F651-4B35-8B2E-1F20889ADB99/r:Clothy.Aggregator.Aggregate" SourceId="B6C1FC06-F651-4B35-8B2E-1F20889ADB99" Name="Clothy.Aggregator.Aggregate" TargetId="C58D4ED3-BA80-41BF-9BE4-7A16B1449710" />
+  <Reference Identifier="B6C1FC06-F651-4B35-8B2E-1F20889ADB99/r:Clothy.Shared" SourceId="B6C1FC06-F651-4B35-8B2E-1F20889ADB99" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="97B30EC7-FE9B-4A95-ACA0-6CE44FB020EE/r:Clothy.Shared" SourceId="97B30EC7-FE9B-4A95-ACA0-6CE44FB020EE" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="97B30EC7-FE9B-4A95-ACA0-6CE44FB020EE/r:Clothy.CatalogService.Domain" SourceId="97B30EC7-FE9B-4A95-ACA0-6CE44FB020EE" Name="Clothy.CatalogService.Domain" TargetId="FB7457A9-68C4-4837-B207-C9F80A8CA97B" />
+  <Reference Identifier="B6C1FC06-F651-4B35-8B2E-1F20889ADB99/r:Clothy.CatalogService.DAL" SourceId="B6C1FC06-F651-4B35-8B2E-1F20889ADB99" Name="Clothy.CatalogService.DAL" TargetId="97B30EC7-FE9B-4A95-ACA0-6CE44FB020EE" />
+  <Reference Identifier="B6C1FC06-F651-4B35-8B2E-1F20889ADB99/r:Clothy.CatalogService.Domain" SourceId="B6C1FC06-F651-4B35-8B2E-1F20889ADB99" Name="Clothy.CatalogService.Domain" TargetId="FB7457A9-68C4-4837-B207-C9F80A8CA97B" />
+  <Reference Identifier="32627D81-CF67-44B9-B659-342EA79966A8/r:Clothy.CatalogService.BLL" SourceId="32627D81-CF67-44B9-B659-342EA79966A8" Name="Clothy.CatalogService.BLL" TargetId="B6C1FC06-F651-4B35-8B2E-1F20889ADB99" />
+  <Reference Identifier="32627D81-CF67-44B9-B659-342EA79966A8/r:Clothy.CatalogService.DAL" SourceId="32627D81-CF67-44B9-B659-342EA79966A8" Name="Clothy.CatalogService.DAL" TargetId="97B30EC7-FE9B-4A95-ACA0-6CE44FB020EE" />
+  <Reference Identifier="32627D81-CF67-44B9-B659-342EA79966A8/r:Clothy.ServiceDefaults" SourceId="32627D81-CF67-44B9-B659-342EA79966A8" Name="Clothy.ServiceDefaults" TargetId="63674236-D30C-41B9-9985-617A8562999E" />
+  <Reference Identifier="32627D81-CF67-44B9-B659-342EA79966A8/r:Clothy.CatalogService.Domain" SourceId="32627D81-CF67-44B9-B659-342EA79966A8" Name="Clothy.CatalogService.Domain" TargetId="FB7457A9-68C4-4837-B207-C9F80A8CA97B" />
+  <Reference Identifier="520B3BF2-8ACA-401F-9DBB-D3C002C66DB6/r:Clothy.Shared" SourceId="520B3BF2-8ACA-401F-9DBB-D3C002C66DB6" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="520B3BF2-8ACA-401F-9DBB-D3C002C66DB6/r:Clothy.CatalogService.BLL" SourceId="520B3BF2-8ACA-401F-9DBB-D3C002C66DB6" Name="Clothy.CatalogService.BLL" TargetId="B6C1FC06-F651-4B35-8B2E-1F20889ADB99" />
+  <Reference Identifier="520B3BF2-8ACA-401F-9DBB-D3C002C66DB6/r:Clothy.CatalogService.DAL" SourceId="520B3BF2-8ACA-401F-9DBB-D3C002C66DB6" Name="Clothy.CatalogService.DAL" TargetId="97B30EC7-FE9B-4A95-ACA0-6CE44FB020EE" />
+  <Reference Identifier="520B3BF2-8ACA-401F-9DBB-D3C002C66DB6/r:Clothy.Aggregator.Aggregate" SourceId="520B3BF2-8ACA-401F-9DBB-D3C002C66DB6" Name="Clothy.Aggregator.Aggregate" TargetId="C58D4ED3-BA80-41BF-9BE4-7A16B1449710" />
+  <Reference Identifier="520B3BF2-8ACA-401F-9DBB-D3C002C66DB6/r:Clothy.CatalogService.Domain" SourceId="520B3BF2-8ACA-401F-9DBB-D3C002C66DB6" Name="Clothy.CatalogService.Domain" TargetId="FB7457A9-68C4-4837-B207-C9F80A8CA97B" />
+  <Reference Identifier="32627D81-CF67-44B9-B659-342EA79966A8/r:Clothy.CatalogService.gRPC.Server" SourceId="32627D81-CF67-44B9-B659-342EA79966A8" Name="Clothy.CatalogService.gRPC.Server" TargetId="520B3BF2-8ACA-401F-9DBB-D3C002C66DB6" />
+  <Reference Identifier="AD75B11A-7533-40B2-86DB-DEDD491655B5/r:Clothy.CatalogService.DAL" SourceId="AD75B11A-7533-40B2-86DB-DEDD491655B5" Name="Clothy.CatalogService.DAL" TargetId="97B30EC7-FE9B-4A95-ACA0-6CE44FB020EE" />
+  <Reference Identifier="AD75B11A-7533-40B2-86DB-DEDD491655B5/r:Clothy.CatalogService.Domain" SourceId="AD75B11A-7533-40B2-86DB-DEDD491655B5" Name="Clothy.CatalogService.Domain" TargetId="FB7457A9-68C4-4837-B207-C9F80A8CA97B" />
+  <Reference Identifier="AD75B11A-7533-40B2-86DB-DEDD491655B5/r:Clothy.Shared" SourceId="AD75B11A-7533-40B2-86DB-DEDD491655B5" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="F00D0774-A24A-4533-95FC-D18A58452C31/r:Clothy.CatalogService.BLL" SourceId="F00D0774-A24A-4533-95FC-D18A58452C31" Name="Clothy.CatalogService.BLL" TargetId="B6C1FC06-F651-4B35-8B2E-1F20889ADB99" />
+  <Reference Identifier="F00D0774-A24A-4533-95FC-D18A58452C31/r:Clothy.Aggregator.Aggregate" SourceId="F00D0774-A24A-4533-95FC-D18A58452C31" Name="Clothy.Aggregator.Aggregate" TargetId="C58D4ED3-BA80-41BF-9BE4-7A16B1449710" />
+  <Reference Identifier="F00D0774-A24A-4533-95FC-D18A58452C31/r:Clothy.CatalogService.DAL" SourceId="F00D0774-A24A-4533-95FC-D18A58452C31" Name="Clothy.CatalogService.DAL" TargetId="97B30EC7-FE9B-4A95-ACA0-6CE44FB020EE" />
+  <Reference Identifier="F00D0774-A24A-4533-95FC-D18A58452C31/r:Clothy.CatalogService.Domain" SourceId="F00D0774-A24A-4533-95FC-D18A58452C31" Name="Clothy.CatalogService.Domain" TargetId="FB7457A9-68C4-4837-B207-C9F80A8CA97B" />
+  <Reference Identifier="F00D0774-A24A-4533-95FC-D18A58452C31/r:Clothy.Shared" SourceId="F00D0774-A24A-4533-95FC-D18A58452C31" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="7454DAD6-57D7-4B89-AF9F-7365EE3A28FC/r:Clothy.ServiceDefaults" SourceId="7454DAD6-57D7-4B89-AF9F-7365EE3A28FC" Name="Clothy.ServiceDefaults" TargetId="63674236-D30C-41B9-9985-617A8562999E" />
+  <Reference Identifier="47B743BA-406F-4253-9B77-75842E1ABC32/r:Clothy.Shared" SourceId="47B743BA-406F-4253-9B77-75842E1ABC32" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="0D6F17C2-3364-40F1-9604-8B4A9622A9BA/r:Clothy.Shared" SourceId="0D6F17C2-3364-40F1-9604-8B4A9622A9BA" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="33B82821-FF18-4B25-A359-620E3825B6F0/r:Clothy.Shared" SourceId="33B82821-FF18-4B25-A359-620E3825B6F0" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="E75DE544-F3B7-43F6-9659-DF78FB6CF12B/r:Clothy.OrderService.gRPC.Client" SourceId="E75DE544-F3B7-43F6-9659-DF78FB6CF12B" Name="Clothy.OrderService.gRPC.Client" TargetId="33B82821-FF18-4B25-A359-620E3825B6F0" />
+  <Reference Identifier="DAAA2492-F056-4EF7-90DF-297123DEDF50/r:Clothy.Shared" SourceId="DAAA2492-F056-4EF7-90DF-297123DEDF50" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="DAAA2492-F056-4EF7-90DF-297123DEDF50/r:Clothy.BaskteService.Domain" SourceId="DAAA2492-F056-4EF7-90DF-297123DEDF50" Name="Clothy.BaskteService.Domain" TargetId="093582DC-B111-4E22-9A82-AD72781BDA48" />
+  <Reference Identifier="E75DE544-F3B7-43F6-9659-DF78FB6CF12B/r:Clothy.BasketService.DAL" SourceId="E75DE544-F3B7-43F6-9659-DF78FB6CF12B" Name="Clothy.BasketService.DAL" TargetId="DAAA2492-F056-4EF7-90DF-297123DEDF50" />
+  <Reference Identifier="79157E99-08D1-445E-B2AA-C3AD1CCAE2A7/r:Clothy.Shared" SourceId="79157E99-08D1-445E-B2AA-C3AD1CCAE2A7" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="E75DE544-F3B7-43F6-9659-DF78FB6CF12B/r:Clothy.BasketService.gRPC.Client" SourceId="E75DE544-F3B7-43F6-9659-DF78FB6CF12B" Name="Clothy.BasketService.gRPC.Client" TargetId="79157E99-08D1-445E-B2AA-C3AD1CCAE2A7" />
+  <Reference Identifier="E75DE544-F3B7-43F6-9659-DF78FB6CF12B/r:Clothy.BaskteService.Domain" SourceId="E75DE544-F3B7-43F6-9659-DF78FB6CF12B" Name="Clothy.BaskteService.Domain" TargetId="093582DC-B111-4E22-9A82-AD72781BDA48" />
+  <Reference Identifier="E75DE544-F3B7-43F6-9659-DF78FB6CF12B/r:Clothy.Shared" SourceId="E75DE544-F3B7-43F6-9659-DF78FB6CF12B" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="0D6F17C2-3364-40F1-9604-8B4A9622A9BA/r:Clothy.BasketService.BLL" SourceId="0D6F17C2-3364-40F1-9604-8B4A9622A9BA" Name="Clothy.BasketService.BLL" TargetId="E75DE544-F3B7-43F6-9659-DF78FB6CF12B" />
+  <Reference Identifier="0D6F17C2-3364-40F1-9604-8B4A9622A9BA/r:Clothy.BasketService.DAL" SourceId="0D6F17C2-3364-40F1-9604-8B4A9622A9BA" Name="Clothy.BasketService.DAL" TargetId="DAAA2492-F056-4EF7-90DF-297123DEDF50" />
+  <Reference Identifier="0D6F17C2-3364-40F1-9604-8B4A9622A9BA/r:Clothy.BasketService.gRPC.Client" SourceId="0D6F17C2-3364-40F1-9604-8B4A9622A9BA" Name="Clothy.BasketService.gRPC.Client" TargetId="79157E99-08D1-445E-B2AA-C3AD1CCAE2A7" />
+  <Reference Identifier="0D6F17C2-3364-40F1-9604-8B4A9622A9BA/r:Clothy.BaskteService.Domain" SourceId="0D6F17C2-3364-40F1-9604-8B4A9622A9BA" Name="Clothy.BaskteService.Domain" TargetId="093582DC-B111-4E22-9A82-AD72781BDA48" />
+  <Reference Identifier="0D6F17C2-3364-40F1-9604-8B4A9622A9BA/r:Clothy.OrderService.gRPC.Client" SourceId="0D6F17C2-3364-40F1-9604-8B4A9622A9BA" Name="Clothy.OrderService.gRPC.Client" TargetId="33B82821-FF18-4B25-A359-620E3825B6F0" />
+  <Reference Identifier="47B743BA-406F-4253-9B77-75842E1ABC32/r:Clothy.BasketService.gRPC.Server" SourceId="47B743BA-406F-4253-9B77-75842E1ABC32" Name="Clothy.BasketService.gRPC.Server" TargetId="0D6F17C2-3364-40F1-9604-8B4A9622A9BA" />
+  <Reference Identifier="77399A4C-18D3-4D0D-AC2B-30BAB7FCCE47/r:Clothy.Shared" SourceId="77399A4C-18D3-4D0D-AC2B-30BAB7FCCE47" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="77399A4C-18D3-4D0D-AC2B-30BAB7FCCE47/r:Clothy.OrderService.Domain" SourceId="77399A4C-18D3-4D0D-AC2B-30BAB7FCCE47" Name="Clothy.OrderService.Domain" TargetId="8C910B2B-2F75-4973-8F6D-39A00E62E342" />
+  <Reference Identifier="47B743BA-406F-4253-9B77-75842E1ABC32/r:Clothy.OrderService.DAL" SourceId="47B743BA-406F-4253-9B77-75842E1ABC32" Name="Clothy.OrderService.DAL" TargetId="77399A4C-18D3-4D0D-AC2B-30BAB7FCCE47" />
+  <Reference Identifier="47B743BA-406F-4253-9B77-75842E1ABC32/r:Clothy.OrderService.Domain" SourceId="47B743BA-406F-4253-9B77-75842E1ABC32" Name="Clothy.OrderService.Domain" TargetId="8C910B2B-2F75-4973-8F6D-39A00E62E342" />
+  <Reference Identifier="47B743BA-406F-4253-9B77-75842E1ABC32/r:Clothy.OrderService.gRPC.Client" SourceId="47B743BA-406F-4253-9B77-75842E1ABC32" Name="Clothy.OrderService.gRPC.Client" TargetId="33B82821-FF18-4B25-A359-620E3825B6F0" />
+  <Reference Identifier="47B743BA-406F-4253-9B77-75842E1ABC32/r:Clothy.BasketService.BLL" SourceId="47B743BA-406F-4253-9B77-75842E1ABC32" Name="Clothy.BasketService.BLL" TargetId="E75DE544-F3B7-43F6-9659-DF78FB6CF12B" />
+  <Reference Identifier="47B743BA-406F-4253-9B77-75842E1ABC32/r:Clothy.BasketService.DAL" SourceId="47B743BA-406F-4253-9B77-75842E1ABC32" Name="Clothy.BasketService.DAL" TargetId="DAAA2492-F056-4EF7-90DF-297123DEDF50" />
+  <Reference Identifier="47B743BA-406F-4253-9B77-75842E1ABC32/r:Clothy.BasketService.gRPC.Client" SourceId="47B743BA-406F-4253-9B77-75842E1ABC32" Name="Clothy.BasketService.gRPC.Client" TargetId="79157E99-08D1-445E-B2AA-C3AD1CCAE2A7" />
+  <Reference Identifier="47B743BA-406F-4253-9B77-75842E1ABC32/r:Clothy.BaskteService.Domain" SourceId="47B743BA-406F-4253-9B77-75842E1ABC32" Name="Clothy.BaskteService.Domain" TargetId="093582DC-B111-4E22-9A82-AD72781BDA48" />
+  <Reference Identifier="7454DAD6-57D7-4B89-AF9F-7365EE3A28FC/r:Clothy.OrderService.BLL" SourceId="7454DAD6-57D7-4B89-AF9F-7365EE3A28FC" Name="Clothy.OrderService.BLL" TargetId="47B743BA-406F-4253-9B77-75842E1ABC32" />
+  <Reference Identifier="7454DAD6-57D7-4B89-AF9F-7365EE3A28FC/r:Clothy.OrderService.DAL" SourceId="7454DAD6-57D7-4B89-AF9F-7365EE3A28FC" Name="Clothy.OrderService.DAL" TargetId="77399A4C-18D3-4D0D-AC2B-30BAB7FCCE47" />
+  <Reference Identifier="EE161405-1234-43E0-AECC-6DE787112C75/r:Clothy.Shared" SourceId="EE161405-1234-43E0-AECC-6DE787112C75" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="EE161405-1234-43E0-AECC-6DE787112C75/r:Clothy.OrderService.DAL" SourceId="EE161405-1234-43E0-AECC-6DE787112C75" Name="Clothy.OrderService.DAL" TargetId="77399A4C-18D3-4D0D-AC2B-30BAB7FCCE47" />
+  <Reference Identifier="EE161405-1234-43E0-AECC-6DE787112C75/r:Clothy.OrderService.Domain" SourceId="EE161405-1234-43E0-AECC-6DE787112C75" Name="Clothy.OrderService.Domain" TargetId="8C910B2B-2F75-4973-8F6D-39A00E62E342" />
+  <Reference Identifier="7454DAD6-57D7-4B89-AF9F-7365EE3A28FC/r:Clothy.OrderService.gRPC.Server" SourceId="7454DAD6-57D7-4B89-AF9F-7365EE3A28FC" Name="Clothy.OrderService.gRPC.Server" TargetId="EE161405-1234-43E0-AECC-6DE787112C75" />
+  <Reference Identifier="7454DAD6-57D7-4B89-AF9F-7365EE3A28FC/r:Clothy.BasketService.BLL" SourceId="7454DAD6-57D7-4B89-AF9F-7365EE3A28FC" Name="Clothy.BasketService.BLL" TargetId="E75DE544-F3B7-43F6-9659-DF78FB6CF12B" />
+  <Reference Identifier="7454DAD6-57D7-4B89-AF9F-7365EE3A28FC/r:Clothy.BasketService.DAL" SourceId="7454DAD6-57D7-4B89-AF9F-7365EE3A28FC" Name="Clothy.BasketService.DAL" TargetId="DAAA2492-F056-4EF7-90DF-297123DEDF50" />
+  <Reference Identifier="7454DAD6-57D7-4B89-AF9F-7365EE3A28FC/r:Clothy.BasketService.gRPC.Client" SourceId="7454DAD6-57D7-4B89-AF9F-7365EE3A28FC" Name="Clothy.BasketService.gRPC.Client" TargetId="79157E99-08D1-445E-B2AA-C3AD1CCAE2A7" />
+  <Reference Identifier="7454DAD6-57D7-4B89-AF9F-7365EE3A28FC/r:Clothy.BasketService.gRPC.Server" SourceId="7454DAD6-57D7-4B89-AF9F-7365EE3A28FC" Name="Clothy.BasketService.gRPC.Server" TargetId="0D6F17C2-3364-40F1-9604-8B4A9622A9BA" />
+  <Reference Identifier="7454DAD6-57D7-4B89-AF9F-7365EE3A28FC/r:Clothy.BaskteService.Domain" SourceId="7454DAD6-57D7-4B89-AF9F-7365EE3A28FC" Name="Clothy.BaskteService.Domain" TargetId="093582DC-B111-4E22-9A82-AD72781BDA48" />
+  <Reference Identifier="7454DAD6-57D7-4B89-AF9F-7365EE3A28FC/r:Clothy.OrderService.Domain" SourceId="7454DAD6-57D7-4B89-AF9F-7365EE3A28FC" Name="Clothy.OrderService.Domain" TargetId="8C910B2B-2F75-4973-8F6D-39A00E62E342" />
+  <Reference Identifier="7454DAD6-57D7-4B89-AF9F-7365EE3A28FC/r:Clothy.OrderService.gRPC.Client" SourceId="7454DAD6-57D7-4B89-AF9F-7365EE3A28FC" Name="Clothy.OrderService.gRPC.Client" TargetId="33B82821-FF18-4B25-A359-620E3825B6F0" />
+  <Reference Identifier="7454DAD6-57D7-4B89-AF9F-7365EE3A28FC/r:Clothy.Shared" SourceId="7454DAD6-57D7-4B89-AF9F-7365EE3A28FC" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="38682539-568A-3719-8909-5B3324805543/r:Clothy.OrderService.BLL" SourceId="38682539-568A-3719-8909-5B3324805543" Name="Clothy.OrderService.BLL" TargetId="47B743BA-406F-4253-9B77-75842E1ABC32" />
+  <Reference Identifier="38682539-568A-3719-8909-5B3324805543/r:Clothy.OrderService.DAL" SourceId="38682539-568A-3719-8909-5B3324805543" Name="Clothy.OrderService.DAL" TargetId="77399A4C-18D3-4D0D-AC2B-30BAB7FCCE47" />
+  <Reference Identifier="38682539-568A-3719-8909-5B3324805543/r:Clothy.OrderService.Domain" SourceId="38682539-568A-3719-8909-5B3324805543" Name="Clothy.OrderService.Domain" TargetId="8C910B2B-2F75-4973-8F6D-39A00E62E342" />
+  <Reference Identifier="38682539-568A-3719-8909-5B3324805543/r:Clothy.BasketService.BLL" SourceId="38682539-568A-3719-8909-5B3324805543" Name="Clothy.BasketService.BLL" TargetId="E75DE544-F3B7-43F6-9659-DF78FB6CF12B" />
+  <Reference Identifier="38682539-568A-3719-8909-5B3324805543/r:Clothy.BasketService.DAL" SourceId="38682539-568A-3719-8909-5B3324805543" Name="Clothy.BasketService.DAL" TargetId="DAAA2492-F056-4EF7-90DF-297123DEDF50" />
+  <Reference Identifier="38682539-568A-3719-8909-5B3324805543/r:Clothy.BasketService.gRPC.Client" SourceId="38682539-568A-3719-8909-5B3324805543" Name="Clothy.BasketService.gRPC.Client" TargetId="79157E99-08D1-445E-B2AA-C3AD1CCAE2A7" />
+  <Reference Identifier="38682539-568A-3719-8909-5B3324805543/r:Clothy.BasketService.gRPC.Server" SourceId="38682539-568A-3719-8909-5B3324805543" Name="Clothy.BasketService.gRPC.Server" TargetId="0D6F17C2-3364-40F1-9604-8B4A9622A9BA" />
+  <Reference Identifier="38682539-568A-3719-8909-5B3324805543/r:Clothy.BaskteService.Domain" SourceId="38682539-568A-3719-8909-5B3324805543" Name="Clothy.BaskteService.Domain" TargetId="093582DC-B111-4E22-9A82-AD72781BDA48" />
+  <Reference Identifier="38682539-568A-3719-8909-5B3324805543/r:Clothy.OrderService.gRPC.Client" SourceId="38682539-568A-3719-8909-5B3324805543" Name="Clothy.OrderService.gRPC.Client" TargetId="33B82821-FF18-4B25-A359-620E3825B6F0" />
+  <Reference Identifier="38682539-568A-3719-8909-5B3324805543/r:Clothy.Shared" SourceId="38682539-568A-3719-8909-5B3324805543" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="DF64D92B-6D8A-4686-A458-B28E96BC8FB7/r:Clothy.OrderService.BLL" SourceId="DF64D92B-6D8A-4686-A458-B28E96BC8FB7" Name="Clothy.OrderService.BLL" TargetId="47B743BA-406F-4253-9B77-75842E1ABC32" />
+  <Reference Identifier="DF64D92B-6D8A-4686-A458-B28E96BC8FB7/r:Clothy.BasketService.BLL" SourceId="DF64D92B-6D8A-4686-A458-B28E96BC8FB7" Name="Clothy.BasketService.BLL" TargetId="E75DE544-F3B7-43F6-9659-DF78FB6CF12B" />
+  <Reference Identifier="DF64D92B-6D8A-4686-A458-B28E96BC8FB7/r:Clothy.BasketService.DAL" SourceId="DF64D92B-6D8A-4686-A458-B28E96BC8FB7" Name="Clothy.BasketService.DAL" TargetId="DAAA2492-F056-4EF7-90DF-297123DEDF50" />
+  <Reference Identifier="DF64D92B-6D8A-4686-A458-B28E96BC8FB7/r:Clothy.BasketService.gRPC.Client" SourceId="DF64D92B-6D8A-4686-A458-B28E96BC8FB7" Name="Clothy.BasketService.gRPC.Client" TargetId="79157E99-08D1-445E-B2AA-C3AD1CCAE2A7" />
+  <Reference Identifier="DF64D92B-6D8A-4686-A458-B28E96BC8FB7/r:Clothy.BasketService.gRPC.Server" SourceId="DF64D92B-6D8A-4686-A458-B28E96BC8FB7" Name="Clothy.BasketService.gRPC.Server" TargetId="0D6F17C2-3364-40F1-9604-8B4A9622A9BA" />
+  <Reference Identifier="DF64D92B-6D8A-4686-A458-B28E96BC8FB7/r:Clothy.BaskteService.Domain" SourceId="DF64D92B-6D8A-4686-A458-B28E96BC8FB7" Name="Clothy.BaskteService.Domain" TargetId="093582DC-B111-4E22-9A82-AD72781BDA48" />
+  <Reference Identifier="DF64D92B-6D8A-4686-A458-B28E96BC8FB7/r:Clothy.OrderService.DAL" SourceId="DF64D92B-6D8A-4686-A458-B28E96BC8FB7" Name="Clothy.OrderService.DAL" TargetId="77399A4C-18D3-4D0D-AC2B-30BAB7FCCE47" />
+  <Reference Identifier="DF64D92B-6D8A-4686-A458-B28E96BC8FB7/r:Clothy.OrderService.Domain" SourceId="DF64D92B-6D8A-4686-A458-B28E96BC8FB7" Name="Clothy.OrderService.Domain" TargetId="8C910B2B-2F75-4973-8F6D-39A00E62E342" />
+  <Reference Identifier="DF64D92B-6D8A-4686-A458-B28E96BC8FB7/r:Clothy.OrderService.gRPC.Client" SourceId="DF64D92B-6D8A-4686-A458-B28E96BC8FB7" Name="Clothy.OrderService.gRPC.Client" TargetId="33B82821-FF18-4B25-A359-620E3825B6F0" />
+  <Reference Identifier="DF64D92B-6D8A-4686-A458-B28E96BC8FB7/r:Clothy.Shared" SourceId="DF64D92B-6D8A-4686-A458-B28E96BC8FB7" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="566AFF6A-3348-495E-AE06-87934A643C54/r:Clothy.ServiceDefaults" SourceId="566AFF6A-3348-495E-AE06-87934A643C54" Name="Clothy.ServiceDefaults" TargetId="63674236-D30C-41B9-9985-617A8562999E" />
+  <Reference Identifier="E2CE7D75-D47B-4F73-859C-FA096FB24874/r:Clothy.Shared" SourceId="E2CE7D75-D47B-4F73-859C-FA096FB24874" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="20B03FD1-521F-4893-B5E7-9C8E44DDDF73/r:Clothy.Shared" SourceId="20B03FD1-521F-4893-B5E7-9C8E44DDDF73" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="E2CE7D75-D47B-4F73-859C-FA096FB24874/r:Clothy.ReviewService.Domain" SourceId="E2CE7D75-D47B-4F73-859C-FA096FB24874" Name="Clothy.ReviewService.Domain" TargetId="20B03FD1-521F-4893-B5E7-9C8E44DDDF73" />
+  <Reference Identifier="F167B4A7-20A9-4B12-85D0-1FC09F984D67/r:Clothy.Shared" SourceId="F167B4A7-20A9-4B12-85D0-1FC09F984D67" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="E2CE7D75-D47B-4F73-859C-FA096FB24874/r:Clothy.ReviewService.gRPC.Client" SourceId="E2CE7D75-D47B-4F73-859C-FA096FB24874" Name="Clothy.ReviewService.gRPC.Client" TargetId="F167B4A7-20A9-4B12-85D0-1FC09F984D67" />
+  <Reference Identifier="566AFF6A-3348-495E-AE06-87934A643C54/r:Clothy.ReviewService.Application" SourceId="566AFF6A-3348-495E-AE06-87934A643C54" Name="Clothy.ReviewService.Application" TargetId="E2CE7D75-D47B-4F73-859C-FA096FB24874" />
+  <Reference Identifier="566AFF6A-3348-495E-AE06-87934A643C54/r:Clothy.ReviewService.gRPC.Client" SourceId="566AFF6A-3348-495E-AE06-87934A643C54" Name="Clothy.ReviewService.gRPC.Client" TargetId="F167B4A7-20A9-4B12-85D0-1FC09F984D67" />
+  <Reference Identifier="00BB86B3-D096-489F-962C-8B41711EE054/r:Clothy.Shared" SourceId="00BB86B3-D096-489F-962C-8B41711EE054" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="00BB86B3-D096-489F-962C-8B41711EE054/r:Clothy.ReviewService.Domain" SourceId="00BB86B3-D096-489F-962C-8B41711EE054" Name="Clothy.ReviewService.Domain" TargetId="20B03FD1-521F-4893-B5E7-9C8E44DDDF73" />
+  <Reference Identifier="566AFF6A-3348-495E-AE06-87934A643C54/r:Clothy.ReviewService.gRPC.Server" SourceId="566AFF6A-3348-495E-AE06-87934A643C54" Name="Clothy.ReviewService.gRPC.Server" TargetId="00BB86B3-D096-489F-962C-8B41711EE054" />
+  <Reference Identifier="FBB9A5CB-60A3-4C01-8400-A7D4A5FDF1DB/r:Clothy.Shared" SourceId="FBB9A5CB-60A3-4C01-8400-A7D4A5FDF1DB" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="FBB9A5CB-60A3-4C01-8400-A7D4A5FDF1DB/r:Clothy.ReviewService.Application" SourceId="FBB9A5CB-60A3-4C01-8400-A7D4A5FDF1DB" Name="Clothy.ReviewService.Application" TargetId="E2CE7D75-D47B-4F73-859C-FA096FB24874" />
+  <Reference Identifier="FBB9A5CB-60A3-4C01-8400-A7D4A5FDF1DB/r:Clothy.ReviewService.Domain" SourceId="FBB9A5CB-60A3-4C01-8400-A7D4A5FDF1DB" Name="Clothy.ReviewService.Domain" TargetId="20B03FD1-521F-4893-B5E7-9C8E44DDDF73" />
+  <Reference Identifier="FBB9A5CB-60A3-4C01-8400-A7D4A5FDF1DB/r:Clothy.ReviewService.gRPC.Client" SourceId="FBB9A5CB-60A3-4C01-8400-A7D4A5FDF1DB" Name="Clothy.ReviewService.gRPC.Client" TargetId="F167B4A7-20A9-4B12-85D0-1FC09F984D67" />
+  <Reference Identifier="566AFF6A-3348-495E-AE06-87934A643C54/r:Clothy.ReviewService.Infrastructure" SourceId="566AFF6A-3348-495E-AE06-87934A643C54" Name="Clothy.ReviewService.Infrastructure" TargetId="FBB9A5CB-60A3-4C01-8400-A7D4A5FDF1DB" />
+  <Reference Identifier="566AFF6A-3348-495E-AE06-87934A643C54/r:Clothy.ReviewService.Domain" SourceId="566AFF6A-3348-495E-AE06-87934A643C54" Name="Clothy.ReviewService.Domain" TargetId="20B03FD1-521F-4893-B5E7-9C8E44DDDF73" />
+  <Reference Identifier="566AFF6A-3348-495E-AE06-87934A643C54/r:Clothy.Shared" SourceId="566AFF6A-3348-495E-AE06-87934A643C54" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="605F086E-82C3-433C-8045-572D734BCBEB/r:Clothy.ReviewService.Application" SourceId="605F086E-82C3-433C-8045-572D734BCBEB" Name="Clothy.ReviewService.Application" TargetId="E2CE7D75-D47B-4F73-859C-FA096FB24874" />
+  <Reference Identifier="605F086E-82C3-433C-8045-572D734BCBEB/r:Clothy.ReviewService.Domain" SourceId="605F086E-82C3-433C-8045-572D734BCBEB" Name="Clothy.ReviewService.Domain" TargetId="20B03FD1-521F-4893-B5E7-9C8E44DDDF73" />
+  <Reference Identifier="605F086E-82C3-433C-8045-572D734BCBEB/r:Clothy.ReviewService.gRPC.Client" SourceId="605F086E-82C3-433C-8045-572D734BCBEB" Name="Clothy.ReviewService.gRPC.Client" TargetId="F167B4A7-20A9-4B12-85D0-1FC09F984D67" />
+  <Reference Identifier="605F086E-82C3-433C-8045-572D734BCBEB/r:Clothy.Shared" SourceId="605F086E-82C3-433C-8045-572D734BCBEB" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="805FDE96-7045-22B9-E11D-A78575AD706B/r:Clothy.ServiceDefaults" SourceId="805FDE96-7045-22B9-E11D-A78575AD706B" Name="Clothy.ServiceDefaults" TargetId="63674236-D30C-41B9-9985-617A8562999E" />
+  <Reference Identifier="805FDE96-7045-22B9-E11D-A78575AD706B/r:Clothy.Shared" SourceId="805FDE96-7045-22B9-E11D-A78575AD706B" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="6E7F8A04-3677-42F3-9688-B014619623C4/r:Clothy.Shared" SourceId="6E7F8A04-3677-42F3-9688-B014619623C4" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="06947FFC-23C1-427E-AC0A-5F45436E9421/r:Clothy.UserService.Domain" SourceId="06947FFC-23C1-427E-AC0A-5F45436E9421" Name="Clothy.UserService.Domain" TargetId="B6670DF3-1E0E-4B0A-822E-796326EFA124" />
+  <Reference Identifier="6E7F8A04-3677-42F3-9688-B014619623C4/r:Clothy.UserService.DAL" SourceId="6E7F8A04-3677-42F3-9688-B014619623C4" Name="Clothy.UserService.DAL" TargetId="06947FFC-23C1-427E-AC0A-5F45436E9421" />
+  <Reference Identifier="6E7F8A04-3677-42F3-9688-B014619623C4/r:Clothy.UserService.Domain" SourceId="6E7F8A04-3677-42F3-9688-B014619623C4" Name="Clothy.UserService.Domain" TargetId="B6670DF3-1E0E-4B0A-822E-796326EFA124" />
+  <Reference Identifier="805FDE96-7045-22B9-E11D-A78575AD706B/r:Clothy.UserService.BLL" SourceId="805FDE96-7045-22B9-E11D-A78575AD706B" Name="Clothy.UserService.BLL" TargetId="6E7F8A04-3677-42F3-9688-B014619623C4" />
+  <Reference Identifier="805FDE96-7045-22B9-E11D-A78575AD706B/r:Clothy.UserService.DAL" SourceId="805FDE96-7045-22B9-E11D-A78575AD706B" Name="Clothy.UserService.DAL" TargetId="06947FFC-23C1-427E-AC0A-5F45436E9421" />
+  <Reference Identifier="805FDE96-7045-22B9-E11D-A78575AD706B/r:Clothy.UserService.Domain" SourceId="805FDE96-7045-22B9-E11D-A78575AD706B" Name="Clothy.UserService.Domain" TargetId="B6670DF3-1E0E-4B0A-822E-796326EFA124" />
+  <Reference Identifier="B510B834-2C93-B650-5B7C-ACC6E9DCBA2E/r:Clothy.ServiceDefaults" SourceId="B510B834-2C93-B650-5B7C-ACC6E9DCBA2E" Name="Clothy.ServiceDefaults" TargetId="63674236-D30C-41B9-9985-617A8562999E" />
+  <Reference Identifier="B510B834-2C93-B650-5B7C-ACC6E9DCBA2E/r:Clothy.Shared" SourceId="B510B834-2C93-B650-5B7C-ACC6E9DCBA2E" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="B510B834-2C93-B650-5B7C-ACC6E9DCBA2E/r:Clothy.BasketService.BLL" SourceId="B510B834-2C93-B650-5B7C-ACC6E9DCBA2E" Name="Clothy.BasketService.BLL" TargetId="E75DE544-F3B7-43F6-9659-DF78FB6CF12B" />
+  <Reference Identifier="B510B834-2C93-B650-5B7C-ACC6E9DCBA2E/r:Clothy.BasketService.gRPC.Client" SourceId="B510B834-2C93-B650-5B7C-ACC6E9DCBA2E" Name="Clothy.BasketService.gRPC.Client" TargetId="79157E99-08D1-445E-B2AA-C3AD1CCAE2A7" />
+  <Reference Identifier="B510B834-2C93-B650-5B7C-ACC6E9DCBA2E/r:Clothy.BasketService.gRPC.Server" SourceId="B510B834-2C93-B650-5B7C-ACC6E9DCBA2E" Name="Clothy.BasketService.gRPC.Server" TargetId="0D6F17C2-3364-40F1-9604-8B4A9622A9BA" />
+  <Reference Identifier="B510B834-2C93-B650-5B7C-ACC6E9DCBA2E/r:Clothy.BasketService.DAL" SourceId="B510B834-2C93-B650-5B7C-ACC6E9DCBA2E" Name="Clothy.BasketService.DAL" TargetId="DAAA2492-F056-4EF7-90DF-297123DEDF50" />
+  <Reference Identifier="B510B834-2C93-B650-5B7C-ACC6E9DCBA2E/r:Clothy.BaskteService.Domain" SourceId="B510B834-2C93-B650-5B7C-ACC6E9DCBA2E" Name="Clothy.BaskteService.Domain" TargetId="093582DC-B111-4E22-9A82-AD72781BDA48" />
+  <Reference Identifier="B510B834-2C93-B650-5B7C-ACC6E9DCBA2E/r:Clothy.OrderService.gRPC.Client" SourceId="B510B834-2C93-B650-5B7C-ACC6E9DCBA2E" Name="Clothy.OrderService.gRPC.Client" TargetId="33B82821-FF18-4B25-A359-620E3825B6F0" />
+  <Reference Identifier="01071113-F3A9-4DF0-B123-989D991B2EB6/r:Clothy.BasketService.BLL" SourceId="01071113-F3A9-4DF0-B123-989D991B2EB6" Name="Clothy.BasketService.BLL" TargetId="E75DE544-F3B7-43F6-9659-DF78FB6CF12B" />
+  <Reference Identifier="01071113-F3A9-4DF0-B123-989D991B2EB6/r:Clothy.BasketService.DAL" SourceId="01071113-F3A9-4DF0-B123-989D991B2EB6" Name="Clothy.BasketService.DAL" TargetId="DAAA2492-F056-4EF7-90DF-297123DEDF50" />
+  <Reference Identifier="01071113-F3A9-4DF0-B123-989D991B2EB6/r:Clothy.BasketService.gRPC.Client" SourceId="01071113-F3A9-4DF0-B123-989D991B2EB6" Name="Clothy.BasketService.gRPC.Client" TargetId="79157E99-08D1-445E-B2AA-C3AD1CCAE2A7" />
+  <Reference Identifier="01071113-F3A9-4DF0-B123-989D991B2EB6/r:Clothy.BaskteService.Domain" SourceId="01071113-F3A9-4DF0-B123-989D991B2EB6" Name="Clothy.BaskteService.Domain" TargetId="093582DC-B111-4E22-9A82-AD72781BDA48" />
+  <Reference Identifier="01071113-F3A9-4DF0-B123-989D991B2EB6/r:Clothy.OrderService.gRPC.Client" SourceId="01071113-F3A9-4DF0-B123-989D991B2EB6" Name="Clothy.OrderService.gRPC.Client" TargetId="33B82821-FF18-4B25-A359-620E3825B6F0" />
+  <Reference Identifier="01071113-F3A9-4DF0-B123-989D991B2EB6/r:Clothy.Shared" SourceId="01071113-F3A9-4DF0-B123-989D991B2EB6" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="9C84E2C0-2341-278D-FF49-56010E1C12A0/r:Clothy.ServiceDefaults" SourceId="9C84E2C0-2341-278D-FF49-56010E1C12A0" Name="Clothy.ServiceDefaults" TargetId="63674236-D30C-41B9-9985-617A8562999E" />
+  <Reference Identifier="9C84E2C0-2341-278D-FF49-56010E1C12A0/r:Clothy.Shared" SourceId="9C84E2C0-2341-278D-FF49-56010E1C12A0" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="3976F328-36F5-4F3C-8112-61A19D1255D3/r:Clothy.Shared" SourceId="3976F328-36F5-4F3C-8112-61A19D1255D3" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="9C84E2C0-2341-278D-FF49-56010E1C12A0/r:Clothy.AuthService.BLL" SourceId="9C84E2C0-2341-278D-FF49-56010E1C12A0" Name="Clothy.AuthService.BLL" TargetId="3976F328-36F5-4F3C-8112-61A19D1255D3" />
+  <Reference Identifier="A1DC74B8-F634-2B95-E1FD-25C94050A0AF/r:Clothy.ServiceDefaults" SourceId="A1DC74B8-F634-2B95-E1FD-25C94050A0AF" Name="Clothy.ServiceDefaults" TargetId="63674236-D30C-41B9-9985-617A8562999E" />
+  <Reference Identifier="A1DC74B8-F634-2B95-E1FD-25C94050A0AF/r:Clothy.Shared" SourceId="A1DC74B8-F634-2B95-E1FD-25C94050A0AF" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="5E667C18-9E0D-5982-8ED8-6F9F5D911883/r:Clothy.ServiceDefaults" SourceId="5E667C18-9E0D-5982-8ED8-6F9F5D911883" Name="Clothy.ServiceDefaults" TargetId="63674236-D30C-41B9-9985-617A8562999E" />
+  <Reference Identifier="0E9D6269-26FC-4FB4-92CF-0A4EE797314B/r:Clothy.Shared" SourceId="0E9D6269-26FC-4FB4-92CF-0A4EE797314B" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="5E667C18-9E0D-5982-8ED8-6F9F5D911883/r:Clothy.NotificationService.BLL" SourceId="5E667C18-9E0D-5982-8ED8-6F9F5D911883" Name="Clothy.NotificationService.BLL" TargetId="0E9D6269-26FC-4FB4-92CF-0A4EE797314B" />
+  <Reference Identifier="5E667C18-9E0D-5982-8ED8-6F9F5D911883/r:Clothy.Shared" SourceId="5E667C18-9E0D-5982-8ED8-6F9F5D911883" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="75BF675C-D456-2EC7-5F19-FE350130AEA1/r:Clothy.ServiceDefaults" SourceId="75BF675C-D456-2EC7-5F19-FE350130AEA1" Name="Clothy.ServiceDefaults" TargetId="63674236-D30C-41B9-9985-617A8562999E" />
+  <Reference Identifier="D7F5DE3A-3E49-4EE9-9A3F-E6D0247375C6/r:Clothy.Shared" SourceId="D7F5DE3A-3E49-4EE9-9A3F-E6D0247375C6" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="57F6DC0D-DA73-4BA2-9968-0E71FBDBEE5C/r:Clothy.Shared" SourceId="57F6DC0D-DA73-4BA2-9968-0E71FBDBEE5C" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="47E1EB53-98D8-49DC-B026-99E10110E406/r:Clothy.PaymentService.gRPC.Client" SourceId="47E1EB53-98D8-49DC-B026-99E10110E406" Name="Clothy.PaymentService.gRPC.Client" TargetId="57F6DC0D-DA73-4BA2-9968-0E71FBDBEE5C" />
+  <Reference Identifier="47E1EB53-98D8-49DC-B026-99E10110E406/r:Clothy.Shared" SourceId="47E1EB53-98D8-49DC-B026-99E10110E406" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="121EDDC1-DBBB-40D8-999B-E988FA3DA092/r:Clothy.PaymentService.Domain" SourceId="121EDDC1-DBBB-40D8-999B-E988FA3DA092" Name="Clothy.PaymentService.Domain" TargetId="47E1EB53-98D8-49DC-B026-99E10110E406" />
+  <Reference Identifier="121EDDC1-DBBB-40D8-999B-E988FA3DA092/r:Clothy.PaymentService.gRPC.Client" SourceId="121EDDC1-DBBB-40D8-999B-E988FA3DA092" Name="Clothy.PaymentService.gRPC.Client" TargetId="57F6DC0D-DA73-4BA2-9968-0E71FBDBEE5C" />
+  <Reference Identifier="121EDDC1-DBBB-40D8-999B-E988FA3DA092/r:Clothy.Shared" SourceId="121EDDC1-DBBB-40D8-999B-E988FA3DA092" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="D7F5DE3A-3E49-4EE9-9A3F-E6D0247375C6/r:Clothy.PaymentService.DAL" SourceId="D7F5DE3A-3E49-4EE9-9A3F-E6D0247375C6" Name="Clothy.PaymentService.DAL" TargetId="121EDDC1-DBBB-40D8-999B-E988FA3DA092" />
+  <Reference Identifier="D7F5DE3A-3E49-4EE9-9A3F-E6D0247375C6/r:Clothy.PaymentService.Domain" SourceId="D7F5DE3A-3E49-4EE9-9A3F-E6D0247375C6" Name="Clothy.PaymentService.Domain" TargetId="47E1EB53-98D8-49DC-B026-99E10110E406" />
+  <Reference Identifier="D7F5DE3A-3E49-4EE9-9A3F-E6D0247375C6/r:Clothy.PaymentService.gRPC.Client" SourceId="D7F5DE3A-3E49-4EE9-9A3F-E6D0247375C6" Name="Clothy.PaymentService.gRPC.Client" TargetId="57F6DC0D-DA73-4BA2-9968-0E71FBDBEE5C" />
+  <Reference Identifier="75BF675C-D456-2EC7-5F19-FE350130AEA1/r:Clothy.PaymentService.BLL" SourceId="75BF675C-D456-2EC7-5F19-FE350130AEA1" Name="Clothy.PaymentService.BLL" TargetId="D7F5DE3A-3E49-4EE9-9A3F-E6D0247375C6" />
+  <Reference Identifier="75BF675C-D456-2EC7-5F19-FE350130AEA1/r:Clothy.PaymentService.DAL" SourceId="75BF675C-D456-2EC7-5F19-FE350130AEA1" Name="Clothy.PaymentService.DAL" TargetId="121EDDC1-DBBB-40D8-999B-E988FA3DA092" />
+  <Reference Identifier="75BF675C-D456-2EC7-5F19-FE350130AEA1/r:Clothy.PaymentService.Domain" SourceId="75BF675C-D456-2EC7-5F19-FE350130AEA1" Name="Clothy.PaymentService.Domain" TargetId="47E1EB53-98D8-49DC-B026-99E10110E406" />
+  <Reference Identifier="75BF675C-D456-2EC7-5F19-FE350130AEA1/r:Clothy.PaymentService.gRPC.Client" SourceId="75BF675C-D456-2EC7-5F19-FE350130AEA1" Name="Clothy.PaymentService.gRPC.Client" TargetId="57F6DC0D-DA73-4BA2-9968-0E71FBDBEE5C" />
+  <Reference Identifier="75BF675C-D456-2EC7-5F19-FE350130AEA1/r:Clothy.Shared" SourceId="75BF675C-D456-2EC7-5F19-FE350130AEA1" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="55CC5F82-7F5D-4663-94C4-7ADFC26BD7CC/r:Clothy.PaymentService.BLL" SourceId="55CC5F82-7F5D-4663-94C4-7ADFC26BD7CC" Name="Clothy.PaymentService.BLL" TargetId="D7F5DE3A-3E49-4EE9-9A3F-E6D0247375C6" />
+  <Reference Identifier="55CC5F82-7F5D-4663-94C4-7ADFC26BD7CC/r:Clothy.PaymentService.DAL" SourceId="55CC5F82-7F5D-4663-94C4-7ADFC26BD7CC" Name="Clothy.PaymentService.DAL" TargetId="121EDDC1-DBBB-40D8-999B-E988FA3DA092" />
+  <Reference Identifier="55CC5F82-7F5D-4663-94C4-7ADFC26BD7CC/r:Clothy.PaymentService.Domain" SourceId="55CC5F82-7F5D-4663-94C4-7ADFC26BD7CC" Name="Clothy.PaymentService.Domain" TargetId="47E1EB53-98D8-49DC-B026-99E10110E406" />
+  <Reference Identifier="55CC5F82-7F5D-4663-94C4-7ADFC26BD7CC/r:Clothy.PaymentService.gRPC.Client" SourceId="55CC5F82-7F5D-4663-94C4-7ADFC26BD7CC" Name="Clothy.PaymentService.gRPC.Client" TargetId="57F6DC0D-DA73-4BA2-9968-0E71FBDBEE5C" />
+  <Reference Identifier="55CC5F82-7F5D-4663-94C4-7ADFC26BD7CC/r:Clothy.Shared" SourceId="55CC5F82-7F5D-4663-94C4-7ADFC26BD7CC" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="0F1C189A-17C0-498C-B67A-C3777FB13684/r:Clothy.ServiceDefaults" SourceId="0F1C189A-17C0-498C-B67A-C3777FB13684" Name="Clothy.ServiceDefaults" TargetId="63674236-D30C-41B9-9985-617A8562999E" />
+  <Reference Identifier="0F1C189A-17C0-498C-B67A-C3777FB13684/r:Clothy.Shared" SourceId="0F1C189A-17C0-498C-B67A-C3777FB13684" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="81F08E08-4D19-B8F3-ED88-DF1849F60E13/r:Clothy.ServiceDefaults" SourceId="81F08E08-4D19-B8F3-ED88-DF1849F60E13" Name="Clothy.ServiceDefaults" TargetId="63674236-D30C-41B9-9985-617A8562999E" />
+  <Reference Identifier="81F08E08-4D19-B8F3-ED88-DF1849F60E13/r:Clothy.Aggregator.Aggregate" SourceId="81F08E08-4D19-B8F3-ED88-DF1849F60E13" Name="Clothy.Aggregator.Aggregate" TargetId="C58D4ED3-BA80-41BF-9BE4-7A16B1449710" />
+  <Reference Identifier="81F08E08-4D19-B8F3-ED88-DF1849F60E13/r:Clothy.Shared" SourceId="81F08E08-4D19-B8F3-ED88-DF1849F60E13" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+  <Reference Identifier="9A23ED6A-4812-4D64-A001-269281A701CF/r:Clothy.Aggregator.Aggregate" SourceId="9A23ED6A-4812-4D64-A001-269281A701CF" Name="Clothy.Aggregator.Aggregate" TargetId="C58D4ED3-BA80-41BF-9BE4-7A16B1449710" />
+  <Reference Identifier="9A23ED6A-4812-4D64-A001-269281A701CF/r:Clothy.Shared" SourceId="9A23ED6A-4812-4D64-A001-269281A701CF" Name="Clothy.Shared" TargetId="D3339B93-9A4E-48EF-AA47-F62D8E8CEF9C" />
+</ArchitectureGraph>
