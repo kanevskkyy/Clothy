@@ -20,10 +20,10 @@ namespace Clothy.ReviewService.Domain.ValueObjects
         public string? ClothePhotoURL { get; }
 
         [JsonConstructor]
-        public ClotheInfo(Guid clotheItemId, string clotneName, string clothePhotoURL)
+        public ClotheInfo(Guid clotheItemId, string clotheName, string clothePhotoURL)
         {
             ClotheItemId = clotheItemId;
-            ClotheName = clotneName;
+            ClotheName = clotheName;  
             ClothePhotoURL = clothePhotoURL;
         }
 

@@ -16,7 +16,7 @@ namespace Clothy.Shared.Helpers
         public bool HasPrevious => CurrentPage > 1;
         public bool HasNext => CurrentPage < TotalPages;
         public List<T> Items { get; set; }
-
+        
         public PagedList() { }
 
         public PagedList(List<T> items, int count, int pageNumber, int pageSize)
