@@ -42,6 +42,7 @@ namespace Clothy.CatalogService.DAL.DB
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new BrandConfiguration());
+            modelBuilder.ApplyConfiguration(new ClothingTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ClotheItemConfiguration());
             modelBuilder.ApplyConfiguration(new ClotheMaterialConfiguration());
             modelBuilder.ApplyConfiguration(new ClothesStockConfiguration());

@@ -29,7 +29,7 @@ return await Deployment.RunAsync(() =>
         VerifyEmail = false,
 
         SslRequired = "none",
-        PasswordPolicy = "length(8) and digits(1) and lowerCase(1) and upperCase(1) and specialChars(1) and hashingIterations(100000)",
+        PasswordPolicy = "length(8) and digits(1) and lowerCase(1) and upperCase(1) and specialChars(1) and hashIterations(100000)",
 
         AccessTokenLifespan = "15m",
         AccessTokenLifespanForImplicitFlow = "15m",

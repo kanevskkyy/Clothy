@@ -4,18 +4,19 @@ config:
   Clothy.Pulumi:userEmail: user@example.com
   Clothy.Pulumi:managerEmail: manager@example.com
   Clothy.Pulumi:adminPassword:
-    secure: AAABAPeqm/KmsvcZIWcIwmJt6Z8smEgCXTNRirFraJO8lSBKlBCMWXRqqTJD
+    secure: v1:t/w9t3nWnDoexk8o:dkC0H+VeaUIbn0x2eHQgdDlCisTih6k96Q==
   Clothy.Pulumi:userPassword:
-    secure: AAABAEb88RRAdzHcQEQctgAPmMYcfWci+1wRkTrAkJuK+bNXUJFZTUjT7Iw=
+    secure: v1:rc1g7KcUK+tmkbHP:ZPjJY+WqrEvYYstqUPTTuMe4Ey4SDr3LCw==
   Clothy.Pulumi:managerPassword:
-    secure: AAABABo07AVmCmHTNSLL4gWXGTnzROQ12gSBqugNPOdMCYZibquONYjThRxwLU8=
+    secure: v1:H2rigs6Xo5vIxhVp:q+NaGWSs3T0xiOYRqbGPcV1MiWyZpW0raA==
   keycloak:url: http://localhost:8080
   keycloak:clientId: admin-cli
   keycloak:username: admin
   keycloak:password: admin
   keycloak:realm: master
   Clothy.Pulumi:sendGridApiKey:
-    secure: AAABAJz3kcC4Xs35kqwK3hXbZDCdO9IjAVoVfcLyYxh8T6ItlHbNkD8u/0uWZ7lNizjWXJ/byTKjwK4UAY2qD9m1hPgkshQyucEVuj5yR3ST2jWUIV/06KgXanB+k55Chtp/yqQ=
+    secure: v1:t22vJLanJh/Y2uaD:7mdM+73HHMxCt6Z7Hjsw0Oqf291C+YQKY61qfHRtskzfYDv7Kj0EeMJaYUaQS42RPU2d09cItwVNcDidbOrn79iu0372wWArzl2rHaOPFC3IF0GsqQ==
   Clothy.Pulumi:smtpFrom: sashanoutbook@gmail.com
   Clothy.Pulumi:smtpReplyTo: oleksandrkanovkij@gmail.com
   Clothy.Pulumi:smtpEnvelopeFrom: oleksandrkanovkij@gmail.com
+encryptionsalt: v1:G0axDqH6TTI=:v1:94s12Cmvh1akukmY:moI3qj9CYmgYDlVncjyJ2VT1VniXRQ==

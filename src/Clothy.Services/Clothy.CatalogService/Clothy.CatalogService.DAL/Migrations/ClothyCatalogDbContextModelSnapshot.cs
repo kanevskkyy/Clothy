@@ -64,20 +64,29 @@ namespace Clothy.CatalogService.DAL.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<string>("Name")
-                        .HasColumnType("text");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("Slug")
-                        .HasColumnType("text");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
-                    b.ToTable("ClothingTypes");
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
+                    b.ToTable("clothing_types", (string)null);
                 });
 
             modelBuilder.Entity("Clothy.CatalogService.Domain.Entities.Catalog.Collection", b =>
@@ -255,7 +264,7 @@ namespace Clothy.CatalogService.DAL.Migrations
                     b.HasIndex("Slug")
                         .IsUnique();
 
-                    b.ToTable("tag", (string)null);
+                    b.ToTable("tags", (string)null);
                 });
 
             modelBuilder.Entity("Clothy.CatalogService.Domain.Entities.Clothe.ClotheItem", b =>
@@ -364,7 +373,7 @@ namespace Clothy.CatalogService.DAL.Migrations
                     b.HasIndex("ClotheId")
                         .IsUnique();
 
-                    b.ToTable("clothe_popularity", (string)null);
+                    b.ToTable("clothe_popularities", (string)null);
                 });
 
             modelBuilder.Entity("Clothy.CatalogService.Domain.Entities.Clothe.ClotheTag", b =>
@@ -464,7 +473,7 @@ namespace Clothy.CatalogService.DAL.Migrations
                     b.HasIndex("ClotheId", "SizeId", "ColorId")
                         .IsUnique();
 
-                    b.ToTable("clothes_stock", null, t =>
+                    b.ToTable("clothes_stocks", null, t =>
                         {
                             t.HasCheckConstraint("ck_clothes_stock_quantity_valid", "\"quantity\" >= 0");
                         });

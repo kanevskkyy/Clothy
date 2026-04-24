@@ -16,6 +16,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\Clothy.ReviewService.API\Clothy.ReviewService.API.csproj" />
 	  <ProjectReference Include="..\Clothy.ReviewService.Application\Clothy.ReviewService.Application.csproj" />
 	</ItemGroup>
 

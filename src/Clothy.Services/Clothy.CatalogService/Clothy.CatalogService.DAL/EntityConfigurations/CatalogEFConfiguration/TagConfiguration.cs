@@ -13,7 +13,7 @@ namespace Clothy.CatalogService.DAL.EntityConfigurations.CatalogEFConfiguration
     {
         public void Configure(EntityTypeBuilder<Tag> builder)
         {
-            builder.ToTable("tag");
+            builder.ToTable("tags");
 
             builder.HasKey(property => property.Id);
 

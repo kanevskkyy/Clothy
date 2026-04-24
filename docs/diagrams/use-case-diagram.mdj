@@ -184,7 +184,7 @@
 											"top": 518,
 											"width": 143,
 											"height": 13,
-											"text": "Unregistered user"
+											"text": "Guest"
 										},
 										{
 											"_type": "LabelView",
@@ -1316,6 +1316,7 @@
 									"font": "Arial;13;0",
 									"parentStyle": true,
 									"left": -264,
+									"top": -24,
 									"width": 10,
 									"height": 10
 								},
@@ -1332,6 +1333,7 @@
 									"font": "Arial;13;0",
 									"parentStyle": true,
 									"left": -264,
+									"top": -24,
 									"width": 10,
 									"height": 10
 								},
@@ -1348,6 +1350,7 @@
 									"font": "Arial;13;0",
 									"parentStyle": true,
 									"left": -264,
+									"top": -24,
 									"width": 10,
 									"height": 10
 								},
@@ -1364,6 +1367,7 @@
 									"font": "Arial;13;0",
 									"parentStyle": true,
 									"left": -264,
+									"top": -24,
 									"width": 10,
 									"height": 10
 								},
@@ -1380,6 +1384,7 @@
 									"font": "Arial;13;0",
 									"parentStyle": true,
 									"left": -264,
+									"top": -24,
 									"width": 10,
 									"height": 10
 								}
@@ -1524,7 +1529,7 @@
 									"font": "Arial;13;0",
 									"parentStyle": true,
 									"left": -248,
-									"top": 64,
+									"top": 40,
 									"width": 10,
 									"height": 10
 								},
@@ -1541,7 +1546,7 @@
 									"font": "Arial;13;0",
 									"parentStyle": true,
 									"left": -248,
-									"top": 64,
+									"top": 40,
 									"width": 10,
 									"height": 10
 								},
@@ -1558,7 +1563,7 @@
 									"font": "Arial;13;0",
 									"parentStyle": true,
 									"left": -248,
-									"top": 64,
+									"top": 40,
 									"width": 10,
 									"height": 10
 								},
@@ -1575,7 +1580,7 @@
 									"font": "Arial;13;0",
 									"parentStyle": true,
 									"left": -248,
-									"top": 64,
+									"top": 40,
 									"width": 10,
 									"height": 10
 								},
@@ -1592,7 +1597,7 @@
 									"font": "Arial;13;0",
 									"parentStyle": true,
 									"left": -248,
-									"top": 64,
+									"top": 40,
 									"width": 10,
 									"height": 10
 								}
@@ -1737,7 +1742,7 @@
 									"font": "Arial;13;0",
 									"parentStyle": true,
 									"left": -240,
-									"top": 224,
+									"top": 200,
 									"width": 10,
 									"height": 10
 								},
@@ -1754,7 +1759,7 @@
 									"font": "Arial;13;0",
 									"parentStyle": true,
 									"left": -240,
-									"top": 224,
+									"top": 200,
 									"width": 10,
 									"height": 10
 								},
@@ -1771,7 +1776,7 @@
 									"font": "Arial;13;0",
 									"parentStyle": true,
 									"left": -240,
-									"top": 224,
+									"top": 200,
 									"width": 10,
 									"height": 10
 								},
@@ -1788,7 +1793,7 @@
 									"font": "Arial;13;0",
 									"parentStyle": true,
 									"left": -240,
-									"top": 224,
+									"top": 200,
 									"width": 10,
 									"height": 10
 								},
@@ -1805,7 +1810,7 @@
 									"font": "Arial;13;0",
 									"parentStyle": true,
 									"left": -240,
-									"top": 224,
+									"top": 200,
 									"width": 10,
 									"height": 10
 								}
@@ -1950,7 +1955,7 @@
 									"font": "Arial;13;0",
 									"parentStyle": true,
 									"left": -240,
-									"top": 288,
+									"top": 264,
 									"width": 10,
 									"height": 10
 								},
@@ -1967,7 +1972,7 @@
 									"font": "Arial;13;0",
 									"parentStyle": true,
 									"left": -240,
-									"top": 288,
+									"top": 264,
 									"width": 10,
 									"height": 10
 								},
@@ -1984,7 +1989,7 @@
 									"font": "Arial;13;0",
 									"parentStyle": true,
 									"left": -240,
-									"top": 288,
+									"top": 264,
 									"width": 10,
 									"height": 10
 								},
@@ -2001,7 +2006,7 @@
 									"font": "Arial;13;0",
 									"parentStyle": true,
 									"left": -240,
-									"top": 288,
+									"top": 264,
 									"width": 10,
 									"height": 10
 								},
@@ -2018,7 +2023,7 @@
 									"font": "Arial;13;0",
 									"parentStyle": true,
 									"left": -240,
-									"top": 288,
+									"top": 264,
 									"width": 10,
 									"height": 10
 								}
@@ -12396,7 +12401,7 @@
 					"_parent": {
 						"$ref": "AAAAAAGdFOLU0ZsLQMY="
 					},
-					"name": "Unregistered user",
+					"name": "Guest",
 					"ownedElements": [
 						{
 							"_type": "UMLAssociation",

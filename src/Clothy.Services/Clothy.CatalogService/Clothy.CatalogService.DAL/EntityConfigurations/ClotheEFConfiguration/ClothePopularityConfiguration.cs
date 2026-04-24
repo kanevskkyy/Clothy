@@ -13,7 +13,7 @@ namespace Clothy.CatalogService.DAL.EntityConfigurations.ClotheEFConfiguration
     {
         public void Configure(EntityTypeBuilder<ClothePopularity> builder)
         {
-            builder.ToTable("clothe_popularity");
+            builder.ToTable("clothe_popularities");
 
             builder.HasKey(property => property.Id);
 

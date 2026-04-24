@@ -13,7 +13,7 @@ namespace Clothy.CatalogService.DAL.EntityConfigurations.StockEFConfigiration
     {
         public void Configure(EntityTypeBuilder<ClothesStock> builder)
         {
-            builder.ToTable("clothes_stock");
+            builder.ToTable("clothes_stocks");
 
             builder.HasKey(property => property.Id);
 
