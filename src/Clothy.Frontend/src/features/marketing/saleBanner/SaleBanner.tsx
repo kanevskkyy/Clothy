@@ -44,7 +44,7 @@ const SaleBanner = () => {
             </div>
             <div className={styles.promoMedia}>
                 <img
-                    src="src/assets/images/outerwear.jpg"
+                    src="assets/images/outerwear.jpg"
                     alt="Outerwear collection"
                     className={styles.promoImage}
                 />

@@ -31,9 +31,9 @@ using MassTransit;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System.Diagnostics.Metrics;
 
-Env.Load();
-
 var builder = WebApplication.CreateBuilder(args);
+
+if (builder.Environment.IsDevelopment()) Env.Load();
 
 builder.Services.AddHealthChecks()
     .AddNpgSql(

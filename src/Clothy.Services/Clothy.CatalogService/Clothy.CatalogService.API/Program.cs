@@ -91,8 +91,17 @@ builder.Services.AddValidatorsFromAssembly(typeof(BrandCreateDTOValidator).Assem
 
 builder.Services.AddGrpc();
 
-builder.AddNpgsqlDbContext<ClothyCatalogDbContext>("ClothyCatalogDb");
-builder.AddRedisClient("clothy-redis");
+string? catalogConnStr = builder.Configuration.GetConnectionString("ClothyCatalogDb");
+if (!string.IsNullOrEmpty(catalogConnStr))
+    builder.Services.AddDbContext<ClothyCatalogDbContext>(options =>
+        options.UseNpgsql(catalogConnStr));
+else builder.AddNpgsqlDbContext<ClothyCatalogDbContext>("ClothyCatalogDb");
+
+string? redisConnStr = builder.Configuration.GetConnectionString("clothy-redis");
+if (!string.IsNullOrEmpty(redisConnStr))
+    builder.Services.AddStackExchangeRedisCache(options =>
+        options.Configuration = redisConnStr);
+else builder.AddRedisClient("clothy-redis");
 
 await using (var scope = builder.Services.BuildServiceProvider().CreateAsyncScope())
 {

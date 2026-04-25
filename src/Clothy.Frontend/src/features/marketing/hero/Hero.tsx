@@ -25,7 +25,7 @@ const Hero = () => {
             </div>
             <div className={styles.imageWrapper}>
                 <img
-                    src="src/assets/images/banner.png"
+                    src="assets/images/banner.png"
                     alt="Hero image"
                     className={styles.image}
                     loading="lazy"

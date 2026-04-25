@@ -58,10 +58,8 @@ const AboutUsPage = () => {
                 </section>
 
 
-                {/*//TODO: Here rename if will rename full project*/}
-
                 <section className={styles.ourStory}>
-                    <img src="src/assets/images/aboutUsBanner.jpg"
+                    <img src="assets/images/aboutUsBanner.jpg"
                          alt="About us banner"
                          loading="lazy"/>
 

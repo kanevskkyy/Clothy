@@ -5,9 +5,9 @@ using Clothy.NotificationService.BLL.Services.Interfaces;
 using DotNetEnv;
 using Clothy.NotificationService.BLL.Consumers;
 
-Env.Load();
-
 var builder = WebApplication.CreateBuilder(args);
+
+if (builder.Environment.IsDevelopment()) Env.Load();
 
 builder.AddServiceDefaults();
 

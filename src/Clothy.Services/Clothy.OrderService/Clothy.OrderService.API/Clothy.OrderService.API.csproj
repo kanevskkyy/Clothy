@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<NoWarn>$(NoWarn);1591</NoWarn>
+	<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
 	<PropertyGroup>
@@ -32,5 +33,11 @@
     <ProjectReference Include="..\Clothy.OrderService.DAL\Clothy.OrderService.DAL.csproj" />
     <ProjectReference Include="..\Clothy.OrderService.gRPC.Server\Clothy.OrderService.gRPC.Server.csproj" />
   </ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="..\..\..\..\.dockerignore">
+	    <Link>.dockerignore</Link>
+	  </Content>
+	</ItemGroup>
 
 </Project>

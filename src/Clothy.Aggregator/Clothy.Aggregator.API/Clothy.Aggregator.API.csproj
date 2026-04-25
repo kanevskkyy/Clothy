@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
 	<ItemGroup>
@@ -11,13 +12,20 @@
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
 		<PackageReference Include="Grpc.Net.Client" Version="2.59.0" />
 		<PackageReference Include="Grpc.Net.ClientFactory" Version="2.59.0" />
-		<PackageReference Include="Aspire.StackExchange.Redis" Version="9.5.2" />
+        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.0" />
+        <PackageReference Include="Aspire.StackExchange.Redis" Version="9.5.2" />
 
 	</ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Clothy.ServiceDefaults\Clothy.ServiceDefaults.csproj" />
     <ProjectReference Include="..\Clothy.Aggregator.Aggregate\Clothy.Aggregator.Aggregate.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\..\..\.dockerignore">
+      <Link>.dockerignore</Link>
+    </Content>
   </ItemGroup>
 
 </Project>

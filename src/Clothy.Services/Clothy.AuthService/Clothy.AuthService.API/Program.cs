@@ -57,11 +57,9 @@ builder.Services.AddMassTransit(x =>
 });
 
 var app = builder.Build();
-app.UseServiceDefaults();
+app.UseServiceDefaults(); 
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
-
-app.MapDefaultEndpoints();
 
 if (app.Environment.IsDevelopment())
 {
@@ -69,11 +67,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.MapControllers();
 
 app.Run();
