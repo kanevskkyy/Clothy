@@ -12,7 +12,8 @@ using Xunit;
 
 namespace Clothy.CatalogService.IntegrationTests.Controllers;
 
-public class ClothesStockControllerTests : IClassFixture<CatalogServiceWebApplicationFactory>, IAsyncLifetime
+[Collection("CatalogService")]
+public class ClothesStockControllerTests : IAsyncLifetime
 {
     private HttpClient client;
     private CatalogServiceWebApplicationFactory factory;

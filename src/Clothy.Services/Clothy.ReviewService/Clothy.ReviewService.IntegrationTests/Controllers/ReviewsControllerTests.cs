@@ -16,7 +16,8 @@ using Xunit;
 
 namespace Clothy.ReviewService.IntegrationTests.Controllers;
 
-public class ReviewsControllerTests : IClassFixture<ReviewServiceWebApplicationFactory>
+[Collection("ReviewService")]
+public class ReviewsControllerTests
 {
     private HttpClient client;
     private ReviewServiceWebApplicationFactory factory;

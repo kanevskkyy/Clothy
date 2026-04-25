@@ -11,7 +11,8 @@ using Xunit;
 
 namespace Clothy.CatalogService.IntegrationTests.Controllers;
 
-public class SizeControllerTests : IClassFixture<CatalogServiceWebApplicationFactory>, IAsyncLifetime
+[Collection("CatalogService")]
+public class SizeControllerTests : IAsyncLifetime
 {
     private HttpClient client;
     private CatalogServiceWebApplicationFactory factory;
@@ -30,14 +31,6 @@ public class SizeControllerTests : IClassFixture<CatalogServiceWebApplicationFac
         ClothyCatalogDbContext db = scope.ServiceProvider.GetRequiredService<ClothyCatalogDbContext>();
         db.Sizes.RemoveRange(db.Sizes);
         await db.SaveChangesAsync();
-
-        IConnectionMultiplexer redis = factory.Services.GetRequiredService<IConnectionMultiplexer>();
-        var server = redis.GetServer(redis.GetEndPoints().First());
-        IDatabase redisDb = redis.GetDatabase();
-        foreach (var key in server.Keys(pattern: "filter*"))
-        {
-            await redisDb.KeyDeleteAsync(key);
-        }
     }
 
     [Fact]

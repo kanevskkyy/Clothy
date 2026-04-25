@@ -24,7 +24,6 @@ using Clothy.Shared.Helpers.CloudinaryConfig;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using MassTransit;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System.Diagnostics.Metrics;

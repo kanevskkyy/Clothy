@@ -61,7 +61,7 @@ public class OrderServiceWebApplicationFactory : WebApplicationFactory<Program>,
             config.AddInMemoryCollection(new Dictionary<string, string?>
             {
                 ["ConnectionStrings:ClothyOrder"] = postgresContainer.GetConnectionString(),
-                ["ConnectionStrings:clothy-redis"] = redisContainer.GetConnectionString(),
+                ["ConnectionStrings:clothy-redis"] = redisContainer.GetConnectionString() + ",allowAdmin=true",
                 ["ConnectionStrings:rabbitmq"] =
                     $"amqp://guest:guest@{rabbitmqContainer.Hostname}:{rabbitmqContainer.GetMappedPublicPort(5672)}/",
                 ["Jwt:Key"] = "SuperSecretKeyForTestingPurposesOnly12345678",

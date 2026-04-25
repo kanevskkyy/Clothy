@@ -14,7 +14,8 @@ using Xunit;
 
 namespace Clothy.PaymentService.IntegrationTests.Controllers;
 
-public class StripePaymentControllerTests : IClassFixture<PaymentServiceWebApplicationFactory>
+[Collection("PaymentService")]
+public class StripePaymentControllerTests
 {
     private HttpClient client;
     private PaymentServiceWebApplicationFactory factory;

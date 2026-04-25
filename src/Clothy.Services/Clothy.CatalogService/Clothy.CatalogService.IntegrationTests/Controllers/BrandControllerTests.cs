@@ -11,7 +11,8 @@ using Xunit;
 
 namespace Clothy.CatalogService.IntegrationTests.Controllers;
 
-public class BrandControllerTests : IClassFixture<CatalogServiceWebApplicationFactory>, IAsyncLifetime
+[Collection("CatalogService")]
+public class BrandControllerTests : IAsyncLifetime
 {
     private HttpClient client;
     private CatalogServiceWebApplicationFactory factory;
@@ -30,14 +31,6 @@ public class BrandControllerTests : IClassFixture<CatalogServiceWebApplicationFa
         ClothyCatalogDbContext db = scope.ServiceProvider.GetRequiredService<ClothyCatalogDbContext>();
         db.Brands.RemoveRange(db.Brands);
         await db.SaveChangesAsync();
-
-        IConnectionMultiplexer redis = factory.Services.GetRequiredService<IConnectionMultiplexer>();
-        var server = redis.GetServer(redis.GetEndPoints().First());
-        IDatabase db2 = redis.GetDatabase();
-        foreach (var key in server.Keys(pattern: "brand*"))
-        {
-            await db2.KeyDeleteAsync(key);
-        }
     }
 
     [Fact]

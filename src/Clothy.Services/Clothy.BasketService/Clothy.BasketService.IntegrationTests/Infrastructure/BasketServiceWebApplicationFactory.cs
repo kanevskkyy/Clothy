@@ -44,7 +44,7 @@ public class BasketServiceWebApplicationFactory : WebApplicationFactory<Program>
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.UseSetting("ConnectionStrings:clothy-redis", redisContainer.GetConnectionString());
+        builder.UseSetting("ConnectionStrings:clothy-redis", redisContainer.GetConnectionString() + ",allowAdmin=true");
 
         builder.UseSetting("ConnectionStrings:rabbitmq",
             $"amqp://guest:guest@{rabbitmqContainer.Hostname}:{rabbitmqContainer.GetMappedPublicPort(5672)}/");

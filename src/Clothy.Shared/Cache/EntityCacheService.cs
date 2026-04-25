@@ -35,7 +35,8 @@ namespace Clothy.Shared.Cache
             this.logger = logger;
 
             subscriber = redisMultiplexer.GetSubscriber();
-            subscriber.Subscribe(INVALIDATION_CHANNEL, (channel, message) =>
+    
+            _ = subscriber.SubscribeAsync(INVALIDATION_CHANNEL, (channel, message) =>
             {
                 string msg = message.ToString();
                 if (msg == CLEAR_ALL_MESSAGES) ClearAllMemoryCache();
@@ -150,11 +151,10 @@ namespace Clothy.Shared.Cache
         public async Task RemoveByPatternAsync(string pattern)
         {
             IServer server = redisDb.Multiplexer.GetServer(redisDb.Multiplexer.GetEndPoints()[0]);
-            foreach (RedisKey key in server.Keys(pattern: pattern + "*"))
+            await foreach (var key in server.KeysAsync(pattern: pattern + "*"))
             {
                 await redisDb.KeyDeleteAsync(key);
             }
-
             await subscriber.PublishAsync(INVALIDATION_CHANNEL, CLEAR_ALL_MESSAGES);
         }
 

@@ -15,7 +15,8 @@ using Xunit;
 
 namespace Clothy.PaymentService.IntegrationTests.Controllers;
 
-public class NowPaymentsControllerTests : IClassFixture<PaymentServiceWebApplicationFactory>
+[Collection("PaymentService")]
+public class NowPaymentsControllerTests
 {
     private HttpClient client;
     private PaymentServiceWebApplicationFactory factory;

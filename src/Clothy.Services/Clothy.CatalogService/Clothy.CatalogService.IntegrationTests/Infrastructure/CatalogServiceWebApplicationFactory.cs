@@ -15,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Moq;
+using StackExchange.Redis;
 using Testcontainers.PostgreSql;
 using Testcontainers.RabbitMq;
 using Testcontainers.Redis;
@@ -58,7 +59,7 @@ public class CatalogServiceWebApplicationFactory : WebApplicationFactory<Program
             config.AddInMemoryCollection(new Dictionary<string, string?>
             {
                 ["ConnectionStrings:ClothyCatalogDb"] = postgresContainer.GetConnectionString(),
-                ["ConnectionStrings:clothy-redis"] = redisContainer.GetConnectionString(),
+                ["ConnectionStrings:clothy-redis"] = redisContainer.GetConnectionString() + ",allowAdmin=true",
                 ["ConnectionStrings:rabbitmq"] =
                     $"amqp://guest:guest@{rabbitmqContainer.Hostname}:{rabbitmqContainer.GetMappedPublicPort(5672)}/",
                 ["Jwt:Key"] = "SuperSecretKeyForTestingPurposesOnly12345678",
@@ -87,6 +88,10 @@ public class CatalogServiceWebApplicationFactory : WebApplicationFactory<Program
             {
                 x.UsingInMemory((context, cfg) => cfg.ConfigureEndpoints(context));
             });
+            
+            services.RemoveAll<IConnectionMultiplexer>();
+            services.AddSingleton<IConnectionMultiplexer>(_ =>
+                ConnectionMultiplexer.Connect(redisContainer.GetConnectionString() + ",allowAdmin=true"));
 
             services.RemoveAll<IConfigureOptions<JwtBearerOptions>>();
             services.RemoveAll<IPostConfigureOptions<JwtBearerOptions>>();

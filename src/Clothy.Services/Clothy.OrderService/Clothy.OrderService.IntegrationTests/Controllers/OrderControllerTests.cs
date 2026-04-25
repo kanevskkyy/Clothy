@@ -13,7 +13,8 @@ using Xunit;
 
 namespace Clothy.OrderService.IntegrationTests.Controllers;
 
-public class OrderControllerTests : IClassFixture<OrderServiceWebApplicationFactory>, IAsyncLifetime
+[Collection("OrderService")]
+public class OrderControllerTests : IAsyncLifetime
 {
     private HttpClient client;
     private OrderServiceWebApplicationFactory factory;
@@ -40,14 +41,6 @@ public class OrderControllerTests : IClassFixture<OrderServiceWebApplicationFact
             DELETE FROM regions;
             DELETE FROM delivery_provider;", connection);
         await cmd.ExecuteNonQueryAsync();
-
-        IConnectionMultiplexer redis = factory.Services.GetRequiredService<IConnectionMultiplexer>();
-        IDatabase db = redis.GetDatabase();
-        var server = redis.GetServer(redis.GetEndPoints().First());
-        foreach (var key in server.Keys(pattern: "order*"))
-        {
-            await db.KeyDeleteAsync(key);
-        }
     }
     
     [Fact]

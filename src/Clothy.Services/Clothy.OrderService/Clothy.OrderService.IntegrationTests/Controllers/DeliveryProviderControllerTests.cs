@@ -12,7 +12,8 @@ using Xunit;
 
 namespace Clothy.OrderService.IntegrationTests.Controllers;
 
-public class DeliveryProviderControllerTests : IClassFixture<OrderServiceWebApplicationFactory>
+[Collection("OrderService")]
+public class DeliveryProviderControllerTests : IAsyncLifetime
 {
     private HttpClient client;
     private OrderServiceWebApplicationFactory factory;
@@ -21,6 +22,17 @@ public class DeliveryProviderControllerTests : IClassFixture<OrderServiceWebAppl
     {
         this.factory = factory;
         client = factory.CreateClient();
+    }
+    
+    public Task InitializeAsync() => Task.CompletedTask;
+    
+    public async Task DisposeAsync()
+    {
+        await using NpgsqlConnection connection = new NpgsqlConnection(factory.PostgresConnectionString);
+        await connection.OpenAsync();
+        await using NpgsqlCommand cmd = new NpgsqlCommand(@"
+        DELETE FROM delivery_provider;", connection);
+        await cmd.ExecuteNonQueryAsync();
     }
     
     [Fact]
