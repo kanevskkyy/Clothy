@@ -5,13 +5,15 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 	</PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
-	  <PackageReference Include="Aspire.StackExchange.Redis" Version="9.5.2" />
+      <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.0" />
+      <PackageReference Include="Aspire.StackExchange.Redis" Version="9.5.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,6 +22,12 @@
     <ProjectReference Include="..\Clothy.BasketService.BLL\Clothy.BasketService.BLL.csproj" />
     <ProjectReference Include="..\Clothy.BasketService.gRPC.Client\Clothy.BasketService.gRPC.Client.csproj" />
     <ProjectReference Include="..\Clothy.BasketService.gRPC.Server\Clothy.BasketService.gRPC.Server.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\..\..\..\.dockerignore">
+      <Link>.dockerignore</Link>
+    </Content>
   </ItemGroup>
 
 </Project>

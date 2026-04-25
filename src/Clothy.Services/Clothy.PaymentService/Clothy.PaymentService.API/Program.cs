@@ -16,11 +16,15 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-Env.Load();
+if (builder.Environment.IsDevelopment()) Env.Load();
 
 builder.AddServiceDefaults();
 
-builder.AddNpgsqlDbContext<PaymentDbContext>("ClothyPaymentDb");
+string? paymentConnStr = builder.Configuration.GetConnectionString("ClothyPaymentDb");
+if (!string.IsNullOrEmpty(paymentConnStr))
+    builder.Services.AddDbContext<PaymentDbContext>(options =>
+        options.UseNpgsql(paymentConnStr));
+else builder.AddNpgsqlDbContext<PaymentDbContext>("ClothyPaymentDb");
 
 builder.Services.AddGrpc();
 builder.Services.AddScoped<IGetOrderInfoClient, GetOrderInfoClient>();

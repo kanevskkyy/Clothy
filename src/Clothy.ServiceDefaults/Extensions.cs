@@ -48,12 +48,14 @@ public static class Extensions
             .WriteTo.Console()
         );
 
+        var allowedOrigins = (Environment.GetEnvironmentVariable("FRONTEND__URL") ?? "http://localhost:5173").Split(',');
+
         builder.Services.AddCors(options =>
         {
             options.AddDefaultPolicy(policy =>
             {
                 policy
-                    .WithOrigins(Environment.GetEnvironmentVariable("FRONTEND__URL") ?? "http://localhost:5173")
+                    .WithOrigins(allowedOrigins)
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials();

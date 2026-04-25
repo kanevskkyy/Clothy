@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<NoWarn>$(NoWarn);1591</NoWarn>
+	<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,6 +25,12 @@
     <ProjectReference Include="..\Clothy.ReviewService.gRPC.Client\Clothy.ReviewService.gRPC.Client.csproj" />
     <ProjectReference Include="..\Clothy.ReviewService.gRPC.Server\Clothy.ReviewService.gRPC.Server.csproj" />
     <ProjectReference Include="..\Clothy.ReviewService.Infrastructure\Clothy.ReviewService.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\..\..\..\.dockerignore">
+      <Link>.dockerignore</Link>
+    </Content>
   </ItemGroup>
 
 </Project>

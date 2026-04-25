@@ -23,7 +23,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddServiceDiscovery();
 
-builder.AddRedisClient("clothy-redis");
+string? redisConnStr = builder.Configuration.GetConnectionString("clothy-redis");
+if (!string.IsNullOrEmpty(redisConnStr))
+    builder.Services.AddStackExchangeRedisCache(options =>
+        options.Configuration = redisConnStr);
+else builder.AddRedisClient("clothy-redis");
+
 builder.Services.AddMemoryCache(options =>
 {
     options.SizeLimit = 1024;

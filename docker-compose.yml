@@ -1,0 +1,341 @@
+name: clothy
+
+services:
+
+  clothy-postgres:
+    image: postgres:16
+    container_name: clothy-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./src/Clothy.AppHost/Scripts:/docker-entrypoint-initdb.d
+    networks:
+      - clothy-network
+
+  clothy-mongo:
+    image: mongo:7
+    container_name: clothy-mongo
+    restart: unless-stopped
+    volumes:
+      - mongodata:/data/db
+    networks:
+      - clothy-network
+
+  clothy-redis:
+    image: redis:7-alpine
+    container_name: clothy-redis
+    restart: unless-stopped
+    volumes:
+      - redisdata:/data
+    networks:
+      - clothy-network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    volumes:
+      - rabbitmqdata:/var/lib/rabbitmq
+    networks:
+      - clothy-network
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    container_name: keycloak
+    restart: unless-stopped
+    command: start-dev
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USERNAME}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://clothy-postgres:5432/keycloak
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "8080:8080"
+    depends_on:
+      - clothy-postgres
+    networks:
+      - clothy-network
+
+  catalog:
+    build:
+      context: ./src
+      dockerfile: Clothy.Services/Clothy.CatalogService/Clothy.CatalogService.API/Dockerfile
+    container_name: catalog  
+    restart: unless-stopped  
+    environment:  
+      ASPNETCORE_ENVIRONMENT: Production  
+      ConnectionStrings__ClothyCatalogDb: "Host=clothy-postgres;Port=5432;Database=ClothyCatalogDb;Username=postgres;Password=${POSTGRES_PASSWORD}"
+      ConnectionStrings__clothy-redis: "clothy-redis:6379"
+      ConnectionStrings__rabbitmq: "amqp://${RABBITMQ_USERNAME}:${RABBITMQ_PASSWORD}@rabbitmq:5672"
+      CLOUDINARYSETTINGS__CLOUDNAME: ${CLOUDINARYSETTINGS__CLOUDNAME}
+      CLOUDINARYSETTINGS__APIKEY: ${CLOUDINARYSETTINGS__APIKEY}
+      CLOUDINARYSETTINGS__APISECRET: ${CLOUDINARYSETTINGS__APISECRET}
+      FRONTEND__URL: ${FRONTEND__URL}
+    depends_on:
+      - clothy-postgres
+      - clothy-redis
+      - rabbitmq
+    networks:
+      - clothy-network
+
+  basket:
+    build:
+      context: ./src
+      dockerfile: Clothy.Services/Clothy.BasketService/Clothy.BasketService.API/Dockerfile
+    container_name: basket
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__clothy-redis: "clothy-redis:6379"
+      ConnectionStrings__rabbitmq: "amqp://${RABBITMQ_USERNAME}:${RABBITMQ_PASSWORD}@rabbitmq:5672"
+      GrpcClients__catalog: "http://catalog:8083"
+      GrpcClients__orders: "http://orders:8087"
+      FRONTEND__URL: ${FRONTEND__URL}
+    depends_on:
+      - clothy-redis
+      - rabbitmq
+      - catalog
+    networks:
+      - clothy-network
+
+  orders:
+    build:
+      context: ./src
+      dockerfile: Clothy.Services/Clothy.OrderService/Clothy.OrderService.API/Dockerfile
+    container_name: orders
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__ClothyOrder: "Host=clothy-postgres;Port=5432;Database=ClothyOrder;Username=postgres;Password=${POSTGRES_PASSWORD}"
+      ConnectionStrings__clothy-redis: "clothy-redis:6379"
+      ConnectionStrings__rabbitmq: "amqp://${RABBITMQ_USERNAME}:${RABBITMQ_PASSWORD}@rabbitmq:5672"
+      GrpcClients__catalog: "http://catalog:8083"
+      GrpcClients__basket: "http://basket:8085"
+      CLOUDINARYSETTINGS__CLOUDNAME: ${CLOUDINARYSETTINGS__CLOUDNAME}
+      CLOUDINARYSETTINGS__APIKEY: ${CLOUDINARYSETTINGS__APIKEY}
+      CLOUDINARYSETTINGS__APISECRET: ${CLOUDINARYSETTINGS__APISECRET}
+      NOVAPOSHTA__API_KEY: ${NOVAPOSHTA__API_KEY}
+      FRONTEND__URL: ${FRONTEND__URL}
+    depends_on:
+      - clothy-postgres
+      - clothy-redis
+      - rabbitmq
+      - catalog
+      - basket
+    networks:
+      - clothy-network
+
+  reviews:
+    build:
+      context: ./src
+      dockerfile: Clothy.Services/Clothy.ReviewService/Clothy.ReviewService.API/Dockerfile
+    container_name: reviews
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__ClothyReviewsDb: "mongodb://clothy-mongo:27017/ClothyReviewsDb"
+      ConnectionStrings__rabbitmq: "amqp://${RABBITMQ_USERNAME}:${RABBITMQ_PASSWORD}@rabbitmq:5672"
+      GrpcClients__catalog: "http://catalog:8083"
+      GrpcClients__orders: "http://orders:8087"
+      FRONTEND__URL: ${FRONTEND__URL}
+    depends_on:
+      - clothy-mongo
+      - rabbitmq
+      - catalog
+      - orders
+    networks:
+      - clothy-network
+
+  auth:
+    build:
+      context: ./src
+      dockerfile: Clothy.Services/Clothy.AuthService/Clothy.AuthService.API/Dockerfile
+    container_name: auth
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__clothy-redis: "clothy-redis:6379"
+      ConnectionStrings__rabbitmq: "amqp://${RABBITMQ_USERNAME}:${RABBITMQ_PASSWORD}@rabbitmq:5672"
+      KEYCLOAK__URL: ${KEYCLOAK__URL}
+      KEYCLOAK__REALM: ${KEYCLOAK__REALM}
+      KEYCLOAK__CLIENTID: ${KEYCLOAK__CLIENTID}
+      KEYCLOAK__CLIENTSECRET: ${KEYCLOAK__CLIENTSECRET}
+      CLOUDINARYSETTINGS__CLOUDNAME: ${CLOUDINARYSETTINGS__CLOUDNAME}
+      CLOUDINARYSETTINGS__APIKEY: ${CLOUDINARYSETTINGS__APIKEY}
+      CLOUDINARYSETTINGS__APISECRET: ${CLOUDINARYSETTINGS__APISECRET}
+      FRONTEND__URL: ${FRONTEND__URL}
+    depends_on:
+      - clothy-redis
+      - rabbitmq
+      - keycloak
+    networks:
+      - clothy-network
+
+  notification:
+    build:
+      context: ./src
+      dockerfile: Clothy.Services/Clothy.NotificationService/Clothy.NotificationService.API/Dockerfile
+    container_name: notification
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__rabbitmq: "amqp://${RABBITMQ_USERNAME}:${RABBITMQ_PASSWORD}@rabbitmq:5672"
+      SENDGRID__KEY: ${SENDGRID__KEY}
+      SENDGRID__FROM_EMAIL: ${SENDGRID__FROM_EMAIL}
+      SENDGRID__FROM_NAME: ${SENDGRID__FROM_NAME}
+    depends_on:
+      - rabbitmq
+    networks:
+      - clothy-network
+
+  payments:
+    build:
+      context: ./src
+      dockerfile: Clothy.Services/Clothy.PaymentService/Clothy.PaymentService.API/Dockerfile
+    container_name: payments
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__ClothyPaymentDb: "Host=clothy-postgres;Port=5432;Database=ClothyPaymentDb;Username=postgres;Password=${POSTGRES_PASSWORD}"
+      ConnectionStrings__rabbitmq: "amqp://${RABBITMQ_USERNAME}:${RABBITMQ_PASSWORD}@rabbitmq:5672"
+      GrpcClients__orders: "http://orders:8087"
+      STRIPE__SECRET_KEY: ${STRIPE__SECRET_KEY}
+      STRIPE__PUBLISHABLE_KEY: ${STRIPE__PUBLISHABLE_KEY}
+      STRIPE__WEBHOOK_SECRET: ${STRIPE__WEBHOOK_SECRET}
+      NOWPAYMENTS__API_KEY: ${NOWPAYMENTS__API_KEY}
+      NOWPAYMENTS__CALLBACK_URL: ${NOWPAYMENTS__CALLBACK_URL}
+      NOWPAYMENTS__WEBHOOK_SECRET: ${NOWPAYMENTS__WEBHOOK_SECRET}
+      SUCCESS__URL: ${SUCCESS__URL}
+      CANCEL__URL: ${CANCEL__URL}
+      FRONTEND__URL: ${FRONTEND__URL}
+    depends_on:
+      - clothy-postgres
+      - rabbitmq
+      - orders
+    networks:
+      - clothy-network
+
+  aggregator:
+    build:
+      context: ./src
+      dockerfile: Clothy.Aggregator/Clothy.Aggregator.API/Dockerfile
+    container_name: aggregator
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__clothy-redis: "clothy-redis:6379"
+      GrpcClients__catalog: "http://catalog:8083"
+      GrpcClients__orders: "http://orders:8087"
+      GrpcClients__basket: "http://basket:8085"
+      GrpcClients__reviews: "http://reviews:8089"
+      FRONTEND__URL: ${FRONTEND__URL}
+    depends_on:
+      - clothy-redis
+      - catalog
+      - orders
+      - basket
+      - reviews
+    networks:
+      - clothy-network
+
+  gateway:
+    build:
+      context: ./src
+      dockerfile: Clothy.Gateway/Dockerfile
+    container_name: gateway
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      FRONTEND__URL: ${FRONTEND__URL}
+    ports:
+      - "8094:8094"
+    depends_on:
+      - catalog
+      - orders
+      - basket
+      - reviews
+      - auth
+      - payments
+      - aggregator
+      - notification
+    networks:
+      - clothy-network
+  
+  catalog-seed:
+    build:
+      context: ./src
+      dockerfile: Clothy.Services/Clothy.CatalogService/Clothy.CatalogService.SeedData/Dockerfile
+    container_name: catalog-seed
+    environment:
+      ConnectionStrings__ClothyCatalogDb: "Host=clothy-postgres;Port=5432;Database=ClothyCatalogDb;Username=postgres;Password=${POSTGRES_PASSWORD}"
+      SEED__MODE: ${SEED__MODE}
+    depends_on:
+      - clothy-postgres
+      - catalog
+    networks:
+      - clothy-network
+    restart: "no"
+
+  order-seed:
+    build:
+      context: ./src
+      dockerfile: Clothy.Services/Clothy.OrderService/Clothy.OrderService.SeedData/Dockerfile
+    container_name: order-seed
+    environment:
+      ConnectionStrings__ClothyOrder: "Host=clothy-postgres;Port=5432;Database=ClothyOrder;Username=postgres;Password=${POSTGRES_PASSWORD}"
+      NOVAPOSHTA__API_KEY: ${NOVAPOSHTA__API_KEY}
+    depends_on:
+      - clothy-postgres
+      - orders
+    networks:
+      - clothy-network
+    restart: "no"
+    
+  ai-tryon:
+    build:
+      context: ./src/Clothy.AI.TryOnService
+      dockerfile: Dockerfile
+    container_name: ai-tryon
+    restart: unless-stopped
+    environment:
+      LIGHT_X_API_KEY: ${LIGHT_X_API_KEY}
+      FRONTEND__URL: ${FRONTEND__URL}
+      CLOUDINARYSETTINGS__CLOUDNAME: ${CLOUDINARYSETTINGS__CLOUDNAME}
+      CLOUDINARYSETTINGS__APIKEY: ${CLOUDINARYSETTINGS__APIKEY}
+      CLOUDINARYSETTINGS__APISECRET: ${CLOUDINARYSETTINGS__APISECRET}
+    networks:
+      - clothy-network
+
+  frontend:
+      build:
+        context: ./src/Clothy.Frontend
+        dockerfile: Dockerfile
+        args:
+          VITE_API_URL: ${VITE_API_URL}
+      container_name: frontend
+      restart: unless-stopped
+      ports:
+        - "3000:3000"
+      depends_on:
+        - gateway
+      networks:
+        - clothy-network
+
+
+volumes:
+  pgdata:
+  mongodata:
+  redisdata:
+  rabbitmqdata:
+
+networks:
+  clothy-network:
+    driver: bridge

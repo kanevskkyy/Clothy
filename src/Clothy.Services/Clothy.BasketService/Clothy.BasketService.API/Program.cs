@@ -20,7 +20,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
-builder.AddRedisClient("clothy-redis");
+string? redisConnStr = builder.Configuration.GetConnectionString("clothy-redis");
+if (!string.IsNullOrEmpty(redisConnStr))
+    builder.Services.AddStackExchangeRedisCache(options =>
+        options.Configuration = redisConnStr);
+else builder.AddRedisClient("clothy-redis");
 
 builder.Services.AddScoped<IBasketRepository, BasketRepository>();
 builder.Services.AddScoped<IBasketService, BasketService>();
@@ -36,15 +40,7 @@ builder.Services.AddConfiguredGrpcClient<OrderItemValidator.OrderItemValidatorCl
     });
 
 builder.Services.AddScoped<IOrderHistoryGrpcClient, OrderHistoryGrpcClient>();
-builder.Services.AddGrpcClient<OrderHistoryService.OrderHistoryServiceClient>(o =>
-    {
-        o.Address = new Uri(builder.Configuration["Grpc:OrderService"]!);
-    })
-    .ConfigureChannel(channelOptions =>
-    {
-        channelOptions.MaxReceiveMessageSize = 5 * 1024 * 1024;
-        channelOptions.MaxSendMessageSize = 5 * 1024 * 1024;
-    })
+builder.Services.AddConfiguredGrpcClient<OrderHistoryService.OrderHistoryServiceClient>("orders")
     .AddStandardResilienceHandler(resilience =>
     {
         resilience.Retry.MaxRetryAttempts = 3;
