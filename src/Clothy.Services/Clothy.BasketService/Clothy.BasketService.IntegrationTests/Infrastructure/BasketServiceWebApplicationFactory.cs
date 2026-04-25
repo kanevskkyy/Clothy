@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Moq;
+using StackExchange.Redis;
 using Testcontainers.RabbitMq;
 using Testcontainers.Redis;
 using Xunit;
@@ -67,6 +68,10 @@ public class BasketServiceWebApplicationFactory : WebApplicationFactory<Program>
             services.RemoveAll<IAuthenticationHandlerProvider>();
             services.RemoveAll<IAuthenticationService>();
             services.RemoveAll<IClaimsTransformation>();
+            
+            services.RemoveAll<IConnectionMultiplexer>();
+            services.AddSingleton<IConnectionMultiplexer>(_ =>
+                ConnectionMultiplexer.Connect(redisContainer.GetConnectionString() + ",allowAdmin=true"));
 
             ServiceDescriptor? schemeProvider = services.FirstOrDefault(d =>
                 d.ServiceType == typeof(IAuthenticationSchemeProvider));

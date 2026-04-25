@@ -15,6 +15,7 @@ using Clothy.BasketService.BLL.Consumers;
 using Clothy.BasketService.gRPC.Client.Services;
 using Clothy.BasketService.gRPC.Client.Services.Interfaces;
 using Clothy.ServiceDefaults.Middleware.Grpc;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,8 +23,12 @@ builder.AddServiceDefaults();
 
 string? redisConnStr = builder.Configuration.GetConnectionString("clothy-redis");
 if (!string.IsNullOrEmpty(redisConnStr))
+{
     builder.Services.AddStackExchangeRedisCache(options =>
         options.Configuration = redisConnStr);
+    builder.Services.AddSingleton<IConnectionMultiplexer>(_ =>
+        ConnectionMultiplexer.Connect(redisConnStr));
+}
 else builder.AddRedisClient("clothy-redis");
 
 builder.Services.AddScoped<IBasketRepository, BasketRepository>();
