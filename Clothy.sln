@@ -117,41 +117,41 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.PaymentService.gRPC.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.BasketService.gRPC.Client", "src\Clothy.Services\Clothy.BasketService\Clothy.BasketService.gRPC.Client\Clothy.BasketService.gRPC.Client.csproj", "{79157E99-08D1-445E-B2AA-C3AD1CCAE2A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.CatalogService.UnitTests", "src\Clothy.Services\Clothy.CatalogService\Clothy.CatalogService.UnitTests\Clothy.CatalogService.UnitTests.csproj", "{F00D0774-A24A-4533-95FC-D18A58452C31}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.CatalogService.UnitTests", "tests\Clothy.CatalogService\Clothy.CatalogService.UnitTests\Clothy.CatalogService.UnitTests.csproj", "{F00D0774-A24A-4533-95FC-D18A58452C31}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.BasketService.UnitTests", "src\Clothy.Services\Clothy.BasketService\Clothy.BasketService.UnitTests\Clothy.BasketService.UnitTests.csproj", "{01071113-F3A9-4DF0-B123-989D991B2EB6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.BasketService.UnitTests", "tests\Clothy.BasketService\Clothy.BasketService.UnitTests\Clothy.BasketService.UnitTests.csproj", "{01071113-F3A9-4DF0-B123-989D991B2EB6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.OrderService.UnitTests", "src\Clothy.Services\Clothy.OrderService\Clothy.OrderService.UnitTests\Clothy.OrderService.UnitTests.csproj", "{DF64D92B-6D8A-4686-A458-B28E96BC8FB7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.OrderService.UnitTests", "tests\Clothy.OrderService\Clothy.OrderService.UnitTests\Clothy.OrderService.UnitTests.csproj", "{DF64D92B-6D8A-4686-A458-B28E96BC8FB7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.PaymentService.UnitTests", "src\Clothy.Services\Clothy.PaymentService\Clothy.PaymentService.UnitTests\Clothy.PaymentService.UnitTests.csproj", "{55CC5F82-7F5D-4663-94C4-7ADFC26BD7CC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.PaymentService.UnitTests", "tests\Clothy.PaymentService\Clothy.PaymentService.UnitTests\Clothy.PaymentService.UnitTests.csproj", "{55CC5F82-7F5D-4663-94C4-7ADFC26BD7CC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.Aggregator.UnitTests", "src\Clothy.Aggregator\Clothy.Aggregator.UnitTests\Clothy.Aggregator.UnitTests.csproj", "{9A23ED6A-4812-4D64-A001-269281A701CF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.Aggregator.UnitTests", "tests\Clothy.Aggregator\Clothy.Aggregator.UnitTests\Clothy.Aggregator.UnitTests.csproj", "{9A23ED6A-4812-4D64-A001-269281A701CF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.ReviewService.UnitTests", "src\Clothy.Services\Clothy.ReviewService\Clothy.ReviewService.UnitTests\Clothy.ReviewService.UnitTests.csproj", "{605F086E-82C3-433C-8045-572D734BCBEB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.ReviewService.UnitTests", "tests\Clothy.ReviewService\Clothy.ReviewService.UnitTests\Clothy.ReviewService.UnitTests.csproj", "{605F086E-82C3-433C-8045-572D734BCBEB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.AuthService.UnitTests", "src\Clothy.Services\Clothy.AuthService\Clothy.AuthService.UnitTests\Clothy.AuthService.UnitTests.csproj", "{F5D235FC-5541-453D-8DD2-ED4E1E0E9F41}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.AuthService.UnitTests", "tests\Clothy.AuthService\Clothy.AuthService.UnitTests\Clothy.AuthService.UnitTests.csproj", "{F5D235FC-5541-453D-8DD2-ED4E1E0E9F41}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.BasketService.IntegrationTests", "src\Clothy.Services\Clothy.BasketService\Clothy.BasketService.IntegrationTests\Clothy.BasketService.IntegrationTests.csproj", "{F8B5158E-A040-4C3E-A920-DC4F12C53350}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.BasketService.IntegrationTests", "tests\Clothy.BasketService\Clothy.BasketService.IntegrationTests\Clothy.BasketService.IntegrationTests.csproj", "{F8B5158E-A040-4C3E-A920-DC4F12C53350}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.PaymentService.IntegrationTests", "src\Clothy.Services\Clothy.PaymentService\Clothy.PaymentService.IntegrationTests\Clothy.PaymentService.IntegrationTests.csproj", "{4A083CBA-8369-442C-A22D-FC4C0E382283}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.PaymentService.IntegrationTests", "tests\Clothy.PaymentService\Clothy.PaymentService.IntegrationTests\Clothy.PaymentService.IntegrationTests.csproj", "{4A083CBA-8369-442C-A22D-FC4C0E382283}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.ReviewService.IntegrationTests", "src\Clothy.Services\Clothy.ReviewService\Clothy.ReviewService.IntegrationTests\Clothy.ReviewService.IntegrationTests.csproj", "{BE53EBA4-29AF-4A30-8814-9CE377475350}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.ReviewService.IntegrationTests", "tests\Clothy.ReviewService\Clothy.ReviewService.IntegrationTests\Clothy.ReviewService.IntegrationTests.csproj", "{BE53EBA4-29AF-4A30-8814-9CE377475350}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.OrderService.IntegrationTests", "src\Clothy.Services\Clothy.OrderService\Clothy.OrderService.IntegrationTests\Clothy.OrderService.IntegrationTests.csproj", "{5C7975A6-EA60-482C-A7DF-6F1E4EEE5D3E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.OrderService.IntegrationTests", "tests\Clothy.OrderService\Clothy.OrderService.IntegrationTests\Clothy.OrderService.IntegrationTests.csproj", "{5C7975A6-EA60-482C-A7DF-6F1E4EEE5D3E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.CatalogService.IntegrationTests", "src\Clothy.Services\Clothy.CatalogService\Clothy.CatalogService.IntegrationTests\Clothy.CatalogService.IntegrationTests.csproj", "{2863D328-D7BE-412D-8144-5EB243A8761F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.CatalogService.IntegrationTests", "tests\Clothy.CatalogService\Clothy.CatalogService.IntegrationTests\Clothy.CatalogService.IntegrationTests.csproj", "{2863D328-D7BE-412D-8144-5EB243A8761F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.E2E.Tests", "src\Clothy.E2E.Tests\Clothy.E2E.Tests.csproj", "{03D74216-970E-4632-80F4-8AF9899CB5B9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.E2E.Tests", "tests\Clothy.E2E.Tests\Clothy.E2E.Tests.csproj", "{03D74216-970E-4632-80F4-8AF9899CB5B9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.CatalogService.ContractTests", "src\Clothy.Services\Clothy.CatalogService\Clothy.CatalogService.ContractTests\Clothy.CatalogService.ContractTests.csproj", "{7D7FACB9-4217-44B3-A8D9-5580DF9FE9AB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.CatalogService.ContractTests", "tests\Clothy.CatalogService\Clothy.CatalogService.ContractTests\Clothy.CatalogService.ContractTests.csproj", "{7D7FACB9-4217-44B3-A8D9-5580DF9FE9AB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.OrderService.ContractTests", "src\Clothy.Services\Clothy.OrderService\Clothy.OrderService.ContractTests\Clothy.OrderService.ContractTests.csproj", "{0BD05324-C15A-4A0E-A82F-A604C35CF68F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.OrderService.ContractTests", "tests\Clothy.OrderService\Clothy.OrderService.ContractTests\Clothy.OrderService.ContractTests.csproj", "{0BD05324-C15A-4A0E-A82F-A604C35CF68F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.BasketService.ContractTests", "src\Clothy.Services\Clothy.BasketService\Clothy.BasketService.ContractTests\Clothy.BasketService.ContractTests.csproj", "{46181CFD-54C8-4151-B2CA-33AC89F0B128}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.BasketService.ContractTests", "tests\Clothy.BasketService\Clothy.BasketService.ContractTests\Clothy.BasketService.ContractTests.csproj", "{46181CFD-54C8-4151-B2CA-33AC89F0B128}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.ReviewService.ContractTests", "src\Clothy.Services\Clothy.ReviewService\Clothy.ReviewService.ContractTests\Clothy.ReviewService.ContractTests.csproj", "{3E7FA052-9DCC-4B58-B39B-F99F4B7B7BD4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.ReviewService.ContractTests", "tests\Clothy.ReviewService\Clothy.ReviewService.ContractTests\Clothy.ReviewService.ContractTests.csproj", "{3E7FA052-9DCC-4B58-B39B-F99F4B7B7BD4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.PaymentService.ContractTests", "src\Clothy.Services\Clothy.PaymentService\Clothy.PaymentService.ContractTests\Clothy.PaymentService.ContractTests.csproj", "{892B5F11-C3D2-4268-9C74-737339EAF50A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clothy.PaymentService.ContractTests", "tests\Clothy.PaymentService\Clothy.PaymentService.ContractTests\Clothy.PaymentService.ContractTests.csproj", "{892B5F11-C3D2-4268-9C74-737339EAF50A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
