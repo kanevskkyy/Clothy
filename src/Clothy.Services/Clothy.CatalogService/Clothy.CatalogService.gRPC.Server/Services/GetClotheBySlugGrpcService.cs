@@ -13,18 +13,18 @@ using Microsoft.Extensions.Logging;
 
 namespace Clothy.CatalogService.gRPC.Server.Services
 {
-    public class GetClotheByIdGrpcService : ClotheServiceGrpc.ClotheServiceGrpcBase
+    public class GetClotheBySlugGrpcService : ClotheServiceGrpc.ClotheServiceGrpcBase
     {
         private IClotheService clotheService;
-        private ILogger<GetClotheByIdGrpcService> logger;
+        private ILogger<GetClotheBySlugGrpcService> logger;
 
-        public GetClotheByIdGrpcService(IClotheService clotheService, ILogger<GetClotheByIdGrpcService> logger)
+        public GetClotheBySlugGrpcService(IClotheService clotheService, ILogger<GetClotheBySlugGrpcService> logger)
         {
             this.clotheService = clotheService;
             this.logger = logger;
         }
 
-        public override async Task<ClotheDetailGrpcResponse> GetClotheById(ClotheIdGrpcRequest request, ServerCallContext context)
+        public override async Task<ClotheDetailGrpcResponse> GetClotheBySlug(ClotheGrpcRequest request, ServerCallContext context)
         {
             if (request == null)
             {

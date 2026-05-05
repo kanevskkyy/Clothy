@@ -29,7 +29,8 @@ namespace Clothy.ServiceDefaults.Middleware.Keycloak
                         options.Audience = "clothy-api";
                         options.SaveToken = false;
 
-                        options.MetadataAddress = "http://localhost:8080/realms/clothy-realm/.well-known/openid-configuration";
+                        string keycloakUrl = Environment.GetEnvironmentVariable("KEYCLOAK__URL") ?? "http://localhost:8080";
+                        options.MetadataAddress = $"{keycloakUrl}/realms/clothy-realm/.well-known/openid-configuration";
 
                         options.TokenValidationParameters = new TokenValidationParameters
                         {

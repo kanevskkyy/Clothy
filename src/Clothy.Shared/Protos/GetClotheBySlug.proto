@@ -1,10 +1,10 @@
 ﻿syntax = "proto3";
 
 service ClotheServiceGrpc {
-	rpc GetClotheById (ClotheIdGrpcRequest) returns (ClotheDetailGrpcResponse);
+	rpc GetClotheBySlug (ClotheGrpcRequest) returns (ClotheDetailGrpcResponse);
 }
 
-message ClotheIdGrpcRequest {
+message ClotheGrpcRequest {
 	string slug = 1;
 }
 
@@ -30,7 +30,7 @@ message AdditionalPhotoGrpcResponse {
 	string id = 1;
 	string photoUrl = 2;
 	string colorId = 3; 
-    bool isMain = 4;
+	bool isMain = 4;
 }
 
 message TagGrpcResponse {

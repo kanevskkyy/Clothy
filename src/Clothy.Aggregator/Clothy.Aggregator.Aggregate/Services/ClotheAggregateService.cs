@@ -29,7 +29,7 @@ namespace Clothy.Aggregator.Aggregate.Services
         {
             logger.LogInformation("Starting aggregation for slug: {Slug}", slug);
 
-            ClotheDetailGrpcResponse clotheInfo = await clotheGrpcClient.GetClotheByIdAsync(slug, cancellationToken);
+            ClotheDetailGrpcResponse clotheInfo = await clotheGrpcClient.GetClotheBySlugAsync(slug, cancellationToken);
 
             var reviewsTask = reviewGrpcClient.GetReviewsByClotheIdAsync(Guid.Parse(clotheInfo.Id), cancellationToken);
             var questionsTask = reviewGrpcClient.GetQuestionsAndAnswersByClotheIdAsync(Guid.Parse(clotheInfo.Id), cancellationToken);

@@ -142,7 +142,7 @@ var app = builder.Build();
 app.MapGrpcService<OrderItemValidatorService>();
 app.MapGrpcService<ClotheItemValidatorService>();
 app.MapGrpcService<ClotheFilterService>();
-app.MapGrpcService<GetClotheByIdGrpcService>();
+app.MapGrpcService<GetClotheBySlugGrpcService>();
 app.MapGrpcService<ClotheStockServiceImpl>();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();

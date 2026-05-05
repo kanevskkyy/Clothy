@@ -18,15 +18,26 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Run Unit Tests
-        run: |
-          dotnet test src/Clothy.Aggregator/Clothy.Aggregator.UnitTests --verbosity normal
-          dotnet test src/Clothy.Services/Clothy.AuthService/Clothy.AuthService.UnitTests --verbosity normal
-          dotnet test src/Clothy.Services/Clothy.BasketService/Clothy.BasketService.UnitTests --verbosity normal
-          dotnet test src/Clothy.Services/Clothy.CatalogService/Clothy.CatalogService.UnitTests --verbosity normal
-          dotnet test src/Clothy.Services/Clothy.OrderService/Clothy.OrderService.UnitTests --verbosity normal
-          dotnet test src/Clothy.Services/Clothy.PaymentService/Clothy.PaymentService.UnitTests --verbosity normal
-          dotnet test src/Clothy.Services/Clothy.ReviewService/Clothy.ReviewService.UnitTests --verbosity normal
+      - name: Aggregator Unit Tests
+        run: dotnet test src/Clothy.Aggregator/Clothy.Aggregator.UnitTests --verbosity normal
+
+      - name: AuthService Unit Tests
+        run: dotnet test src/Clothy.Services/Clothy.AuthService/Clothy.AuthService.UnitTests --verbosity normal
+
+      - name: BasketService Unit Tests
+        run: dotnet test src/Clothy.Services/Clothy.BasketService/Clothy.BasketService.UnitTests --verbosity normal
+
+      - name: CatalogService Unit Tests
+        run: dotnet test src/Clothy.Services/Clothy.CatalogService/Clothy.CatalogService.UnitTests --verbosity normal
+
+      - name: OrderService Unit Tests
+        run: dotnet test src/Clothy.Services/Clothy.OrderService/Clothy.OrderService.UnitTests --verbosity normal
+
+      - name: PaymentService Unit Tests
+        run: dotnet test src/Clothy.Services/Clothy.PaymentService/Clothy.PaymentService.UnitTests --verbosity normal
+
+      - name: ReviewService Unit Tests
+        run: dotnet test src/Clothy.Services/Clothy.ReviewService/Clothy.ReviewService.UnitTests --verbosity normal
 
   integration-test:
     name: Run Integration Tests
@@ -40,13 +51,47 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Run Integration Tests
-        run: |
-          dotnet test src/Clothy.Services/Clothy.CatalogService/Clothy.CatalogService.IntegrationTests --verbosity normal
-          dotnet test src/Clothy.Services/Clothy.BasketService/Clothy.BasketService.IntegrationTests --verbosity normal
-          dotnet test src/Clothy.Services/Clothy.OrderService/Clothy.OrderService.IntegrationTests --verbosity normal
-          dotnet test src/Clothy.Services/Clothy.PaymentService/Clothy.PaymentService.IntegrationTests --verbosity normal
-          dotnet test src/Clothy.Services/Clothy.ReviewService/Clothy.ReviewService.IntegrationTests --verbosity normal
+      - name: CatalogService Integration Tests
+        run: dotnet test src/Clothy.Services/Clothy.CatalogService/Clothy.CatalogService.IntegrationTests --verbosity normal
+
+      - name: BasketService Integration Tests
+        run: dotnet test src/Clothy.Services/Clothy.BasketService/Clothy.BasketService.IntegrationTests --verbosity normal
+
+      - name: OrderService Integration Tests
+        run: dotnet test src/Clothy.Services/Clothy.OrderService/Clothy.OrderService.IntegrationTests --verbosity normal
+
+      - name: PaymentService Integration Tests
+        run: dotnet test src/Clothy.Services/Clothy.PaymentService/Clothy.PaymentService.IntegrationTests --verbosity normal
+
+      - name: ReviewService Integration Tests
+        run: dotnet test src/Clothy.Services/Clothy.ReviewService/Clothy.ReviewService.IntegrationTests --verbosity normal
+
+  contract-test:
+    name: Run Contract Tests
+    runs-on: ubuntu-latest
+    needs: [unit-test, integration-test]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: CatalogService Contract Tests
+        run: dotnet test src/Clothy.Services/Clothy.CatalogService/Clothy.CatalogService.ContractTests --verbosity normal
+
+      - name: OrderService Contract Tests
+        run: dotnet test src/Clothy.Services/Clothy.OrderService/Clothy.OrderService.ContractTests --verbosity normal
+
+      - name: BasketService Contract Tests
+        run: dotnet test src/Clothy.Services/Clothy.BasketService/Clothy.BasketService.ContractTests --verbosity normal
+
+      - name: ReviewService Contract Tests
+        run: dotnet test src/Clothy.Services/Clothy.ReviewService/Clothy.ReviewService.ContractTests --verbosity normal
+
+      - name: PaymentService Contract Tests
+        run: dotnet test src/Clothy.Services/Clothy.PaymentService/Clothy.PaymentService.ContractTests --verbosity normal
 
   build-and-push:
     name: Build and Push to Docker Hub

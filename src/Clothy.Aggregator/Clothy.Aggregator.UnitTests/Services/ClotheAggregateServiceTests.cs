@@ -81,7 +81,7 @@ public class ClotheAggregateServiceTests
         Guid clotheId = Guid.Parse(clothe.Id);
 
         clotheGrpcClientMock
-            .Setup(c => c.GetClotheByIdAsync(clothe.Slug, It.IsAny<CancellationToken>()))
+            .Setup(c => c.GetClotheBySlugAsync(clothe.Slug, It.IsAny<CancellationToken>()))
             .ReturnsAsync(clothe);
 
         reviewGrpcClientMock
@@ -120,7 +120,7 @@ public class ClotheAggregateServiceTests
         Guid clotheId = Guid.Parse(clothe.Id);
 
         clotheGrpcClientMock
-            .Setup(c => c.GetClotheByIdAsync(clothe.Slug, It.IsAny<CancellationToken>()))
+            .Setup(c => c.GetClotheBySlugAsync(clothe.Slug, It.IsAny<CancellationToken>()))
             .ReturnsAsync(clothe);
 
         reviewGrpcClientMock
@@ -172,7 +172,7 @@ public class ClotheAggregateServiceTests
     public async Task GetFullClotheDetailAsync_WhenClotheClientThrows_PropagatesException()
     {
         clotheGrpcClientMock
-            .Setup(c => c.GetClotheByIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Setup(c => c.GetClotheBySlugAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new NotFoundException("Clothe not found"));
 
         Func<Task> act = async () => await service.GetFullClotheDetailAsync("non-existent-slug");
@@ -187,7 +187,7 @@ public class ClotheAggregateServiceTests
         Guid clotheId = Guid.Parse(clothe.Id);
 
         clotheGrpcClientMock
-            .Setup(c => c.GetClotheByIdAsync(clothe.Slug, It.IsAny<CancellationToken>()))
+            .Setup(c => c.GetClotheBySlugAsync(clothe.Slug, It.IsAny<CancellationToken>()))
             .ReturnsAsync(clothe);
 
         reviewGrpcClientMock

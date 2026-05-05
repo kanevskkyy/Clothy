@@ -71,7 +71,8 @@ services:
     container_name: catalog  
     restart: unless-stopped  
     environment:  
-      ASPNETCORE_ENVIRONMENT: Production  
+      ASPNETCORE_ENVIRONMENT: Production 
+      KEYCLOAK__URL: ${KEYCLOAK__URL} 
       ConnectionStrings__ClothyCatalogDb: "Host=clothy-postgres;Port=5432;Database=ClothyCatalogDb;Username=postgres;Password=${POSTGRES_PASSWORD}"
       ConnectionStrings__clothy-redis: "clothy-redis:6379"
       ConnectionStrings__rabbitmq: "amqp://${RABBITMQ_USERNAME}:${RABBITMQ_PASSWORD}@rabbitmq:5672"
@@ -94,6 +95,7 @@ services:
     restart: unless-stopped
     environment:
       ASPNETCORE_ENVIRONMENT: Production
+      KEYCLOAK__URL: ${KEYCLOAK__URL}
       ConnectionStrings__clothy-redis: "clothy-redis:6379"
       ConnectionStrings__rabbitmq: "amqp://${RABBITMQ_USERNAME}:${RABBITMQ_PASSWORD}@rabbitmq:5672"
       GrpcClients__catalog: "http://catalog:8083"
@@ -114,6 +116,7 @@ services:
     restart: unless-stopped
     environment:
       ASPNETCORE_ENVIRONMENT: Production
+      KEYCLOAK__URL: ${KEYCLOAK__URL}
       ConnectionStrings__ClothyOrder: "Host=clothy-postgres;Port=5432;Database=ClothyOrder;Username=postgres;Password=${POSTGRES_PASSWORD}"
       ConnectionStrings__clothy-redis: "clothy-redis:6379"
       ConnectionStrings__rabbitmq: "amqp://${RABBITMQ_USERNAME}:${RABBITMQ_PASSWORD}@rabbitmq:5672"
@@ -141,6 +144,7 @@ services:
     restart: unless-stopped
     environment:
       ASPNETCORE_ENVIRONMENT: Production
+      KEYCLOAK__URL: ${KEYCLOAK__URL}
       ConnectionStrings__ClothyReviewsDb: "mongodb://clothy-mongo:27017/ClothyReviewsDb"
       ConnectionStrings__rabbitmq: "amqp://${RABBITMQ_USERNAME}:${RABBITMQ_PASSWORD}@rabbitmq:5672"
       GrpcClients__catalog: "http://catalog:8083"
@@ -187,6 +191,7 @@ services:
     restart: unless-stopped
     environment:
       ASPNETCORE_ENVIRONMENT: Production
+      KEYCLOAK__URL: ${KEYCLOAK__URL}
       ConnectionStrings__rabbitmq: "amqp://${RABBITMQ_USERNAME}:${RABBITMQ_PASSWORD}@rabbitmq:5672"
       SENDGRID__KEY: ${SENDGRID__KEY}
       SENDGRID__FROM_EMAIL: ${SENDGRID__FROM_EMAIL}
@@ -204,6 +209,7 @@ services:
     restart: unless-stopped
     environment:
       ASPNETCORE_ENVIRONMENT: Production
+      KEYCLOAK__URL: ${KEYCLOAK__URL}
       ConnectionStrings__ClothyPaymentDb: "Host=clothy-postgres;Port=5432;Database=ClothyPaymentDb;Username=postgres;Password=${POSTGRES_PASSWORD}"
       ConnectionStrings__rabbitmq: "amqp://${RABBITMQ_USERNAME}:${RABBITMQ_PASSWORD}@rabbitmq:5672"
       GrpcClients__orders: "http://orders:8087"
@@ -231,6 +237,7 @@ services:
     restart: unless-stopped
     environment:
       ASPNETCORE_ENVIRONMENT: Production
+      KEYCLOAK__URL: ${KEYCLOAK__URL}
       ConnectionStrings__clothy-redis: "clothy-redis:6379"
       GrpcClients__catalog: "http://catalog:8083"
       GrpcClients__orders: "http://orders:8087"
@@ -254,6 +261,7 @@ services:
     restart: unless-stopped
     environment:
       ASPNETCORE_ENVIRONMENT: Production
+      KEYCLOAK__URL: ${KEYCLOAK__URL}
       FRONTEND__URL: ${FRONTEND__URL}
     ports:
       - "8094:8094"

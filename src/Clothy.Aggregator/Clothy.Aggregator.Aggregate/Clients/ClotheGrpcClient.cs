@@ -19,12 +19,12 @@ namespace Clothy.Aggregator.Aggregate.Clients
             this.logger = logger;
         }
 
-        public async Task<ClotheDetailGrpcResponse> GetClotheByIdAsync(string slug, CancellationToken cancellationToken = default)
+        public async Task<ClotheDetailGrpcResponse> GetClotheBySlugAsync(string slug, CancellationToken cancellationToken = default)
         {
-            ClotheIdGrpcRequest request = new ClotheIdGrpcRequest { 
+            ClotheGrpcRequest request = new ClotheGrpcRequest { 
                 Slug = slug
             };
-            ClotheDetailGrpcResponse response = await client.GetClotheByIdAsync(request, cancellationToken: cancellationToken);
+            ClotheDetailGrpcResponse response = await client.GetClotheBySlugAsync(request, cancellationToken: cancellationToken);
             return response;
         }
     }
