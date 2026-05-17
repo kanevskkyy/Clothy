@@ -193,9 +193,9 @@ services:
       ASPNETCORE_ENVIRONMENT: Production
       KEYCLOAK__URL: ${KEYCLOAK__URL}
       ConnectionStrings__rabbitmq: "amqp://${RABBITMQ_USERNAME}:${RABBITMQ_PASSWORD}@rabbitmq:5672"
-      SENDGRID__KEY: ${SENDGRID__KEY}
-      SENDGRID__FROM_EMAIL: ${SENDGRID__FROM_EMAIL}
-      SENDGRID__FROM_NAME: ${SENDGRID__FROM_NAME}
+      GMAIL__APP_PASSWORD: ${GMAIL__APP_PASSWORD}
+      GMAIL__FROM: ${GMAIL__FROM}
+      GMAIL__FROM_NAME: ${GMAIL__FROM_NAME}
     depends_on:
       - rabbitmq
     networks:

@@ -13,14 +13,14 @@ builder.AddServiceDefaults();
 
 builder.Services.Configure<EmailProviderOptions>(options =>
 {
-    options.ApiKey = Environment.GetEnvironmentVariable("SENDGRID__KEY");
-    options.FromEmail = Environment.GetEnvironmentVariable("SENDGRID__FROM_EMAIL");
-    options.FromName = Environment.GetEnvironmentVariable("SENDGRID__FROM_NAME");
+    options.ApiKey = Environment.GetEnvironmentVariable("GMAIL__APP_PASSWORD");
+    options.FromEmail = Environment.GetEnvironmentVariable("GMAIL__FROM");
+    options.FromName = Environment.GetEnvironmentVariable("GMAIL__FROM_NAME");
 });
 
 builder.Services.AddControllers();
 
-builder.Services.AddScoped<IEmailProvider, SendGridProvider>();
+builder.Services.AddScoped<IEmailProvider, GmailProvider>();
 builder.Services.AddScoped<ITemplateRender, RazorTemplateRender>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 

@@ -8,8 +8,11 @@ on:
 
 jobs:
   unit-test:
-    name: Run Unit Tests
+    name: Unit Tests - ${{ matrix.service }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [Aggregator, AuthService, BasketService, CatalogService, OrderService, PaymentService, ReviewService]
     steps:
       - uses: actions/checkout@v4
 
@@ -18,31 +21,23 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Aggregator Unit Tests
-        run: dotnet test tests/Clothy.Aggregator/Clothy.Aggregator.UnitTests --verbosity normal
+      - name: Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: ${{ runner.os }}-nuget-
 
-      - name: AuthService Unit Tests
-        run: dotnet test tests/Clothy.AuthService/Clothy.AuthService.UnitTests --verbosity normal
-
-      - name: BasketService Unit Tests
-        run: dotnet test tests/Clothy.BasketService/Clothy.BasketService.UnitTests --verbosity normal
-
-      - name: CatalogService Unit Tests
-        run: dotnet test tests/Clothy.CatalogService/Clothy.CatalogService.UnitTests --verbosity normal
-
-      - name: OrderService Unit Tests
-        run: dotnet test tests/Clothy.OrderService/Clothy.OrderService.UnitTests --verbosity normal
-
-      - name: PaymentService Unit Tests
-        run: dotnet test tests/Clothy.PaymentService/Clothy.PaymentService.UnitTests --verbosity normal
-
-      - name: ReviewService Unit Tests
-        run: dotnet test tests/Clothy.ReviewService/Clothy.ReviewService.UnitTests --verbosity normal
+      - name: Run Unit Tests
+        run: dotnet test tests/Clothy.${{ matrix.service }}/Clothy.${{ matrix.service }}.UnitTests --verbosity normal
 
   integration-test:
-    name: Run Integration Tests
+    name: Integration Tests - ${{ matrix.service }}
     runs-on: ubuntu-latest
     needs: unit-test
+    strategy:
+      matrix:
+        service: [CatalogService, BasketService, OrderService, PaymentService, ReviewService]
     steps:
       - uses: actions/checkout@v4
 
@@ -51,25 +46,23 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: CatalogService Integration Tests
-        run: dotnet test tests/Clothy.CatalogService/Clothy.CatalogService.IntegrationTests --verbosity normal
+      - name: Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: ${{ runner.os }}-nuget-
 
-      - name: BasketService Integration Tests
-        run: dotnet test tests/Clothy.BasketService/Clothy.BasketService.IntegrationTests --verbosity normal
-
-      - name: OrderService Integration Tests
-        run: dotnet test tests/Clothy.OrderService/Clothy.OrderService.IntegrationTests --verbosity normal
-
-      - name: PaymentService Integration Tests
-        run: dotnet test tests/Clothy.PaymentService/Clothy.PaymentService.IntegrationTests --verbosity normal
-
-      - name: ReviewService Integration Tests
-        run: dotnet test tests/Clothy.ReviewService/Clothy.ReviewService.IntegrationTests --verbosity normal
+      - name: Run Integration Tests
+        run: dotnet test tests/Clothy.${{ matrix.service }}/Clothy.${{ matrix.service }}.IntegrationTests --verbosity normal
 
   contract-test:
-    name: Run Contract Tests
+    name: Contract Tests - ${{ matrix.service }}
     runs-on: ubuntu-latest
     needs: [unit-test, integration-test]
+    strategy:
+      matrix:
+        service: [CatalogService, OrderService, BasketService, ReviewService, PaymentService]
     steps:
       - uses: actions/checkout@v4
 
@@ -78,27 +71,21 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: CatalogService Contract Tests
-        run: dotnet test tests/Clothy.CatalogService/Clothy.CatalogService.ContractTests --verbosity normal
+      - name: Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: ${{ runner.os }}-nuget-
 
-      - name: OrderService Contract Tests
-        run: dotnet test tests/Clothy.OrderService/Clothy.OrderService.ContractTests --verbosity normal
-
-      - name: BasketService Contract Tests
-        run: dotnet test tests/Clothy.BasketService/Clothy.BasketService.ContractTests --verbosity normal
-
-      - name: ReviewService Contract Tests
-        run: dotnet test tests/Clothy.ReviewService/Clothy.ReviewService.ContractTests --verbosity normal
-
-      - name: PaymentService Contract Tests
-        run: dotnet test tests/Clothy.PaymentService/Clothy.PaymentService.ContractTests --verbosity normal
+      - name: Run Contract Tests
+        run: dotnet test tests/Clothy.${{ matrix.service }}/Clothy.${{ matrix.service }}.ContractTests --verbosity normal
 
   build-and-push:
-    name: Build and Push to Docker Hub
+    name: Build and Push - ${{ matrix.service }}
     runs-on: ubuntu-latest
     needs: [unit-test, integration-test, contract-test]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-
     strategy:
       matrix:
         include:
@@ -135,7 +122,6 @@ jobs:
           - service: ai-tryon
             context: ./src/Clothy.AI.TryOnService
             dockerfile: Dockerfile
-
     steps:
       - uses: actions/checkout@v4
 
