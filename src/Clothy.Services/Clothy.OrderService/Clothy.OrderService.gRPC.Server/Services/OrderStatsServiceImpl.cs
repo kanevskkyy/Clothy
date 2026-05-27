@@ -32,7 +32,7 @@ namespace Clothy.OrderService.gRPC.Server.Services
                 return new OrderStats
                 {
                     NewOrdersCount = result.newOrdersCount,
-                    TotalPrice = result.totalPrice.ToString(),
+                    TotalPrice = result.totalPrice.ToString(System.Globalization.CultureInfo.InvariantCulture),
                     PendingOrders = result.pendingOrdersCount
                 };
             }
