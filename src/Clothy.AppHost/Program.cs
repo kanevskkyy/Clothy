@@ -84,9 +84,9 @@ var catalogService = builder.AddProject<Clothy_CatalogService_API>("catalog")
 
 var notificationService = builder.AddProject<Clothy_NotificationService_API>("notification")
     .WithReference(rabbitmq)
-    .WithEnvironment("SENDGRID__KEY", Environment.GetEnvironmentVariable("SENDGRID__KEY"))
-    .WithEnvironment("SENDGRID__FROM_EMAIL", Environment.GetEnvironmentVariable("SENDGRID__FROM_EMAIL"))
-    .WithEnvironment("SENDGRID__FROM_NAME", Environment.GetEnvironmentVariable("SENDGRID__FROM_NAME"))
+    .WithEnvironment("GMAIL__APP_PASSWORD", Environment.GetEnvironmentVariable("GMAIL__APP_PASSWORD"))
+    .WithEnvironment("GMAIL__FROM", Environment.GetEnvironmentVariable("GMAIL__FROM"))
+    .WithEnvironment("GMAIL__FROM_NAME", Environment.GetEnvironmentVariable("GMAIL__FROM_NAME"))
     .WaitFor(rabbitmq);
 
 var basketService = builder.AddProject<Clothy_BasketService_API>("basket")
