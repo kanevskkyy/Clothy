@@ -30,6 +30,7 @@ import UserLayout from "../layout/userLayout/UserLayout.tsx";
 import EmailVerifyRoute from "../routes/EmailVerifyRoute.tsx";
 import VerifyEmailPage from "../../pages/auth/VerifyEmailPage/VerifyEmailPage.tsx";
 import AdminOrdersPage from "../../pages/admin/orders/AdminOrdersPage.tsx";
+import AdminOrderDetailPage from "../../pages/admin/orders/AdminOrderDetailPage.tsx";
 import AdminReviewsPage from "../../pages/admin/reviews/AdminReviewsPage.tsx";
 import AdminQuestionsPage from "../../pages/admin/questions/AdminQuestionsPage.tsx";
 import AdminBrandsPage from "../../pages/admin/brand/AdminBrandsPage.tsx";
@@ -89,6 +90,7 @@ export const AppRouter = () => {
                     <Route path="/admin" element={<AdminLayout />}>
                         <Route index element={<AdminDashboardPage />} />
                         <Route path="orders" element={<AdminOrdersPage />} />
+                        <Route path="orders/:orderId" element={<AdminOrderDetailPage />} />
                         <Route path="reviews" element={<AdminReviewsPage />} />
                         <Route path="questions" element={<AdminQuestionsPage />} />
                         <Route path="brands" element={<AdminBrandsPage />} />

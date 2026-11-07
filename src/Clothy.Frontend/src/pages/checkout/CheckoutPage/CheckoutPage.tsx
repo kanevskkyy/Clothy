@@ -11,6 +11,7 @@ import {toast} from "sonner";
 import {ordersApi} from "../../../app/api/ordersApi.ts";
 import {getErrorMessage} from "../../../shared/lib/errorHandler.ts";
 import {paymentApi} from "../../../app/api/paymentApi.ts";
+import {getPaymentDeviceInfo} from "../../../shared/lib/deviceInfo.ts";
 import {useQueryClient} from "@tanstack/react-query";
 import Loader from "../../../shared/ui/Loader/Loader.tsx";
 import Container from "../../../shared/layout/Container/Container.tsx";
@@ -49,7 +50,7 @@ const CheckoutPage = () => {
             });
 
             await queryClient.invalidateQueries({queryKey: ["clothe-top8"]});
-            const paymentData = await paymentApi.payForOrderAsync(orderData.id, formData.paymentMethod);
+            const paymentData = await paymentApi.payForOrderAsync(orderData.id, formData.paymentMethod, getPaymentDeviceInfo());
             window.location.href = paymentData.paymentUrl;
         } catch (error) {
             toast.error(getErrorMessage(error));
