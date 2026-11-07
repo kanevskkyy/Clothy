@@ -311,8 +311,7 @@ Stripe Checkout charges in USD (`StripeService.PAY_CURRENCY = "usd"`), so the or
 and no conversion is needed. PaymentService also checks the currency of the Stripe charge: a charge in any
 other currency is **not scored** (warning in the log) instead of being sent with an amount the model would
 misread. If the shop ever switches Stripe to UAH, a conversion to USD (rate from config or from Stripe
-balance transactions) has to be added in `StripeFraudScorer` first. Note: two pages still show prices with
-`₴` (`OrderDetailPage`, the free-delivery banner on `HomePage`), while the rest of the storefront and Stripe use `$`.
+balance transactions) has to be added in `StripeFraudScorer` first. All storefront prices are shown in `$`.
 
 ### Running it
 

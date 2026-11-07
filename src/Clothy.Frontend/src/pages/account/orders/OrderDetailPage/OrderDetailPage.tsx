@@ -46,7 +46,7 @@ const OrderDetailPage = () => {
                 <meta
                     name="description"
                     content={`Order ${orderDetail.id} placed on ${formatDate(orderDetail.createdAt)}. 
-                ${orderDetail.items.length} item(s). Total: ${orderDetail.totalPrice} ₴.`}
+                ${orderDetail.items.length} item(s). Total: ${orderDetail.totalPrice} $.`}
                 />
             </Helmet>
 
@@ -80,7 +80,7 @@ const OrderDetailPage = () => {
                                     <p className={styles.itemName}>{item.clotheName}</p>
                                     <p className={styles.itemVariant}>{item.sizeName} • x{item.quantity}</p>
                                 </div>
-                                <p className={styles.itemPrice}>{item.price} ₴</p>
+                                <p className={styles.itemPrice}>{item.price} $</p>
                             </div>
                         ))}
 
@@ -94,7 +94,7 @@ const OrderDetailPage = () => {
                         <div className={styles.orderSummary}>
                             <div className={`${styles.summaryRow} ${styles.total}`}>
                                 <span>Total</span>
-                                <span className={styles.totalPrice}>{orderDetail?.totalPrice} ₴</span>
+                                <span className={styles.totalPrice}>{orderDetail?.totalPrice} $</span>
                             </div>
                             <div
                                 className={`${styles.freeDelivery} ${
