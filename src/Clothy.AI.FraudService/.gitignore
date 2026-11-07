@@ -1,0 +1,14 @@
+# Локальне оточення
+.venv/
+__pycache__/
+.pytest_cache/
+.env
+
+# SQLite-історія (у Docker лежить у volume /data)
+*.db
+*.db-shm
+*.db-wal
+
+# Моделі не комітимо: копіюються з D:\graph-antifraud (див. README.md)
+models/*
+!models/README.md
