@@ -87,7 +87,7 @@ const AdminOrdersPage = () => {
             const slice = decisions.slice((page - 1) * REVIEW_PAGE_SIZE, page * REVIEW_PAGE_SIZE);
 
             // decisions keep only the order id: load each order (deleted orders are skipped)
-            const details = await Promise.allSettled(slice.map((d) => ordersApi.getOrderByIdAsync(d.txid)));
+            const details = await Promise.allSettled(slice.map((d) => ordersApi.getOrderByIdAsync(d.txid, true)));
             const items: IOrderReadDTO[] = details.flatMap((r) => r.status === "fulfilled" ? [{
                 id: r.value.id,
                 status: r.value.status,

@@ -28,7 +28,8 @@ export const paymentApi = {
         if (orderIds.length === 0) return [];
         const params = new URLSearchParams();
         orderIds.forEach((id) => params.append("orderIds", id));
-        const { data } = await apiClient.get<IOrderPaymentStatus[]>(`/api/payments/admin/statuses?${params.toString()}`);
+        const { data } = await apiClient.get<IOrderPaymentStatus[]>(`/api/payments/admin/statuses?${params.toString()}`,
+            {skipNotFoundRedirect: true});
         return data;
     },
 

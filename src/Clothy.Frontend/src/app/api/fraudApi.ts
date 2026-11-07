@@ -50,7 +50,7 @@ export const fraudApi = {
     /** null when the order was not scored (404: service was down, late webhook, or not paid by card). */
     getOrderRiskAsync: async (orderId: string): Promise<IFraudTxRecord | null> => {
         try {
-            const { data } = await apiClient.get<IFraudTxRecord>(`/api/fraud/tx/${orderId}`);
+            const { data } = await apiClient.get<IFraudTxRecord>(`/api/fraud/tx/${orderId}`, {skipNotFoundRedirect: true});
             return data;
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.status === 404) return null;

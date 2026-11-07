@@ -47,8 +47,8 @@ export const ordersApi = {
         return data;
     },
 
-    getOrderByIdAsync: async (orderId: string): Promise<IOrderDetailDTO> => {
-        const { data } = await apiClient.get<IOrderDetailDTO>(`/api/orders/${orderId}`);
+    getOrderByIdAsync: async (orderId: string, skipNotFoundRedirect = false): Promise<IOrderDetailDTO> => {
+        const { data } = await apiClient.get<IOrderDetailDTO>(`/api/orders/${orderId}`, {skipNotFoundRedirect});
         return data;
     },
 
