@@ -27,6 +27,7 @@ public class StripeServiceTests
     private Mock<IPublishEndpoint> publishEndpointMock;
     private Mock<IOptions<CardSettings>> stripeSettingsMock;
     private Mock<IStripeFraudScorer> fraudScorerMock;
+    private Mock<IStripeDisputeHandler> disputeHandlerMock;
     private PaymentDbContext dbContext;
 
     private StripeService stripeService;
@@ -39,6 +40,7 @@ public class StripeServiceTests
         publishEndpointMock = new Mock<IPublishEndpoint>();
         stripeSettingsMock = new Mock<IOptions<CardSettings>>();
         fraudScorerMock = new Mock<IStripeFraudScorer>();
+        disputeHandlerMock = new Mock<IStripeDisputeHandler>();
 
         stripeSettingsMock.Setup(s => s.Value).Returns(new CardSettings
         {
@@ -60,7 +62,8 @@ public class StripeServiceTests
             stripeSettingsMock.Object,
             userClaimsExtractorMock.Object,
             publishEndpointMock.Object,
-            fraudScorerMock.Object);
+            fraudScorerMock.Object,
+            disputeHandlerMock.Object);
     }
 
     private ClaimsPrincipal BuildClaims(Guid userId)

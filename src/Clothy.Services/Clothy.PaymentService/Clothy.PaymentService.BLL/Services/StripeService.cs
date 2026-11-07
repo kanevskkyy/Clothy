@@ -28,6 +28,7 @@ namespace Clothy.PaymentService.BLL.Services
         private IUserClaimsExtractor userClaimsExtractor;
         private IPublishEndpoint publishEndpoint;
         private IStripeFraudScorer fraudScorer;
+        private IStripeDisputeHandler disputeHandler;
 
         private const string PAY_CURRENCY = "usd";
 
@@ -37,7 +38,8 @@ namespace Clothy.PaymentService.BLL.Services
             IOptions<CardSettings> stripeSettings,
             IUserClaimsExtractor userClaimsExtractor,
             IPublishEndpoint publishEndpoint,
-            IStripeFraudScorer fraudScorer)
+            IStripeFraudScorer fraudScorer,
+            IStripeDisputeHandler disputeHandler)
         {
             this.dbContext = dbContext;
             this.orderInfoClient = orderInfoClient;
@@ -46,6 +48,7 @@ namespace Clothy.PaymentService.BLL.Services
             this.userClaimsExtractor = userClaimsExtractor;
             this.publishEndpoint = publishEndpoint;
             this.fraudScorer = fraudScorer;
+            this.disputeHandler = disputeHandler;
         }
 
         /// <summary>
@@ -141,7 +144,8 @@ namespace Clothy.PaymentService.BLL.Services
             Guid userId = userClaimsExtractor.GetUserId(claimsPrincipal);
             if (userId != oldPayment.UserId) throw new ForbiddenException("You cannot retry someone else's payment!");
 
-            if (oldPayment.Status == PaymentStatus.Paid) throw new ValidationFailedException("Cannot retry already paid payment!");
+            // != Pending instead of == Paid: disputed payments were paid too
+            if (oldPayment.Status != PaymentStatus.Pending) throw new ValidationFailedException("Cannot retry already paid payment!");
 
             GetOrderInfoResponse orderInfoResponse = await orderInfoClient.GetOrderInfoAsync(oldPayment.OrderId, cancellationToken);
 
@@ -241,7 +245,8 @@ namespace Clothy.PaymentService.BLL.Services
                     return;
                 }
 
-                if (payment.Status == PaymentStatus.Paid)
+                // != Pending instead of == Paid: a repeated event must not turn a disputed payment back into Paid
+                if (payment.Status != PaymentStatus.Pending)
                 {
                     logger.LogInformation("Payment {PaymentId} already marked as Paid", paymentId);
                     return;
@@ -262,6 +267,11 @@ namespace Clothy.PaymentService.BLL.Services
                 // Fraud scoring runs after the payment is saved and published and never throws:
                 // if FraudService is down the order simply stays "not scored".
                 await fraudScorer.ScorePaidSessionAsync(session, payment, stripeEvent.Created, cancellationToken);
+            }
+            else if (stripeEvent.Type == StripeDisputeHandler.DISPUTE_CREATED || stripeEvent.Type == StripeDisputeHandler.DISPUTE_CLOSED)
+            {
+                // reached only after the signature check above, like checkout.session.completed
+                await disputeHandler.HandleAsync(stripeEvent, cancellationToken);
             }
             else
             {
