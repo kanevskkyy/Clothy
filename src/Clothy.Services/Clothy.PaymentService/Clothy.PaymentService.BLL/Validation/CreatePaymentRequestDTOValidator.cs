@@ -14,6 +14,15 @@ namespace Clothy.PaymentService.BLL.Validation
         {
             RuleFor(p => p.OrderId)
                 .NotEmpty().WithMessage("OrderID cannot be empty!");
+
+            When(p => p.Device != null, () =>
+            {
+                RuleFor(p => p.Device!.DeviceType).MaximumLength(20);
+                RuleFor(p => p.Device!.DeviceInfo).MaximumLength(100);
+                RuleFor(p => p.Device!.Os).MaximumLength(100);
+                RuleFor(p => p.Device!.Browser).MaximumLength(100);
+                RuleFor(p => p.Device!.Screen).MaximumLength(20);
+            });
         }
     }
 }

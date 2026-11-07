@@ -1,5 +1,6 @@
 ﻿using Clothy.PaymentService.BLL.Config;
 using Clothy.PaymentService.BLL.DTOs;
+using Clothy.PaymentService.BLL.Fraud;
 using Clothy.PaymentService.BLL.Services;
 using Clothy.PaymentService.DAL.Context;
 using Clothy.PaymentService.Domain.Entities;
@@ -25,6 +26,7 @@ public class StripeServiceTests
     private Mock<IUserClaimsExtractor> userClaimsExtractorMock;
     private Mock<IPublishEndpoint> publishEndpointMock;
     private Mock<IOptions<CardSettings>> stripeSettingsMock;
+    private Mock<IStripeFraudScorer> fraudScorerMock;
     private PaymentDbContext dbContext;
 
     private StripeService stripeService;
@@ -36,6 +38,7 @@ public class StripeServiceTests
         userClaimsExtractorMock = new Mock<IUserClaimsExtractor>();
         publishEndpointMock = new Mock<IPublishEndpoint>();
         stripeSettingsMock = new Mock<IOptions<CardSettings>>();
+        fraudScorerMock = new Mock<IStripeFraudScorer>();
 
         stripeSettingsMock.Setup(s => s.Value).Returns(new CardSettings
         {
@@ -56,7 +59,8 @@ public class StripeServiceTests
             loggerMock.Object,
             stripeSettingsMock.Object,
             userClaimsExtractorMock.Object,
-            publishEndpointMock.Object);
+            publishEndpointMock.Object,
+            fraudScorerMock.Object);
     }
 
     private ClaimsPrincipal BuildClaims(Guid userId)

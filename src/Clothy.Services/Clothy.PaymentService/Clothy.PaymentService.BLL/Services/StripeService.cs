@@ -1,5 +1,6 @@
 ﻿using Clothy.PaymentService.BLL.Config;
 using Clothy.PaymentService.BLL.DTOs;
+using Clothy.PaymentService.BLL.Fraud;
 using Clothy.PaymentService.BLL.Services.Interfaces;
 using Clothy.PaymentService.DAL.Context;
 using Clothy.PaymentService.Domain.Entities;
@@ -26,6 +27,7 @@ namespace Clothy.PaymentService.BLL.Services
         private CardSettings stripeSettings;
         private IUserClaimsExtractor userClaimsExtractor;
         private IPublishEndpoint publishEndpoint;
+        private IStripeFraudScorer fraudScorer;
 
         private const string PAY_CURRENCY = "usd";
 
@@ -34,7 +36,8 @@ namespace Clothy.PaymentService.BLL.Services
             ILogger<StripeService> logger,
             IOptions<CardSettings> stripeSettings,
             IUserClaimsExtractor userClaimsExtractor,
-            IPublishEndpoint publishEndpoint)
+            IPublishEndpoint publishEndpoint,
+            IStripeFraudScorer fraudScorer)
         {
             this.dbContext = dbContext;
             this.orderInfoClient = orderInfoClient;
@@ -42,6 +45,21 @@ namespace Clothy.PaymentService.BLL.Services
             this.stripeSettings = stripeSettings.Value;
             this.userClaimsExtractor = userClaimsExtractor;
             this.publishEndpoint = publishEndpoint;
+            this.fraudScorer = fraudScorer;
+        }
+
+        /// <summary>
+        /// Metadata for both the Checkout Session and its PaymentIntent. Dispute events carry only
+        /// the charge and PaymentIntent, so order_id has to be on the PaymentIntent too.
+        /// </summary>
+        private static Dictionary<string, string> BuildMetadata(PaymentRecordEF paymentRecord)
+        {
+            return new Dictionary<string, string>()
+            {
+                { "payment_id", paymentRecord.Id.ToString() },
+                { "order_id", paymentRecord.OrderId.ToString() },
+                { "user_id", paymentRecord.UserId.ToString() }
+            };
         }
 
         public async Task<CreatePaymentResponseDTO> CreatePaymentAsync(CreatePaymentRequestDTO request, ClaimsPrincipal claimsPrincipal, CancellationToken cancellationToken)
@@ -87,13 +105,13 @@ namespace Clothy.PaymentService.BLL.Services
                         }
                     }
                 },
-                Metadata = new Dictionary<string, string>()
+                Metadata = BuildMetadata(paymentRecord),
+                PaymentIntentData = new SessionPaymentIntentDataOptions
                 {
-                    { "payment_id", paymentRecord.Id.ToString() },
-                    { "order_id", paymentRecord.OrderId.ToString() },
-                    { "user_id", paymentRecord.UserId.ToString() }
+                    Metadata = BuildMetadata(paymentRecord)
                 }
             };
+            FraudDeviceMetadata.AddTo(sessionCreateOptions.Metadata, request.Device?.ToFraudDeviceData());
 
             SessionService sessionService = new SessionService();
             Session session = await sessionService.CreateAsync(sessionCreateOptions, cancellationToken: cancellationToken);
@@ -161,11 +179,10 @@ namespace Clothy.PaymentService.BLL.Services
                         }
                     }
                 },
-                Metadata = new Dictionary<string, string>()
+                Metadata = BuildMetadata(newPaymentRecord),
+                PaymentIntentData = new SessionPaymentIntentDataOptions
                 {
-                    { "payment_id", newPaymentRecord.Id.ToString() },
-                    { "order_id", newPaymentRecord.OrderId.ToString() },
-                    { "user_id", newPaymentRecord.UserId.ToString() }
+                    Metadata = BuildMetadata(newPaymentRecord)
                 }
             };
 
@@ -241,6 +258,10 @@ namespace Clothy.PaymentService.BLL.Services
                 await publishEndpoint.Publish(orderPaidEvent, cancellationToken);
 
                 logger.LogInformation("Payment {PaymentId} marked as Paid via webhook", paymentId);
+
+                // Fraud scoring runs after the payment is saved and published and never throws:
+                // if FraudService is down the order simply stays "not scored".
+                await fraudScorer.ScorePaidSessionAsync(session, payment, stripeEvent.Created, cancellationToken);
             }
             else
             {
