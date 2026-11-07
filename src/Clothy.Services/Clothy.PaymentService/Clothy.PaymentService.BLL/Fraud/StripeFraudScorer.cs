@@ -12,6 +12,13 @@ namespace Clothy.PaymentService.BLL.Fraud
 
     public class StripeFraudScorer : IStripeFraudScorer
     {
+        /// <summary>
+        /// The model was trained on IEEE-CIS amounts in US dollars. Checkout charges in USD
+        /// (StripeService.PAY_CURRENCY), so the order total is sent as is. A charge in any other currency
+        /// is not scored rather than sent with an amount the model would misread.
+        /// </summary>
+        public const string MODEL_CURRENCY = "usd";
+
         private readonly IFraudScoringClient fraudClient;
         private readonly IStripePaymentDetailsProvider stripeDetails;
         private readonly ILogger<StripeFraudScorer> logger;
@@ -37,6 +44,13 @@ namespace Clothy.PaymentService.BLL.Fraud
                 if (charge?.CardFingerprint == null)
                 {
                     logger.LogWarning("Order {OrderId} is not fraud-scored: no card fingerprint in the charge", payment.OrderId);
+                    return FraudScoreOutcome.NotScored;
+                }
+
+                if (charge.Currency != null && !string.Equals(charge.Currency, MODEL_CURRENCY, StringComparison.OrdinalIgnoreCase))
+                {
+                    logger.LogWarning("Order {OrderId} is not fraud-scored: charge currency {Currency} is not USD, the model expects USD amounts",
+                        payment.OrderId, charge.Currency);
                     return FraudScoreOutcome.NotScored;
                 }
 

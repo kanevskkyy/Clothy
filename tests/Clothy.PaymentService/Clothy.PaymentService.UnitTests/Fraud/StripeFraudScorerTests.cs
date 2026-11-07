@@ -43,7 +43,7 @@ public class StripeFraudScorerTests
     {
         DateTime chargeCreated = new DateTime(2026, 11, 7, 10, 0, 0, DateTimeKind.Utc);
         detailsMock.Setup(d => d.GetChargeDetailsAsync("pi_test", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new StripeChargeDetails("fp_1", "mastercard", "credit", "79000", null, chargeCreated));
+            .ReturnsAsync(new StripeChargeDetails("fp_1", "mastercard", "credit", "79000", null, chargeCreated, "usd"));
         FraudScoreRequest? sent = null;
         clientMock.Setup(c => c.ScoreAsync(It.IsAny<FraudScoreRequest>(), It.IsAny<CancellationToken>()))
             .Callback<FraudScoreRequest, CancellationToken>((r, _) => sent = r)
@@ -89,6 +89,36 @@ public class StripeFraudScorerTests
 
         (await act.Should().NotThrowAsync()).Which.Should().Be(FraudScoreOutcome.NotScored);
         clientMock.Verify(c => c.ScoreAsync(It.IsAny<FraudScoreRequest>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Theory]
+    [InlineData("uah")]
+    [InlineData("eur")]
+    public async Task ScorePaidSessionAsync_WhenChargeIsNotInUsd_ReturnsNotScoredAndDoesNotCallFraudService(string currency)
+    {
+        detailsMock.Setup(d => d.GetChargeDetailsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new StripeChargeDetails("fp_1", "visa", "debit", null, null, DateTime.UtcNow, currency));
+
+        FraudScoreOutcome outcome = await CreateScorer().ScorePaidSessionAsync(PaidSession(), payment, DateTime.UtcNow, CancellationToken.None);
+
+        outcome.Should().Be(FraudScoreOutcome.NotScored);
+        clientMock.Verify(c => c.ScoreAsync(It.IsAny<FraudScoreRequest>(), It.IsAny<CancellationToken>()), Times.Never);
+        logger.Entries.Should().Contain(e => e.Message.Contains(currency));
+    }
+
+    [Theory]
+    [InlineData("usd")]
+    [InlineData("USD")]
+    public async Task ScorePaidSessionAsync_WhenChargeIsInUsd_SendsOrderTotalAsIs(string currency)
+    {
+        detailsMock.Setup(d => d.GetChargeDetailsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new StripeChargeDetails("fp_1", "visa", "debit", null, null, DateTime.UtcNow, currency));
+        clientMock.Setup(c => c.ScoreAsync(It.IsAny<FraudScoreRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new FraudScoreResult(FraudScoreOutcome.Scored, new FraudScoreResponse()));
+
+        await CreateScorer().ScorePaidSessionAsync(PaidSession(), payment, DateTime.UtcNow, CancellationToken.None);
+
+        clientMock.Verify(c => c.ScoreAsync(It.Is<FraudScoreRequest>(r => r.TransactionAmt == 120d), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]

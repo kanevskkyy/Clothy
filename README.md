@@ -276,7 +276,7 @@ flowchart LR
 
 **How a payment is scored.** On `checkout.session.completed` PaymentService marks the payment as Paid and
 publishes `OrderPaidEvent` exactly as before, then reads the charge from Stripe and sends `POST /score`:
-`txid` = order id, `ts` = charge time (Unix seconds), `TransactionAmt` = order total,
+`txid` = order id, `ts` = charge time (Unix seconds), `TransactionAmt` = order total in USD (see below),
 `card1` = 53-bit hash of `card.fingerprint`, `card4`/`card6` = brand/funding, `addr1` = billing postal code
 if it is numeric, `P_emaildomain` = buyer email domain, `DeviceType`/`DeviceInfo`/`id_30`/`id_31`/`id_33` =
 device data from the storefront, `ProductCD` = `W`. If FraudService is down, slow (> 2 s), returns an error
@@ -289,6 +289,14 @@ address and device fields are never logged.
 The order is found through `order_id` / `payment_id` in PaymentIntent metadata (older payments: through
 their Checkout Session). Repeated events change nothing. Events with an invalid signature are not processed.
 The order status in OrderService is not changed.
+
+**Currency.** The model was trained on IEEE-CIS amounts in US dollars. Clothy prices are in USD and
+Stripe Checkout charges in USD (`StripeService.PAY_CURRENCY = "usd"`), so the order total is sent unchanged
+and no conversion is needed. PaymentService also checks the currency of the Stripe charge: a charge in any
+other currency is **not scored** (warning in the log) instead of being sent with an amount the model would
+misread. If the shop ever switches Stripe to UAH, a conversion to USD (rate from config or from Stripe
+balance transactions) has to be added in `StripeFraudScorer` first. Note: two pages still show prices with
+`₴` (`OrderDetailPage`, the free-delivery banner on `HomePage`), while the rest of the storefront and Stripe use `$`.
 
 ### Running it
 
@@ -340,6 +348,7 @@ stripe listen --forward-to localhost:8094/api/payments/webhook/stripe `
   fields only approximately (e.g. `card1` is a hash, IEEE-CIS card attributes `card2/3/5` and distances are
   missing), so scores are **for demonstration only**; real use needs retraining on the shop's own data.
 - The thresholds give the chosen flag rate only on the validation distribution; on live traffic it shifts.
+- Only USD charges are scored; other currencies stay "not scored".
 - The ring signal turns on after 14 days of history in the store.
 - Payments must reach the service in time order; a late webhook leaves the order not scored.
 - SQLite history means one FraudService instance.

@@ -12,7 +12,8 @@ namespace Clothy.PaymentService.BLL.Fraud
         string? CardFunding,
         string? BillingPostalCode,
         string? BillingEmail,
-        DateTime? ChargeCreatedUtc);
+        DateTime? ChargeCreatedUtc,
+        string? Currency = null);
 
     /// <summary>Reads from the Stripe API what webhook payloads do not contain.</summary>
     public interface IStripePaymentDetailsProvider
@@ -58,7 +59,8 @@ namespace Clothy.PaymentService.BLL.Fraud
                 card?.Funding,
                 charge.BillingDetails?.Address?.PostalCode,
                 charge.BillingDetails?.Email,
-                charge.Created);
+                charge.Created,
+                charge.Currency);
         }
 
         public async Task<IReadOnlyDictionary<string, string>?> GetPaymentIntentMetadataAsync(string paymentIntentId, CancellationToken cancellationToken)
