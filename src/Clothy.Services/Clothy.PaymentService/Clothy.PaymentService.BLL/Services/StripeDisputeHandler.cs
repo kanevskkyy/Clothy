@@ -16,22 +16,34 @@ namespace Clothy.PaymentService.BLL.Services
     /// <summary>
     /// Disputes update the payment status (Paid -> Disputed -> DisputeWon/DisputeLost) and send a label to
     /// FraudService. The order status in OrderService is not touched.
-    /// Idempotent: Stripe may deliver the same event again, a repeated event finds the status already set and does nothing.
+    ///
+    /// Stripe does not guarantee event order and may deliver events in parallel or more than once:
+    /// - a dispute means the money was taken, so a dispute for a Pending payment first runs the same
+    ///   "paid" logic as checkout.session.completed (Paid, OrderPaidEvent, /score);
+    /// - every status change is a compare-and-set (see PaymentRecordUpdater), so each step happens once;
+    /// - the label is sent only after the /score attempt is over (FraudSync != None). If scoring is still
+    ///   running in another webhook, that webhook sends the label when it finishes.
     /// </summary>
     public class StripeDisputeHandler : IStripeDisputeHandler
     {
         public const string DISPUTE_CREATED = "charge.dispute.created";
         public const string DISPUTE_CLOSED = "charge.dispute.closed";
 
+        private enum LabelAction { None, SetFraud, RemoveFraud }
+
         private readonly PaymentDbContext dbContext;
+        private readonly PaymentRecordUpdater updater;
+        private readonly IStripePaymentLifecycle lifecycle;
         private readonly IStripePaymentDetailsProvider stripeDetails;
         private readonly IFraudScoringClient fraudClient;
         private readonly ILogger<StripeDisputeHandler> logger;
 
-        public StripeDisputeHandler(PaymentDbContext dbContext, IStripePaymentDetailsProvider stripeDetails,
-            IFraudScoringClient fraudClient, ILogger<StripeDisputeHandler> logger)
+        public StripeDisputeHandler(PaymentDbContext dbContext, PaymentRecordUpdater updater, IStripePaymentLifecycle lifecycle,
+            IStripePaymentDetailsProvider stripeDetails, IFraudScoringClient fraudClient, ILogger<StripeDisputeHandler> logger)
         {
             this.dbContext = dbContext;
+            this.updater = updater;
+            this.lifecycle = lifecycle;
             this.stripeDetails = stripeDetails;
             this.fraudClient = fraudClient;
             this.logger = logger;
@@ -51,38 +63,60 @@ namespace Clothy.PaymentService.BLL.Services
                 return;
             }
 
-            PaymentRecordEF? payment = await FindPaymentAsync(dispute.PaymentIntentId, cancellationToken);
+            (PaymentRecordEF? payment, IReadOnlyDictionary<string, string>? sessionMetadata) =
+                await FindPaymentAsync(dispute.PaymentIntentId, cancellationToken);
             if (payment == null)
             {
                 logger.LogWarning("No payment found for dispute {DisputeId}", dispute.Id);
                 return;
             }
 
+            if (stripeEvent.Type != DISPUTE_CREATED && stripeEvent.Type != DISPUTE_CLOSED) return;
+
+            // A dispute can arrive before checkout.session.completed (test card 4000 0000 0000 0259 opens it
+            // in the same second). The payment did go through, so it is marked as paid here; whichever webhook
+            // gets there first does it, the other one finds the payment no longer Pending.
+            if (payment.Status == PaymentStatus.Pending)
+            {
+                await lifecycle.TryMarkPaidAsync(new StripePaidContext(
+                    payment.Id, dispute.PaymentIntentId, null, sessionMetadata, stripeEvent.Created), cancellationToken);
+            }
+
             if (stripeEvent.Type == DISPUTE_CREATED)
-                await HandleCreatedAsync(dispute, payment, cancellationToken);
-            else if (stripeEvent.Type == DISPUTE_CLOSED)
-                await HandleClosedAsync(dispute, payment, stripeEvent.Created, cancellationToken);
+                await HandleCreatedAsync(dispute, payment.Id, cancellationToken);
+            else
+                await HandleClosedAsync(dispute, payment.Id, stripeEvent.Created, cancellationToken);
         }
 
-        private async Task HandleCreatedAsync(Dispute dispute, PaymentRecordEF payment, CancellationToken cancellationToken)
+        private async Task HandleCreatedAsync(Dispute dispute, Guid paymentId, CancellationToken cancellationToken)
         {
-            if (payment.Status != PaymentStatus.Paid)
+            (bool changed, LabelAction label, PaymentRecordEF? payment) = await updater.UpdateAsync(paymentId, p =>
+            {
+                if (p.Status != PaymentStatus.Paid) return (false, LabelAction.None, p);
+
+                p.Status = PaymentStatus.Disputed;
+                p.DisputedAt = dispute.Created;
+                p.UpdatedAt = DateTime.UtcNow;
+                // FraudSync == None: /score is still running in another webhook, which will send the label
+                if (p.FraudSync != FraudSyncState.Scored) return (true, LabelAction.None, p);
+
+                p.FraudSync = FraudSyncState.Labeled;
+                return (true, LabelAction.SetFraud, p);
+            }, cancellationToken);
+
+            if (!changed)
             {
                 // Disputed/DisputeWon/DisputeLost: already processed (repeated or late event)
                 logger.LogInformation("Dispute {DisputeId} for Payment {PaymentId} skipped: status is already {Status}",
-                    dispute.Id, payment.Id, payment.Status);
+                    dispute.Id, paymentId, payment?.Status);
                 return;
             }
 
-            payment.Status = PaymentStatus.Disputed;
-            payment.UpdatedAt = DateTime.UtcNow;
-            await dbContext.SaveChangesAsync(cancellationToken);
-            logger.LogInformation("Payment {PaymentId} of Order {OrderId} marked as Disputed", payment.Id, payment.OrderId);
-
-            await fraudClient.LabelAsync(payment.OrderId.ToString(), true, ToUnixSeconds(dispute.Created), cancellationToken);
+            logger.LogInformation("Payment {PaymentId} of Order {OrderId} marked as Disputed", paymentId, payment!.OrderId);
+            if (label == LabelAction.SetFraud) await lifecycle.SendFraudLabelAsync(payment, cancellationToken);
         }
 
-        private async Task HandleClosedAsync(Dispute dispute, PaymentRecordEF payment, DateTime eventCreated, CancellationToken cancellationToken)
+        private async Task HandleClosedAsync(Dispute dispute, Guid paymentId, DateTime eventCreated, CancellationToken cancellationToken)
         {
             PaymentStatus? target = dispute.Status switch
             {
@@ -98,64 +132,90 @@ namespace Clothy.PaymentService.BLL.Services
                 return;
             }
 
-            if (payment.Status is not (PaymentStatus.Paid or PaymentStatus.Disputed))
+            (bool changed, LabelAction label, PaymentRecordEF? payment) = await updater.UpdateAsync(paymentId, p =>
+            {
+                if (p.Status is not (PaymentStatus.Paid or PaymentStatus.Disputed)) return (false, LabelAction.None, p);
+
+                p.Status = target.Value;
+                p.DisputedAt ??= dispute.Created;
+                p.UpdatedAt = DateTime.UtcNow;
+
+                if (target == PaymentStatus.DisputeWon && p.FraudSync == FraudSyncState.Labeled)
+                {
+                    // won: the payment was legitimate, remove the label that was sent
+                    p.FraudSync = FraudSyncState.Unlabeled;
+                    return (true, LabelAction.RemoveFraud, p);
+                }
+
+                if (target == PaymentStatus.DisputeLost && p.FraudSync == FraudSyncState.Scored)
+                {
+                    // lost without a label (charge.dispute.created was missed): set it now
+                    p.FraudSync = FraudSyncState.Labeled;
+                    return (true, LabelAction.SetFraud, p);
+                }
+
+                // FraudSync == None: scoring is still running and will label a DisputeLost payment itself
+                return (true, LabelAction.None, p);
+            }, cancellationToken);
+
+            if (!changed)
             {
                 logger.LogInformation("Dispute {DisputeId} for Payment {PaymentId} skipped: status is already {Status}",
-                    dispute.Id, payment.Id, payment.Status);
+                    dispute.Id, paymentId, payment?.Status);
                 return;
             }
 
-            bool createdWasMissed = payment.Status == PaymentStatus.Paid;
-            payment.Status = target.Value;
-            payment.UpdatedAt = DateTime.UtcNow;
-            await dbContext.SaveChangesAsync(cancellationToken);
-            logger.LogInformation("Payment {PaymentId} of Order {OrderId} marked as {Status}", payment.Id, payment.OrderId, payment.Status);
+            logger.LogInformation("Payment {PaymentId} of Order {OrderId} marked as {Status}", paymentId, payment!.OrderId, payment.Status);
 
-            string txId = payment.OrderId.ToString();
-            if (target == PaymentStatus.DisputeWon)
-            {
-                // won: the payment was legitimate, remove the fraud label
-                await fraudClient.LabelAsync(txId, false, ToUnixSeconds(eventCreated), cancellationToken);
-            }
-            else if (createdWasMissed)
-            {
-                // lost without a processed charge.dispute.created: set the label now, with the dispute time
-                await fraudClient.LabelAsync(txId, true, ToUnixSeconds(dispute.Created), cancellationToken);
-            }
+            if (label == LabelAction.SetFraud)
+                await lifecycle.SendFraudLabelAsync(payment, cancellationToken);
+            else if (label == LabelAction.RemoveFraud)
+                await fraudClient.LabelAsync(payment.OrderId.ToString(), false, StripePaymentLifecycle.ToUnixSeconds(eventCreated), cancellationToken);
         }
 
         /// <summary>
         /// The payment is found through PaymentIntent metadata (payment_id, order_id). Payments created before
         /// the metadata was copied to the PaymentIntent are found through their Checkout Session.
+        /// Also returns the Checkout Session metadata (device data) when it had to be read.
         /// </summary>
-        private async Task<PaymentRecordEF?> FindPaymentAsync(string paymentIntentId, CancellationToken cancellationToken)
+        private async Task<(PaymentRecordEF?, IReadOnlyDictionary<string, string>?)> FindPaymentAsync(string paymentIntentId, CancellationToken cancellationToken)
         {
             IReadOnlyDictionary<string, string>? metadata = await SafeAsync(
                 () => stripeDetails.GetPaymentIntentMetadataAsync(paymentIntentId, cancellationToken));
+            IReadOnlyDictionary<string, string>? sessionMetadata = null;
 
             if (metadata == null || (!metadata.ContainsKey("payment_id") && !metadata.ContainsKey("order_id")))
             {
-                metadata = await SafeAsync(() => stripeDetails.GetCheckoutSessionMetadataAsync(paymentIntentId, cancellationToken));
+                sessionMetadata = await SafeAsync(() => stripeDetails.GetCheckoutSessionMetadataAsync(paymentIntentId, cancellationToken));
+                metadata = sessionMetadata;
             }
 
-            if (metadata == null) return null;
+            if (metadata == null) return (null, null);
 
+            PaymentRecordEF? payment = null;
             if (metadata.TryGetValue("payment_id", out string? paymentIdStr) && Guid.TryParse(paymentIdStr, out Guid paymentId))
             {
-                PaymentRecordEF? byId = await dbContext.PaymentRecords.FirstOrDefaultAsync(p => p.Id == paymentId, cancellationToken);
-                if (byId != null) return byId;
+                payment = await dbContext.PaymentRecords.AsNoTracking().FirstOrDefaultAsync(p => p.Id == paymentId, cancellationToken);
             }
 
-            if (metadata.TryGetValue("order_id", out string? orderIdStr) && Guid.TryParse(orderIdStr, out Guid orderId))
+            if (payment == null && metadata.TryGetValue("order_id", out string? orderIdStr) && Guid.TryParse(orderIdStr, out Guid orderId))
             {
-                // one order can have several payment attempts; the disputed one is the one that was paid
-                return await dbContext.PaymentRecords
-                    .Where(p => p.OrderId == orderId && p.Status != PaymentStatus.Pending)
-                    .OrderByDescending(p => p.UpdatedAt)
-                    .FirstOrDefaultAsync(cancellationToken);
+                // one order can have several attempts: prefer the paid one, otherwise the latest attempt
+                payment = (await dbContext.PaymentRecords.AsNoTracking()
+                        .Where(p => p.OrderId == orderId)
+                        .ToListAsync(cancellationToken))
+                    .OrderByDescending(p => p.Status != PaymentStatus.Pending)
+                    .ThenByDescending(p => p.UpdatedAt ?? p.CreatedAt)
+                    .FirstOrDefault();
             }
 
-            return null;
+            // device data lives in the Checkout Session metadata; needed only if the dispute marks the payment as paid
+            if (payment is { Status: PaymentStatus.Pending } && sessionMetadata == null)
+            {
+                sessionMetadata = await SafeAsync(() => stripeDetails.GetCheckoutSessionMetadataAsync(paymentIntentId, cancellationToken));
+            }
+
+            return (payment, sessionMetadata);
         }
 
         private async Task<IReadOnlyDictionary<string, string>?> SafeAsync(Func<Task<IReadOnlyDictionary<string, string>?>> call)
@@ -169,11 +229,6 @@ namespace Clothy.PaymentService.BLL.Services
                 logger.LogWarning("Stripe metadata lookup for a dispute failed ({Error})", ex.GetType().Name);
                 return null;
             }
-        }
-
-        private static long ToUnixSeconds(DateTime utc)
-        {
-            return new DateTimeOffset(DateTime.SpecifyKind(utc, DateTimeKind.Utc)).ToUnixTimeSeconds();
         }
     }
 }

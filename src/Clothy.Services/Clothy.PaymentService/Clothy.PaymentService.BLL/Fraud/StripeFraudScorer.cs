@@ -1,13 +1,20 @@
 using Clothy.PaymentService.Domain.Entities;
 using Microsoft.Extensions.Logging;
-using Stripe.Checkout;
 
 namespace Clothy.PaymentService.BLL.Fraud
 {
     public interface IStripeFraudScorer
     {
-        /// <summary>Scores a paid Checkout Session. Never throws: the payment is already saved and must not fail.</summary>
-        Task<FraudScoreOutcome> ScorePaidSessionAsync(Session session, PaymentRecordEF payment, DateTime eventCreatedUtc, CancellationToken cancellationToken);
+        /// <summary>
+        /// Scores a paid payment. Never throws: the payment is already saved and must not fail.
+        /// </summary>
+        /// <param name="payment">The paid payment (order id and total).</param>
+        /// <param name="paymentIntentId">Stripe PaymentIntent; card data is read from its latest charge.</param>
+        /// <param name="customerEmail">Checkout email if known; otherwise the billing email of the charge.</param>
+        /// <param name="sessionMetadata">Checkout Session metadata with optional device data.</param>
+        /// <param name="eventCreatedUtc">Fallback payment time when the charge has none.</param>
+        Task<FraudScoreOutcome> ScorePaidPaymentAsync(PaymentRecordEF payment, string? paymentIntentId, string? customerEmail,
+            IReadOnlyDictionary<string, string>? sessionMetadata, DateTime eventCreatedUtc, CancellationToken cancellationToken);
     }
 
     public class StripeFraudScorer : IStripeFraudScorer
@@ -30,17 +37,18 @@ namespace Clothy.PaymentService.BLL.Fraud
             this.logger = logger;
         }
 
-        public async Task<FraudScoreOutcome> ScorePaidSessionAsync(Session session, PaymentRecordEF payment, DateTime eventCreatedUtc, CancellationToken cancellationToken)
+        public async Task<FraudScoreOutcome> ScorePaidPaymentAsync(PaymentRecordEF payment, string? paymentIntentId, string? customerEmail,
+            IReadOnlyDictionary<string, string>? sessionMetadata, DateTime eventCreatedUtc, CancellationToken cancellationToken)
         {
             try
             {
-                if (string.IsNullOrEmpty(session.PaymentIntentId))
+                if (string.IsNullOrEmpty(paymentIntentId))
                 {
-                    logger.LogWarning("Order {OrderId} is not fraud-scored: session has no PaymentIntent", payment.OrderId);
+                    logger.LogWarning("Order {OrderId} is not fraud-scored: no PaymentIntent", payment.OrderId);
                     return FraudScoreOutcome.NotScored;
                 }
 
-                StripeChargeDetails? charge = await stripeDetails.GetChargeDetailsAsync(session.PaymentIntentId, cancellationToken);
+                StripeChargeDetails? charge = await stripeDetails.GetChargeDetailsAsync(paymentIntentId, cancellationToken);
                 if (charge?.CardFingerprint == null)
                 {
                     logger.LogWarning("Order {OrderId} is not fraud-scored: no card fingerprint in the charge", payment.OrderId);
@@ -62,8 +70,8 @@ namespace Clothy.PaymentService.BLL.Fraud
                     charge.CardBrand,
                     charge.CardFunding,
                     charge.BillingPostalCode,
-                    session.CustomerDetails?.Email ?? charge.BillingEmail,
-                    FraudDeviceMetadata.From(session.Metadata));
+                    customerEmail ?? charge.BillingEmail,
+                    FraudDeviceMetadata.From(sessionMetadata));
 
                 FraudScoreResult result = await fraudClient.ScoreAsync(FraudRequestMapper.Build(data), cancellationToken);
 

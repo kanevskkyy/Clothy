@@ -9,6 +9,7 @@ using Clothy.Shared.Events.PaymentEvents;
 using Clothy.Shared.Helpers.Exceptions;
 using Clothy.Shared.Helpers.JWT;
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Stripe;
@@ -26,8 +27,7 @@ namespace Clothy.PaymentService.BLL.Services
         private ILogger<StripeService> logger;
         private CardSettings stripeSettings;
         private IUserClaimsExtractor userClaimsExtractor;
-        private IPublishEndpoint publishEndpoint;
-        private IStripeFraudScorer fraudScorer;
+        private IStripePaymentLifecycle paymentLifecycle;
         private IStripeDisputeHandler disputeHandler;
 
         private const string PAY_CURRENCY = "usd";
@@ -37,8 +37,7 @@ namespace Clothy.PaymentService.BLL.Services
             ILogger<StripeService> logger,
             IOptions<CardSettings> stripeSettings,
             IUserClaimsExtractor userClaimsExtractor,
-            IPublishEndpoint publishEndpoint,
-            IStripeFraudScorer fraudScorer,
+            IStripePaymentLifecycle paymentLifecycle,
             IStripeDisputeHandler disputeHandler)
         {
             this.dbContext = dbContext;
@@ -46,8 +45,7 @@ namespace Clothy.PaymentService.BLL.Services
             this.logger = logger;
             this.stripeSettings = stripeSettings.Value;
             this.userClaimsExtractor = userClaimsExtractor;
-            this.publishEndpoint = publishEndpoint;
-            this.fraudScorer = fraudScorer;
+            this.paymentLifecycle = paymentLifecycle;
             this.disputeHandler = disputeHandler;
         }
 
@@ -237,36 +235,19 @@ namespace Clothy.PaymentService.BLL.Services
                     return;
                 }
 
-                PaymentRecordEF? payment = await dbContext.PaymentRecords.FindAsync(new object[] { paymentId }, cancellationToken);
-
-                if (payment == null)
+                bool exists = await dbContext.PaymentRecords.AnyAsync(p => p.Id == paymentId, cancellationToken);
+                if (!exists)
                 {
                     logger.LogWarning("PaymentRecord not found for PaymentId={PaymentId}", paymentId);
                     return;
                 }
 
-                // != Pending instead of == Paid: a repeated event must not turn a disputed payment back into Paid
-                if (payment.Status != PaymentStatus.Pending)
-                {
-                    logger.LogInformation("Payment {PaymentId} already marked as Paid", paymentId);
-                    return;
-                }
-
-                payment.Status = PaymentStatus.Paid;
-                payment.UpdatedAt = DateTime.UtcNow.ToUniversalTime();
-                await dbContext.SaveChangesAsync(cancellationToken);
-
-                OrderPaidEvent orderPaidEvent = new OrderPaidEvent()
-                {
-                    OrderId = payment.OrderId
-                };
-                await publishEndpoint.Publish(orderPaidEvent, cancellationToken);
-
-                logger.LogInformation("Payment {PaymentId} marked as Paid via webhook", paymentId);
-
-                // Fraud scoring runs after the payment is saved and published and never throws:
-                // if FraudService is down the order simply stays "not scored".
-                await fraudScorer.ScorePaidSessionAsync(session, payment, stripeEvent.Created, cancellationToken);
+                // Paid + OrderPaidEvent + fraud scoring, shared with a dispute that arrives first.
+                // Only a Pending payment changes (compare-and-set): a repeated event, or one that lost the race
+                // to charge.dispute.created, changes nothing.
+                await paymentLifecycle.TryMarkPaidAsync(new StripePaidContext(
+                    paymentId, session.PaymentIntentId, session.CustomerDetails?.Email, session.Metadata, stripeEvent.Created),
+                    cancellationToken);
             }
             else if (stripeEvent.Type == StripeDisputeHandler.DISPUTE_CREATED || stripeEvent.Type == StripeDisputeHandler.DISPUTE_CLOSED)
             {

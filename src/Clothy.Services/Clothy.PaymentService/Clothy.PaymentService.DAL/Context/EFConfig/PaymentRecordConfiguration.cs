@@ -27,8 +27,16 @@ namespace Clothy.PaymentService.DAL.Context.Config
                 .IsRequired()
                 .HasColumnType("decimal(10,2)");
 
+            // Status and FraudSync are concurrency tokens: every UPDATE gets "WHERE Status = <read value>
+            // AND FraudSync = <read value>", so parallel webhooks cannot both move a payment out of Pending
+            // (OrderPaidEvent is published once) and cannot both send the same fraud label.
             builder.Property(property => property.Status)
-                .IsRequired();
+                .IsRequired()
+                .IsConcurrencyToken();
+
+            builder.Property(property => property.FraudSync)
+                .IsRequired()
+                .IsConcurrencyToken();
             
             builder.Property(property => property.TransactionId)
                 .IsRequired()

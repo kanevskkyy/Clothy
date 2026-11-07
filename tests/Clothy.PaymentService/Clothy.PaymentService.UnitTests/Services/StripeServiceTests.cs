@@ -61,8 +61,12 @@ public class StripeServiceTests
             loggerMock.Object,
             stripeSettingsMock.Object,
             userClaimsExtractorMock.Object,
-            publishEndpointMock.Object,
-            fraudScorerMock.Object,
+            new StripePaymentLifecycle(
+                new PaymentRecordUpdater(dbContext),
+                publishEndpointMock.Object,
+                fraudScorerMock.Object,
+                new Mock<IFraudScoringClient>().Object,
+                new Mock<ILogger<StripePaymentLifecycle>>().Object),
             disputeHandlerMock.Object);
     }
 

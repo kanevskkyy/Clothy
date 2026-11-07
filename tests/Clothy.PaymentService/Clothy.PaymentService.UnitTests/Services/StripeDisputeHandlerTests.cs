@@ -1,195 +1,145 @@
-using Clothy.PaymentService.BLL.Fraud;
-using Clothy.PaymentService.BLL.Services;
-using Clothy.PaymentService.DAL.Context;
 using Clothy.PaymentService.Domain.Entities;
 using Clothy.PaymentService.UnitTests.Infrastructure;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
 using Moq;
 using Stripe;
 using Xunit;
 
 namespace Clothy.PaymentService.UnitTests.Services;
 
+/// <summary>Dispute events for a payment that was paid (and scored) earlier.</summary>
 public class StripeDisputeHandlerTests
 {
-    private static readonly DateTime DisputeCreated = new(2026, 11, 20, 9, 0, 0, DateTimeKind.Utc);
-    private static readonly DateTime ClosedEventCreated = new(2026, 12, 5, 9, 0, 0, DateTimeKind.Utc);
-
-    private readonly PaymentDbContext dbContext;
-    private readonly Mock<IStripePaymentDetailsProvider> detailsMock = new();
-    private readonly Mock<IFraudScoringClient> fraudClientMock = new();
-    private readonly StripeDisputeHandler handler;
-    private readonly PaymentRecordEF payment;
+    private readonly PaymentWebhookHarness h;
 
     public StripeDisputeHandlerTests()
     {
-        dbContext = new PaymentDbContext(new DbContextOptionsBuilder<PaymentDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString()).Options);
-
-        payment = new PaymentRecordEF
-        {
-            Id = Guid.NewGuid(),
-            OrderId = Guid.NewGuid(),
-            UserId = Guid.NewGuid(),
-            Price = 100m,
-            Status = PaymentStatus.Paid,
-            TransactionId = "cs_test",
-            UpdatedAt = DateTime.UtcNow
-        };
-        dbContext.PaymentRecords.Add(payment);
-        dbContext.SaveChanges();
-
-        detailsMock.Setup(d => d.GetPaymentIntentMetadataAsync("pi_test", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new Dictionary<string, string>
-            {
-                { "payment_id", payment.Id.ToString() },
-                { "order_id", payment.OrderId.ToString() }
-            });
-        fraudClientMock.Setup(c => c.LabelAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(FraudLabelOutcome.Labeled);
-
-        handler = new StripeDisputeHandler(dbContext, detailsMock.Object, fraudClientMock.Object, new ListLogger<StripeDisputeHandler>());
+        h = new PaymentWebhookHarness(PaymentStatus.Paid, FraudSyncState.Scored);
+        // the order was scored when it was paid
+        h.Fraud.ScoreAsync(new Clothy.PaymentService.BLL.Fraud.FraudScoreRequest { TxId = h.Payment.OrderId.ToString() }, CancellationToken.None).Wait();
+        h.Fraud.Calls.Clear();
     }
 
-    private static Event DisputeEvent(string type, string status, string paymentIntentId = "pi_test") => new()
-    {
-        Id = "evt_" + Guid.NewGuid().ToString("N"),
-        Type = type,
-        Created = type == StripeDisputeHandler.DISPUTE_CLOSED ? ClosedEventCreated : DisputeCreated,
-        Data = new EventData
-        {
-            Object = new Dispute
-            {
-                Id = "dp_test",
-                PaymentIntentId = paymentIntentId,
-                ChargeId = "ch_test",
-                Created = DisputeCreated,
-                Status = status
-            }
-        }
-    };
-
-    private static long Unix(DateTime utc) => new DateTimeOffset(utc).ToUnixTimeSeconds();
-
-    private async Task<PaymentStatus> StoredStatus() =>
-        (await dbContext.PaymentRecords.AsNoTracking().SingleAsync(p => p.Id == payment.Id)).Status;
+    private async Task<PaymentStatus> StatusAsync() => (await h.StoredPaymentAsync()).Status;
 
     [Fact]
     public async Task Created_MarksPaymentDisputedAndLabelsOrderAsFraud()
     {
-        await handler.HandleAsync(DisputeEvent(StripeDisputeHandler.DISPUTE_CREATED, "needs_response"), CancellationToken.None);
+        await h.SendAsync(PaymentWebhookHarness.DisputeCreated());
 
-        (await StoredStatus()).Should().Be(PaymentStatus.Disputed);
-        fraudClientMock.Verify(c => c.LabelAsync(payment.OrderId.ToString(), true, Unix(DisputeCreated), It.IsAny<CancellationToken>()), Times.Once);
+        (await StatusAsync()).Should().Be(PaymentStatus.Disputed);
+        h.Fraud.Calls.Should().Equal("label:true");
+        h.Fraud.LabelTimes.Should().Equal(new DateTimeOffset(PaymentWebhookHarness.DisputeCreatedUtc).ToUnixTimeSeconds());
+        h.PublishedOrderPaidEvents.Should().Be(0, "the payment was already paid");
     }
 
     [Fact]
     public async Task Created_WhenDeliveredTwice_LabelsOnlyOnce()
     {
-        Event e = DisputeEvent(StripeDisputeHandler.DISPUTE_CREATED, "needs_response");
+        await h.SendAsync(PaymentWebhookHarness.DisputeCreated());
+        await h.SendAsync(PaymentWebhookHarness.DisputeCreated());
 
-        await handler.HandleAsync(e, CancellationToken.None);
-        await handler.HandleAsync(e, CancellationToken.None);
-
-        (await StoredStatus()).Should().Be(PaymentStatus.Disputed);
-        fraudClientMock.Verify(c => c.LabelAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Once);
+        (await StatusAsync()).Should().Be(PaymentStatus.Disputed);
+        h.Fraud.Calls.Should().Equal("label:true");
     }
 
     [Fact]
     public async Task ClosedWon_MarksDisputeWonAndRemovesFraudLabel()
     {
-        await handler.HandleAsync(DisputeEvent(StripeDisputeHandler.DISPUTE_CREATED, "needs_response"), CancellationToken.None);
-        await handler.HandleAsync(DisputeEvent(StripeDisputeHandler.DISPUTE_CLOSED, "won"), CancellationToken.None);
+        await h.SendAsync(PaymentWebhookHarness.DisputeCreated());
+        await h.SendAsync(PaymentWebhookHarness.DisputeClosed("won"));
 
-        (await StoredStatus()).Should().Be(PaymentStatus.DisputeWon);
-        fraudClientMock.Verify(c => c.LabelAsync(payment.OrderId.ToString(), false, Unix(ClosedEventCreated), It.IsAny<CancellationToken>()), Times.Once);
+        (await StatusAsync()).Should().Be(PaymentStatus.DisputeWon);
+        h.Fraud.Calls.Should().Equal("label:true", "label:false");
     }
 
     [Fact]
     public async Task ClosedWon_WhenDeliveredTwice_RemovesLabelOnlyOnce()
     {
-        await handler.HandleAsync(DisputeEvent(StripeDisputeHandler.DISPUTE_CREATED, "needs_response"), CancellationToken.None);
-        Event closed = DisputeEvent(StripeDisputeHandler.DISPUTE_CLOSED, "won");
+        await h.SendAsync(PaymentWebhookHarness.DisputeCreated());
+        await h.SendAsync(PaymentWebhookHarness.DisputeClosed("won"));
+        await h.SendAsync(PaymentWebhookHarness.DisputeClosed("won"));
 
-        await handler.HandleAsync(closed, CancellationToken.None);
-        await handler.HandleAsync(closed, CancellationToken.None);
-
-        fraudClientMock.Verify(c => c.LabelAsync(It.IsAny<string>(), false, It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Once);
+        h.Fraud.Calls.Should().Equal("label:true", "label:false");
     }
 
     [Fact]
     public async Task ClosedLost_MarksDisputeLostAndKeepsExistingLabel()
     {
-        await handler.HandleAsync(DisputeEvent(StripeDisputeHandler.DISPUTE_CREATED, "needs_response"), CancellationToken.None);
-        await handler.HandleAsync(DisputeEvent(StripeDisputeHandler.DISPUTE_CLOSED, "lost"), CancellationToken.None);
+        await h.SendAsync(PaymentWebhookHarness.DisputeCreated());
+        await h.SendAsync(PaymentWebhookHarness.DisputeClosed("lost"));
 
-        (await StoredStatus()).Should().Be(PaymentStatus.DisputeLost);
-        fraudClientMock.Verify(c => c.LabelAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Once);
+        (await StatusAsync()).Should().Be(PaymentStatus.DisputeLost);
+        h.Fraud.Calls.Should().Equal("label:true");
     }
 
     [Fact]
     public async Task ClosedLost_WhenCreatedWasMissed_SetsFraudLabelWithDisputeTime()
     {
-        await handler.HandleAsync(DisputeEvent(StripeDisputeHandler.DISPUTE_CLOSED, "lost"), CancellationToken.None);
+        await h.SendAsync(PaymentWebhookHarness.DisputeClosed("lost"));
 
-        (await StoredStatus()).Should().Be(PaymentStatus.DisputeLost);
-        fraudClientMock.Verify(c => c.LabelAsync(payment.OrderId.ToString(), true, Unix(DisputeCreated), It.IsAny<CancellationToken>()), Times.Once);
+        (await StatusAsync()).Should().Be(PaymentStatus.DisputeLost);
+        h.Fraud.Calls.Should().Equal("label:true");
+        h.Fraud.LabelTimes.Should().Equal(new DateTimeOffset(PaymentWebhookHarness.DisputeCreatedUtc).ToUnixTimeSeconds());
     }
 
     [Fact]
     public async Task Created_AfterClosed_DoesNotReopenDispute()
     {
-        await handler.HandleAsync(DisputeEvent(StripeDisputeHandler.DISPUTE_CLOSED, "won"), CancellationToken.None);
-        await handler.HandleAsync(DisputeEvent(StripeDisputeHandler.DISPUTE_CREATED, "needs_response"), CancellationToken.None);
+        await h.SendAsync(PaymentWebhookHarness.DisputeClosed("won"));
+        await h.SendAsync(PaymentWebhookHarness.DisputeCreated());
 
-        (await StoredStatus()).Should().Be(PaymentStatus.DisputeWon);
+        (await StatusAsync()).Should().Be(PaymentStatus.DisputeWon);
+        h.Fraud.Calls.Should().BeEmpty("no label was sent, so there is nothing to remove");
     }
 
     [Fact]
     public async Task ClosedWithOtherStatus_ChangesNothing()
     {
-        await handler.HandleAsync(DisputeEvent(StripeDisputeHandler.DISPUTE_CLOSED, "warning_closed"), CancellationToken.None);
+        await h.SendAsync(PaymentWebhookHarness.DisputeClosed("warning_closed"));
 
-        (await StoredStatus()).Should().Be(PaymentStatus.Paid);
-        fraudClientMock.VerifyNoOtherCalls();
+        (await StatusAsync()).Should().Be(PaymentStatus.Paid);
+        h.Fraud.Calls.Should().BeEmpty();
     }
 
     [Fact]
-    public async Task Created_WhenFraudServiceFails_StillSavesDisputedStatus()
+    public async Task Created_WhenFraudServiceDoesNotKnowTheOrder_StillSavesDisputedStatus()
     {
-        fraudClientMock.Setup(c => c.LabelAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(FraudLabelOutcome.Failed);
+        // e.g. FraudService was down when the order was paid: /labels answers 404
+        PaymentWebhookHarness unscored = new(PaymentStatus.Paid, FraudSyncState.Scored);
 
-        Func<Task> act = () => handler.HandleAsync(DisputeEvent(StripeDisputeHandler.DISPUTE_CREATED, "needs_response"), CancellationToken.None);
+        Func<Task> act = () => unscored.SendAsync(PaymentWebhookHarness.DisputeCreated());
 
         await act.Should().NotThrowAsync();
-        (await StoredStatus()).Should().Be(PaymentStatus.Disputed);
+        (await unscored.StoredPaymentAsync()).Status.Should().Be(PaymentStatus.Disputed);
+        unscored.Fraud.Calls.Should().Equal("label-404");
     }
 
     [Fact]
     public async Task Created_ForOldPaymentWithoutIntentMetadata_FindsOrderThroughCheckoutSession()
     {
-        detailsMock.Setup(d => d.GetPaymentIntentMetadataAsync("pi_old", It.IsAny<CancellationToken>()))
+        h.StripeDetails.Setup(d => d.GetPaymentIntentMetadataAsync("pi_test", It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Dictionary<string, string>());
-        detailsMock.Setup(d => d.GetCheckoutSessionMetadataAsync("pi_old", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new Dictionary<string, string> { { "order_id", payment.OrderId.ToString() } });
+        h.StripeDetails.Setup(d => d.GetCheckoutSessionMetadataAsync("pi_test", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Dictionary<string, string> { { "order_id", h.Payment.OrderId.ToString() } });
 
-        await handler.HandleAsync(DisputeEvent(StripeDisputeHandler.DISPUTE_CREATED, "needs_response", "pi_old"), CancellationToken.None);
+        await h.SendAsync(PaymentWebhookHarness.DisputeCreated());
 
-        (await StoredStatus()).Should().Be(PaymentStatus.Disputed);
+        (await StatusAsync()).Should().Be(PaymentStatus.Disputed);
     }
 
     [Fact]
     public async Task Created_ForUnknownPayment_DoesNothing()
     {
-        detailsMock.Setup(d => d.GetPaymentIntentMetadataAsync("pi_other", It.IsAny<CancellationToken>()))
+        h.StripeDetails.Setup(d => d.GetPaymentIntentMetadataAsync("pi_test", It.IsAny<CancellationToken>()))
             .ThrowsAsync(new StripeException("No such payment_intent"));
+        h.StripeDetails.Setup(d => d.GetCheckoutSessionMetadataAsync("pi_test", It.IsAny<CancellationToken>()))
+            .ReturnsAsync((IReadOnlyDictionary<string, string>?)null);
 
-        Func<Task> act = () => handler.HandleAsync(DisputeEvent(StripeDisputeHandler.DISPUTE_CREATED, "needs_response", "pi_other"), CancellationToken.None);
+        Func<Task> act = () => h.SendAsync(PaymentWebhookHarness.DisputeCreated());
 
         await act.Should().NotThrowAsync();
-        (await StoredStatus()).Should().Be(PaymentStatus.Paid);
-        fraudClientMock.VerifyNoOtherCalls();
+        (await StatusAsync()).Should().Be(PaymentStatus.Paid);
+        h.Fraud.Calls.Should().BeEmpty();
     }
 }

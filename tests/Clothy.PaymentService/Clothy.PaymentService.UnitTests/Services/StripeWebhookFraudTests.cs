@@ -52,8 +52,8 @@ public class StripeWebhookFraudTests
             new ListLogger<StripeService>(),
             Options.Create(new CardSettings { ApiKey = "sk_test_fake", WebhookSecret = WEBHOOK_SECRET }),
             new Mock<IUserClaimsExtractor>().Object,
-            publishMock.Object,
-            scorerMock.Object,
+            new StripePaymentLifecycle(new PaymentRecordUpdater(dbContext), publishMock.Object, scorerMock.Object,
+                new Mock<IFraudScoringClient>().Object, new ListLogger<StripePaymentLifecycle>()),
             disputeMock.Object);
     }
 
@@ -68,7 +68,8 @@ public class StripeWebhookFraudTests
     [Fact]
     public async Task CheckoutCompleted_WhenFraudServiceIsDown_PaymentIsStillPaidAndPublished()
     {
-        scorerMock.Setup(s => s.ScorePaidSessionAsync(It.IsAny<Session>(), It.IsAny<PaymentRecordEF>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
+        scorerMock.Setup(s => s.ScorePaidPaymentAsync(It.IsAny<PaymentRecordEF>(), It.IsAny<string?>(), It.IsAny<string?>(),
+                It.IsAny<IReadOnlyDictionary<string, string>?>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(FraudScoreOutcome.NotScored);
         string payload = CompletedPayload();
 
@@ -76,9 +77,11 @@ public class StripeWebhookFraudTests
 
         (await dbContext.PaymentRecords.SingleAsync()).Status.Should().Be(PaymentStatus.Paid);
         publishMock.Verify(p => p.Publish(It.Is<OrderPaidEvent>(e => e.OrderId == payment.OrderId), It.IsAny<CancellationToken>()), Times.Once);
-        scorerMock.Verify(s => s.ScorePaidSessionAsync(
-            It.Is<Session>(x => x.PaymentIntentId == "pi_test"),
+        scorerMock.Verify(s => s.ScorePaidPaymentAsync(
             It.Is<PaymentRecordEF>(p => p.Id == payment.Id),
+            "pi_test",
+            It.IsAny<string?>(),
+            It.Is<IReadOnlyDictionary<string, string>?>(m => m != null && m["order_id"] == payment.OrderId.ToString()),
             It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 

@@ -88,6 +88,8 @@ builder.Services.AddHttpClient<IFraudScoringClient, FraudScoringClient>((sp, cli
     });
 builder.Services.AddScoped<IStripePaymentDetailsProvider, StripePaymentDetailsProvider>();
 builder.Services.AddScoped<IStripeFraudScorer, StripeFraudScorer>();
+builder.Services.AddScoped<PaymentRecordUpdater>();
+builder.Services.AddScoped<IStripePaymentLifecycle, StripePaymentLifecycle>();
 builder.Services.AddScoped<IStripeDisputeHandler, StripeDisputeHandler>();
 builder.Services.AddScoped<IPaymentAdminService, PaymentAdminService>();
 

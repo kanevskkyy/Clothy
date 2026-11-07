@@ -290,6 +290,22 @@ The order is found through `order_id` / `payment_id` in PaymentIntent metadata (
 their Checkout Session). Repeated events change nothing. Events with an invalid signature are not processed.
 The order status in OrderService is not changed.
 
+**Event order and parallel webhooks.** Stripe does not guarantee order: with the test card `0259` the dispute
+can arrive before (or at the same time as) `checkout.session.completed`. A dispute for a payment that is still
+`Pending` first runs the same "paid" step as checkout (Paid, `OrderPaidEvent`, `/score`), then `Disputed` and
+`/labels`. Two guarantees make any order safe:
+
+- *Compare-and-set on the payment row.* `Status` and `FraudSync` are EF Core concurrency tokens, so each
+  `UPDATE` has `WHERE Status = <read> AND FraudSync = <read>`. Only one webhook can move a payment out of
+  `Pending`, so `OrderPaidEvent` is published and `/score` called exactly once; the loser re-reads the row and
+  sees it is done. This was chosen over a raw `UPDATE ... WHERE Status = Pending` (`ExecuteUpdate`) because
+  it covers every transition with the same mechanism, works with the in-memory provider used by the unit
+  tests (the race tests run the real handlers in parallel), and needs no extra version column.
+- *`/labels` after `/score`.* `FraudSync` (`None → Scored → Labeled → Unlabeled`, migration
+  `AddFraudSyncAndDisputedAt`) records what FraudService already has. A dispute that lands while `/score`
+  is still running only sets `Disputed` and leaves the label to the scoring webhook, which sends it when
+  scoring is over (with the stored dispute time), so FraudService never gets a label for an unknown txid.
+
 **Currency.** The model was trained on IEEE-CIS amounts in US dollars. Clothy prices are in USD and
 Stripe Checkout charges in USD (`StripeService.PAY_CURRENCY = "usd"`), so the order total is sent unchanged
 and no conversion is needed. PaymentService also checks the currency of the Stripe charge: a charge in any
