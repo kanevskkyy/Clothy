@@ -9,6 +9,7 @@ using Clothy.OrderService.SeedData.Seeders;
 using DotNetEnv;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
 
 class Program
 {
@@ -24,6 +25,10 @@ class Program
 
         string? connectionString = builder.GetConnectionString("ClothyOrder");
         Console.WriteLine($"Using connection string: {connectionString}");
+
+        if (string.IsNullOrWhiteSpace(connectionString)) throw new InvalidOperationException("ConnectionStrings__ClothyOrder is not set");
+
+        await WaitForDatabaseAsync(connectionString);
 
         ServiceCollection services = new ServiceCollection();
         services.AddSingleton<IConnectionFactory>(provider => new ConnectionFactory(connectionString!));
@@ -70,5 +75,52 @@ class Program
 
             Console.WriteLine("All seeding completed!");
         }
+    }
+
+    /// <summary>
+    /// Same readiness check as catalog-seed: the database accepts connections and the tables from
+    /// CreateTablesOrders.sql exist (orders_reservations is the last table the script creates).
+    /// </summary>
+    private static async Task WaitForDatabaseAsync(string connectionString)
+    {
+        const int MAX_RETRIES = 30;
+        int delayMs = 1000;
+
+        for (int i = 1; i <= MAX_RETRIES; i++)
+        {
+            try
+            {
+                Console.WriteLine($"[{i}/{MAX_RETRIES}] Checking database readiness...");
+
+                await using NpgsqlConnection connection = new NpgsqlConnection(connectionString);
+                await connection.OpenAsync();
+
+                await using NpgsqlCommand command = new NpgsqlCommand("SELECT 1 FROM orders_reservations LIMIT 1", connection);
+                await command.ExecuteScalarAsync();
+
+                Console.WriteLine("Database is ready! Tables exist.");
+                return;
+            }
+            catch (PostgresException ex) when (ex.SqlState == "3D000")
+            {
+                Console.WriteLine($"Database ClothyOrder is not created yet. Waiting for init scripts... (retry in {delayMs}ms)");
+            }
+            catch (PostgresException ex) when (ex.SqlState == "42P01")
+            {
+                Console.WriteLine($"Tables not created yet. Waiting for init scripts... (retry in {delayMs}ms)");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Database not ready: {ex.Message} (retry in {delayMs}ms)");
+            }
+
+            if (i < MAX_RETRIES)
+            {
+                await Task.Delay(delayMs);
+                delayMs = Math.Min(delayMs * 2, 10000);
+            }
+        }
+
+        throw new TimeoutException($"Database was not ready after {MAX_RETRIES} attempts");
     }
 }
