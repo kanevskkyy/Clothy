@@ -41,9 +41,6 @@ namespace Clothy.OrderService.BLL.Services
 
         public async Task<SettlementReadDTO> CreateAsync(SettlementCreateDTO settlementCreateDTO, CancellationToken cancellationToken = default)
         {
-            bool nameAlreadyExists = await unitOfWork.Settlement.ExistsByNameAndRegionIdAsync(settlementCreateDTO.Name, settlementCreateDTO.RegionId, cancellationToken: cancellationToken);
-            if (nameAlreadyExists) throw new AlreadyExistsException($"Settlement with name: {settlementCreateDTO.Name} with this RegionId already exists");
-
             Region? region = await unitOfWork.Region.GetByIdAsync(settlementCreateDTO.RegionId, cancellationToken);
             if (region == null) throw new NotFoundException($"Region with ID: {settlementCreateDTO.RegionId}");
 
@@ -98,9 +95,6 @@ namespace Clothy.OrderService.BLL.Services
         {
             Settlement? settlement = await unitOfWork.Settlement.GetByIdAsync(id, cancellationToken);
             if (settlement == null) throw new NotFoundException($"Settlement not found with ID: {id}");
-
-            bool nameAlreadyExists = await unitOfWork.Settlement.ExistsByNameAndRegionIdAsync(settlementUpdateDTO.Name, settlementUpdateDTO.RegionId, id, cancellationToken: cancellationToken);
-            if (nameAlreadyExists) throw new AlreadyExistsException($"Settlement with name: {settlementUpdateDTO.Name} with this RegionId already exists");
 
             Region? region = await unitOfWork.Region.GetByIdAsync(settlementUpdateDTO.RegionId, cancellationToken);
             if (region == null) throw new NotFoundException($"Region not found with ID: {settlementUpdateDTO.RegionId}");

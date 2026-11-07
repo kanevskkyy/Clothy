@@ -69,8 +69,7 @@ public static class DatabaseInitializer
                 ref VARCHAR(100) NOT NULL,
                 createdat TIMESTAMP WITHOUT TIME ZONE DEFAULT (NOW() AT TIME ZONE 'utc'),
                 updatedat TIMESTAMP WITHOUT TIME ZONE,
-                FOREIGN KEY (regionid) REFERENCES regions(id) ON UPDATE CASCADE ON DELETE CASCADE,
-                UNIQUE (name, regionid)
+                FOREIGN KEY (regionid) REFERENCES regions(id) ON UPDATE CASCADE ON DELETE CASCADE
             );
 
             CREATE TABLE IF NOT EXISTS pickup_points (
