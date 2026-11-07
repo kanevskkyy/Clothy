@@ -207,15 +207,24 @@ namespace Clothy.PaymentService.BLL.Services
 
         public async Task HandleWebhookAsync(string payload, string stripeSignature, CancellationToken cancellationToken)
         {
+            // Invalid or missing signature: the event is not processed and the caller gets 400
+            // (ValidationFailedException -> ExceptionHandlingMiddleware), so a misconfigured secret is visible
+            // in Stripe's webhook log instead of being hidden behind 200.
+            if (string.IsNullOrEmpty(stripeSignature))
+            {
+                logger.LogWarning("Stripe webhook without Stripe-Signature header rejected.");
+                throw new ValidationFailedException("Missing Stripe-Signature header.");
+            }
+
             Stripe.Event stripeEvent;
             try
             {
                 stripeEvent = EventUtility.ConstructEvent(payload, stripeSignature, stripeSettings.WebhookSecret);
             }
-            catch (StripeException ex)
+            catch (StripeException)
             {
-                logger.LogError(ex, "Stripe webhook signature verification failed.");
-                return;
+                logger.LogWarning("Stripe webhook signature verification failed; event rejected.");
+                throw new ValidationFailedException("Invalid Stripe webhook signature.");
             }
 
             logger.LogInformation("Stripe webhook received: {Type}", stripeEvent.Type);

@@ -139,7 +139,7 @@ public class StripeServiceTests
     }
 
     [Fact]
-    public async Task HandleWebhookAsync_WhenSignatureIsInvalid_ReturnsWithoutThrowing()
+    public async Task HandleWebhookAsync_WhenSignatureIsInvalid_ThrowsValidationFailedException()
     {
         string invalidPayload = "{}";
         string invalidSignature = "invalid_signature";
@@ -147,7 +147,18 @@ public class StripeServiceTests
         Func<Task> act = async () => await stripeService.HandleWebhookAsync(
             invalidPayload, invalidSignature, CancellationToken.None);
 
-        await act.Should().NotThrowAsync();
+        // mapped to 400 by ExceptionHandlingMiddleware
+        await act.Should().ThrowAsync<ValidationFailedException>();
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(null)]
+    public async Task HandleWebhookAsync_WhenSignatureIsMissing_ThrowsValidationFailedException(string? signature)
+    {
+        Func<Task> act = async () => await stripeService.HandleWebhookAsync("{}", signature!, CancellationToken.None);
+
+        await act.Should().ThrowAsync<ValidationFailedException>();
     }
 
     [Fact]
@@ -156,7 +167,8 @@ public class StripeServiceTests
         string invalidPayload = "{}";
         string invalidSignature = "invalid_signature";
 
-        await stripeService.HandleWebhookAsync(invalidPayload, invalidSignature, CancellationToken.None);
+        await FluentActions.Awaiting(() => stripeService.HandleWebhookAsync(invalidPayload, invalidSignature, CancellationToken.None))
+            .Should().ThrowAsync<ValidationFailedException>();
 
         publishEndpointMock.Verify(
             p => p.Publish(It.IsAny<OrderPaidEvent>(), It.IsAny<CancellationToken>()),

@@ -6,6 +6,7 @@ using Clothy.PaymentService.Domain.Entities;
 using Clothy.PaymentService.gRPC.Client.Services.Interfaces;
 using Clothy.PaymentService.UnitTests.Infrastructure;
 using Clothy.Shared.Events.PaymentEvents;
+using Clothy.Shared.Helpers.Exceptions;
 using Clothy.Shared.Helpers.JWT;
 using FluentAssertions;
 using MassTransit;
@@ -122,8 +123,8 @@ public class StripeWebhookFraudTests
         Func<Task> wrongSecret = () => service.HandleWebhookAsync(payload, StripeWebhookSigner.Sign(payload, "whsec_wrong"), CancellationToken.None);
         Func<Task> noSignature = () => service.HandleWebhookAsync(payload, "", CancellationToken.None);
 
-        await wrongSecret.Should().NotThrowAsync();
-        await noSignature.Should().NotThrowAsync();
+        await wrongSecret.Should().ThrowAsync<ValidationFailedException>();
+        await noSignature.Should().ThrowAsync<ValidationFailedException>();
         disputeMock.VerifyNoOtherCalls();
         (await dbContext.PaymentRecords.SingleAsync()).Status.Should().Be(PaymentStatus.Pending);
     }
@@ -134,7 +135,8 @@ public class StripeWebhookFraudTests
         string payload = DisputePayload("charge.dispute.created");
         string signature = StripeWebhookSigner.Sign(payload, WEBHOOK_SECRET);
 
-        await service.HandleWebhookAsync(payload.Replace("pi_test", "pi_other"), signature, CancellationToken.None);
+        await FluentActions.Awaiting(() => service.HandleWebhookAsync(payload.Replace("pi_test", "pi_other"), signature, CancellationToken.None))
+            .Should().ThrowAsync<ValidationFailedException>();
 
         disputeMock.VerifyNoOtherCalls();
     }

@@ -157,7 +157,9 @@ public class StripePaymentControllerTests
         };
         request.Headers.Add("Stripe-Signature", "invalid");
 
-        await client.SendAsync(request);
+        HttpResponseMessage response = await client.SendAsync(request);
+
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
 
         using IServiceScope scope = factory.Services.CreateScope();
         PaymentDbContext db = scope.ServiceProvider.GetRequiredService<PaymentDbContext>();

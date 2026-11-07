@@ -287,7 +287,7 @@ address and device fields are never logged.
 **Disputes.** `charge.dispute.created` sets the payment to `Disputed` and labels the order as fraud
 (`at` = dispute creation time); `charge.dispute.closed` sets `DisputeWon` (label removed) or `DisputeLost`.
 The order is found through `order_id` / `payment_id` in PaymentIntent metadata (older payments: through
-their Checkout Session). Repeated events change nothing. Events with an invalid signature are not processed.
+their Checkout Session). Repeated events change nothing. Events with an invalid or missing signature are not processed and get 400.
 The order status in OrderService is not changed.
 
 **Event order and parallel webhooks.** Stripe does not guarantee order: with the test card `0259` the dispute
