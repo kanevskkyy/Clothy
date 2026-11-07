@@ -18,9 +18,26 @@
 
 ## Відмінності від graph-antifraud
 
-Логіка ознак, моделі й пороги не змінені.
+Логіка ознак, моделі й пороги не змінені. Змінено лише збереження і читання рішень (місця позначені
+коментарем `Clothy` у коді):
 
-Поки відмінностей у коді немає (див. історію комітів цієї теки).
+| Файл | Зміна |
+|---|---|
+| `src/sqlstore.py` | у таблиці `decisions` нова колонка `top_features` (JSON); старі бази доповнюються через `ALTER TABLE` при відкритті; `get_tx` повертає `top_features`; новий метод `recent_decisions(flagged, limit)` |
+| `src/scoring.py` | `log_decision` отримує топ-3 внески (`None`, якщо `explain=false`) |
+| `src/schemas.py` | `TxRecord.top_features`; нові `DecisionItem`, `DecisionsResponse` |
+| `src/service.py` | новий `GET /decisions?flagged=true&limit=50` (лише SQLite, інакше 501; `limit` 1..500) |
+| `tests/test_decisions.py` | новий: збереження `top_features`, фільтр/порядок/ліміт `/decisions`, мітка, 501, OpenAPI, міграція старої бази |
+| `pyproject.toml` | `tests/test_decisions.py` додано в перевірку ruff |
+| `Dockerfile`, `.dockerignore`, `.gitignore`, `README.md`, `models/README.md` | нові, для Clothy |
+
+`GET /decisions` (приклад):
+
+```bash
+curl -s "http://127.0.0.1:8097/decisions?flagged=true&limit=20"
+# {"items": [{"txid": "...", "ts": 1730000000, "score": 0.52, "flag": true, "threshold": 0.4008,
+#   "variant": "main", "fraud_label_at": null, "top_features": [...], "ring_alert": null}]}
+```
 
 ## Запуск локально
 
@@ -44,7 +61,7 @@ uvicorn src.service:create_app --factory --port 8097
 pytest -q
 ```
 
-З моделями: 57 passed, 1 skipped (`private/fixture_real_test.npz` не копіюється). Без моделей тести, яким вони
+З моделями: 63 passed, 1 skipped (`private/fixture_real_test.npz` не копіюється). Без моделей тести, яким вони
 потрібні, пропускаються (`skipif` за `models/service_config.yaml`).
 
 ## Docker

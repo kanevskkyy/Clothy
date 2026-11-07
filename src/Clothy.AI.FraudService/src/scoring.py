@@ -177,7 +177,8 @@ class Scorer:
             if store:
                 self.store.add(txid, req)
                 if hasattr(self.store, "log_decision"):
-                    self.store.log_decision(txid, int(req["ts"]), self.variant, p, flag, self.threshold)
+                    self.store.log_decision(txid, int(req["ts"]), self.variant, p, flag, self.threshold,
+                                            out["top_features"] if explain else None)
                     if ring is not None and ring["suspect"]:
                         self.store.log_ring(txid, int(req["ts"]), ring["other_cards_30d"], ring["share_new"])
             return out

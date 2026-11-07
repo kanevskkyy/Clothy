@@ -21,6 +21,7 @@ from src.config import abs_path as _abs  # noqa: F401  (старі тести і
 from src.features import DuplicateTransactionError, OutOfOrderError
 from src.schemas import (
     VALIDATION_422,
+    DecisionsResponse,
     HealthResponse,
     Label,
     LabelResponse,
@@ -176,5 +177,18 @@ def create_app(models_dir: str | None = None, variant: str | None = None, flag_r
             raise HTTPException(status_code=501, detail="потрібен STORE_BACKEND=sqlite")
         with scorer._lock:
             return {"alerts": scorer.store.recent_ring_alerts(limit)}
+
+    @app.get("/decisions", tags=["history"], response_model=DecisionsResponse,
+             summary="Збережені рішення (Clothy)",
+             description="Останні рішення моделі з трьома головними причинами й сигналом кільця, від новіших до "
+                         "старіших. `flagged=true` повертає лише транзакції «на перевірку», `flagged=false` лише "
+                         "решту; без параметра повертаються всі.",
+             responses={501: E501})
+    def decisions(flagged: bool | None = Query(None, description="Фільтр за рішенням (flag)."),
+                  limit: int = Query(50, ge=1, le=500, description="Скільки записів повернути (1..500).")):
+        if not hasattr(scorer.store, "recent_decisions"):
+            raise HTTPException(status_code=501, detail="потрібен STORE_BACKEND=sqlite")
+        with scorer._lock:
+            return {"items": scorer.store.recent_decisions(flagged, limit)}
 
     return app

@@ -133,7 +133,8 @@ class TxRecord(BaseModel):
 
     model_config = ConfigDict(json_schema_extra={"examples": [{
         "txid": "a1", "card1": 15000.0, "ts": 1000000, "amount": 49.0, "fraud_label_at": None, "variant": "main",
-        "score": 0.01439689565449953, "flag": False, "threshold": 0.4008151590824127, "ring_alert": None}]})
+        "score": 0.01439689565449953, "flag": False, "threshold": 0.4008151590824127, "ring_alert": None,
+        "top_features": [{"feature": "card5", "value": None, "contribution": 0.259}]}]})
 
     txid: str
     card1: float
@@ -145,6 +146,33 @@ class TxRecord(BaseModel):
     flag: bool | None
     threshold: float | None
     ring_alert: RingAlert | None = Field(description="Спрацювання сигналу кільця; null, якщо його не було.")
+    top_features: list[TopFeature] | None = Field(None, description="Clothy: три найбільші внески ознак, "
+                                                  "збережені разом із рішенням; null, якщо не рахувались.")
+
+
+class DecisionItem(BaseModel):
+    """Clothy: рядок списку збережених рішень."""
+
+    txid: str
+    ts: int
+    score: float
+    flag: bool
+    threshold: float
+    variant: str
+    fraud_label_at: float | None = Field(description="Час мітки про шахрайство; null, якщо мітки немає.")
+    top_features: list[TopFeature] | None = Field(description="Три найбільші внески; null, якщо не рахувались.")
+    ring_alert: RingAlert | None = Field(description="Спрацювання сигналу кільця; null, якщо його не було.")
+
+
+class DecisionsResponse(BaseModel):
+    """Clothy: збережені рішення, від новіших до старіших."""
+
+    model_config = ConfigDict(json_schema_extra={"examples": [{"items": [
+        {"txid": "a1", "ts": 1000000, "score": 0.52, "flag": True, "threshold": 0.4008, "variant": "main",
+         "fraud_label_at": None, "top_features": [{"feature": "card5", "value": None, "contribution": 0.259}],
+         "ring_alert": None}]}]})
+
+    items: list[DecisionItem]
 
 
 class RingAlertItem(BaseModel):

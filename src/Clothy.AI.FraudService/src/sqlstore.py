@@ -1,6 +1,7 @@
 """Сховище історії в SQLite. Ті самі визначення ознак, що в FeatureStore (src/features.py):
 вікна лише з рядків СТРОГО раніше за час транзакції, мітка j відома для i, якщо t_j <= t_i - 7 днів,
 t_j >= t_i - 30 днів і dispute надійшов не пізніше t_i (fraud_at <= t_i). Власна мітка не використовується."""
+import json
 import sqlite3
 from collections.abc import Iterable, Mapping
 from typing import Any
@@ -17,7 +18,7 @@ CREATE INDEX IF NOT EXISTS i_pe ON tx(card1, em, ts);
 CREATE INDEX IF NOT EXISTS i_tri ON tx(card1, addr1, em, ts);
 CREATE INDEX IF NOT EXISTS i_fp ON tx(fp, ts);
 CREATE TABLE IF NOT EXISTS decisions (
-  txid TEXT PRIMARY KEY, ts INTEGER, variant TEXT, score REAL, flag INTEGER, threshold REAL);
+  txid TEXT PRIMARY KEY, ts INTEGER, variant TEXT, score REAL, flag INTEGER, threshold REAL, top_features TEXT);
 CREATE TABLE IF NOT EXISTS ring_alerts (
   txid TEXT PRIMARY KEY, ts INTEGER, other_cards INTEGER, share_new REAL);
 """
@@ -41,6 +42,10 @@ class SqlFeatureStore:
             self.db.execute("PRAGMA journal_mode=WAL")
             self.db.execute("PRAGMA synchronous=NORMAL")
         self.db.executescript(SCHEMA)
+        # Clothy: бази, створені до появи колонки top_features, доповнюються без втрати даних
+        cols = {r[1] for r in self.db.execute("PRAGMA table_info(decisions)")}
+        if "top_features" not in cols:
+            self.db.execute("ALTER TABLE decisions ADD COLUMN top_features TEXT")
         self.db.commit()
         self.last_ts, self.first_ts = self.db.execute("SELECT MAX(ts), MIN(ts) FROM tx").fetchone()
 
@@ -161,11 +166,17 @@ class SqlFeatureStore:
         if cur.rowcount == 0:
             raise KeyError(txid)
 
-    def log_decision(self, txid: str, ts: int, variant: str, score: float, flag: bool, threshold: float) -> None:
-        """Записує рішення моделі в таблицю decisions (повторний txid перезаписує запис)."""
+    def log_decision(self, txid: str, ts: int, variant: str, score: float, flag: bool, threshold: float,
+                     top_features: list[dict[str, Any]] | None = None) -> None:
+        """Записує рішення моделі в таблицю decisions (повторний txid перезаписує запис).
+
+        top_features (Clothy): три найбільші внески ознак, зберігаються як JSON; None, якщо не рахувались.
+        """
+        tf = None if top_features is None else json.dumps(top_features)
         with self.db:
-            self.db.execute("INSERT OR REPLACE INTO decisions VALUES (?,?,?,?,?,?)",
-                            (txid, int(ts), variant, float(score), int(bool(flag)), float(threshold)))
+            self.db.execute("INSERT OR REPLACE INTO decisions "
+                            "(txid, ts, variant, score, flag, threshold, top_features) VALUES (?,?,?,?,?,?,?)",
+                            (txid, int(ts), variant, float(score), int(bool(flag)), float(threshold), tf))
 
     def log_ring(self, txid: str, ts: int, other_cards: int | None, share_new: float | None) -> None:
         """Записує спрацювання сигналу кільця в таблицю ring_alerts."""
@@ -183,13 +194,36 @@ class SqlFeatureStore:
     def get_tx(self, txid: str) -> dict[str, Any] | None:
         """Транзакція разом із рішенням, часом мітки та спрацюванням кільця; None, якщо txid невідомий."""
         row = self.db.execute(
-            "SELECT t.txid, t.card1, t.ts, t.amt, t.fraud_at, d.variant, d.score, d.flag, d.threshold "
+            "SELECT t.txid, t.card1, t.ts, t.amt, t.fraud_at, d.variant, d.score, d.flag, d.threshold, d.top_features "
             "FROM tx t LEFT JOIN decisions d ON d.txid = t.txid WHERE t.txid=?", (txid,)).fetchone()
         if row is None:
             return None
-        cols = ("txid", "card1", "ts", "amount", "fraud_label_at", "variant", "score", "flag", "threshold")
+        cols = ("txid", "card1", "ts", "amount", "fraud_label_at", "variant", "score", "flag", "threshold",
+                "top_features")
         rec = dict(zip(cols, row, strict=False))
         rec["flag"] = None if rec["flag"] is None else bool(rec["flag"])
+        rec["top_features"] = None if rec["top_features"] is None else json.loads(rec["top_features"])
         al = self.db.execute("SELECT other_cards, share_new FROM ring_alerts WHERE txid=?", (txid,)).fetchone()
         rec["ring_alert"] = None if al is None else {"other_cards_30d": al[0], "share_new": al[1]}
         return rec
+
+    def recent_decisions(self, flagged: bool | None = None, limit: int = 20) -> list[dict[str, Any]]:
+        """Clothy: останні limit рішень, від новіших до старіших; flagged=True/False фільтрує за flag.
+
+        Кожен запис: txid, ts, score, flag, threshold, variant, fraud_label_at, top_features, ring_alert.
+        """
+        where, args = "", []
+        if flagged is not None:
+            where, args = "WHERE d.flag=?", [int(bool(flagged))]
+        rows = self.db.execute(
+            "SELECT d.txid, d.ts, d.score, d.flag, d.threshold, d.variant, t.fraud_at, d.top_features, "
+            "r.other_cards, r.share_new, r.txid "
+            "FROM decisions d LEFT JOIN tx t ON t.txid = d.txid LEFT JOIN ring_alerts r ON r.txid = d.txid "
+            f"{where} ORDER BY d.ts DESC, d.txid DESC LIMIT ?", (*args, int(limit))).fetchall()
+        out = []
+        for r in rows:
+            out.append({"txid": r[0], "ts": r[1], "score": r[2], "flag": bool(r[3]), "threshold": r[4],
+                        "variant": r[5], "fraud_label_at": r[6],
+                        "top_features": None if r[7] is None else json.loads(r[7]),
+                        "ring_alert": None if r[10] is None else {"other_cards_30d": r[8], "share_new": r[9]}})
+        return out
