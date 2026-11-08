@@ -11,7 +11,7 @@ const AdminSizesPage = () => {
             description="Manage catalog sizes"
             entityName="Size"
             entityNamePlural="Sizes"
-            icon={<Layers size={28} color="#6B6B6B" />}
+            icon={<Layers size={22} />}
             getAll={catalogApi.getAllSizesAsync}
             getById={catalogApi.getSizeByIdAsync}
             create={catalogApi.createSizeAsync}

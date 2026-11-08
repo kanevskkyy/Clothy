@@ -22,7 +22,7 @@ const AdminBrandsPage = () => {
             description="Manage catalog brands"
             entityName="Brand"
             entityNamePlural="Brands"
-            icon={<Tag size={28} color="#6B6B6B" />}
+            icon={<Tag size={22} />}
             getAll={catalogApi.getAllBrandsAsync}
             getById={catalogApi.getBrandByIdAsync}
             create={catalogApi.createBrandAsync}

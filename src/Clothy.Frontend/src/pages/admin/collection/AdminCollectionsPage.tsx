@@ -11,7 +11,7 @@ const AdminCollectionsPage = () => {
             description="Manage catalog collections"
             entityName="Collection"
             entityNamePlural="Collections"
-            icon={<Layers size={28} color="#6B6B6B" />}
+            icon={<Layers size={22} />}
             getAll={catalogApi.getAllCollectionsAsync}
             getById={catalogApi.getCollectionByIdAsync}
             create={catalogApi.createCollectionAsync}
