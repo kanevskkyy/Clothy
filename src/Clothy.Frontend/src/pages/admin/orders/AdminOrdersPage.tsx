@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import {useOutletContext, useSearchParams} from "react-router-dom";
 import {Helmet} from "react-helmet";
-import {Package} from "lucide-react";
+import {Package, ShieldAlert, ShieldCheck} from "lucide-react";
 import {toast} from "sonner";
 import styles from "./AdminOrdersPage.module.css";
 import {getCurrentPage, handlePageChange} from "../../../shared/lib/paginationUtils";
@@ -11,16 +11,19 @@ import type {PagedList} from "../../../shared/lib/pagedList";
 import {getErrorMessage} from "../../../shared/lib/errorHandler";
 import SortSelect from "../../../features/catalog/sortSelect/SortSelect";
 import {ORDER_STATUS_OPTIONS} from "../../../entities/ordersService/orderStatus";
-import Loader from "../../../shared/ui/Loader/Loader.tsx";
-import EmptyState from "../../../shared/ui/EmptyState/EmptyState.tsx";
-import OrderList from "../../../entities/ordersService/orderList/OrderList.tsx";
 import Pagination from "../../../shared/ui/Pagination/Pagination.tsx";
-import Checkbox from "../../../shared/ui/Checkbox/Checkbox.tsx";
 import type {AdminLayoutContext} from "../../../features/auth/admin/adminLayout/AdminLayout.tsx";
 import {fraudApi, type IFraudRiskSummary} from "../../../app/api/fraudApi.ts";
 import {paymentApi} from "../../../app/api/paymentApi.ts";
 import RiskBadge from "../../../entities/fraud/RiskBadge.tsx";
 import PaymentStatusBadge from "../../../entities/fraud/PaymentStatusBadge.tsx";
+import AdminOrdersTable from "./AdminOrdersTable.tsx";
+import AdminToolbar from "../ui/AdminToolbar.tsx";
+import AdminToggle from "../ui/AdminToggle.tsx";
+import AdminCard from "../ui/AdminCard.tsx";
+import AdminEmptyState from "../ui/AdminEmptyState.tsx";
+import AdminButton from "../ui/AdminButton.tsx";
+import {AdminRowsSkeleton} from "../ui/AdminSkeleton.tsx";
 
 // "on review" mode pages through the fraud decisions on the client
 const REVIEW_PAGE_SIZE = 10;
@@ -177,48 +180,76 @@ const AdminOrdersPage = () => {
     };
 
     const filters = (
-        <div className={styles.header}>
-            <Checkbox
-                id="only-review"
-                label="Лише на перевірку"
-                checked={onlyReview}
-                onChange={handleOnlyReviewChange}
-            />
-            {!onlyReview && (
+        <AdminToolbar
+            start={
+                <>
+                    <AdminToggle
+                        pressed={onlyReview}
+                        onChange={handleOnlyReviewChange}
+                        icon={<ShieldAlert size={16}/>}
+                    >
+                        Лише на перевірку
+                    </AdminToggle>
+                    {!isLoading && orders && (
+                        <span className={styles.count} aria-live="polite">
+                            {onlyReview
+                                ? `На перевірку: ${orders.totalCount}`
+                                : `${orders.totalCount} orders`}
+                        </span>
+                    )}
+                </>
+            }
+            end={!onlyReview ? (
                 <SortSelect
                     value={currentStatus}
                     options={ORDER_STATUS_OPTIONS}
                     onChange={handleStatusChange}
                     label="Status:"
                 />
+            ) : (
+                <span className={styles.hint}>Фільтр статусу вимкнено в режимі перевірки</span>
             )}
-        </div>
+        />
     );
 
-    if (isLoading) {
-        return <Loader/>
-    }
+    const renderBody = () => {
+        if (isLoading) {
+            return <AdminRowsSkeleton rows={8} columns={6} label="Loading orders"/>;
+        }
 
-    if (!orders || orders.items.length === 0) {
-        return (
-            <>
-                {filters}
-                <EmptyState
-                    icon={<Package size={28} color="#6B6B6B"/>}
+        if (!orders || orders.items.length === 0) {
+            return (
+                <AdminEmptyState
+                    icon={onlyReview ? <ShieldCheck size={22}/> : <Package size={22}/>}
                     title="No orders found"
                     description={onlyReview
                         ? "Немає замовлень, позначених антифродом на перевірку."
                         : "There are no orders matching the selected status."}
-                    buttons={currentStatus || onlyReview ? [{
-                        label: "Clear Filter",
-                        onClick: () => onlyReview ? handleOnlyReviewChange(false) : handleStatusChange(""),
-                        variant: "primary",
-                        size: "md",
-                    }] : []}
+                    action={currentStatus || onlyReview ? (
+                        <AdminButton
+                            variant="secondary"
+                            size="md"
+                            onClick={() => onlyReview ? handleOnlyReviewChange(false) : handleStatusChange("")}
+                        >
+                            Clear Filter
+                        </AdminButton>
+                    ) : undefined}
                 />
-            </>
+            );
+        }
+
+        return (
+            <AdminOrdersTable
+                orders={orders.items}
+                onStatusChange={handleOrderStatusChange}
+                getOrderLink={(order) => `/admin/orders/${order.id}`}
+                renderPayment={(order) => (
+                    <PaymentStatusBadge status={paymentStatuses[order.id]} disputesOnly/>
+                )}
+                renderRisk={risks ? (order) => <RiskBadge record={risks[order.id] ?? null}/> : undefined}
+            />
         );
-    }
+    };
 
     return (
         <div>
@@ -228,18 +259,10 @@ const AdminOrdersPage = () => {
             </Helmet>
 
             {filters}
-            <OrderList
-                orders={orders.items}
-                onStatusChange={handleOrderStatusChange}
-                getOrderLink={(order) => `/admin/orders/${order.id}`}
-                renderExtra={(order) => (
-                    <>
-                        <PaymentStatusBadge status={paymentStatuses[order.id]} disputesOnly/>
-                        {risks && <RiskBadge record={risks[order.id] ?? null}/>}
-                    </>
-                )}
-            />
-            {orders.totalPages > 1 && (
+            <AdminCard flush aria-label="Orders">
+                {renderBody()}
+            </AdminCard>
+            {!isLoading && orders && orders.totalPages > 1 && (
                 <Pagination
                     currentPage={orders.currentPage}
                     totalPages={orders.totalPages}
