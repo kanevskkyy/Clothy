@@ -83,6 +83,7 @@
 /* ---------- panel ---------- */
 
 .panel {
+    container-type: inline-size;
     border: 1px solid var(--a-border, #E5E1DC);
     border-radius: var(--a-radius, 10px);
     background: var(--a-surface, #FFFFFF);
@@ -360,7 +361,10 @@
     .note {
         padding: 12px 16px;
     }
+}
 
+/* narrow panel (phone or side column): bar goes under the reason name */
+@container (max-width: 560px) {
     .reason {
         grid-template-columns: minmax(0, 1fr) auto;
         grid-template-areas:
