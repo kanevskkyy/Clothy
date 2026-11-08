@@ -1,7 +1,5 @@
 import {Check, MessageSquare, Trash2} from "lucide-react";
-import EmptyState from "../../../shared/ui/EmptyState/EmptyState.tsx";
 import Pagination from "../../../shared/ui/Pagination/Pagination.tsx";
-import Loader from "../../../shared/ui/Loader/Loader.tsx";
 import {Helmet} from "react-helmet";
 import {useOutletContext, useSearchParams} from "react-router-dom";
 import {useEffect, useState} from "react";
@@ -14,6 +12,11 @@ import type {PagedList} from "../../../shared/lib/pagedList.ts";
 import ReviewRowCard from "../../../entities/reviewsService/reviewRow/ReviewRowCard.tsx";
 import type {AdminLayoutContext} from "../../../features/auth/admin/adminLayout/AdminLayout.tsx";
 import { useQueryClient } from "@tanstack/react-query";
+import AdminCard from "../ui/AdminCard.tsx";
+import AdminToolbar from "../ui/AdminToolbar.tsx";
+import AdminEmptyState from "../ui/AdminEmptyState.tsx";
+import {AdminRowsSkeleton} from "../ui/AdminSkeleton.tsx";
+import styles from "./AdminReviewsPage.module.css";
 
 const AdminReviewsPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -77,7 +80,13 @@ const AdminReviewsPage = () => {
         handlePageChange(page, searchParams, setSearchParams);
     };
 
-    if (isLoading) return <Loader/>;
+    if (isLoading) {
+        return (
+            <AdminCard flush>
+                <AdminRowsSkeleton rows={4} columns={3} label="Loading reviews"/>
+            </AdminCard>
+        );
+    }
 
     if (!reviews || reviews.items.length === 0) {
         return (
@@ -85,12 +94,13 @@ const AdminReviewsPage = () => {
                 <Helmet>
                     <title>Admin — Reviews</title>
                 </Helmet>
-                <EmptyState
-                    icon={<MessageSquare size={28} color="#6B6B6B"/>}
-                    title="No pending reviews"
-                    description="All reviews have been moderated."
-                    buttons={[]}
-                />
+                <AdminCard>
+                    <AdminEmptyState
+                        icon={<MessageSquare size={22}/>}
+                        title="No pending reviews"
+                        description="All reviews have been moderated."
+                    />
+                </AdminCard>
             </>
         );
     }
@@ -102,7 +112,11 @@ const AdminReviewsPage = () => {
                 <meta name="description" content="Moderate pending product reviews."/>
             </Helmet>
 
-            <div>
+            <AdminToolbar
+                start={<span className={styles.count}>{reviews.totalCount} pending reviews</span>}
+            />
+
+            <div className={styles.list}>
                 {reviews.items.map((review) => (
                     <ReviewRowCard
                         key={review.id}
