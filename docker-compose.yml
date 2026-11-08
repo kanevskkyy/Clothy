@@ -222,6 +222,7 @@ services:
       SUCCESS__URL: ${SUCCESS__URL}
       CANCEL__URL: ${CANCEL__URL}
       FRONTEND__URL: ${FRONTEND__URL}
+      FRAUD__URL: ${FRAUD__URL:-http://fraud-service:8097}
     depends_on:
       - clothy-postgres
       - rabbitmq
@@ -322,6 +323,29 @@ services:
     networks:
       - clothy-network
 
+  fraud-service:
+    build:
+      context: ./src/Clothy.AI.FraudService
+      dockerfile: Dockerfile
+    container_name: fraud-service
+    restart: unless-stopped
+    environment:
+      MODEL_VARIANT: ${FRAUD__MODEL_VARIANT:-main}
+      FLAG_RATE: ${FRAUD__FLAG_RATE:-0.01}
+      RING_SIGNAL: ${FRAUD__RING_SIGNAL:-on}
+      LOG_LEVEL: ${FRAUD__LOG_LEVEL:-INFO}
+      STORE_BACKEND: sqlite
+      DB_PATH: /data/history.db
+    volumes:
+      - frauddata:/data
+    # Порт назовні не публікується: сервіс доступний лише в clothy-network
+    # (PaymentService викликає /score і /labels, gateway віддає адмінці читання).
+    # Для налагодження /docs з хоста тимчасово розкоментуйте:
+    # ports:
+    #   - "8097:8097"
+    networks:
+      - clothy-network
+
   frontend:
       build:
         context: ./src/Clothy.Frontend
@@ -343,6 +367,7 @@ volumes:
   mongodata:
   redisdata:
   rabbitmqdata:
+  frauddata:
 
 networks:
   clothy-network:

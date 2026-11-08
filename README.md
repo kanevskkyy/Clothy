@@ -25,6 +25,7 @@
 - [Key Features](#key-features)
 - [Getting Started](#getting-started)
 - [Environment Variables](#environment-variables)
+- [Fraud Detection](#fraud-detection)
 - [CI/CD Pipeline](#cicd-pipeline)
 - [Testing Strategy](#testing-strategy)
 - [Domain Diagrams](#domain-diagrams)
@@ -230,7 +231,142 @@ NOVAPOSHTA__API_KEY=
 # URLs
 FRONTEND__URL=http://localhost:3000
 VITE_API_URL=http://localhost:8094
+
+# Fraud detection (all optional, defaults shown)
+FRAUD__URL=http://fraud-service:8097
+FRAUD__MODEL_VARIANT=main
+FRAUD__FLAG_RATE=0.01
+FRAUD__RING_SIGNAL=on
+FRAUD__LOG_LEVEL=INFO
 ```
+
+---
+
+## Fraud Detection
+
+`Clothy.AI.FraudService` (Python, FastAPI, XGBoost) scores every card payment after it succeeds and flags
+risky orders for manual review in the admin panel. It is the demo service of a bachelor's thesis
+(graph-antifraud): features come from the history of the card, card + postal code and card + email pairs,
+disputes of neighbouring transactions (known after 7 days, 30-day window) and the device fingerprint.
+The answer is a fraud probability, a decision against a threshold chosen on validation data, the top-3
+reasons and a transparent "ring" signal (one device paying with several new cards).
+
+Buyers never see anything: scoring happens after the payment, and the payment never depends on it.
+
+```mermaid
+flowchart LR
+    B[Buyer] -->|checkout + device data| P[PaymentService]
+    P -->|Checkout Session<br/>metadata: order_id, device| S[(Stripe)]
+    S -->|checkout.session.completed| P
+    P -->|POST /score<br/>timeout 2 s, circuit breaker| F[FraudService<br/>XGBoost + SQLite history]
+    S -->|charge.dispute.created / closed| P
+    P -->|POST /labels fraud=true/false| F
+    P -->|Disputed / DisputeWon / DisputeLost| DB[(ClothyPaymentDb)]
+    A[Admin panel] -->|GET /api/fraud/tx, decisions<br/>role Admin| G[Gateway]
+    G --> F
+    A -->|GET /api/payments/admin/statuses| G --> P
+```
+
+| Piece | Where |
+|---|---|
+| Service, tests, Dockerfile | `src/Clothy.AI.FraudService` (own [README](src/Clothy.AI.FraudService/README.md)) |
+| Scoring client and Stripe mapping | `PaymentService.BLL/Fraud` (`IFraudScoringClient`, `FraudRequestMapper`) |
+| Dispute webhook | `PaymentService.BLL/Services/StripeDisputeHandler.cs` |
+| Admin UI | `/admin/orders` (risk badge, "Лише на перевірку" filter), `/admin/orders/:id` (reasons, ring signal, dispute status) |
+
+**How a payment is scored.** On `checkout.session.completed` PaymentService marks the payment as Paid and
+publishes `OrderPaidEvent` exactly as before, then reads the charge from Stripe and sends `POST /score`:
+`txid` = order id, `ts` = charge time (Unix seconds), `TransactionAmt` = order total in USD (see below),
+`card1` = 53-bit hash of `card.fingerprint`, `card4`/`card6` = brand/funding, `addr1` = billing postal code
+if it is numeric, `P_emaildomain` = buyer email domain, `DeviceType`/`DeviceInfo`/`id_30`/`id_31`/`id_33` =
+device data from the storefront, `ProductCD` = `W`. If FraudService is down, slow (> 2 s), returns an error
+or rejects a late webhook (409 for a `ts` earlier than the last one), the order stays **not scored** and
+only a warning is logged. A 409 for a duplicate txid counts as "already scored". Card fingerprint, email,
+address and device fields are never logged.
+
+**Disputes.** `charge.dispute.created` sets the payment to `Disputed` and labels the order as fraud
+(`at` = dispute creation time); `charge.dispute.closed` sets `DisputeWon` (label removed) or `DisputeLost`.
+The order is found through `order_id` / `payment_id` in PaymentIntent metadata (older payments: through
+their Checkout Session). Repeated events change nothing. Events with an invalid or missing signature are not processed and get 400.
+The order status in OrderService is not changed.
+
+**Event order and parallel webhooks.** Stripe does not guarantee order: with the test card `0259` the dispute
+can arrive before (or at the same time as) `checkout.session.completed`. A dispute for a payment that is still
+`Pending` first runs the same "paid" step as checkout (Paid, `OrderPaidEvent`, `/score`), then `Disputed` and
+`/labels`. Two guarantees make any order safe:
+
+- *Compare-and-set on the payment row.* `Status` and `FraudSync` are EF Core concurrency tokens, so each
+  `UPDATE` has `WHERE Status = <read> AND FraudSync = <read>`. Only one webhook can move a payment out of
+  `Pending`, so `OrderPaidEvent` is published and `/score` called exactly once; the loser re-reads the row and
+  sees it is done. This was chosen over a raw `UPDATE ... WHERE Status = Pending` (`ExecuteUpdate`) because
+  it covers every transition with the same mechanism, works with the in-memory provider used by the unit
+  tests (the race tests run the real handlers in parallel), and needs no extra version column.
+- *`/labels` after `/score`.* `FraudSync` (`None → Scored → Labeled → Unlabeled`, migration
+  `AddFraudSyncAndDisputedAt`) records what FraudService already has. A dispute that lands while `/score`
+  is still running only sets `Disputed` and leaves the label to the scoring webhook, which sends it when
+  scoring is over (with the stored dispute time), so FraudService never gets a label for an unknown txid.
+
+**Currency.** The model was trained on IEEE-CIS amounts in US dollars. Clothy prices are in USD and
+Stripe Checkout charges in USD (`StripeService.PAY_CURRENCY = "usd"`), so the order total is sent unchanged
+and no conversion is needed. PaymentService also checks the currency of the Stripe charge: a charge in any
+other currency is **not scored** (warning in the log) instead of being sent with an amount the model would
+misread. If the shop ever switches Stripe to UAH, a conversion to USD (rate from config or from Stripe
+balance transactions) has to be added in `StripeFraudScorer` first. All storefront prices are shown in `$`.
+
+### Running it
+
+```powershell
+# 1. Model files are not in git: copy them from the graph-antifraud repository
+$src = "D:\graph-antifraud\models"; $dst = "src\Clothy.AI.FraudService\models"
+"service_main.json","service_device.json","encoders.json","service_config.yaml","ring_signal.yaml","fixture_synthetic.npz" |
+  ForEach-Object { Copy-Item (Join-Path $src $_) $dst }
+
+# 2a. Docker: fraud-service is built with the rest; it is reachable only inside clothy-network
+docker compose up --build
+
+# 2b. Local development (Aspire or dotnet run): start the service on port 8097,
+#     PaymentService and the gateway use http://localhost:8097 by default
+cd src\Clothy.AI.FraudService
+python -m venv .venv; .venv\Scripts\Activate.ps1; pip install -r requirements.txt
+uvicorn src.service:create_app --factory --port 8097
+```
+
+The decision history lives in SQLite in the `frauddata` volume (`/data/history.db`) and survives restarts.
+
+### Stripe setup (test mode only)
+
+In Stripe Dashboard → Developers → Webhooks, the endpoint `<gateway>/api/payments/webhook/stripe` needs
+these events: `checkout.session.completed`, `charge.dispute.created`, `charge.dispute.closed`.
+Other events are ignored with 200.
+
+Local test with the Stripe CLI:
+
+```powershell
+stripe login
+stripe listen --forward-to localhost:8094/api/payments/webhook/stripe `
+  --events checkout.session.completed,charge.dispute.created,charge.dispute.closed
+# put the printed whsec_... into STRIPE__WEBHOOK_SECRET and restart payments
+```
+
+1. Pay for an order in the store with the test card `4000 0000 0000 0259` (any future date, any CVC).
+   The payment succeeds, the order gets a risk badge, and Stripe opens a dispute automatically:
+   the payment becomes `Disputed` and the order is labelled in FraudService.
+2. Close the dispute: submit evidence `winning_evidence` (→ `DisputeWon`, label removed) or
+   `losing_evidence` (→ `DisputeLost`) in the Dashboard or with
+   `stripe disputes update dp_... -d "evidence[uncategorized_text]=winning_evidence" -d submit=true`.
+3. `stripe trigger charge.dispute.created` only checks signature and routing: the triggered payment has no
+   Clothy order, so the handler logs "No payment found" and changes nothing.
+
+### Limitations
+
+- The model is trained on **IEEE-CIS Fraud Detection**, not on shop data. Stripe fields map to IEEE-CIS
+  fields only approximately (e.g. `card1` is a hash, IEEE-CIS card attributes `card2/3/5` and distances are
+  missing), so scores are **for demonstration only**; real use needs retraining on the shop's own data.
+- The thresholds give the chosen flag rate only on the validation distribution; on live traffic it shifts.
+- Only USD charges are scored; other currencies stay "not scored".
+- The ring signal turns on after 14 days of history in the store.
+- Payments must reach the service in time order; a late webhook leaves the order not scored.
+- SQLite history means one FraudService instance.
 
 ---
 

@@ -1,5 +1,6 @@
 ﻿using Clothy.PaymentService.BLL.Config;
 using Clothy.PaymentService.BLL.DTOs;
+using Clothy.PaymentService.BLL.Fraud;
 using Clothy.PaymentService.BLL.Services;
 using Clothy.PaymentService.DAL.Context;
 using Clothy.PaymentService.Domain.Entities;
@@ -25,6 +26,8 @@ public class StripeServiceTests
     private Mock<IUserClaimsExtractor> userClaimsExtractorMock;
     private Mock<IPublishEndpoint> publishEndpointMock;
     private Mock<IOptions<CardSettings>> stripeSettingsMock;
+    private Mock<IStripeFraudScorer> fraudScorerMock;
+    private Mock<IStripeDisputeHandler> disputeHandlerMock;
     private PaymentDbContext dbContext;
 
     private StripeService stripeService;
@@ -36,6 +39,8 @@ public class StripeServiceTests
         userClaimsExtractorMock = new Mock<IUserClaimsExtractor>();
         publishEndpointMock = new Mock<IPublishEndpoint>();
         stripeSettingsMock = new Mock<IOptions<CardSettings>>();
+        fraudScorerMock = new Mock<IStripeFraudScorer>();
+        disputeHandlerMock = new Mock<IStripeDisputeHandler>();
 
         stripeSettingsMock.Setup(s => s.Value).Returns(new CardSettings
         {
@@ -56,7 +61,13 @@ public class StripeServiceTests
             loggerMock.Object,
             stripeSettingsMock.Object,
             userClaimsExtractorMock.Object,
-            publishEndpointMock.Object);
+            new StripePaymentLifecycle(
+                new PaymentRecordUpdater(dbContext),
+                publishEndpointMock.Object,
+                fraudScorerMock.Object,
+                new Mock<IFraudScoringClient>().Object,
+                new Mock<ILogger<StripePaymentLifecycle>>().Object),
+            disputeHandlerMock.Object);
     }
 
     private ClaimsPrincipal BuildClaims(Guid userId)
@@ -128,7 +139,7 @@ public class StripeServiceTests
     }
 
     [Fact]
-    public async Task HandleWebhookAsync_WhenSignatureIsInvalid_ReturnsWithoutThrowing()
+    public async Task HandleWebhookAsync_WhenSignatureIsInvalid_ThrowsValidationFailedException()
     {
         string invalidPayload = "{}";
         string invalidSignature = "invalid_signature";
@@ -136,7 +147,18 @@ public class StripeServiceTests
         Func<Task> act = async () => await stripeService.HandleWebhookAsync(
             invalidPayload, invalidSignature, CancellationToken.None);
 
-        await act.Should().NotThrowAsync();
+        // mapped to 400 by ExceptionHandlingMiddleware
+        await act.Should().ThrowAsync<ValidationFailedException>();
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(null)]
+    public async Task HandleWebhookAsync_WhenSignatureIsMissing_ThrowsValidationFailedException(string? signature)
+    {
+        Func<Task> act = async () => await stripeService.HandleWebhookAsync("{}", signature!, CancellationToken.None);
+
+        await act.Should().ThrowAsync<ValidationFailedException>();
     }
 
     [Fact]
@@ -145,7 +167,8 @@ public class StripeServiceTests
         string invalidPayload = "{}";
         string invalidSignature = "invalid_signature";
 
-        await stripeService.HandleWebhookAsync(invalidPayload, invalidSignature, CancellationToken.None);
+        await FluentActions.Awaiting(() => stripeService.HandleWebhookAsync(invalidPayload, invalidSignature, CancellationToken.None))
+            .Should().ThrowAsync<ValidationFailedException>();
 
         publishEndpointMock.Verify(
             p => p.Publish(It.IsAny<OrderPaidEvent>(), It.IsAny<CancellationToken>()),

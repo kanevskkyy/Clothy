@@ -15,9 +15,13 @@ const ADMIN_STATUS_OPTIONS = [
 interface OrderListItemProps {
     orders: IOrderReadDTO[];
     onStatusChange?: (orderId: string, newStatus: string) => Promise<void>;
+    /** link of an order card; the buyer pages keep the default /order/:id */
+    getOrderLink?: (order: IOrderReadDTO) => string;
+    /** extra badges next to the price (admin: fraud risk, dispute status) */
+    renderExtra?: (order: IOrderReadDTO) => React.ReactNode;
 }
 
-export const OrderList: React.FC<OrderListItemProps> = ({orders, onStatusChange}) => {
+export const OrderList: React.FC<OrderListItemProps> = ({orders, onStatusChange, getOrderLink, renderExtra}) => {
     const [loadingId, setLoadingId] = useState<string | null>(null);
 
     const handleStatusChange = async (orderId: string, newStatus: string) => {
@@ -35,7 +39,7 @@ export const OrderList: React.FC<OrderListItemProps> = ({orders, onStatusChange}
             {orders.map((order) => (
                 <div key={order.id} className={styles.orderItem}>
                     <Link
-                        to={`/order/${order.id}`}
+                        to={getOrderLink ? getOrderLink(order) : `/order/${order.id}`}
                         className={styles.linkOverlay}
                         aria-label={`Open order ${order.id}`}
                     />
@@ -84,6 +88,8 @@ export const OrderList: React.FC<OrderListItemProps> = ({orders, onStatusChange}
                         ) : (
                             <Badge label={order.status}/>
                         )}
+
+                        {renderExtra?.(order)}
 
                         <p className={styles.orderPrice}>
                             {order.totalPrice} $

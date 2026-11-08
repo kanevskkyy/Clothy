@@ -14,7 +14,7 @@ export interface IBenefitItem {
 const benefits: IBenefitItem[] = [
     {
         title: "Free shipping",
-        description: "Enjoy complimentary delivery on orders over ₴1500.",
+        description: "Enjoy complimentary delivery on orders over $1500.",
     },
     {
         title: "Quality guarantee",

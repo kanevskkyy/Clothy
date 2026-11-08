@@ -45,30 +45,6 @@ namespace Clothy.OrderService.DAL.Repositories
             );
         }
 
-        public async Task<bool> ExistsByNameAndRegionIdAsync(string name, Guid regionId, Guid? excludeId = null, CancellationToken cancellationToken = default)
-        {
-            using IDbConnection connection = await GetOpenConnectionAsync();
-            string sql = @"
-                SELECT COUNT(1)
-                FROM settlements
-                WHERE LOWER(name) = LOWER(@Name)
-                AND (@ExcludeId IS NULL OR id <> @ExcludeId)
-                AND regionid = @RegionId;
-            ";
-
-            int count = await connection.ExecuteScalarAsync<int>(
-                new CommandDefinition(sql, new
-                {
-                    Name = name,
-                    ExcludeId = excludeId,
-                    RegionId = regionId,
-                },
-                cancellationToken: cancellationToken
-                )
-            );
-            return count > 0;
-        }
-
         public async Task<(IEnumerable<Settlement>, int totalCount)> GetPagedAsync(SettlementFilterDTO settlementFilterDTO, CancellationToken cancellationToken = default)
         {
             using IDbConnection dbConnection = await GetOpenConnectionAsync();

@@ -66,8 +66,7 @@ CREATE TABLE settlements (
     updatedat TIMESTAMP WITHOUT TIME ZONE,
     FOREIGN KEY (regionid) REFERENCES regions(id)
         ON UPDATE CASCADE
-        ON DELETE CASCADE,
-    UNIQUE (name, regionid)
+        ON DELETE CASCADE
 );
 
 CREATE TABLE pickup_points (

@@ -1,5 +1,6 @@
 using Clothy.PaymentService.API.Middleware;
 using Clothy.PaymentService.BLL.Config;
+using Clothy.PaymentService.BLL.Fraud;
 using Clothy.PaymentService.BLL.Services;
 using Clothy.PaymentService.BLL.Services.Interfaces;
 using Clothy.PaymentService.BLL.Validation;
@@ -13,6 +14,9 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Http.Resilience;
+using Microsoft.Extensions.Options;
+using Polly;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,6 +62,36 @@ builder.Services.PostConfigure<CryptoSettings>(options =>
 });
 
 builder.Services.AddHttpClient("NowPayments");
+
+// Fraud scoring (Clothy.AI.FraudService). Payments never depend on it: the client returns "not scored"
+// on any failure, FraudSettings.Timeout (2 s) is a hard limit per call, and the circuit breaker stops
+// calling a service that keeps failing.
+builder.Services.Configure<FraudSettings>(options =>
+{
+    options.BaseUrl = Environment.GetEnvironmentVariable("FRAUD__URL") ?? options.BaseUrl;
+});
+builder.Services.AddHttpClient<IFraudScoringClient, FraudScoringClient>((sp, client) =>
+    {
+        FraudSettings settings = sp.GetRequiredService<IOptions<FraudSettings>>().Value;
+        client.BaseAddress = new Uri(settings.BaseUrl.TrimEnd('/') + "/");
+    })
+    .AddResilienceHandler("fraud", pipeline =>
+    {
+        pipeline.AddCircuitBreaker(new HttpCircuitBreakerStrategyOptions
+        {
+            FailureRatio = 0.5,
+            MinimumThroughput = 5,
+            SamplingDuration = TimeSpan.FromSeconds(30),
+            BreakDuration = TimeSpan.FromSeconds(30)
+        });
+        pipeline.AddTimeout(TimeSpan.FromSeconds(2));
+    });
+builder.Services.AddScoped<IStripePaymentDetailsProvider, StripePaymentDetailsProvider>();
+builder.Services.AddScoped<IStripeFraudScorer, StripeFraudScorer>();
+builder.Services.AddScoped<PaymentRecordUpdater>();
+builder.Services.AddScoped<IStripePaymentLifecycle, StripePaymentLifecycle>();
+builder.Services.AddScoped<IStripeDisputeHandler, StripeDisputeHandler>();
+builder.Services.AddScoped<IPaymentAdminService, PaymentAdminService>();
 
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssembly(typeof(CreatePaymentRequestDTOValidator).Assembly);

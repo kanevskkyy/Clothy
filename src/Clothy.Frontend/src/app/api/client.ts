@@ -1,6 +1,13 @@
 import axios, { type InternalAxiosRequestConfig, type AxiosError } from 'axios';
 import { useAuthStore } from '../stores/authStore.ts';
 
+declare module 'axios' {
+    interface AxiosRequestConfig {
+        /** 404 is an expected answer for this request: do not redirect to /not-found */
+        skipNotFoundRedirect?: boolean;
+    }
+}
+
 const API_BASE_URL: string = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 interface IRefreshTokenRequest {
@@ -67,7 +74,7 @@ apiClient.interceptors.response.use(
     async (error: AxiosError<BackendErrorResponse>) => {
         const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-        if (error.response?.status === 404) {
+        if (error.response?.status === 404 && !originalRequest?.skipNotFoundRedirect) {
             if (typeof window !== 'undefined' && !window.location.pathname.includes('/not-found')) {
                 window.location.href = '/not-found';
             }

@@ -12,5 +12,9 @@ namespace Clothy.PaymentService.Domain.Entities
     {
         Pending,
         Paid,
+        // Stripe disputes (added at the end: values are stored as int, existing numbers must not change)
+        Disputed,
+        DisputeWon,
+        DisputeLost,
     }
 }

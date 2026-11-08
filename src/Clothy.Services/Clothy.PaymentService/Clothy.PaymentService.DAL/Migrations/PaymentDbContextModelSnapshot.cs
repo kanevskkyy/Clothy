@@ -31,6 +31,13 @@ namespace Clothy.PaymentService.DAL.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTime?>("DisputedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("FraudSync")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uuid");
 
@@ -41,6 +48,7 @@ namespace Clothy.PaymentService.DAL.Migrations
                         .HasColumnType("decimal(10,2)");
 
                     b.Property<int>("Status")
+                        .IsConcurrencyToken()
                         .HasColumnType("integer");
 
                     b.Property<string>("TransactionId")

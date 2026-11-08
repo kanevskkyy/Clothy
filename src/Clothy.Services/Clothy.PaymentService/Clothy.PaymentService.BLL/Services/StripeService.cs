@@ -1,5 +1,6 @@
 ﻿using Clothy.PaymentService.BLL.Config;
 using Clothy.PaymentService.BLL.DTOs;
+using Clothy.PaymentService.BLL.Fraud;
 using Clothy.PaymentService.BLL.Services.Interfaces;
 using Clothy.PaymentService.DAL.Context;
 using Clothy.PaymentService.Domain.Entities;
@@ -8,6 +9,7 @@ using Clothy.Shared.Events.PaymentEvents;
 using Clothy.Shared.Helpers.Exceptions;
 using Clothy.Shared.Helpers.JWT;
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Stripe;
@@ -25,7 +27,8 @@ namespace Clothy.PaymentService.BLL.Services
         private ILogger<StripeService> logger;
         private CardSettings stripeSettings;
         private IUserClaimsExtractor userClaimsExtractor;
-        private IPublishEndpoint publishEndpoint;
+        private IStripePaymentLifecycle paymentLifecycle;
+        private IStripeDisputeHandler disputeHandler;
 
         private const string PAY_CURRENCY = "usd";
 
@@ -34,14 +37,30 @@ namespace Clothy.PaymentService.BLL.Services
             ILogger<StripeService> logger,
             IOptions<CardSettings> stripeSettings,
             IUserClaimsExtractor userClaimsExtractor,
-            IPublishEndpoint publishEndpoint)
+            IStripePaymentLifecycle paymentLifecycle,
+            IStripeDisputeHandler disputeHandler)
         {
             this.dbContext = dbContext;
             this.orderInfoClient = orderInfoClient;
             this.logger = logger;
             this.stripeSettings = stripeSettings.Value;
             this.userClaimsExtractor = userClaimsExtractor;
-            this.publishEndpoint = publishEndpoint;
+            this.paymentLifecycle = paymentLifecycle;
+            this.disputeHandler = disputeHandler;
+        }
+
+        /// <summary>
+        /// Metadata for both the Checkout Session and its PaymentIntent. Dispute events carry only
+        /// the charge and PaymentIntent, so order_id has to be on the PaymentIntent too.
+        /// </summary>
+        private static Dictionary<string, string> BuildMetadata(PaymentRecordEF paymentRecord)
+        {
+            return new Dictionary<string, string>()
+            {
+                { "payment_id", paymentRecord.Id.ToString() },
+                { "order_id", paymentRecord.OrderId.ToString() },
+                { "user_id", paymentRecord.UserId.ToString() }
+            };
         }
 
         public async Task<CreatePaymentResponseDTO> CreatePaymentAsync(CreatePaymentRequestDTO request, ClaimsPrincipal claimsPrincipal, CancellationToken cancellationToken)
@@ -87,13 +106,13 @@ namespace Clothy.PaymentService.BLL.Services
                         }
                     }
                 },
-                Metadata = new Dictionary<string, string>()
+                Metadata = BuildMetadata(paymentRecord),
+                PaymentIntentData = new SessionPaymentIntentDataOptions
                 {
-                    { "payment_id", paymentRecord.Id.ToString() },
-                    { "order_id", paymentRecord.OrderId.ToString() },
-                    { "user_id", paymentRecord.UserId.ToString() }
+                    Metadata = BuildMetadata(paymentRecord)
                 }
             };
+            FraudDeviceMetadata.AddTo(sessionCreateOptions.Metadata, request.Device?.ToFraudDeviceData());
 
             SessionService sessionService = new SessionService();
             Session session = await sessionService.CreateAsync(sessionCreateOptions, cancellationToken: cancellationToken);
@@ -123,7 +142,8 @@ namespace Clothy.PaymentService.BLL.Services
             Guid userId = userClaimsExtractor.GetUserId(claimsPrincipal);
             if (userId != oldPayment.UserId) throw new ForbiddenException("You cannot retry someone else's payment!");
 
-            if (oldPayment.Status == PaymentStatus.Paid) throw new ValidationFailedException("Cannot retry already paid payment!");
+            // != Pending instead of == Paid: disputed payments were paid too
+            if (oldPayment.Status != PaymentStatus.Pending) throw new ValidationFailedException("Cannot retry already paid payment!");
 
             GetOrderInfoResponse orderInfoResponse = await orderInfoClient.GetOrderInfoAsync(oldPayment.OrderId, cancellationToken);
 
@@ -161,11 +181,10 @@ namespace Clothy.PaymentService.BLL.Services
                         }
                     }
                 },
-                Metadata = new Dictionary<string, string>()
+                Metadata = BuildMetadata(newPaymentRecord),
+                PaymentIntentData = new SessionPaymentIntentDataOptions
                 {
-                    { "payment_id", newPaymentRecord.Id.ToString() },
-                    { "order_id", newPaymentRecord.OrderId.ToString() },
-                    { "user_id", newPaymentRecord.UserId.ToString() }
+                    Metadata = BuildMetadata(newPaymentRecord)
                 }
             };
 
@@ -188,15 +207,24 @@ namespace Clothy.PaymentService.BLL.Services
 
         public async Task HandleWebhookAsync(string payload, string stripeSignature, CancellationToken cancellationToken)
         {
+            // Invalid or missing signature: the event is not processed and the caller gets 400
+            // (ValidationFailedException -> ExceptionHandlingMiddleware), so a misconfigured secret is visible
+            // in Stripe's webhook log instead of being hidden behind 200.
+            if (string.IsNullOrEmpty(stripeSignature))
+            {
+                logger.LogWarning("Stripe webhook without Stripe-Signature header rejected.");
+                throw new ValidationFailedException("Missing Stripe-Signature header.");
+            }
+
             Stripe.Event stripeEvent;
             try
             {
                 stripeEvent = EventUtility.ConstructEvent(payload, stripeSignature, stripeSettings.WebhookSecret);
             }
-            catch (StripeException ex)
+            catch (StripeException)
             {
-                logger.LogError(ex, "Stripe webhook signature verification failed.");
-                return;
+                logger.LogWarning("Stripe webhook signature verification failed; event rejected.");
+                throw new ValidationFailedException("Invalid Stripe webhook signature.");
             }
 
             logger.LogInformation("Stripe webhook received: {Type}", stripeEvent.Type);
@@ -216,31 +244,24 @@ namespace Clothy.PaymentService.BLL.Services
                     return;
                 }
 
-                PaymentRecordEF? payment = await dbContext.PaymentRecords.FindAsync(new object[] { paymentId }, cancellationToken);
-
-                if (payment == null)
+                bool exists = await dbContext.PaymentRecords.AnyAsync(p => p.Id == paymentId, cancellationToken);
+                if (!exists)
                 {
                     logger.LogWarning("PaymentRecord not found for PaymentId={PaymentId}", paymentId);
                     return;
                 }
 
-                if (payment.Status == PaymentStatus.Paid)
-                {
-                    logger.LogInformation("Payment {PaymentId} already marked as Paid", paymentId);
-                    return;
-                }
-
-                payment.Status = PaymentStatus.Paid;
-                payment.UpdatedAt = DateTime.UtcNow.ToUniversalTime();
-                await dbContext.SaveChangesAsync(cancellationToken);
-
-                OrderPaidEvent orderPaidEvent = new OrderPaidEvent()
-                {
-                    OrderId = payment.OrderId
-                };
-                await publishEndpoint.Publish(orderPaidEvent, cancellationToken);
-
-                logger.LogInformation("Payment {PaymentId} marked as Paid via webhook", paymentId);
+                // Paid + OrderPaidEvent + fraud scoring, shared with a dispute that arrives first.
+                // Only a Pending payment changes (compare-and-set): a repeated event, or one that lost the race
+                // to charge.dispute.created, changes nothing.
+                await paymentLifecycle.TryMarkPaidAsync(new StripePaidContext(
+                    paymentId, session.PaymentIntentId, session.CustomerDetails?.Email, session.Metadata, stripeEvent.Created),
+                    cancellationToken);
+            }
+            else if (stripeEvent.Type == StripeDisputeHandler.DISPUTE_CREATED || stripeEvent.Type == StripeDisputeHandler.DISPUTE_CLOSED)
+            {
+                // reached only after the signature check above, like checkout.session.completed
+                await disputeHandler.HandleAsync(stripeEvent, cancellationToken);
             }
             else
             {
