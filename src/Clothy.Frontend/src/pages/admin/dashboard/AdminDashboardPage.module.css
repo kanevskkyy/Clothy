@@ -5,65 +5,59 @@
 }
 
 .card {
-    background: #fff;
-    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
     padding: 20px;
+    background: var(--a-surface);
+    border: 1px solid var(--a-border);
+    border-radius: var(--a-radius);
 }
 
 .cardHeader {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
+    gap: 12px;
     margin-bottom: 12px;
+}
+
+.title {
+    font-family: inherit;
     font-size: 14px;
-    color: #737373;
-}
-
-.value {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--color-text-primary);
-}
-
-.label {
-    margin-top: 4px;
-    font-size: 12px;
-    color: var(--color-text-secondary);
+    font-weight: 500;
+    color: var(--a-text-2);
 }
 
 .cardIcon {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    background: var(--a-neutral-bg);
+    color: var(--a-text-2);
 }
 
-.iconGreen {
-    background: #E7F7F2;
-    color: #10B77F;
+.attention .cardIcon {
+    background: var(--a-warning-bg);
+    color: var(--a-warning);
 }
 
-.iconOrange {
-    background: #FDF5E6;
-    color: #F6A51A;
+.value {
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+    color: var(--a-text);
 }
 
-.iconBlue {
-    background: #EBF2FE;
-    color: #3C83F6;
-}
-
-.iconYellow {
-    background: #FDF5E6;
-    color: #F59F0A;
-}
-
-.iconRed {
-    background: #FBE9E9;
-    color: #DC2828;
+.label {
+    font-size: 13px;
+    color: var(--a-text-3);
 }
 
 @media (max-width: 1024px) {
@@ -74,7 +68,6 @@
 
 @media (max-width: 768px) {
     .grid {
-        grid-template-columns: repeat(2, 1fr);
         gap: 12px;
     }
 
@@ -83,7 +76,7 @@
     }
 
     .value {
-        font-size: 20px;
+        font-size: 24px;
     }
 }
 
