@@ -216,6 +216,7 @@
 
 .scale {
     display: flex;
+    margin-bottom: 8px;
     justify-content: space-between;
     font-size: 11px;
     color: var(--a-text-3, #78736D);

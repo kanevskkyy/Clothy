@@ -51,7 +51,6 @@ const AdminOrdersTable: React.FC<AdminOrdersTableProps> = ({orders, onStatusChan
             <thead>
             <tr>
                 <th scope="col">Order</th>
-                <th scope="col">Date</th>
                 <th scope="col">Customer</th>
                 <th scope="col">Status</th>
                 <th scope="col">Payment</th>
@@ -67,18 +66,20 @@ const AdminOrdersTable: React.FC<AdminOrdersTableProps> = ({orders, onStatusChan
                 return (
                     <tr key={order.id}>
                         <td className={table.nowrap}>
-                            <Link
-                                to={getOrderLink(order)}
-                                className={`${table.link} ${table.mono}`}
-                                aria-label={`Open order ${order.id}`}
-                                title={order.id}
-                            >
-                                #{shortId(order.id)}
-                            </Link>
+                            <div className={styles.stack}>
+                                <Link
+                                    to={getOrderLink(order)}
+                                    className={`${table.link} ${table.mono}`}
+                                    aria-label={`Open order ${order.id}`}
+                                    title={order.id}
+                                >
+                                    #{shortId(order.id)}
+                                </Link>
+                                <span className={table.muted}>{formatDate(order.createdAt)}</span>
+                            </div>
                         </td>
-                        <td className={`${table.nowrap} ${table.muted}`}>{formatDate(order.createdAt)}</td>
                         <td>
-                            <div className={styles.customer}>
+                            <div className={`${styles.stack} ${styles.customer}`}>
                                 <span className={table.strong}>{customer || "—"}</span>
                                 {order.userEmail && <span className={table.muted}>{order.userEmail}</span>}
                             </div>
