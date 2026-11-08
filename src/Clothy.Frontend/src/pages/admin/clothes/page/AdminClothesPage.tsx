@@ -13,15 +13,16 @@ import {getErrorMessage} from "../../../../shared/lib/errorHandler.ts";
 import type { SortOption } from "../../../../features/catalog/sortSelect/SortSelect.tsx";
 import type { FilterState } from "../../../../features/catalog/catalogFilter/CatalogFilter.tsx";
 import { parsePrice } from "../../../../shared/lib/parsePrice.ts";
-import Loader from "../../../../shared/ui/Loader/Loader.tsx";
-import Container from "../../../../shared/layout/Container/Container.tsx";
-import Button from "../../../../shared/ui/Button/Button.tsx";
 import SortSelect from "../../../../features/catalog/sortSelect/SortSelect.tsx";
 import CatalogFilter from "../../../../features/catalog/catalogFilter/CatalogFilter.tsx";
-import EmptyState from "../../../../shared/ui/EmptyState/EmptyState.tsx";
 import AdminProductList from "../productList/AdminProductList.tsx";
 import Pagination from "../../../../shared/ui/Pagination/Pagination.tsx";
 import type {AdminLayoutContext} from "../../../../features/auth/admin/adminLayout/AdminLayout.tsx";
+import AdminToolbar from "../../ui/AdminToolbar.tsx";
+import AdminButton from "../../ui/AdminButton.tsx";
+import AdminCard from "../../ui/AdminCard.tsx";
+import AdminEmptyState from "../../ui/AdminEmptyState.tsx";
+import { AdminTilesSkeleton } from "../../ui/AdminSkeleton.tsx";
 
 const AdminClothesPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -166,6 +167,7 @@ const AdminClothesPage = () => {
     const handleSortChange = (newSort: string) => {
         setSortBy(newSort);
         const params = new URLSearchParams(searchParams);
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions -- existing logic, kept as is
         newSort === "newest" ? params.delete("sort") : params.set("sort", newSort);
         setSearchParams(params);
     };
@@ -174,27 +176,39 @@ const AdminClothesPage = () => {
         handlePageChangeUtil(page, searchParams, setSearchParams);
     };
 
-    if (!filters || !pagedClothes) return <Loader />;
+    if (!filters || !pagedClothes) return <AdminTilesSkeleton count={8} minWidth={200} height={300} label="Loading clothes" />;
 
     return (
-        <Container paddingY={30} paddingX={10}>
+        <div>
             <Helmet>
                 <title>{`Admin — Clothes Management | Page ${currentPage}`}</title>
             </Helmet>
 
-            <div className={styles.pageHeader}>
-                <Button
-                    variant="primary"
-                    size="sm"
-                    icon={<Plus size={16} />}
-                    onClick={() => navigate("/admin/clothes/create")}
-                >
-                    New clothe
-                </Button>
-            </div>
+            <AdminToolbar
+                start={
+                    <span className={styles.count} aria-live="polite">
+                        {pagedClothes.totalCount} items
+                    </span>
+                }
+                end={
+                    <>
+                        <div className={styles.desktopSort}>
+                            <SortSelect value={sortBy} options={sortOptions} onChange={handleSortChange} />
+                        </div>
+                        <AdminButton
+                            variant="primary"
+                            size="md"
+                            icon={<Plus size={16} />}
+                            onClick={() => navigate("/admin/clothes/create")}
+                        >
+                            New clothe
+                        </AdminButton>
+                    </>
+                }
+            />
 
             <div className={styles.catalogContainer}>
-                <aside className={styles.filterSidebar}>
+                <aside className={styles.filterSidebar} aria-label="Filters">
                     <CatalogFilter
                         backgroundColor="#f5f5f0"
                         filters={filters}
@@ -203,38 +217,36 @@ const AdminClothesPage = () => {
                     />
                 </aside>
 
-                <main className={styles.catalogMain}>
-                    <div className={styles.catalogHeader}>
-                        <div className={styles.desktopSort}>
-                            <SortSelect value={sortBy} options={sortOptions} onChange={handleSortChange} />
-                        </div>
-                        <div className={styles.mobileFiltersRow}>
-                            <CatalogFilter
-                                backgroundColor="#f5f5f0"
-                                filters={filters}
-                                initialFilters={getInitialFilters()}
-                                onFilterChange={handleFilterChange}
-                            />
-                            <SortSelect value={sortBy} options={sortOptions} onChange={handleSortChange} />
-                        </div>
+                <div className={styles.catalogMain}>
+                    <div className={styles.mobileFiltersRow}>
+                        <CatalogFilter
+                            backgroundColor="#f5f5f0"
+                            filters={filters}
+                            initialFilters={getInitialFilters()}
+                            onFilterChange={handleFilterChange}
+                        />
+                        <SortSelect value={sortBy} options={sortOptions} onChange={handleSortChange} />
                     </div>
 
                     {loading ? (
-                        <Loader />
+                        <AdminTilesSkeleton count={8} minWidth={200} height={300} label="Loading clothes" />
                     ) : pagedClothes.items.length === 0 ? (
-                        <EmptyState
-                            icon={<PackageSearch size={28} color="#6B6B6B" />}
-                            title="No items found"
-                            description="Try adjusting your filters or create a new clothe."
-                            buttons={[
-                                {
-                                    label: "Reset Filters",
-                                    onClick: () => setSearchParams(new URLSearchParams()),
-                                    variant: "primary",
-                                    size: "md",
-                                },
-                            ]}
-                        />
+                        <AdminCard>
+                            <AdminEmptyState
+                                icon={<PackageSearch size={22} />}
+                                title="No items found"
+                                description="Try adjusting your filters or create a new clothe."
+                                action={
+                                    <AdminButton
+                                        variant="secondary"
+                                        size="md"
+                                        onClick={() => setSearchParams(new URLSearchParams())}
+                                    >
+                                        Reset Filters
+                                    </AdminButton>
+                                }
+                            />
+                        </AdminCard>
                     ) : (
                         <>
                             <div className={styles.productWrapper}>
@@ -249,9 +261,9 @@ const AdminClothesPage = () => {
                             )}
                         </>
                     )}
-                </main>
+                </div>
             </div>
-        </Container>
+        </div>
     );
 };
 

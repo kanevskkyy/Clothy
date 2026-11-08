@@ -1,35 +1,29 @@
-.pageHeader {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    margin-bottom: 28px;
-}
-
 .catalogContainer {
     width: 100%;
     display: grid;
-    grid-template-columns: 240px 1fr;
-    gap: 40px;
-    box-sizing: border-box;
-    overflow: hidden;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
 }
 
 .filterSidebar {
-    position: relative;
+    position: sticky;
+    top: 0;
     min-width: 0;
+    padding: 16px;
+    background: var(--a-surface);
+    border: 1px solid var(--a-border);
+    border-radius: var(--a-radius);
+}
+
+.count {
+    font-size: 13px;
+    color: var(--a-text-2);
+    font-variant-numeric: tabular-nums;
 }
 
 .catalogMain {
     min-width: 0;
-}
-
-.catalogHeader {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    margin-bottom: 24px;
-    gap: 20px;
-    flex-wrap: wrap;
 }
 
 .mobileFiltersRow {
@@ -41,14 +35,44 @@
 }
 
 .productWrapper {
-    margin: 0 auto;
     width: 100%;
 }
 
-@media (max-width: 1024px) {
+/* create / edit pages */
+.formPage {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 960px;
+}
+
+.back {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px 4px 4px;
+    border-radius: 6px;
+    font-size: 14px;
+    color: var(--a-text-2);
+    text-decoration: none;
+}
+
+.back:hover {
+    color: var(--a-text);
+    background: var(--a-neutral-bg);
+}
+
+.formSkeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+@media (max-width: 1199px) {
     .catalogContainer {
-        grid-template-columns: 220px 1fr;
-        gap: 28px;
+        grid-template-columns: 220px minmax(0, 1fr);
+        gap: 20px;
     }
 }
 
@@ -62,13 +86,6 @@
         display: none;
     }
 
-    .catalogHeader {
-        flex-direction: column;
-        align-items: flex-start;
-        margin-bottom: 16px;
-        gap: 12px;
-    }
-
     .mobileFiltersRow {
         display: flex;
         gap: 12px;
@@ -79,15 +96,13 @@
     .mobileFiltersRow > :first-child {
         flex-shrink: 0;
     }
+
     .mobileFiltersRow > :last-child {
-        flex: 1; min-width: 0;
+        flex: 1;
+        min-width: 0;
     }
 
     .desktopSort {
         display: none;
-    }
-
-    .pageTitle {
-        font-size: 20px;
     }
 }

@@ -315,7 +315,7 @@ const ClotheUpdateForm = ({ clothe, onSuccess }: Props) => {
                     {isSubmitting ? "Saving..." : "Save changes"}
                 </Button>
                 <Button
-                    variant="secondary"
+                    variant="outline"
                     icon={<Trash2 size={15} />}
                     disabled={isDeleting || isSubmitting}
                     onClick={handleDelete}

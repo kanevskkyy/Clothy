@@ -438,6 +438,7 @@ const ClotheCreateForm = ({ onSuccess }: Props) => {
                                         <button
                                             type="button"
                                             className={styles.removeBtn}
+                                            aria-label="Remove color group"
                                             onClick={() => removeColorGroup(group.localId)}
                                         >
                                             <Trash2 size={15} />
@@ -494,6 +495,7 @@ const ClotheCreateForm = ({ onSuccess }: Props) => {
                                                 <button
                                                     type="button"
                                                     className={styles.removeBtn}
+                                                    aria-label="Remove photo"
                                                     onClick={() => removePhotoFromGroup(group.localId, photo.localId)}
                                                 >
                                                     <Trash2 size={14} />
@@ -549,7 +551,7 @@ const ClotheCreateForm = ({ onSuccess }: Props) => {
                                         className={styles.percentInput}
                                     />
                                 </div>
-                                <button type="button" className={styles.removeBtn} onClick={() => removeMaterial(mat.localId)}>
+                                <button type="button" className={styles.removeBtn} aria-label="Remove material" onClick={() => removeMaterial(mat.localId)}>
                                     <Trash2 size={16} />
                                 </button>
                             </div>
