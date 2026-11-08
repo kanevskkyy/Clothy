@@ -1,0 +1,44 @@
+/* Admin design tokens. Scoped to the admin layout root, so buyer pages never see them.
+   Values follow the store palette from src/index.css (warm neutrals, near-black, Inter + Playfair). */
+.root {
+    --a-bg: #F6F6F3;
+    --a-surface: #FFFFFF;
+    --a-surface-muted: #FBFAF9;
+    --a-surface-hover: #F7F5F2;
+    --a-border: #E5E1DC;
+    --a-border-soft: #EFEBE6;
+    --a-border-strong: #CFC8BF;
+
+    --a-text: #161412;
+    --a-text-2: #6B655E;
+    --a-text-3: #78736D;
+    --a-accent: #CE783B;
+
+    --a-success: #067647;
+    --a-success-bg: #ECFDF3;
+    --a-success-border: #ABEFC6;
+    --a-warning: #93370D;
+    --a-warning-bg: #FFFAEB;
+    --a-warning-border: #FEDF89;
+    --a-danger: #B42318;
+    --a-danger-bg: #FEF3F2;
+    --a-danger-border: #FECDCA;
+    --a-info: #175CD3;
+    --a-info-bg: #EFF8FF;
+    --a-info-border: #B2DDFF;
+    --a-neutral: #57534E;
+    --a-neutral-bg: #F5F3F0;
+
+    --a-radius: 10px;
+    --a-radius-sm: 6px;
+    --a-shadow-hover: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --a-font-heading: 'Playfair Display', serif;
+
+    color: var(--a-text);
+    background: var(--a-bg);
+}
+
+.root :focus-visible {
+    outline: 2px solid var(--a-text);
+    outline-offset: 2px;
+}

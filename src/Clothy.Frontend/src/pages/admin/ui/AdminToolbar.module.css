@@ -1,0 +1,25 @@
+.toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.start,
+.end {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.end {
+    margin-left: auto;
+}
+
+/* the buyer SortSelect and Checkbox bring their own margins */
+.toolbar :global(label) {
+    margin-bottom: 0;
+}
