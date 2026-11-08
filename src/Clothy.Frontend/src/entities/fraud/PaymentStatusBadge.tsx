@@ -1,12 +1,13 @@
 import React from "react";
-import Badge from "../../features/catalog/badge/Badge.tsx";
+import {AlertCircle, Check, Clock, CreditCard, X} from "lucide-react";
+import styles from "./FraudRisk.module.css";
 
-const PAYMENT_STATUS_STYLES: Record<string, { label: string; color: string; background: string; borderColor: string }> = {
-    Pending: {label: "Не оплачено", color: "#6B6B6B", background: "#F4F4F4", borderColor: "#E0E0E0"},
-    Paid: {label: "Оплачено", color: "#067647", background: "#ECFDF3", borderColor: "#ABEFC6"},
-    Disputed: {label: "Спір відкрито", color: "#B42318", background: "#FEF3F2", borderColor: "#FECDCA"},
-    DisputeWon: {label: "Спір виграно", color: "#175CD3", background: "#EFF8FF", borderColor: "#B2DDFF"},
-    DisputeLost: {label: "Спір програно", color: "#B42318", background: "#FEF3F2", borderColor: "#FECDCA"},
+const PAYMENT_STATUS_STYLES: Record<string, { label: string; className: string; icon: React.ReactNode }> = {
+    Pending: {label: "Не оплачено", className: styles.toneNeutral, icon: <Clock size={13}/>},
+    Paid: {label: "Оплачено", className: styles.toneSuccess, icon: <CreditCard size={13}/>},
+    Disputed: {label: "Спір: відкрито", className: styles.toneWarning, icon: <AlertCircle size={13}/>},
+    DisputeWon: {label: "Спір: виграно", className: styles.toneInfo, icon: <Check size={13}/>},
+    DisputeLost: {label: "Спір: програно", className: styles.toneDanger, icon: <X size={13}/>},
 };
 
 interface IPaymentStatusBadgeProps {
@@ -19,8 +20,13 @@ const PaymentStatusBadge: React.FC<IPaymentStatusBadgeProps> = ({status, dispute
     if (!status) return null;
     if (disputesOnly && !status.startsWith("Dispute")) return null;
 
-    const style = PAYMENT_STATUS_STYLES[status] ?? {label: status, color: "#6B6B6B", background: "#F4F4F4", borderColor: "#E0E0E0"};
-    return <Badge label={style.label} color={style.color} background={style.background} borderColor={style.borderColor}/>;
+    const style = PAYMENT_STATUS_STYLES[status] ?? {label: status, className: styles.toneNeutral, icon: null};
+    return (
+        <span className={`${styles.badge} ${style.className}`}>
+            {style.icon && <span className={styles.badgeIcon} aria-hidden="true">{style.icon}</span>}
+            {style.label}
+        </span>
+    );
 };
 
 export default PaymentStatusBadge;

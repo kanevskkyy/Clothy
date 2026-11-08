@@ -1,15 +1,14 @@
 import React from "react";
-import {Network} from "lucide-react";
-import Badge from "../../features/catalog/badge/Badge.tsx";
+import {AlertTriangle, CircleSlash, Network, ShieldCheck} from "lucide-react";
 import type {IFraudRiskSummary} from "../../app/api/fraudApi.ts";
 import styles from "./FraudRisk.module.css";
 import {getRiskLevel, type RiskLevel} from "./riskLevel.ts";
 
-
-const RISK_STYLES: Record<RiskLevel, { label: string; color: string; background: string; borderColor: string }> = {
-    low: {label: "Ризик: низький", color: "#067647", background: "#ECFDF3", borderColor: "#ABEFC6"},
-    review: {label: "Ризик: на перевірку", color: "#B42318", background: "#FEF3F2", borderColor: "#FECDCA"},
-    unscored: {label: "Ризик: не оцінено", color: "#6B6B6B", background: "#F4F4F4", borderColor: "#E0E0E0"},
+// every level has its own icon and text, so the badge does not rely on color alone
+const RISK_STYLES: Record<RiskLevel, { label: string; className: string; icon: React.ReactNode }> = {
+    low: {label: "Ризик: низький", className: styles.toneSuccess, icon: <ShieldCheck size={13}/>},
+    review: {label: "Ризик: на перевірку", className: styles.toneWarning, icon: <AlertTriangle size={13}/>},
+    unscored: {label: "Ризик: не оцінено", className: styles.toneNeutral, icon: <CircleSlash size={13}/>},
 };
 
 interface IRiskBadgeProps {
@@ -26,7 +25,10 @@ const RiskBadge: React.FC<IRiskBadgeProps> = ({record, showScore = true}) => {
 
     return (
         <span className={styles.badgeRow}>
-            <Badge label={style.label} color={style.color} background={style.background} borderColor={style.borderColor}/>
+            <span className={`${styles.badge} ${style.className}`}>
+                <span className={styles.badgeIcon} aria-hidden="true">{style.icon}</span>
+                {style.label}
+            </span>
             {showScore && record?.score != null && (
                 <span className={styles.score} title="Ймовірність шахрайства за моделлю">
                     {record.score.toFixed(3)}
@@ -34,7 +36,7 @@ const RiskBadge: React.FC<IRiskBadgeProps> = ({record, showScore = true}) => {
             )}
             {record?.ring_alert && (
                 <span className={styles.ring} title="Сигнал кільця: з цього пристрою платили кількома новими картками">
-                    <Network size={14}/> кільце
+                    <Network size={12} aria-hidden="true"/> кільце
                 </span>
             )}
         </span>
