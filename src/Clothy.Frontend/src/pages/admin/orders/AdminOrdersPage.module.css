@@ -1,14 +1,25 @@
-.header {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-    gap: 12px;
+.count {
+    font-size: 13px;
+    color: var(--a-text-2);
+    font-variant-numeric: tabular-nums;
 }
 
-@media (max-width: 480px) {
-    .header {
-        margin-bottom: 16px;
-    }
+.hint {
+    font-size: 13px;
+    color: var(--a-text-3);
+}
+
+.stack {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.customer {
+    min-width: 150px;
+}
+
+.statusSelect {
+    min-width: 140px;
+    text-align: left;
 }

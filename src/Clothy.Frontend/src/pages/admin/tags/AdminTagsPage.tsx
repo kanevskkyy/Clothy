@@ -11,7 +11,7 @@ const AdminTagsPage = () => {
             description="Manage catalog tags"
             entityName="Tag"
             entityNamePlural="Tags"
-            icon={<Tag size={28} color="#6B6B6B" />}
+            icon={<Tag size={22} />}
             getAll={catalogApi.getAllTagsAsync}
             getById={catalogApi.getTagByIdAsync}
             create={catalogApi.createTagAsync}

@@ -1,54 +1,51 @@
-.header {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 20px;
+.count {
+    font-size: 13px;
+    color: var(--a-text-2);
+    font-variant-numeric: tabular-nums;
 }
 
-.list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 20px;
-    border: 1px solid #EBEBEB;
-    border-radius: 10px;
-    background: #fff;
-    gap: 12px;
-}
-
-.rowInfo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    min-width: 0;
-}
-
-.rowName {
-    font-size: 14px;
+.name {
     font-weight: 500;
-    color: #1a1a1a;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    color: var(--a-text);
 }
 
-.rowSlug {
-    font-size: 12px;
-    color: #999;
-    background: #F5F5F5;
-    padding: 2px 8px;
+.slug {
+    display: inline-block;
+    padding: 1px 8px;
     border-radius: 4px;
+    background: var(--a-neutral-bg);
+    color: var(--a-text-2);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12px;
     white-space: nowrap;
 }
 
-.rowActions {
-    display: flex;
+.swatch {
+    display: inline-flex;
     align-items: center;
     gap: 8px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12px;
+    color: var(--a-text-2);
+    text-transform: uppercase;
+}
+
+.swatchDot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.12);
     flex-shrink: 0;
+}
+
+/* narrow screens: row actions become icon-only (aria-label keeps the name) */
+@media (max-width: 640px) {
+    .actionLabel {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
 }

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { adminApi, type IAdminDashboard } from "../../../app/api/adminApi";
-import Loader from "../../../shared/ui/Loader/Loader";
 import { toast } from "sonner";
 import { getErrorMessage } from "../../../shared/lib/errorHandler";
 import { ShoppingBag, DollarSign, Clock, Package, Star, AlertTriangle } from "lucide-react";
@@ -8,6 +7,7 @@ import styles from "./AdminDashboardPage.module.css";
 import type {AdminLayoutContext} from "../../../features/auth/admin/adminLayout/AdminLayout.tsx";
 import {useOutletContext} from "react-router-dom";
 import {Helmet} from "react-helmet";
+import {AdminTilesSkeleton} from "../ui/AdminSkeleton.tsx";
 
 const AdminDashboardPage = () => {
     const [data, setData] = useState<IAdminDashboard | null>(null);
@@ -31,50 +31,50 @@ const AdminDashboardPage = () => {
         setPageHeader({ title: "Dashboard", description: "Today's store review" });
     }, []);
 
-    if (isLoading || !data) return <Loader />;
+    if (isLoading || !data) return <AdminTilesSkeleton count={6} height={128} label="Loading dashboard"/>;
 
     const cards = [
         {
             title: "Orders today",
             value: data.newOrdersCount,
             label: "new orders",
-            icon: <ShoppingBag size={18} />,
-            iconClass: styles.iconGreen,
+            icon: <ShoppingBag size={16} />,
+            attention: false,
         },
         {
             title: "Revenue today",
             value: `$${data.totalPrice}`,
             label: "total amount",
-            icon: <DollarSign size={18} />,
-            iconClass: styles.iconGreen,
+            icon: <DollarSign size={16} />,
+            attention: false,
         },
         {
             title: "Awaiting processing",
             value: data.pendingOrdersCount,
             label: "processing orders",
-            icon: <Clock size={18} />,
-            iconClass: styles.iconOrange,
+            icon: <Clock size={16} />,
+            attention: data.pendingOrdersCount > 0,
         },
         {
             title: "Goods in stock",
             value: data.totalItemsCount,
             label: "units",
-            icon: <Package size={18} />,
-            iconClass: styles.iconBlue,
+            icon: <Package size={16} />,
+            attention: false,
         },
         {
             title: "Reviews under moderation",
             value: data.pendingReviewCount,
             label: "awaiting inspection",
-            icon: <Star size={18} />,
-            iconClass: styles.iconYellow,
+            icon: <Star size={16} />,
+            attention: data.pendingReviewCount > 0,
         },
         {
             title: "Unanswered questions",
             value: data.questionsWithoutAnswerCount,
             label: "require attention",
-            icon: <AlertTriangle size={18} />,
-            iconClass: styles.iconRed,
+            icon: <AlertTriangle size={16} />,
+            attention: data.questionsWithoutAnswerCount > 0,
         },
     ];
 
@@ -87,14 +87,18 @@ const AdminDashboardPage = () => {
 
             <div className={styles.grid}>
                 {cards.map((card, idx) => (
-                    <div className={styles.card} key={idx}>
+                    <section
+                        className={`${styles.card} ${card.attention ? styles.attention : ""}`}
+                        key={idx}
+                        aria-label={card.title}
+                    >
                         <div className={styles.cardHeader}>
-                            <span>{card.title}</span>
-                            <div className={`${styles.cardIcon} ${card.iconClass}`}>{card.icon}</div>
+                            <h2 className={styles.title}>{card.title}</h2>
+                            <div className={styles.cardIcon} aria-hidden="true">{card.icon}</div>
                         </div>
                         <p className={styles.value}>{card.value}</p>
                         <p className={styles.label}>{card.label}</p>
-                    </div>
+                    </section>
                 ))}
             </div>
         </>

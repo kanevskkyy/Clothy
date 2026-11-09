@@ -11,7 +11,7 @@ const AdminDeliveryProvidersPage = () => {
             description="Manage delivery providers"
             entityName="Delivery Provider"
             entityNamePlural="Delivery Providers"
-            icon={<Truck size={28} color="#6B6B6B" />}
+            icon={<Truck size={22} />}
             getAll={ordersApi.getDeliveryProvidersAsync}
             getById={ordersApi.getDeliveryProviderByIdAsync}
             create={ordersApi.createDeliveryProviderAsync}

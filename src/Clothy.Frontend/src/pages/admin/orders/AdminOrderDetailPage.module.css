@@ -1,0 +1,78 @@
+.page {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.back {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px 4px 4px;
+    border-radius: 6px;
+    font-size: 14px;
+    color: var(--a-text-2);
+    text-decoration: none;
+}
+
+.back:hover {
+    color: var(--a-text);
+    background: var(--a-neutral-bg);
+}
+
+/* wide screens: order on the left, fraud block on the right; narrow: fraud block first */
+.layout {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: flex-start;
+    gap: 24px;
+}
+
+.aside {
+    flex: 0 0 460px;
+    position: sticky;
+    top: 0;
+}
+
+.aside:empty {
+    display: none;
+}
+
+.detail {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 4px 24px 24px;
+    background: var(--a-surface);
+    border: 1px solid var(--a-border);
+    border-radius: var(--a-radius);
+}
+
+/* the buyer page centers itself at 736px; inside the admin card it fills the card */
+.detail > div {
+    max-width: none;
+    margin: 0;
+    padding: 20px 0 0;
+}
+
+@media (max-width: 1279px) {
+    .layout {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .aside {
+        flex: none;
+        position: static;
+    }
+
+    .detail {
+        flex: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .detail {
+        padding: 0 16px 16px;
+    }
+}

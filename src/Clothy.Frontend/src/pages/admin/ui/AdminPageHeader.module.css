@@ -1,0 +1,29 @@
+.header {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.title {
+    font-family: var(--a-font-heading);
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1.2;
+    color: var(--a-text);
+}
+
+.description {
+    font-size: 14px;
+    color: var(--a-text-2);
+}
+
+@media (max-width: 768px) {
+    .title {
+        font-size: 20px;
+    }
+
+    .description {
+        font-size: 13px;
+    }
+}

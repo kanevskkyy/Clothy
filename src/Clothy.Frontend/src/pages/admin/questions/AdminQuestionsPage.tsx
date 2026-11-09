@@ -1,7 +1,5 @@
 import { MessageSquare, Trash2 } from "lucide-react";
-import EmptyState from "../../../shared/ui/EmptyState/EmptyState.tsx";
 import Pagination from "../../../shared/ui/Pagination/Pagination.tsx";
-import Loader from "../../../shared/ui/Loader/Loader.tsx";
 import { Helmet } from "react-helmet";
 import { useOutletContext, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -16,6 +14,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import QuestionItem from "../../../entities/reviewsService/questionItem/QuestionItem.tsx";
 import SortSelect from "../../../features/catalog/sortSelect/SortSelect.tsx";
 import styles from "./AdminQuestionsPage.module.css";
+import AdminCard from "../ui/AdminCard.tsx";
+import AdminToolbar from "../ui/AdminToolbar.tsx";
+import AdminButton from "../ui/AdminButton.tsx";
+import AdminEmptyState from "../ui/AdminEmptyState.tsx";
+import { AdminRowsSkeleton } from "../ui/AdminSkeleton.tsx";
 
 type FilterType = "all" | "unanswered";
 
@@ -100,16 +103,23 @@ const AdminQuestionsPage = () => {
     };
 
     const renderContent = () => {
-        if (isLoading) return <Loader />;
+        if (isLoading) {
+            return (
+                <AdminCard flush>
+                    <AdminRowsSkeleton rows={4} columns={2} label="Loading questions" />
+                </AdminCard>
+            );
+        }
 
         if (!questions || questions.items.length === 0) {
             return (
-                <EmptyState
-                    icon={<MessageSquare size={28} color="#6B6B6B" />}
-                    title="No questions found"
-                    description={filter === "unanswered" ? "All questions have been answered." : "No questions yet."}
-                    buttons={[]}
-                />
+                <AdminCard>
+                    <AdminEmptyState
+                        icon={<MessageSquare size={22} />}
+                        title="No questions found"
+                        description={filter === "unanswered" ? "All questions have been answered." : "No questions yet."}
+                    />
+                </AdminCard>
             );
         }
 
@@ -117,12 +127,12 @@ const AdminQuestionsPage = () => {
             <>
                 <div className={styles.list}>
                     {questions.items.map((question) => (
-                        <div key={question.id} className={styles.questionCard}>
+                        <article key={question.id} className={styles.questionCard}>
                             {question.clotheInfo && (
                                 <div className={styles.clotheInfo}>
                                     <img
                                         src={question.clotheInfo.clothePhotoURL}
-                                        alt={question.clotheInfo.clotheName}
+                                        alt=""
                                         className={styles.clothePhoto}
                                     />
                                     <span className={styles.clotheName}>{question.clotheInfo.clotheName}</span>
@@ -138,17 +148,17 @@ const AdminQuestionsPage = () => {
                                     />
                                 </div>
                                 <div className={styles.actions}>
-                                    <button
-                                        className={styles.deleteBtn}
+                                    <AdminButton
+                                        variant="danger"
+                                        icon={<Trash2 size={14} />}
                                         disabled={deletingId === question.id}
                                         onClick={() => handleDelete(question.id)}
                                     >
-                                        <Trash2 size={15} />
                                         Delete
-                                    </button>
+                                    </AdminButton>
                                 </div>
                             </div>
-                        </div>
+                        </article>
                     ))}
                 </div>
 
@@ -170,14 +180,19 @@ const AdminQuestionsPage = () => {
                 <meta name="description" content="Manage customer questions." />
             </Helmet>
 
-            <div className={styles.header}>
-                <SortSelect
-                    value={filter}
-                    options={FILTER_OPTIONS}
-                    onChange={(value) => handleFilterChange(value as FilterType)}
-                    label="Show:"
-                />
-            </div>
+            <AdminToolbar
+                start={!isLoading && questions ? (
+                    <span className={styles.count}>{questions.totalCount} questions</span>
+                ) : undefined}
+                end={
+                    <SortSelect
+                        value={filter}
+                        options={FILTER_OPTIONS}
+                        onChange={(value) => handleFilterChange(value as FilterType)}
+                        label="Show:"
+                    />
+                }
+            />
 
             {renderContent()}
         </div>

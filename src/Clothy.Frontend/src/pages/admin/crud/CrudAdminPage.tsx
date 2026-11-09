@@ -1,14 +1,18 @@
 import { Pencil, Trash2, Plus } from "lucide-react";
-import EmptyState from "../../../shared/ui/EmptyState/EmptyState.tsx";
-import Loader from "../../../shared/ui/Loader/Loader.tsx";
 import Modal from "../../../shared/layout/Modal/Modal.tsx";
-import Button from "../../../shared/ui/Button/Button.tsx";
 import { Helmet } from "react-helmet";
 import { useOutletContext } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { getErrorMessage } from "../../../shared/lib/errorHandler.ts";
 import styles from "./CrudAdminPage.module.css";
+import table from "../ui/AdminTable.module.css";
+import AdminTable from "../ui/AdminTable.tsx";
+import AdminCard from "../ui/AdminCard.tsx";
+import AdminToolbar from "../ui/AdminToolbar.tsx";
+import AdminButton from "../ui/AdminButton.tsx";
+import AdminEmptyState from "../ui/AdminEmptyState.tsx";
+import { AdminRowsSkeleton } from "../ui/AdminSkeleton.tsx";
 import type { IBaseCrudEntity } from "../../../entities/catalogService/interfaces/shared/IBaseCrudEntity.ts";
 import type {AdminLayoutContext} from "../../../features/auth/admin/adminLayout/AdminLayout.tsx";
 
@@ -22,10 +26,13 @@ interface CrudAdminPageProps<T extends IBaseCrudEntity> {
 
     getAll: () => Promise<T[]>;
     getById: (id: string) => Promise<T>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- existing prop type, kept as is
     create: (data: any) => Promise<T>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- existing prop type, kept as is
     update: (id: string, data: any) => Promise<T>;
     remove: (id: string) => Promise<void>;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- existing prop type, kept as is
     FormComponent: React.ComponentType<any>;
 }
 
@@ -97,7 +104,13 @@ function CrudAdminPage<T extends IBaseCrudEntity>({
         }
     };
 
-    if (isLoading) return <Loader />;
+    if (isLoading) {
+        return (
+            <AdminCard flush>
+                <AdminRowsSkeleton rows={6} columns={3} label={`Loading ${entityNamePlural.toLowerCase()}`} />
+            </AdminCard>
+        );
+    }
 
     return (
         <div>
@@ -143,57 +156,68 @@ function CrudAdminPage<T extends IBaseCrudEntity>({
                 </Modal>
             )}
 
-            <div className={styles.header}>
-                <Button
-                    variant="primary"
-                    size="md"
-                    icon={<Plus size={15} />}
-                    onClick={() => setIsCreating(true)}
-                >
-                    Add {entityName.toLowerCase()}
-                </Button>
-            </div>
+            <AdminToolbar
+                start={<span className={styles.count}>{items.length} {entityNamePlural.toLowerCase()}</span>}
+                end={
+                    <AdminButton
+                        variant="primary"
+                        size="md"
+                        icon={<Plus size={15} />}
+                        onClick={() => setIsCreating(true)}
+                    >
+                        Add {entityName.toLowerCase()}
+                    </AdminButton>
+                }
+            />
 
-            {items.length === 0 ? (
-                <EmptyState
-                    icon={icon}
-                    title={`No ${entityNamePlural.toLowerCase()} yet`}
-                    description={`Add your first ${entityName.toLowerCase()} to get started.`}
-                    buttons={[]}
-                />
-            ) : (
-                <div className={styles.list}>
-                    {items.map((item) => (
-                        <div key={item.id} className={styles.row}>
-                            <div className={styles.rowInfo}>
-                                <span className={styles.rowName}>{item.name}</span>
-                                <span className={styles.rowSlug}>{item.slug ?? ""}</span>
-                            </div>
-
-                            <div className={styles.rowActions}>
-                                <Button
-                                    variant="secondary"
-                                    size="sm"
-                                    icon={<Pencil size={14} />}
-                                    onClick={() => handleEditClick(item.id)}
-                                >
-                                    Edit
-                                </Button>
-
-                                <Button
-                                    variant="secondary"
-                                    size="sm"
-                                    icon={<Trash2 size={14} />}
-                                    disabled={deletingId === item.id}
-                                    onClick={() => handleDelete(item.id, item.name)}
-                                >
-                                    Delete
-                                </Button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
+            <AdminCard flush aria-label={entityNamePlural}>
+                {items.length === 0 ? (
+                    <AdminEmptyState
+                        icon={icon}
+                        title={`No ${entityNamePlural.toLowerCase()} yet`}
+                        description={`Add your first ${entityName.toLowerCase()} to get started.`}
+                    />
+                ) : (
+                    <AdminTable caption={entityNamePlural}>
+                        <thead>
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Slug</th>
+                            <th scope="col" className={table.actions}>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {items.map((item) => (
+                            <tr key={item.id}>
+                                <td className={styles.name}>{item.name}</td>
+                                <td>{item.slug ? <span className={styles.slug}>{item.slug}</span> : <span className={table.muted}>—</span>}</td>
+                                <td className={table.actions}>
+                                    <div className={table.actionsInner}>
+                                        <AdminButton
+                                            variant="quiet"
+                                            icon={<Pencil size={14} />}
+                                            aria-label={`Edit ${item.name}`}
+                                            onClick={() => handleEditClick(item.id)}
+                                        >
+                                            <span className={styles.actionLabel}>Edit</span>
+                                        </AdminButton>
+                                        <AdminButton
+                                            variant="danger"
+                                            icon={<Trash2 size={14} />}
+                                            aria-label={`Delete ${item.name}`}
+                                            disabled={deletingId === item.id}
+                                            onClick={() => handleDelete(item.id, item.name)}
+                                        >
+                                            <span className={styles.actionLabel}>Delete</span>
+                                        </AdminButton>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </AdminTable>
+                )}
+            </AdminCard>
         </div>
     );
 }

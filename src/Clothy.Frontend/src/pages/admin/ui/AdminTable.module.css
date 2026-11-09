@@ -1,0 +1,124 @@
+.scroll {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    color: var(--a-text);
+}
+
+.table th {
+    position: sticky;
+    top: 0;
+    padding: 10px 12px;
+    background: var(--a-surface-muted);
+    border-bottom: 1px solid var(--a-border);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-align: left;
+    color: var(--a-text-2);
+    white-space: nowrap;
+}
+
+.table td {
+    padding: 12px;
+    border-bottom: 1px solid var(--a-border-soft);
+    vertical-align: middle;
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.table tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+.table tbody tr:hover {
+    background: var(--a-surface-hover);
+}
+
+.table th:first-child,
+.table td:first-child {
+    padding-left: 20px;
+}
+
+.table th:last-child,
+.table td:last-child {
+    padding-right: 20px;
+}
+
+/* helpers for cells */
+.num {
+    text-align: right !important;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+.muted {
+    color: var(--a-text-2);
+    font-size: 13px;
+}
+
+.strong {
+    font-weight: 500;
+}
+
+.actions {
+    text-align: right !important;
+    white-space: nowrap;
+}
+
+.actionsInner {
+    display: inline-flex;
+    gap: 6px;
+    justify-content: flex-end;
+}
+
+.link {
+    color: var(--a-text);
+    font-weight: 500;
+    text-decoration: none;
+    font-variant-numeric: tabular-nums;
+}
+
+.link:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12px;
+}
+
+@media (max-width: 768px) {
+    .table th:first-child,
+    .table td:first-child {
+        padding-left: 16px;
+    }
+
+    .table th:last-child,
+    .table td:last-child {
+        padding-right: 16px;
+    }
+}
+
+.srOnly {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}

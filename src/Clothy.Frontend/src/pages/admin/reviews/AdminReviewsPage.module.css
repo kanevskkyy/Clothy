@@ -1,0 +1,11 @@
+.count {
+    font-size: 13px;
+    color: var(--a-text-2);
+    font-variant-numeric: tabular-nums;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}

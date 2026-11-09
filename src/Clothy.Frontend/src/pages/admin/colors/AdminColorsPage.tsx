@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 import { Tag, Pencil, Trash2, Plus } from "lucide-react";
-import EmptyState from "../../../shared/ui/EmptyState/EmptyState.tsx";
-import Loader from "../../../shared/ui/Loader/Loader.tsx";
 import Modal from "../../../shared/layout/Modal/Modal.tsx";
-import Button from "../../../shared/ui/Button/Button.tsx";
 import { Helmet } from "react-helmet";
 import { useOutletContext } from "react-router-dom";
 import { toast } from "sonner";
@@ -11,7 +8,14 @@ import { getErrorMessage } from "../../../shared/lib/errorHandler.ts";
 import ColorForm from "../../../features/forms/colorForm/ColorForm.tsx";
 import { catalogApi } from "../../../app/api/catalogApi.ts";
 import type { AdminLayoutContext } from "../../../features/auth/admin/adminLayout/AdminLayout.tsx";
-import styles from "./AdminColorsPage.module.css";
+import styles from "../crud/CrudAdminPage.module.css";
+import table from "../ui/AdminTable.module.css";
+import AdminTable from "../ui/AdminTable.tsx";
+import AdminCard from "../ui/AdminCard.tsx";
+import AdminToolbar from "../ui/AdminToolbar.tsx";
+import AdminButton from "../ui/AdminButton.tsx";
+import AdminEmptyState from "../ui/AdminEmptyState.tsx";
+import { AdminRowsSkeleton } from "../ui/AdminSkeleton.tsx";
 import type { IColorReadDTO } from "../../../entities/catalogService/interfaces/color/IColorReadDTO.ts";
 
 const AdminColorsPage = () => {
@@ -71,7 +75,13 @@ const AdminColorsPage = () => {
         }
     };
 
-    if (isLoading) return <Loader />;
+    if (isLoading) {
+        return (
+            <AdminCard flush>
+                <AdminRowsSkeleton rows={6} columns={4} label="Loading colors" />
+            </AdminCard>
+        );
+    }
 
     return (
         <div>
@@ -110,57 +120,70 @@ const AdminColorsPage = () => {
                 </Modal>
             )}
 
-            <div className={styles.header}>
-                <Button variant="primary" size="md" icon={<Plus size={15} />} onClick={() => setIsCreating(true)}>
-                    Add color
-                </Button>
-            </div>
+            <AdminToolbar
+                start={<span className={styles.count}>{colors.length} colors</span>}
+                end={
+                    <AdminButton variant="primary" size="md" icon={<Plus size={15} />} onClick={() => setIsCreating(true)}>
+                        Add color
+                    </AdminButton>
+                }
+            />
 
-            {colors.length === 0 ? (
-                <EmptyState
-                    icon={<Tag size={28} color="#6B6B6B" />}
-                    title="No colors yet"
-                    description="Add your first color to get started."
-                    buttons={[]}
-                />
-            ) : (
-                <div className={styles.list}>
-                    {colors.map((color) => (
-                        <div key={color.id} className={styles.row}>
-                            <div className={styles.rowInfo}>
-                                <span className={styles.rowName}>{color.name}</span>
-                                <span className={styles.rowSlug}>{color.slug}</span>
-                                <span
-                                    className={styles.colorCircle}
-                                    style={{ backgroundColor: color.hexCode }}
-                                    title={color.hexCode}
-                                />
-                            </div>
-
-                            <div className={styles.rowActions}>
-                                <Button
-                                    variant="secondary"
-                                    size="sm"
-                                    icon={<Pencil size={14} />}
-                                    onClick={() => handleEditClick(color.id)}
-                                >
-                                    Edit
-                                </Button>
-
-                                <Button
-                                    variant="secondary"
-                                    size="sm"
-                                    icon={<Trash2 size={14} />}
-                                    disabled={deletingId === color.id}
-                                    onClick={() => handleDelete(color.id, color.name)}
-                                >
-                                    Delete
-                                </Button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
+            <AdminCard flush aria-label="Colors">
+                {colors.length === 0 ? (
+                    <AdminEmptyState
+                        icon={<Tag size={22} />}
+                        title="No colors yet"
+                        description="Add your first color to get started."
+                    />
+                ) : (
+                    <AdminTable caption="Colors">
+                        <thead>
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Slug</th>
+                            <th scope="col">Color</th>
+                            <th scope="col" className={table.actions}>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {colors.map((color) => (
+                            <tr key={color.id}>
+                                <td className={styles.name}>{color.name}</td>
+                                <td><span className={styles.slug}>{color.slug}</span></td>
+                                <td>
+                                    <span className={styles.swatch}>
+                                        <span className={styles.swatchDot} style={{ backgroundColor: color.hexCode }} aria-hidden="true" />
+                                        {color.hexCode}
+                                    </span>
+                                </td>
+                                <td className={table.actions}>
+                                    <div className={table.actionsInner}>
+                                        <AdminButton
+                                            variant="quiet"
+                                            icon={<Pencil size={14} />}
+                                            aria-label={`Edit ${color.name}`}
+                                            onClick={() => handleEditClick(color.id)}
+                                        >
+                                            <span className={styles.actionLabel}>Edit</span>
+                                        </AdminButton>
+                                        <AdminButton
+                                            variant="danger"
+                                            icon={<Trash2 size={14} />}
+                                            aria-label={`Delete ${color.name}`}
+                                            disabled={deletingId === color.id}
+                                            onClick={() => handleDelete(color.id, color.name)}
+                                        >
+                                            <span className={styles.actionLabel}>Delete</span>
+                                        </AdminButton>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </AdminTable>
+                )}
+            </AdminCard>
         </div>
     );
 };

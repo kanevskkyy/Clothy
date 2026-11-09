@@ -1,11 +1,13 @@
 import {useEffect, useState} from "react";
-import {useOutletContext, useParams} from "react-router-dom";
+import {Link, useOutletContext, useParams} from "react-router-dom";
+import {ArrowLeft} from "lucide-react";
 import {toast} from "sonner";
 import type {AdminLayoutContext} from "../../../features/auth/admin/adminLayout/AdminLayout.tsx";
 import {fraudApi, type IFraudTxRecord} from "../../../app/api/fraudApi.ts";
 import {paymentApi} from "../../../app/api/paymentApi.ts";
 import FraudRiskPanel from "../../../entities/fraud/FraudRiskPanel.tsx";
 import OrderDetailPage from "../../account/orders/OrderDetailPage/OrderDetailPage.tsx";
+import styles from "./AdminOrderDetailPage.module.css";
 
 // Admin view of an order: the buyer's order page plus the fraud block, which buyers never see.
 const AdminOrderDetailPage = () => {
@@ -36,10 +38,21 @@ const AdminOrderDetailPage = () => {
     }, [orderId]);
 
     return (
-        <>
-            <FraudRiskPanel record={risk} paymentStatus={paymentStatus}/>
-            <OrderDetailPage/>
-        </>
+        <div className={styles.page}>
+            <Link to="/admin/orders" className={styles.back}>
+                <ArrowLeft size={16} aria-hidden="true"/> All orders
+            </Link>
+
+            <div className={styles.layout}>
+                {/* the fraud panel renders nothing while loading or when the service is down */}
+                <aside className={styles.aside} aria-label="Fraud risk">
+                    <FraudRiskPanel record={risk} paymentStatus={paymentStatus}/>
+                </aside>
+                <div className={styles.detail}>
+                    <OrderDetailPage/>
+                </div>
+            </div>
+        </div>
     );
 };
 
