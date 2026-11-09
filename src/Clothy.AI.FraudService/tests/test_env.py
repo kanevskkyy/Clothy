@@ -3,7 +3,7 @@ import os
 import pytest
 
 needs_models = pytest.mark.skipif(not os.path.exists(os.path.join("models", "service_config.yaml")),
-                                  reason="models/ відсутня")
+                                  reason="models/ is missing")
 
 
 def test_abs_paths():

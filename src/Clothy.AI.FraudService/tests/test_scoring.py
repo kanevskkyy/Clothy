@@ -8,7 +8,7 @@ from src.scoring import Scorer
 
 MODELS = "models"
 pytestmark = pytest.mark.skipif(not os.path.exists(os.path.join(MODELS, "service_config.yaml")),
-                                reason="models/ відсутня")
+                                reason="models/ is missing")
 REQ = dict(txid="a1", ts=1_000_000, TransactionAmt=49.0, card1=15000.0, ProductCD="W", card4="visa",
            card6="debit", addr1=299.0, addr2=87.0, P_emaildomain="gmail.com")
 
@@ -24,7 +24,7 @@ def test_fixture_reproduces(variant):
 def test_real_fixture_if_present():
     path = os.path.join("private", "fixture_real_test.npz")
     if not os.path.exists(path):
-        pytest.skip("private/fixture_real_test.npz відсутній")
+        pytest.skip("private/fixture_real_test.npz is missing")
     fx = np.load(path)
     for variant in ("main", "device"):
         sc = Scorer(MODELS, variant)
@@ -41,10 +41,10 @@ def test_score_roundtrip(variant, n, backend):
     assert len(out["top_features"]) == 3 and len(out["features"]) == n
     assert sc.store.n_transactions == 1
     sc.score("a2", {**REQ, "ts": REQ["ts"] + 1}, store=False)
-    assert sc.store.n_transactions == 1                        # store=False нічого не зберігає
+    assert sc.store.n_transactions == 1                        # store=False stores nothing
     assert sc.score("a3", {**REQ, "ts": REQ["ts"] + 2}, explain=False)["top_features"] == []
     with pytest.raises(ValueError):
-        sc.score("a1", REQ)                                    # дублікат
+        sc.score("a1", REQ)                                    # duplicate
 
 
 @pytest.mark.parametrize("variant", ["main", "device"])
@@ -73,11 +73,11 @@ def test_http_flow():
     assert c.get("/health").json()["n_features"] == 34
     assert c.post("/score", json=REQ).status_code == 200
     assert c.post("/score", json=REQ).status_code == 409
-    assert c.post("/score", json={**REQ, "txid": "x", "ts": 5}).status_code == 409   # назад у часі
+    assert c.post("/score", json={**REQ, "txid": "x", "ts": 5}).status_code == 409   # back in time
     assert c.post("/score", json={"txid": "y"}).status_code == 422
     assert c.post("/labels", json={"txid": "a1", "fraud": True}).status_code == 200
     assert c.post("/labels", json={"txid": "zzz"}).status_code == 404
-    assert c.get("/tx/a1").status_code == 501                  # для пам'яті без бази
+    assert c.get("/tx/a1").status_code == 501                  # memory store has no database
 
 
 def test_http_sqlite_persists(tmp_path):
@@ -103,7 +103,7 @@ def test_synthetic_ring_mechanics():
     evs = make_stream(MODELS, seed=0)
     ring = [e for e in evs if e["_ring"] == 0]
     assert 5 <= len(ring) <= 7 and len({e["card1"] for e in ring}) == len(ring)
-    assert all(sum(1 for x in evs if x["card1"] == e["card1"]) == 1 for e in ring)    # нові картки, одна транзакція
+    assert all(sum(1 for x in evs if x["card1"] == e["card1"]) == 1 for e in ring)    # new cards, one transaction each
     last = max(ring, key=lambda e: (e["ts"], e["txid"]))
     st, seen = FeatureStore(), None
     for e in evs:

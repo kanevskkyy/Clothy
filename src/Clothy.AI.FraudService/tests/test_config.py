@@ -1,4 +1,4 @@
-"""Перевірка конфігу при старті та логування без персональних даних."""
+"""Config validation at startup and logging without personal data."""
 import logging
 import os
 
@@ -8,7 +8,7 @@ from src.config import ConfigError, load_settings
 
 MODELS = "models"
 pytestmark = pytest.mark.skipif(not os.path.exists(os.path.join(MODELS, "service_config.yaml")),
-                                reason="models/ відсутня")
+                                reason="models/ is missing")
 
 
 def test_defaults():
@@ -36,13 +36,13 @@ def test_explicit_ring_params_skip_env():
 
 
 @pytest.mark.parametrize("env,needle", [
-    ({"MODEL_VARIANT": "mian"}, "MODEL_VARIANT='mian': допустимо main або device"),
-    ({"FLAG_RATE": "abc"}, "FLAG_RATE='abc': має бути числом"),
+    ({"MODEL_VARIANT": "mian"}, "MODEL_VARIANT='mian': allowed main or device"),
+    ({"FLAG_RATE": "abc"}, "FLAG_RATE='abc': must be a number"),
     ({"FLAG_RATE": "0.04"}, "0.005, 0.01, 0.02, 0.03, 0.05"),
-    ({"STORE_BACKEND": "postgres"}, "STORE_BACKEND='postgres': допустимо memory або sqlite"),
-    ({"STORE_BACKEND": "sqlite", "DB_PATH": "no_such_dir_xyz/h.db"}, "не існує"),
-    ({"STORE_BACKEND": "sqlite", "DB_PATH": "models"}, "це тека"),
-    ({"RING_SIGNAL": "of"}, "RING_SIGNAL='of': допустимо on/1/true/yes"),
+    ({"STORE_BACKEND": "postgres"}, "STORE_BACKEND='postgres': allowed memory or sqlite"),
+    ({"STORE_BACKEND": "sqlite", "DB_PATH": "no_such_dir_xyz/h.db"}, "does not exist"),
+    ({"STORE_BACKEND": "sqlite", "DB_PATH": "models"}, "this is a folder"),
+    ({"RING_SIGNAL": "of"}, "RING_SIGNAL='of': allowed on/1/true/yes"),
     ({"MODELS_DIR": "no_such_models_xyz"}, "MODELS_DIR="),
     ({"LOG_LEVEL": "loud"}, "LOG_LEVEL='LOUD'"),
 ])
@@ -85,7 +85,7 @@ def test_logs_have_no_personal_data(monkeypatch, caplog):
         assert c.post("/score", json={**req, "txid": "a2", "card1": "not-a-number"}).status_code == 422
         assert c.post("/labels", json={"txid": "zzz"}).status_code == 404
     text = " | ".join(r.getMessage() for r in caplog.records if r.name == "antifraud")
-    assert "старт: variant=main" in text and "409 /score txid=a1" in text and "404 /labels txid=zzz" in text
-    assert "422 /score" in text and "card1" in text          # назва поля є, значення немає
+    assert "startup: variant=main" in text and "409 /score txid=a1" in text and "404 /labels txid=zzz" in text
+    assert "422 /score" in text and "card1" in text          # the field name is logged, the value is not
     for secret in ("15123", "secretmail", "SecretPhone", "299", "not-a-number"):
         assert secret not in text, secret

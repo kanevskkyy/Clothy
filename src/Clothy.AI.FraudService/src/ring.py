@@ -1,5 +1,5 @@
-"""Прозорий сигнал кільця: багато ІНШИХ карток на тій самій конфігурації пристрою за 30 днів,
-і серед них переважно нові картки. Параметри (k, s) підібрано на реальній валідації (ноутбук 23)."""
+"""Transparent ring signal: many OTHER cards on the same device configuration within 30 days,
+mostly new cards among them. Parameters (k, s) were tuned on real validation data (notebook 23)."""
 import math
 from collections.abc import Mapping
 from typing import Any
@@ -12,16 +12,16 @@ def _nan(v: Any) -> bool:
 
 
 def ring_signal(dev: Mapping[str, float], params: Mapping[str, float], history_days: float) -> dict[str, Any]:
-    """Рахує сигнал кільця для однієї транзакції.
+    """Computes the ring signal for one transaction.
 
     Args:
-        dev: результат device_features (потрібні fp_other30 і fp_share_new).
-        params: {"k", "s", "warmup_days"} з models/ring_signal.yaml.
-        history_days: скільки днів історії накопичено в сховищі.
+        dev: device_features output (needs fp_other30 and fp_share_new).
+        params: {"k", "s", "warmup_days"} from models/ring_signal.yaml.
+        history_days: how many days of history the store holds.
 
     Returns:
-        {"suspect", "active", "other_cards_30d", "share_new", "k", "s"}: suspect = True, якщо сигнал активний
-        (history_days >= warmup_days), відбиток є і fp_other30 >= k та fp_share_new >= s.
+        {"suspect", "active", "other_cards_30d", "share_new", "k", "s"}: suspect = True if the signal is active
+        (history_days >= warmup_days), a fingerprint exists and fp_other30 >= k and fp_share_new >= s.
     """
     other, share = dev["fp_other30"], dev["fp_share_new"]
     has = not _nan(other)

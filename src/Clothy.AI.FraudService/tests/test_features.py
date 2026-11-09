@@ -19,7 +19,7 @@ def make_events(seed, n=400):
     rnd = random.Random(seed)
     times = sorted(rnd.randint(0, 45 * DAY) for _ in range(n))
     for k in range(0, n, 17):
-        times[k] = times[max(k - 1, 0)]                      # однакові часи: рівний час має бути виключений
+        times[k] = times[max(k - 1, 0)]                      # identical times: an equal time must be excluded
     evs = []
     for i, t in enumerate(times):
         ev = {"txid": f"t{i}", "ts": t, "TransactionAmt": round(rnd.uniform(1, 300), 2),
@@ -28,7 +28,7 @@ def make_events(seed, n=400):
         if rnd.random() < 0.6:
             ev.update(dict(zip(FP, rnd.choice(DEVS))))
             if rnd.random() < 0.1:
-                ev[rnd.choice(FP)] = None                    # неповний відбиток = немає відбитка
+                ev[rnd.choice(FP)] = None                    # incomplete fingerprint = no fingerprint
         ev["_fraud"] = rnd.random() < 0.15
         ev["_at"] = t + rnd.randint(0, 20 * DAY) if ev["_fraud"] else None
         evs.append(ev)
@@ -89,14 +89,14 @@ def test_online_equals_brute_force(kind, seed):
     st = new_store(kind)
     pending = sorted((e["_at"], j) for j, e in enumerate(evs) if e["_fraud"])
     for i, ev in enumerate(evs):
-        for at, j in list(pending):                          # мітки, що надійшли не пізніше поточного часу
+        for at, j in list(pending):                          # labels received no later than the current time
             if j < i and at <= ev["ts"]:
                 st.set_label(evs[j]["txid"], True, at); pending.remove((at, j))
         got = {**st.history_features(ev), **st.device_features(ev)}
         exp = brute(evs, norm, newflag, i)
         assert set(got) == set(exp)
         for k in exp:
-            assert same(float(got[k]), float(exp[k])), f"{kind}, подія {i}, ознака {k}: {got[k]} != {exp[k]}"
+            assert same(float(got[k]), float(exp[k])), f"{kind}, event {i}, feature {k}: {got[k]} != {exp[k]}"
         st.add(ev["txid"], ev)
 
 
@@ -109,11 +109,11 @@ def test_order_duplicates_and_labels(kind):
         st.add("a", base)
     with pytest.raises(OutOfOrderError):
         st.add("b", {**base, "ts": 999})
-    st.add("c", {**base, "ts": 1000})                         # рівний час дозволений
+    st.add("c", {**base, "ts": 1000})                         # equal time is allowed
     with pytest.raises(KeyError):
         st.set_label("zzz", True, 1)
     with pytest.raises(ValueError):
-        st.history_features({"ts": 1, "TransactionAmt": 1.0})   # немає card1
+        st.history_features({"ts": 1, "TransactionAmt": 1.0})   # no card1
 
 
 def test_sqlite_persistence(tmp_path):
@@ -124,7 +124,7 @@ def test_sqlite_persistence(tmp_path):
         st.add(ev["txid"], ev); mem.add(ev["txid"], ev)
     st.set_label(evs[3]["txid"], True, evs[3]["ts"] + 8 * DAY); mem.set_label(evs[3]["txid"], True, evs[3]["ts"] + 8 * DAY)
     st.close()
-    st2 = SqlFeatureStore(path)                              # новий «процес»: історія й мітки мають зберегтись
+    st2 = SqlFeatureStore(path)                              # a new "process": history and labels must persist
     assert st2.n_transactions == half
     with pytest.raises(OutOfOrderError):
         st2.check("zz", {**evs[0], "ts": evs[half - 1]["ts"] - 1})

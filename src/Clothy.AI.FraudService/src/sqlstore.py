@@ -1,6 +1,6 @@
-"""Сховище історії в SQLite. Ті самі визначення ознак, що в FeatureStore (src/features.py):
-вікна лише з рядків СТРОГО раніше за час транзакції, мітка j відома для i, якщо t_j <= t_i - 7 днів,
-t_j >= t_i - 30 днів і dispute надійшов не пізніше t_i (fraud_at <= t_i). Власна мітка не використовується."""
+"""SQLite history store. Same feature definitions as FeatureStore (src/features.py):
+windows only use rows STRICTLY before the transaction time, label j is known for i if t_j <= t_i - 7 days,
+t_j >= t_i - 30 days and the dispute arrived no later than t_i (fraud_at <= t_i). A row's own label is never used."""
 import json
 import sqlite3
 from collections.abc import Iterable, Mapping
@@ -26,13 +26,13 @@ _KNOWN_FRAUD = "CASE WHEN ts<=? AND fraud_at IS NOT NULL AND fraud_at<=? THEN 1 
 
 
 class SqlFeatureStore:
-    """Сховище історії в SQLite з тим самим інтерфейсом і ознаками, що FeatureStore.
+    """SQLite history store with the same interface and features as FeatureStore.
 
-    Додатково зберігає рішення (таблиця decisions) і спрацювання сигналу кільця (ring_alerts).
-    Файлова база переживає перезапуск сервісу.
+    It also stores decisions (the decisions table) and ring signal alerts (ring_alerts).
+    A file database survives service restarts.
 
     Args:
-        path: шлях до файлу бази або ":memory:".
+        path: path to the database file or ":memory:".
     """
 
     def __init__(self, path: str = ":memory:") -> None:
@@ -42,7 +42,7 @@ class SqlFeatureStore:
             self.db.execute("PRAGMA journal_mode=WAL")
             self.db.execute("PRAGMA synchronous=NORMAL")
         self.db.executescript(SCHEMA)
-        # Clothy: бази, створені до появи колонки top_features, доповнюються без втрати даних
+        # Clothy: databases created before the top_features column are migrated without data loss
         cols = {r[1] for r in self.db.execute("PRAGMA table_info(decisions)")}
         if "top_features" not in cols:
             self.db.execute("ALTER TABLE decisions ADD COLUMN top_features TEXT")
@@ -50,29 +50,29 @@ class SqlFeatureStore:
         self.last_ts, self.first_ts = self.db.execute("SELECT MAX(ts), MIN(ts) FROM tx").fetchone()
 
     def close(self) -> None:
-        """Закриває з'єднання з базою."""
+        """Closes the database connection."""
         self.db.close()
 
     @property
     def n_transactions(self) -> int:
-        """Кількість збережених транзакцій."""
+        """Number of stored transactions."""
         return self.db.execute("SELECT COUNT(*) FROM tx").fetchone()[0]
 
     @property
     def n_decisions(self) -> int:
-        """Кількість записаних рішень."""
+        """Number of recorded decisions."""
         return self.db.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
 
     def check(self, txid: str, req: Mapping[str, Any]) -> None:
-        """Перевіряє, що транзакцію можна зберегти (див. FeatureStore.check)."""
+        """Checks that the transaction can be stored (see FeatureStore.check)."""
         r = normalize_request(req)
         if self.db.execute("SELECT 1 FROM tx WHERE txid=?", (txid,)).fetchone():
-            raise DuplicateTransactionError(f"транзакція {txid} уже збережена")
+            raise DuplicateTransactionError(f"transaction {txid} is already stored")
         if self.last_ts is not None and r["ts"] < self.last_ts:
-            raise OutOfOrderError(f"ts {r['ts']} раніше за останній збережений {self.last_ts}")
+            raise OutOfOrderError(f"ts {r['ts']} is earlier than the last stored {self.last_ts}")
 
     def history_features(self, req: Mapping[str, Any]) -> dict[str, float]:
-        """Ознаки історії картки та міток сусідів (див. FeatureStore.history_features)."""
+        """Card history and neighbour label features (see FeatureStore.history_features)."""
         r = normalize_request(req)
         now, c1, ad, em, amt = r["ts"], r["c1"], r["ad"], r["em"], r["amt"]
         q = self.db.execute
@@ -113,7 +113,7 @@ class SqlFeatureStore:
         return f
 
     def device_features(self, req: Mapping[str, Any]) -> dict[str, float]:
-        """Ознаки відбитка пристрою (див. FeatureStore.device_features)."""
+        """Device fingerprint features (see FeatureStore.device_features)."""
         r = normalize_request(req)
         if r["fp"] is None:
             return {k: NAN for k in DEVICE_NAMES}
@@ -129,7 +129,7 @@ class SqlFeatureStore:
                 "fp_share_new": n_new / o30 if o30 > 0 else NAN}
 
     def add(self, txid: str, req: Mapping[str, Any]) -> None:
-        """Зберігає транзакцію в таблиці tx (після перевірок check)."""
+        """Stores the transaction in the tx table (after the check checks)."""
         self.check(txid, req)
         r = normalize_request(req)
         now = r["ts"]
@@ -144,10 +144,10 @@ class SqlFeatureStore:
             self.first_ts = now
 
     def bulk_load(self, rows: Iterable[tuple]) -> None:
-        """Масове завантаження історії без перевірок (для бенчмарку).
+        """Bulk history load without checks (for the benchmark).
 
         Args:
-            rows: кортежі (txid, card1, addr1, em, fp, ts, amt, is_new, fraud_at).
+            rows: tuples (txid, card1, addr1, em, fp, ts, amt, is_new, fraud_at).
         """
         with self.db:
             self.db.executemany("INSERT INTO tx (txid, card1, addr1, em, fp, ts, amt, is_new, fraud_at) "
@@ -156,10 +156,10 @@ class SqlFeatureStore:
         self.last_ts, self.first_ts = self.db.execute("SELECT MAX(ts), MIN(ts) FROM tx").fetchone()
 
     def set_label(self, txid: str, fraud: bool, at: float) -> None:
-        """Записує мітку спору (див. FeatureStore.set_label).
+        """Records a dispute label (see FeatureStore.set_label).
 
         Raises:
-            KeyError: txid невідомий.
+            KeyError: unknown txid.
         """
         with self.db:
             cur = self.db.execute("UPDATE tx SET fraud_at=? WHERE txid=?", (float(at) if fraud else None, txid))
@@ -168,9 +168,9 @@ class SqlFeatureStore:
 
     def log_decision(self, txid: str, ts: int, variant: str, score: float, flag: bool, threshold: float,
                      top_features: list[dict[str, Any]] | None = None) -> None:
-        """Записує рішення моделі в таблицю decisions (повторний txid перезаписує запис).
+        """Writes the model decision to the decisions table (a repeated txid overwrites the row).
 
-        top_features (Clothy): три найбільші внески ознак, зберігаються як JSON; None, якщо не рахувались.
+        top_features (Clothy): the three largest feature contributions, stored as JSON; None if not computed.
         """
         tf = None if top_features is None else json.dumps(top_features)
         with self.db:
@@ -179,20 +179,20 @@ class SqlFeatureStore:
                             (txid, int(ts), variant, float(score), int(bool(flag)), float(threshold), tf))
 
     def log_ring(self, txid: str, ts: int, other_cards: int | None, share_new: float | None) -> None:
-        """Записує спрацювання сигналу кільця в таблицю ring_alerts."""
+        """Writes a ring signal alert to the ring_alerts table."""
         with self.db:
             self.db.execute("INSERT OR REPLACE INTO ring_alerts VALUES (?,?,?,?)",
                             (txid, int(ts), None if other_cards is None else int(other_cards),
                              None if share_new is None else float(share_new)))
 
     def recent_ring_alerts(self, limit: int = 20) -> list[dict[str, Any]]:
-        """Останні limit спрацювань сигналу кільця, від новіших до старіших."""
+        """The last limit ring signal alerts, newest first."""
         rows = self.db.execute("SELECT txid, ts, other_cards, share_new FROM ring_alerts "
                                "ORDER BY ts DESC, txid DESC LIMIT ?", (int(limit),)).fetchall()
         return [dict(zip(("txid", "ts", "other_cards_30d", "share_new"), r, strict=False)) for r in rows]
 
     def get_tx(self, txid: str) -> dict[str, Any] | None:
-        """Транзакція разом із рішенням, часом мітки та спрацюванням кільця; None, якщо txid невідомий."""
+        """Transaction with its decision, label time and ring alert; None if the txid is unknown."""
         row = self.db.execute(
             "SELECT t.txid, t.card1, t.ts, t.amt, t.fraud_at, d.variant, d.score, d.flag, d.threshold, d.top_features "
             "FROM tx t LEFT JOIN decisions d ON d.txid = t.txid WHERE t.txid=?", (txid,)).fetchone()
@@ -208,9 +208,9 @@ class SqlFeatureStore:
         return rec
 
     def recent_decisions(self, flagged: bool | None = None, limit: int = 20) -> list[dict[str, Any]]:
-        """Clothy: останні limit рішень, від новіших до старіших; flagged=True/False фільтрує за flag.
+        """Clothy: the last limit decisions, newest first; flagged=True/False filters by flag.
 
-        Кожен запис: txid, ts, score, flag, threshold, variant, fraud_label_at, top_features, ring_alert.
+        Each row: txid, ts, score, flag, threshold, variant, fraud_label_at, top_features, ring_alert.
         """
         where, args = "", []
         if flagged is not None:

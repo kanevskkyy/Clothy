@@ -7,7 +7,7 @@ from src.scoring import Scorer
 
 MODELS = "models"
 needs_models = pytest.mark.skipif(not os.path.exists(os.path.join(MODELS, "service_config.yaml")),
-                                  reason="models/ відсутня")
+                                  reason="models/ is missing")
 P = {"k": 3, "s": 0.8, "warmup_days": 14}
 DAY = 86400
 
@@ -16,11 +16,11 @@ def test_ring_rule_unit():
     nan = float("nan")
     dev = lambda o, s: {"fp_other30": o, "fp_share_new": s}
     assert ring_signal(dev(3.0, 1.0), P, 20)["suspect"] is True
-    assert ring_signal(dev(2.0, 1.0), P, 20)["suspect"] is False      # мало карток
-    assert ring_signal(dev(5.0, 0.5), P, 20)["suspect"] is False      # мало нових
-    assert ring_signal(dev(nan, nan), P, 20)["suspect"] is False      # немає відбитка
+    assert ring_signal(dev(2.0, 1.0), P, 20)["suspect"] is False      # too few cards
+    assert ring_signal(dev(5.0, 0.5), P, 20)["suspect"] is False      # too few new cards
+    assert ring_signal(dev(nan, nan), P, 20)["suspect"] is False      # no fingerprint
     assert ring_signal(dev(0.0, nan), P, 20)["suspect"] is False
-    r = ring_signal(dev(9.0, 1.0), P, 5)                              # історія ще не прогріта
+    r = ring_signal(dev(9.0, 1.0), P, 5)                              # history is not warmed up yet
     assert r["suspect"] is False and r["active"] is False
 
 
@@ -55,7 +55,7 @@ def test_http_ring_flow(tmp_path):
         r = c.post("/score", json={**base, "txid": f"t{i}", "ts": 20 * DAY + i * 60, "card1": 100.0 + i})
         assert r.status_code == 200
         flags.append(r.json()["ring"]["suspect"])
-    assert flags == [False, False, False, True]                         # k = 3: з четвертої картки
+    assert flags == [False, False, False, True]                         # k = 3: from the fourth card
     assert c.get("/tx/t3").json()["ring_alert"]["other_cards_30d"] == 3
     assert c.get("/tx/t0").json()["ring_alert"] is None
     alerts = c.get("/rings").json()["alerts"]

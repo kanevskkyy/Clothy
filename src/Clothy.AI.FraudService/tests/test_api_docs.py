@@ -1,4 +1,4 @@
-"""Схеми відповідей (response_model) не змінюють JSON, а /openapi.json описує ендпоінти й коди помилок."""
+"""Response schemas (response_model) do not change the JSON, and /openapi.json documents endpoints and error codes."""
 import heapq
 import json
 import os
@@ -15,12 +15,12 @@ from src.synth import make_stream, public_fields  # noqa: E402
 
 MODELS = "models"
 pytestmark = pytest.mark.skipif(not os.path.exists(os.path.join(MODELS, "service_config.yaml")),
-                                reason="models/ відсутня")
-RING = {"k": 2, "s": 0.5, "warmup_days": 1}   # короткий прогрів, щоб сигнал кільця спрацьовував на синтетиці
+                                reason="models/ is missing")
+RING = {"k": 2, "s": 0.5, "warmup_days": 1}   # short warmup so the ring signal fires on synthetic data
 
 
 def _plain(obj):
-    """Те, що повернув би FastAPI без response_model (dict -> JSON -> dict)."""
+    """What FastAPI would return without response_model (dict -> JSON -> dict)."""
     return json.loads(json.dumps(obj))
 
 
@@ -54,7 +54,7 @@ def test_http_json_equals_scorer_output(variant, backend):
         for e in evs[::37]:
             assert c.get(f"/tx/{e['txid']}").json() == _plain(ref.store.get_tx(e["txid"]))
         assert c.get("/rings", params={"limit": 50}).json() == _plain({"alerts": ref.store.recent_ring_alerts(50)})
-        assert n_suspect > 0   # перевірка /tx і /rings справді бачила спрацювання кільця
+        assert n_suspect > 0   # the /tx and /rings check actually saw ring alerts
         ref.store.close()
         c.app.state.scorer.store.close()
 
