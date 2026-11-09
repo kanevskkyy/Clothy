@@ -35,6 +35,13 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-management
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_port_connectivity"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+      start_interval: 2s
     container_name: rabbitmq
     restart: unless-stopped
     environment:
@@ -81,9 +88,12 @@ services:
       CLOUDINARYSETTINGS__APISECRET: ${CLOUDINARYSETTINGS__APISECRET}
       FRONTEND__URL: ${FRONTEND__URL}
     depends_on:
-      - clothy-postgres
-      - clothy-redis
-      - rabbitmq
+      clothy-postgres:
+        condition: service_started
+      clothy-redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
     networks:
       - clothy-network
 
@@ -102,9 +112,12 @@ services:
       GrpcClients__orders: "http://orders:8087"
       FRONTEND__URL: ${FRONTEND__URL}
     depends_on:
-      - clothy-redis
-      - rabbitmq
-      - catalog
+      clothy-redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+      catalog:
+        condition: service_started
     networks:
       - clothy-network
 
@@ -128,11 +141,16 @@ services:
       NOVAPOSHTA__API_KEY: ${NOVAPOSHTA__API_KEY}
       FRONTEND__URL: ${FRONTEND__URL}
     depends_on:
-      - clothy-postgres
-      - clothy-redis
-      - rabbitmq
-      - catalog
-      - basket
+      clothy-postgres:
+        condition: service_started
+      clothy-redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+      catalog:
+        condition: service_started
+      basket:
+        condition: service_started
     networks:
       - clothy-network
 
@@ -151,10 +169,14 @@ services:
       GrpcClients__orders: "http://orders:8087"
       FRONTEND__URL: ${FRONTEND__URL}
     depends_on:
-      - clothy-mongo
-      - rabbitmq
-      - catalog
-      - orders
+      clothy-mongo:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+      catalog:
+        condition: service_started
+      orders:
+        condition: service_started
     networks:
       - clothy-network
 
@@ -177,9 +199,12 @@ services:
       CLOUDINARYSETTINGS__APISECRET: ${CLOUDINARYSETTINGS__APISECRET}
       FRONTEND__URL: ${FRONTEND__URL}
     depends_on:
-      - clothy-redis
-      - rabbitmq
-      - keycloak
+      clothy-redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
     networks:
       - clothy-network
 
@@ -197,7 +222,8 @@ services:
       GMAIL__FROM: ${GMAIL__FROM}
       GMAIL__FROM_NAME: ${GMAIL__FROM_NAME}
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
     networks:
       - clothy-network
 
@@ -224,9 +250,12 @@ services:
       FRONTEND__URL: ${FRONTEND__URL}
       FRAUD__URL: ${FRAUD__URL:-http://fraud-service:8097}
     depends_on:
-      - clothy-postgres
-      - rabbitmq
-      - orders
+      clothy-postgres:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+      orders:
+        condition: service_started
     networks:
       - clothy-network
 
