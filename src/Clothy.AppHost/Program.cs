@@ -8,6 +8,10 @@ string ENV_PATH = Path.Combine(Directory.GetCurrentDirectory(), "../..", ".env")
 if (File.Exists(ENV_PATH)) Env.Load(ENV_PATH);
 else throw new FileNotFoundException($".env file not found at path: {ENV_PATH}. Application cannot start without environment variables.");
 
+// .env holds the docker-compose URL (http://keycloak:8080). Under Aspire the services run on the host,
+// where "keycloak" does not resolve and every lookup stalls ~3s before failing. Keycloak is published on 8080.
+Environment.SetEnvironmentVariable("KEYCLOAK__URL", "http://localhost:8080");
+
 var postgresPassword = builder.AddParameter("postgres-password", secret: true);
 
 var rabbitMQUsername = builder.AddParameter("rabbitMq-username", secret: true);

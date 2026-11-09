@@ -170,6 +170,7 @@ namespace Clothy.CatalogService.BLL.Services
         public async Task UpdateStockAsync(Guid clotheId, Guid colorId, Guid sizeId, int orderedQuantity, CancellationToken cancellationToken = default)
         {
             ClothesStock? clotheStock = await unitOfWork.ClothesStocks.GetByClotheColorSizeAsync(clotheId, colorId, sizeId, cancellationToken);
+            if (clotheStock == null) throw new NotFoundException($"Clothes stock not found for clothe {clotheId}, color {colorId}, size {sizeId}");
 
             clotheStock.Quantity -= orderedQuantity;
             unitOfWork.ClothesStocks.Update(clotheStock);
