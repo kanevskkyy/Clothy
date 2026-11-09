@@ -111,7 +111,7 @@ public class FraudScoringClientTests
     {
         StubHttpMessageHandler handler = new StubHttpMessageHandler((req, _) => Task.FromResult(
             req.Method == HttpMethod.Post
-                ? StubHttpMessageHandler.Json(HttpStatusCode.Conflict, "{\"detail\":\"транзакція уже збережена\"}")
+                ? StubHttpMessageHandler.Json(HttpStatusCode.Conflict, "{\"detail\":\"transaction is already stored\"}")
                 : StubHttpMessageHandler.Json(HttpStatusCode.OK, "{\"txid\":\"x\",\"score\":0.1,\"flag\":false}")));
 
         FraudScoreResult result = await CreateClient(handler).ScoreAsync(Request(), CancellationToken.None);
@@ -129,8 +129,8 @@ public class FraudScoringClientTests
         // 409 for a late webhook: ts is earlier than the last stored transaction, nothing was saved
         StubHttpMessageHandler handler = new StubHttpMessageHandler((req, _) => Task.FromResult(
             req.Method == HttpMethod.Post
-                ? StubHttpMessageHandler.Json(HttpStatusCode.Conflict, "{\"detail\":\"ts раніше за останній\"}")
-                : StubHttpMessageHandler.Json(HttpStatusCode.NotFound, "{\"detail\":\"невідома транзакція\"}")));
+                ? StubHttpMessageHandler.Json(HttpStatusCode.Conflict, "{\"detail\":\"ts is earlier than the last stored\"}")
+                : StubHttpMessageHandler.Json(HttpStatusCode.NotFound, "{\"detail\":\"unknown transaction\"}")));
 
         FraudScoreResult result = await CreateClient(handler).ScoreAsync(Request(), CancellationToken.None);
 
