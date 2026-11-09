@@ -1,12 +1,12 @@
-"""Онлайн-ознаки сервісної моделі.
+"""Online features for the service model.
 
-Відтворюють визначення з ноутбуків 20-22 (models/service_config.yaml):
-  * усі вікна беруть лише рядки зі СТРОГО раннім часом (рівний час виключено);
-  * мітка сусіда j «відома» для транзакції i, якщо t_j <= t_i - 7 днів (затримка),
-    t_j >= t_i - 30 днів (вікно) і мітку про шахрайство отримано не пізніше t_i;
-  * мітку не отримано = «чесна»: рахується в nk, але не в fk;
-  * власна мітка рядка не використовується.
-Транзакції мають надходити в неспадному порядку часу ts (секунди).
+They reproduce the definitions from notebooks 20-22 (models/service_config.yaml):
+  * all windows use only rows with a STRICTLY earlier time (equal time is excluded);
+  * neighbour j's label is "known" for transaction i if t_j <= t_i - 7 days (delay),
+    t_j >= t_i - 30 days (window) and the fraud label was received no later than t_i;
+  * no label received = "legit": counted in nk but not in fk;
+  * a row's own label is never used.
+Transactions must arrive in non-decreasing order of ts (seconds).
 """
 import math
 from bisect import bisect_left, bisect_right
@@ -23,11 +23,11 @@ DEVICE_NAMES = ["fp_other30", "fp_other7", "fp_nk", "fp_fk", "fp_rate", "fp_new3
 
 
 class OutOfOrderError(ValueError):
-    """Транзакція має ts, раніший за останню збережену (потік мусить іти в неспадному порядку часу)."""
+    """The transaction's ts is earlier than the last stored one (the stream must be in non-decreasing time order)."""
 
 
 class DuplicateTransactionError(ValueError):
-    """Транзакцію з таким txid уже збережено."""
+    """A transaction with this txid is already stored."""
 
 
 def _missing(v: Any) -> bool:
@@ -35,22 +35,22 @@ def _missing(v: Any) -> bool:
 
 
 def normalize_request(req: Mapping[str, Any]) -> dict[str, Any]:
-    """Витягає з запиту ключі історії у зручному вигляді.
+    """Extracts the history keys from a request in a convenient form.
 
     Args:
-        req: поля транзакції (назви IEEE-CIS); card1, ts і TransactionAmt обов'язкові.
+        req: transaction fields (IEEE-CIS names); card1, ts and TransactionAmt are required.
 
     Returns:
-        Словник: c1 (card1), ad (addr1 або None), em (P_emaildomain або None),
-        fp (відбиток DeviceInfo|id_30|id_31|id_33 або None, якщо бракує хоч одного поля),
-        amt (сума), ts (час, int).
+        A dict: c1 (card1), ad (addr1 or None), em (P_emaildomain or None),
+        fp (fingerprint DeviceInfo|id_30|id_31|id_33, or None if any field is missing),
+        amt (amount), ts (time, int).
 
     Raises:
-        ValueError: обов'язкове поле відсутнє або NaN.
+        ValueError: a required field is missing or NaN.
     """
     for k in ("card1", "ts", "TransactionAmt"):
         if _missing(req.get(k)):
-            raise ValueError(f"{k} обов'язкове")
+            raise ValueError(f"{k} is required")
     fp = [None if _missing(req.get(c)) else str(req[c]) for c in FP_COLS]
     return {
         "c1": float(req["card1"]),
@@ -63,7 +63,7 @@ def normalize_request(req: Mapping[str, Any]) -> dict[str, Any]:
 
 
 class _Group:
-    """Рядки однієї групи ключа (картка, пара, трійка чи відбиток), упорядковані за часом."""
+    """Rows of one key group (card, pair, triple or fingerprint), ordered by time."""
 
     __slots__ = ("t", "amt", "new", "fraud_at", "card")
 
@@ -80,7 +80,7 @@ class _Group:
 
 
 def _window(g: _Group | None, now: int, w_days: float, delay_days: float) -> tuple[int, int]:
-    """позиції [lo, hi): рядки з часом у [now - w_days, now - delay_days] і строго раніше за now"""
+    """positions [lo, hi): rows with time in [now - w_days, now - delay_days] and strictly before now"""
     if g is None:
         return 0, 0
     a = bisect_left(g.t, now)
@@ -95,7 +95,7 @@ def _count(g: _Group | None, now: int, w_days: float) -> int:
 
 
 def _known(g: _Group | None, now: int, w_days: float, delay_days: float) -> tuple[int, int]:
-    """(скільки відомих, з них шахрайських) для групи з однією ознакою ключа"""
+    """(how many known, how many of them fraud) for a group with a single key feature"""
     if g is None:
         return 0, 0
     lo, hi = _window(g, now, w_days, delay_days)
@@ -103,9 +103,9 @@ def _known(g: _Group | None, now: int, w_days: float, delay_days: float) -> tupl
 
 
 class FeatureStore:
-    """Сховище історії в пам'яті з онлайн-ознаками (див. докстрінг модуля).
+    """In-memory history store with online features (see the module docstring).
 
-    Атрибути last_ts і first_ts: час останньої й першої збереженої транзакції (None, якщо порожньо).
+    Attributes last_ts and first_ts: time of the last and first stored transaction (None if empty).
     """
 
     def __init__(self) -> None:
@@ -116,28 +116,28 @@ class FeatureStore:
 
     @property
     def n_transactions(self) -> int:
-        """Кількість збережених транзакцій."""
+        """Number of stored transactions."""
         return len(self.tx)
 
     def check(self, txid: str, req: Mapping[str, Any]) -> None:
-        """Перевіряє, що транзакцію можна зберегти.
+        """Checks that the transaction can be stored.
 
         Raises:
-            ValueError: неповний запит.
-            DuplicateTransactionError: txid уже збережено.
-            OutOfOrderError: ts раніший за останній збережений.
+            ValueError: incomplete request.
+            DuplicateTransactionError: txid is already stored.
+            OutOfOrderError: ts is earlier than the last stored one.
         """
         r = normalize_request(req)
         if txid in self.tx:
-            raise DuplicateTransactionError(f"транзакція {txid} уже збережена")
+            raise DuplicateTransactionError(f"transaction {txid} is already stored")
         if self.last_ts is not None and r["ts"] < self.last_ts:
-            raise OutOfOrderError(f"ts {r['ts']} раніше за останній збережений {self.last_ts}")
+            raise OutOfOrderError(f"ts {r['ts']} is earlier than the last stored {self.last_ts}")
 
     def history_features(self, req: Mapping[str, Any]) -> dict[str, float]:
-        """Ознаки історії картки та міток сусідів (HISTORY_NAMES) для транзакції req.
+        """Card history and neighbour label features (HISTORY_NAMES) for transaction req.
 
-        Враховуються лише транзакції строго раніше за req["ts"]; сама req не зберігається.
-        Пропущені значення повертаються як NaN.
+        Only transactions strictly before req["ts"] are counted; req itself is not stored.
+        Missing values are returned as NaN.
         """
         r = normalize_request(req)
         now, c1, ad, em, amt = r["ts"], r["c1"], r["ad"], r["em"], r["amt"]
@@ -169,8 +169,8 @@ class FeatureStore:
         return f
 
     def device_features(self, req: Mapping[str, Any]) -> dict[str, float]:
-        """Ознаки відбитка пристрою (DEVICE_NAMES): інші картки на тому самому відбитку за 7/30 днів,
-        їхні відомі мітки та частка нових карток. Без повного відбитка всі значення NaN.
+        """Device fingerprint features (DEVICE_NAMES): other cards on the same fingerprint in 7/30 days,
+        their known labels and the share of new cards. Without a full fingerprint all values are NaN.
         """
         r = normalize_request(req)
         if r["fp"] is None:
@@ -196,12 +196,12 @@ class FeatureStore:
                 "fp_share_new": n_new / o30 if o30 > 0 else NAN}
 
     def add(self, txid: str, req: Mapping[str, Any]) -> None:
-        """Зберігає транзакцію в історії (після тих самих перевірок, що й check)."""
+        """Stores the transaction in history (after the same checks as check)."""
         self.check(txid, req)
         r = normalize_request(req)
         now, c1, ad, em = r["ts"], r["c1"], r["ad"], r["em"]
         g0 = self.card.get(c1)
-        new = 1 if (g0 is None or bisect_left(g0.t, now) == 0) else 0   # перша поява картки в цей момент
+        new = 1 if (g0 is None or bisect_left(g0.t, now) == 0) else 0   # first appearance of the card at this moment
         refs = []
 
         def put(d, key):
@@ -225,15 +225,15 @@ class FeatureStore:
             self.first_ts = now
 
     def set_label(self, txid: str, fraud: bool, at: float) -> None:
-        """Записує мітку спору.
+        """Records a dispute label.
 
         Args:
-            txid: збережена транзакція.
-            fraud: True ставить мітку шахрайства з часом at, False знімає мітку.
-            at: час отримання мітки (секунди, та сама шкала, що й ts).
+            txid: a stored transaction.
+            fraud: True sets a fraud label at time at, False removes the label.
+            at: time the label was received (seconds, same scale as ts).
 
         Raises:
-            KeyError: txid невідомий.
+            KeyError: unknown txid.
         """
         refs = self.tx.get(txid)
         if refs is None:

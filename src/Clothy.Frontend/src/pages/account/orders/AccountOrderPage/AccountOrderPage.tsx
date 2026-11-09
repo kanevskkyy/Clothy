@@ -17,7 +17,7 @@ const AccountOrderPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const currentPage = getCurrentPage(searchParams);
 
-    const [isLoading, setIsLoading] = useState(true); // Змінено на true для першого завантаження
+    const [isLoading, setIsLoading] = useState(true); // true for the initial load
     const [myOrders, setMyOrders] = useState<PagedList<IOrderReadDTO> | null>(null);
 
     useEffect(() => {

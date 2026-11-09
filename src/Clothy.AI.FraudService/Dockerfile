@@ -1,6 +1,6 @@
 FROM python:3.11-slim
 
-# xgboost потребує OpenMP (libgomp), якого немає в slim-образі
+# xgboost needs OpenMP (libgomp), which the slim image lacks
 RUN apt-get update \
     && apt-get install -y --no-install-recommends libgomp1 \
     && rm -rf /var/lib/apt/lists/*
@@ -10,7 +10,7 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# models/ не в git: перед збіркою скопіюйте файли моделей (див. README.md)
+# models/ is not in git: copy the model files before building (see the root README.md)
 COPY src ./src
 COPY models ./models
 
@@ -22,7 +22,7 @@ ENV MODELS_DIR=models \
     RING_SIGNAL=on \
     LOG_LEVEL=INFO
 
-# Історія SQLite переживає перезапуск, якщо /data змонтовано як volume
+# SQLite history survives restarts if /data is mounted as a volume
 RUN mkdir -p /data
 VOLUME /data
 

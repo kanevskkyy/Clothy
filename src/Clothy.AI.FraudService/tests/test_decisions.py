@@ -1,4 +1,4 @@
-"""Clothy: top_features у таблиці decisions і ендпоінт GET /decisions."""
+"""Clothy: top_features in the decisions table and the GET /decisions endpoint."""
 import os
 import sqlite3
 
@@ -14,11 +14,11 @@ from src.synth import make_stream, public_fields  # noqa: E402
 
 MODELS = "models"
 needs_models = pytest.mark.skipif(not os.path.exists(os.path.join(MODELS, "service_config.yaml")),
-                                  reason="models/ відсутня")
+                                  reason="models/ is missing")
 
 
 def _scored_client(n=300, flag_rate=0.05):
-    """Клієнт із SQLite у пам'яті та n оцінених транзакцій; повертає (client, {txid: відповідь /score})."""
+    """Client with in-memory SQLite and n scored transactions; returns (client, {txid: /score response})."""
     c = TestClient(create_app(MODELS, "main", flag_rate, backend="sqlite", db_path=":memory:", ring_params=False))
     outs = {}
     for i, e in enumerate(make_stream(MODELS, seed=3)[:n]):
@@ -44,7 +44,7 @@ def test_tx_returns_stored_top_features():
 def test_decisions_filter_order_and_limit():
     c, outs = _scored_client()
     flagged = [t for t, (o, _) in outs.items() if o["flag"]]
-    assert flagged, "на синтетиці з FLAG_RATE=0.05 мають бути позначені транзакції"
+    assert flagged, "synthetic data with FLAG_RATE=0.05 must have flagged transactions"
 
     items = c.get("/decisions", params={"flagged": True, "limit": 500}).json()["items"]
     assert {i["txid"] for i in items} == set(flagged)
@@ -88,7 +88,7 @@ def test_openapi_documents_decisions():
 
 
 def test_old_database_gets_top_features_column(tmp_path):
-    """База зі старою схемою decisions (без top_features) відкривається, дані не губляться."""
+    """A database with the old decisions schema (no top_features) opens without losing data."""
     path = str(tmp_path / "old.db")
     db = sqlite3.connect(path)
     db.executescript("""

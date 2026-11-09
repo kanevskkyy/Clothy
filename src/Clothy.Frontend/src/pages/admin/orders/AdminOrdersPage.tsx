@@ -60,7 +60,7 @@ const AdminOrdersPage = () => {
         const loadRisksAsync = async (orderIds: string[]): Promise<RiskMap | undefined> => {
             const results = await Promise.allSettled(orderIds.map((id) => fraudApi.getOrderRiskAsync(id)));
             if (results.some((r) => r.status === "rejected")) {
-                toast.warning("Антифрод недоступний: ризик замовлень не показано");
+                toast.warning("Fraud check unavailable: order risks not shown");
                 return undefined;
             }
             return Object.fromEntries(orderIds.map((id, i) =>
@@ -80,7 +80,7 @@ const AdminOrdersPage = () => {
             try {
                 decisions = await fraudApi.getDecisionsAsync(true);
             } catch (error) {
-                toast.error(`Антифрод недоступний: ${getErrorMessage(error)}`);
+                toast.error(`Fraud check unavailable: ${getErrorMessage(error)}`);
                 setOrders(null);
                 return;
             }
@@ -188,12 +188,12 @@ const AdminOrdersPage = () => {
                         onChange={handleOnlyReviewChange}
                         icon={<ShieldAlert size={16}/>}
                     >
-                        Лише на перевірку
+                        Needs review only
                     </AdminToggle>
                     {!isLoading && orders && (
                         <span className={styles.count} aria-live="polite">
                             {onlyReview
-                                ? `На перевірку: ${orders.totalCount}`
+                                ? `Needs review: ${orders.totalCount}`
                                 : `${orders.totalCount} orders`}
                         </span>
                     )}
@@ -207,7 +207,7 @@ const AdminOrdersPage = () => {
                     label="Status:"
                 />
             ) : (
-                <span className={styles.hint}>Фільтр статусу вимкнено в режимі перевірки</span>
+                <span className={styles.hint}>Status filter is disabled in review mode</span>
             )}
         />
     );
@@ -223,7 +223,7 @@ const AdminOrdersPage = () => {
                     icon={onlyReview ? <ShieldCheck size={22}/> : <Package size={22}/>}
                     title="No orders found"
                     description={onlyReview
-                        ? "Немає замовлень, позначених антифродом на перевірку."
+                        ? "No orders flagged for review by the fraud check."
                         : "There are no orders matching the selected status."}
                     action={currentStatus || onlyReview ? (
                         <AdminButton

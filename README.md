@@ -269,10 +269,53 @@ flowchart LR
 
 | Piece | Where |
 |---|---|
-| Service, tests, Dockerfile | `src/Clothy.AI.FraudService` (own [README](src/Clothy.AI.FraudService/README.md)) |
+| Service, tests, Dockerfile | `src/Clothy.AI.FraudService` (API docs at `/docs`) |
 | Scoring client and Stripe mapping | `PaymentService.BLL/Fraud` (`IFraudScoringClient`, `FraudRequestMapper`) |
 | Dispute webhook | `PaymentService.BLL/Services/StripeDisputeHandler.cs` |
-| Admin UI | `/admin/orders` (risk badge, "Лише на перевірку" filter), `/admin/orders/:id` (reasons, ring signal, dispute status) |
+| Admin UI | `/admin/orders` (risk badge, "Needs review only" filter), `/admin/orders/:id` (reasons, ring signal, dispute status) |
+| CI | `fraud-service-test` (ruff + pytest) and `fraud-build-and-push` jobs, see [CI/CD Pipeline](#cicd-pipeline) |
+
+### Inside the service
+
+```mermaid
+flowchart LR
+    subgraph score["POST /score"]
+        R[Request: txid, ts,<br/>TransactionAmt, card1, ...] --> F[Features from the store<br/>card history 1/7/30 days,<br/>pairs with address and email,<br/>neighbour labels u2/u3,<br/>device fingerprint]
+        F --> X[XGBoost<br/>main 34 / device 41 features]
+        X --> T{"score ≥ threshold<br/>from validation"}
+        T --> D[Decision: score, flag,<br/>top-3 contributions, ring signal]
+        F --> RS[Ring signal<br/>k, s, warmup_days] --> D
+        D --> S[("Store<br/>memory / SQLite:<br/>tx, decisions, ring_alerts")]
+    end
+    S -.-> F
+    subgraph labels["Dispute"]
+        W[Payment provider<br/>dispute webhook] --> L[POST /labels<br/>txid, fraud, at]
+        L --> U[Label update<br/>fraud_at in the store]
+    end
+    U --> S
+```
+
+Features use only transactions strictly before `ts`. A neighbouring transaction j's label becomes known for
+transaction i if `t_j <= t_i − 7 days`, `t_j >= t_i − 30 days` and the label arrived no later than `t_i`; a row's own
+label is never used. The in-memory and SQLite stores compute the same features (the tests check this).
+
+| Code | When |
+|---|---|
+| 404 | unknown `txid` in `/labels` or `/tx/{txid}` |
+| 409 | `/score` with `store=true`: duplicate `txid` or `ts` earlier than the last stored transaction |
+| 422 | incomplete or invalid request; the body is either a list of pydantic errors (`detail: [...]`) or a string from the service (`detail: "card1 is required"`) |
+| 501 | `/tx`, `/rings` or `/decisions` with `STORE_BACKEND=memory` |
+
+| File in `src/` | What it does |
+|---|---|
+| `service.py` | FastAPI app: endpoints, error codes, logging |
+| `schemas.py` | pydantic request and response schemas with descriptions and examples for `/docs` |
+| `config.py` | reads and validates settings (`.env`, environment variables), sets up the logger |
+| `scoring.py` | `Scorer`: features → XGBoost → threshold → decision, top-3 contributions, ring signal; sha256 check of the models |
+| `features.py` | `FeatureStore`: online features and delayed labels in memory |
+| `sqlstore.py` | `SqlFeatureStore`: the same features in SQLite, tables `tx`, `decisions`, `ring_alerts` |
+| `ring.py` | the ring signal rule |
+| `synth.py` | synthetic stream with the IEEE-CIS schema (regular cards, fraud episodes, rings) |
 
 **How a payment is scored.** On `checkout.session.completed` PaymentService marks the payment as Paid and
 publishes `OrderPaidEvent` exactly as before, then reads the charge from Stripe and sends `POST /score`:
@@ -374,17 +417,30 @@ stripe listen --forward-to localhost:8094/api/payments/webhook/stripe `
 
 ![CI/CD Pipeline](docs/images/ci-cd.jpg)
 
-The pipeline runs on every push to `main` and every pull request, with four sequential jobs:
+The pipeline runs on every push to `main` and every pull request:
 
-```
-Unit Tests  →  Integration Tests  →  Contract Tests  →  Docker Build & Push
-   (7 services)      (5 services)       (5 services)       (11 images → DockerHub)
+```mermaid
+flowchart LR
+    U[Unit Tests<br/>7 services] --> I[Integration Tests<br/>5 services] --> C[Contract Tests<br/>5 services]
+    C --> B[Docker Build & Push<br/>11 images → DockerHub]
+    U --> B
+    I --> B
+    FT[Fraud Service<br/>ruff + pytest] --> FB[Build & Push<br/>clothy-fraud]
+    U --> FB
+    I --> FB
+    C --> FB
 ```
 
 - **Unit Tests** — 7 service matrices run in parallel with NuGet caching
 - **Integration Tests** — 5 services, require passing unit tests
 - **Contract Tests** — Consumer-driven contract tests, require all prior tests
+- **Fraud Service** — `ruff check` and `pytest` for `Clothy.AI.FraudService` on Python 3.11 with pip caching; runs in parallel with the .NET jobs
 - **Docker Build & Push** — Builds and pushes 11 Docker images to DockerHub using GitHub Actions cache; only runs on `main` after all tests pass
+- **Build & Push - fraud** — Builds and pushes `clothy-fraud`; only runs on `main` after all tests pass
+
+**Model files in CI.** `models/` is not in git, so the fraud jobs download it from the `FRAUD_MODELS_URL`
+secret (a zip with the contents of `models/` at its root). Without the secret the model-dependent tests are skipped
+and the `clothy-fraud` image is not built; the job logs a warning instead of failing.
 
 ---
 

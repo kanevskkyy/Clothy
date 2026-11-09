@@ -3,11 +3,11 @@ import {AlertCircle, Check, Clock, CreditCard, X} from "lucide-react";
 import styles from "./FraudRisk.module.css";
 
 const PAYMENT_STATUS_STYLES: Record<string, { label: string; className: string; icon: React.ReactNode }> = {
-    Pending: {label: "Не оплачено", className: styles.toneNeutral, icon: <Clock size={13}/>},
-    Paid: {label: "Оплачено", className: styles.toneSuccess, icon: <CreditCard size={13}/>},
-    Disputed: {label: "Спір: відкрито", className: styles.toneWarning, icon: <AlertCircle size={13}/>},
-    DisputeWon: {label: "Спір: виграно", className: styles.toneInfo, icon: <Check size={13}/>},
-    DisputeLost: {label: "Спір: програно", className: styles.toneDanger, icon: <X size={13}/>},
+    Pending: {label: "Unpaid", className: styles.toneNeutral, icon: <Clock size={13}/>},
+    Paid: {label: "Paid", className: styles.toneSuccess, icon: <CreditCard size={13}/>},
+    Disputed: {label: "Dispute open", className: styles.toneWarning, icon: <AlertCircle size={13}/>},
+    DisputeWon: {label: "Dispute won", className: styles.toneInfo, icon: <Check size={13}/>},
+    DisputeLost: {label: "Dispute lost", className: styles.toneDanger, icon: <X size={13}/>},
 };
 
 interface IPaymentStatusBadgeProps {

@@ -6,9 +6,9 @@ import {getRiskLevel, type RiskLevel} from "./riskLevel.ts";
 
 // every level has its own icon and text, so the badge does not rely on color alone
 const RISK_STYLES: Record<RiskLevel, { label: string; className: string; icon: React.ReactNode }> = {
-    low: {label: "Ризик: низький", className: styles.toneSuccess, icon: <ShieldCheck size={13}/>},
-    review: {label: "Ризик: на перевірку", className: styles.toneWarning, icon: <AlertTriangle size={13}/>},
-    unscored: {label: "Ризик: не оцінено", className: styles.toneNeutral, icon: <CircleSlash size={13}/>},
+    low: {label: "Low risk", className: styles.toneSuccess, icon: <ShieldCheck size={13}/>},
+    review: {label: "Needs review", className: styles.toneWarning, icon: <AlertTriangle size={13}/>},
+    unscored: {label: "Not scored", className: styles.toneNeutral, icon: <CircleSlash size={13}/>},
 };
 
 interface IRiskBadgeProps {
@@ -30,13 +30,13 @@ const RiskBadge: React.FC<IRiskBadgeProps> = ({record, showScore = true}) => {
                 {style.label}
             </span>
             {showScore && record?.score != null && (
-                <span className={styles.score} title="Ймовірність шахрайства за моделлю">
+                <span className={styles.score} title="Fraud probability (model score)">
                     {record.score.toFixed(3)}
                 </span>
             )}
             {record?.ring_alert && (
-                <span className={styles.ring} title="Сигнал кільця: з цього пристрою платили кількома новими картками">
-                    <Network size={12} aria-hidden="true"/> кільце
+                <span className={styles.ring} title="Ring signal: this device paid with several new cards">
+                    <Network size={12} aria-hidden="true"/> ring
                 </span>
             )}
         </span>

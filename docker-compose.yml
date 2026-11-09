@@ -338,9 +338,9 @@ services:
       DB_PATH: /data/history.db
     volumes:
       - frauddata:/data
-    # Порт назовні не публікується: сервіс доступний лише в clothy-network
-    # (PaymentService викликає /score і /labels, gateway віддає адмінці читання).
-    # Для налагодження /docs з хоста тимчасово розкоментуйте:
+    # The port is not published: the service is reachable only inside clothy-network
+    # (PaymentService calls /score and /labels, the gateway serves reads to the admin panel).
+    # To debug /docs from the host, temporarily uncomment:
     # ports:
     #   - "8097:8097"
     networks:

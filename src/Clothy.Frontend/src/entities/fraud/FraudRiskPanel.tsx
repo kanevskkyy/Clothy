@@ -14,7 +14,7 @@ const HIDDEN_VALUE_FEATURES = new Set([
 
 const formatValue = (f: IFraudTopFeature): string | null => {
     if (HIDDEN_VALUE_FEATURES.has(f.feature)) return null;
-    if (f.value === null) return "немає даних";
+    if (f.value === null) return "no data";
     return Number.isInteger(f.value) ? String(f.value) : f.value.toFixed(2);
 };
 
@@ -28,23 +28,23 @@ interface IScoreMeterProps {
 
 /** Score on a 0..1 track with a mark at the decision threshold. */
 const ScoreMeter: React.FC<IScoreMeterProps> = ({score, threshold, flagged}) => {
-    const relation = threshold === null ? "" : score >= threshold ? ", вище порогу" : ", нижче порогу";
+    const relation = threshold === null ? "" : score >= threshold ? ", above threshold" : ", below threshold";
     return (
         <div>
             <div className={styles.scoreHead}>
                 <span className={styles.scoreValue}>{score.toFixed(3)}</span>
                 <span className={styles.scoreCaption}>
-                    {threshold !== null ? <>поріг {threshold.toFixed(3)}</> : "поріг невідомий"}
+                    {threshold !== null ? <>threshold {threshold.toFixed(3)}</> : "threshold unknown"}
                 </span>
             </div>
             <div
                 className={styles.meter}
                 role="meter"
-                aria-label="Score моделі"
+                aria-label="Model score"
                 aria-valuemin={0}
                 aria-valuemax={1}
                 aria-valuenow={score}
-                aria-valuetext={`${score.toFixed(3)}${threshold !== null ? ` при порозі ${threshold.toFixed(3)}` : ""}${relation}`}
+                aria-valuetext={`${score.toFixed(3)}${threshold !== null ? ` at threshold ${threshold.toFixed(3)}` : ""}${relation}`}
             >
                 <span
                     className={`${styles.meterFill} ${flagged ? styles.fillReview : styles.fillLow}`}
@@ -52,7 +52,7 @@ const ScoreMeter: React.FC<IScoreMeterProps> = ({score, threshold, flagged}) => 
                 />
                 {threshold !== null && (
                     <span className={styles.threshold} style={{left: toPercent(threshold)}} aria-hidden="true">
-                        <span className={styles.thresholdLabel}>поріг</span>
+                        <span className={styles.thresholdLabel}>threshold</span>
                     </span>
                 )}
             </div>
@@ -80,7 +80,7 @@ const FraudRiskPanel: React.FC<IFraudRiskPanelProps> = ({record, paymentStatus})
         <section className={styles.panel} aria-labelledby="fraud-panel-title">
             <div className={styles.panelHeader}>
                 <h2 id="fraud-panel-title" className={styles.panelTitle}>
-                    <ShieldAlert size={18} aria-hidden="true"/> Антифрод
+                    <ShieldAlert size={18} aria-hidden="true"/> Fraud check
                 </h2>
                 <div className={styles.extras}>
                     <RiskBadge record={record} showScore={false}/>
@@ -91,21 +91,21 @@ const FraudRiskPanel: React.FC<IFraudRiskPanelProps> = ({record, paymentStatus})
             <div className={styles.panelBody}>
                 {!record || record.score === null ? (
                     <p className={styles.meta}>
-                        Оплату не оцінено: сервіс антифроду був недоступний, оплата прийшла не по черзі
-                        або замовлення оплачене не карткою Stripe. На оплату це не вплинуло.
+                        Payment not scored: the fraud service was unavailable, the payment arrived out of order,
+                        or the order wasn't paid with a Stripe card. The payment itself was not affected.
                     </p>
                 ) : (
                     <>
                         <div>
                             <p className={styles.sectionLabel}>Score</p>
                             <ScoreMeter score={record.score} threshold={record.threshold} flagged={record.flag === true}/>
-                            {record.variant && <p className={styles.meta}>Модель {record.variant}</p>}
+                            {record.variant && <p className={styles.meta}>Model {record.variant}</p>}
                         </div>
 
                         {record.fraud_label_at !== null && (
                             <div className={`${styles.callout} ${styles.calloutLabel}`}>
                                 <span className={styles.calloutIcon} aria-hidden="true"><Gavel size={16}/></span>
-                                <span>Позначено як шахрайство за результатом спору.</span>
+                                <span>Marked as fraud based on the dispute outcome.</span>
                             </div>
                         )}
 
@@ -113,17 +113,17 @@ const FraudRiskPanel: React.FC<IFraudRiskPanelProps> = ({record, paymentStatus})
                             <div className={`${styles.callout} ${styles.calloutRing}`}>
                                 <span className={styles.calloutIcon} aria-hidden="true"><Network size={16}/></span>
                                 <span>
-                                    <span className={styles.calloutTitle}>Сигнал кільця</span>
-                                    З цього пристрою за 30 днів платили
-                                    {" "}{record.ring_alert.other_cards_30d ?? "?"} раз(и) іншими картками
-                                    {record.ring_alert.share_new !== null && <>, нових карток {Math.round(record.ring_alert.share_new * 100)}%</>}.
+                                    <span className={styles.calloutTitle}>Ring signal</span>
+                                    This device made
+                                    {" "}{record.ring_alert.other_cards_30d ?? "?"} payment(s) with other cards in the last 30 days
+                                    {record.ring_alert.share_new !== null && <>, {Math.round(record.ring_alert.share_new * 100)}% of them new</>}.
                                 </span>
                             </div>
                         )}
 
                         {features.length > 0 && (
                             <div>
-                                <p className={styles.sectionLabel} id="fraud-reasons-title">Головні причини</p>
+                                <p className={styles.sectionLabel} id="fraud-reasons-title">Top reasons</p>
                                 <ul className={styles.reasons} aria-labelledby="fraud-reasons-title">
                                     {features.map((f) => {
                                         const value = formatValue(f);
@@ -137,7 +137,7 @@ const FraudRiskPanel: React.FC<IFraudRiskPanelProps> = ({record, paymentStatus})
                                                 </span>
                                                 <span
                                                     className={styles.impact}
-                                                    title={`Внесок ${f.contribution > 0 ? "+" : ""}${f.contribution.toFixed(3)}`}
+                                                    title={`Contribution ${f.contribution > 0 ? "+" : ""}${f.contribution.toFixed(3)}`}
                                                     aria-hidden="true"
                                                 >
                                                     <span
@@ -147,7 +147,7 @@ const FraudRiskPanel: React.FC<IFraudRiskPanelProps> = ({record, paymentStatus})
                                                 </span>
                                                 <span className={up ? styles.reasonUp : styles.reasonDown}>
                                                     <span className={styles.arrow} aria-hidden="true">{up ? "↑" : "↓"}</span>
-                                                    {up ? "підвищує ризик" : "знижує ризик"}
+                                                    {up ? "raises risk" : "lowers risk"}
                                                 </span>
                                             </li>
                                         );
@@ -160,7 +160,7 @@ const FraudRiskPanel: React.FC<IFraudRiskPanelProps> = ({record, paymentStatus})
             </div>
 
             <p className={styles.note}>
-                Модель навчена на наборі IEEE-CIS, а не на даних магазину: оцінки демонстраційні.
+                The model is trained on the IEEE-CIS dataset, not on store data: scores are for demo purposes only.
             </p>
         </section>
     );

@@ -1,9 +1,9 @@
-# Конфігурація інструментів. Тести налаштовано в pytest.ini.
+# Tool configuration. Tests are configured in pytest.ini.
 
 [tool.ruff]
 line-length = 120
 target-version = "py310"
-# Лінтер перевіряє лише код сервісу і нові тести; дослідницькі скрипти й ранні тести поза перевіркою.
+# The linter checks only the service code and new tests; research scripts and early tests are excluded.
 include = ["src/**/*.py", "tests/test_api_docs.py", "tests/test_config.py", "tests/test_decisions.py"]
 
 [tool.ruff.lint]

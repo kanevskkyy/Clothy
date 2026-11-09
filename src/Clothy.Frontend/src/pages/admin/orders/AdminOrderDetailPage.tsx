@@ -29,7 +29,7 @@ const AdminOrderDetailPage = () => {
             .then(setRisk)
             .catch(() => {
                 setRisk(undefined);
-                toast.warning("Антифрод недоступний: ризик замовлення не показано");
+                toast.warning("Fraud check unavailable: order risk not shown");
             });
 
         paymentApi.getOrderPaymentStatusesAsync([orderId])
