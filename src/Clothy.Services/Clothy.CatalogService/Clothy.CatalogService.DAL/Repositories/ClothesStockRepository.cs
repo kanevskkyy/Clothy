@@ -23,7 +23,9 @@ namespace Clothy.CatalogService.DAL.Repositories
 
         public async Task<ClothesStock?> GetByClotheColorSizeAsync(Guid clotheId, Guid colorId, Guid sizeId, CancellationToken cancellationToken = default)
         {
-            return await dbSet.FirstOrDefaultAsync(s => s.ClotheId == clotheId && s.ColorId == colorId && s.SizeId == sizeId, cancellationToken);
+            return await dbSet
+                .Include(s => s.Clothe)
+                .FirstOrDefaultAsync(s => s.ClotheId == clotheId && s.ColorId == colorId && s.SizeId == sizeId, cancellationToken);
         }
 
         public async Task<ClothesStock?> GetByIdWithDetailsAsync(Guid id, CancellationToken cancellationToken = default)
